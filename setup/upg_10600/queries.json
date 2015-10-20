@@ -1,0 +1,13 @@
+{
+    "1": {
+        "method": "changeColumn",
+        "params": [
+            "member_map_cmarkers",
+            "description",
+            {
+                "name": "description",
+                "type": "TEXT"
+            }
+        ]
+    }
+}

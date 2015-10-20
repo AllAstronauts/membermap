@@ -1,0 +1,26 @@
+{
+    "1": {
+        "method": "changeColumn",
+        "params": [
+            "member_map_cmarkers_groups",
+            "pin_colour",
+            {
+                "name": "pin_bg_colour",
+                "type": "VARCHAR",
+                "length": 6
+            }
+        ]
+    },
+    "2": {
+        "method": "addColumn",
+        "params": [
+            "member_map_cmarkers_groups",
+            "pin_colour",
+            {
+                "type": "VARCHAR",
+                "length": 6,
+                "allow_null": false
+            }
+        ]
+    }
+}

@@ -1,0 +1,136 @@
+{
+    "1": {
+        "method": "createTable",
+        "params": [
+            {
+                "name": "member_map_cmarkers_groups",
+                "columns": {
+                    "id": {
+                        "name": "id",
+                        "type": "MEDIUMINT",
+                        "length": 5,
+                        "values": [],
+                        "allow_null": false,
+                        "auto_increment": true,
+                        "comment": ""
+                    },
+                    "g_title": {
+                        "name": "g_title",
+                        "type": "VARCHAR",
+                        "length": 150,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": false,
+                        "comment": ""
+                    },
+                    "pin_colour": {
+                        "name": "pin_colour",
+                        "type": "VARCHAR",
+                        "length": 6,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": false,
+                        "comment": ""
+                    },
+                    "pin_icon": {
+                        "name": "pin_icon",
+                        "type": "VARCHAR",
+                        "length": 15,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": false,
+                        "comment": ""
+                    }
+                },
+                "indexes": {
+                    "PRIMARY": {
+                        "type": "primary",
+                        "name": "PRIMARY",
+                        "columns": [
+                            "id"
+                        ],
+                        "length": [
+                            null
+                        ]
+                    }
+                }
+            }
+        ]
+    },
+    "2": {
+        "method": "createTable",
+        "params": [
+            {
+                "name": "member_map_cmarkers",
+                "columns": {
+                    "m_id": {
+                        "name": "m_id",
+                        "type": "MEDIUMINT",
+                        "length": 5,
+                        "values": [],
+                        "allow_null": false,
+                        "auto_increment": true,
+                        "comment": ""
+                    },
+                    "g_id": {
+                        "name": "g_id",
+                        "type": "MEDIUMINT",
+                        "length": 5,
+                        "values": [],
+                        "allow_null": false,
+                        "auto_increment": false,
+                        "comment": ""
+                    },
+                    "title": {
+                        "name": "title",
+                        "type": "VARCHAR",
+                        "length": 150,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": false,
+                        "comment": ""
+                    },
+                    "description": {
+                        "name": "description",
+                        "type": "VARCHAR",
+                        "length": 255,
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": false,
+                        "comment": ""
+                    },
+                    "lat": {
+                        "name": "lat",
+                        "type": "FLOAT",
+                        "length": "10,6",
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": false,
+                        "comment": ""
+                    },
+                    "lon": {
+                        "name": "lon",
+                        "type": "FLOAT",
+                        "length": "10,6",
+                        "decimals": null,
+                        "values": [],
+                        "allow_null": false,
+                        "comment": ""
+                    }
+                },
+                "indexes": {
+                    "PRIMARY": {
+                        "type": "primary",
+                        "name": "PRIMARY",
+                        "columns": [
+                            "m_id"
+                        ],
+                        "length": [
+                            null
+                        ]
+                    }
+                }
+            }
+        ]
+    }
+}
