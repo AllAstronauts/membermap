@@ -1,1 +1,10 @@
-[]
+{
+    "settings": {
+        "permissions": {
+            "tab": "community",
+            "controller": "permissions",
+            "do": "",
+            "restriction": null
+        }
+    }
+}

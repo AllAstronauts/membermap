@@ -1,1 +1,14 @@
-[]
+{
+    "front": {
+        "membermap": {
+            "default_controller": "showmap",
+            "protected": 0
+        }
+    },
+    "admin": {
+        "settings": {
+            "default_controller": "",
+            "protected": false
+        }
+    }
+}
