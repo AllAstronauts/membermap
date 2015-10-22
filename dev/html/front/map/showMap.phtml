@@ -1,0 +1,13 @@
+<ips:template parameters="$markers=''" />
+{template="pageHeader" group="global" app="core" params="\IPS\Member::loggedIn()->language()->addToStack('__app_membermap')"}
+
+
+<section>
+	<div id='membermapWrapper'>
+		<div id="mapWrapper" class='ipsLayout_content clearfix'>
+			<div id='mapCanvas'></div>
+		</div>
+	</div>
+</section>
+
+<div id='mapMarkers' class='ipsHide'>{$markers|raw}</div>
