@@ -1,6 +1,16 @@
 <ips:template parameters="$markers=''" />
-{template="pageHeader" group="global" app="core" params="\IPS\Member::loggedIn()->language()->addToStack('__app_membermap')"}
-
+<div class="ipsPageHeader ipsClearfix">
+	<header class='ipsSpacer_bottom'>
+		<h1 class="ipsType_pageTitle">{lang="frontnavigation_membermap"}</h1>
+		<div class='ipsPos_right ipsResponsive_noFloat ipsResponsive_hidePhone'>
+			<ul class="ipsToolList ipsToolList_horizontal ipsClearfix">
+				<li class='ipsToolList_primaryAction'>
+					<a class="ipsButton ipsButton_medium ipsButton_important ipsButton_fullWidth" href="#" title='' id="membermap_button_addLocation">{lang="membermap_button_addLocation"}</a>
+				</li>
+			</ul>
+		</div>
+	</header>
+</div>
 
 <section>
 	<div id='membermapWrapper'>

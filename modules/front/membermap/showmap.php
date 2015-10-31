@@ -35,7 +35,6 @@ class _showmap extends \IPS\Dispatcher\Controller
 	{
 		$markers = array();
 
-
 		if ( ! is_file ( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-index.json' ) OR \IPS\Request::i()->rebuildCache === '1' )
 		{
 			\IPS\membermap\Map::i()->recacheJsonFile();
@@ -76,6 +75,52 @@ class _showmap extends \IPS\Dispatcher\Controller
 		</script>
 EOF;
 
+	}
+
+	protected function add()
+	{
+		\IPS\Output::i()->title		= \IPS\Member::loggedIn()->language()->addToStack( 'tripMap_add_blog' );
+
+		$geoLocForm =  new \IPS\Helpers\Form( 'membermap_geoLocation', NULL, NULL, array( 'id' => 'membermap_geoLocation' ) );
+		$geoLocForm->addHeader( 'membermap_current_location' );
+		$geoLocForm->addHtml( '<li class="ipsType_center"><i class="fa fa-fw fa-4x fa-location-arrow"></i></li>' );
+		$geoLocForm->addHtml( '<li class="ipsType_center">This will use a feature in your browser to detect your current location using GPS, Cellphone triangulation, Wifi, Router, or IP address</li>' );
+		$geoLocForm->addButton( 'membermap_current_location', 'button', NULL, 'ipsButton ipsButton_primary', array( 'id' => 'membermap_currentLocation' ) );
+
+
+		//$form->addButton( 'continue', 'button', NULL, 'ipsButton ipsButton_primary', array( 'id' => 'membermap_currentLocation' ) );
+
+		
+		$form = new \IPS\Helpers\Form( 'membermap_location', NULL, NULL, array( 'id' => 'membermap_location' ) );
+		$form->class = 'ipsForm_vertical';
+
+		$form->addHeader( 'Search for your location' );
+		$form->add( new \IPS\Helpers\Form\Text( 'membermap_location', '', FALSE, array( 'placeholder' => "Enter your address / city / county / country, you can be as specific as you like" ), NULL, NULL, NULL, 'membermap_location' ) );
+		$form->addButton( 'save', 'submit', NULL, 'ipsPos_center ipsButton ipsButton_primary', array( 'id' => 'membermap_locationSubmit' ) );
+
+		$form->hiddenValues['lat'] = \IPS\Request::i()->lat;
+		$form->hiddenValues['lng'] = \IPS\Request::i()->lng;
+
+		if ( $values = $form->values() )
+		{
+			try
+			{
+				$values['member_id'] = \IPS\Member::loggedIn()->member_id;
+
+				\IPS\membermap\Map::i()->saveMarker( $values );
+				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap' ) );
+				return;
+			}
+			catch( \Exception $e )
+			{
+				$form->error	= \IPS\Member::loggedIn()->language()->addToStack( 'membermap_' . $e->getMessage() );
+				
+				\IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'map' )->addLocation( $geoLocForm, $form );
+				return;
+			}
+		}
+
+		\IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'map' )->addLocation( $geoLocForm, $form );
 	}
 	
 	// Create new methods with the same name as the 'do' parameter which should execute it

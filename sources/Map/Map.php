@@ -20,14 +20,19 @@ class _Map extends \IPS\Patterns\Singleton
 	 */
 	public function saveMarker( $data )
 	{
-		if ( \IPS\Request::i()->lat AND \IPS\Request::i()->lon )
+		if ( ! $data['member_id'] )
 		{
-			$lat = \IPS\Request::i()->lat;
-			$lng = \IPS\Request::i()->lon;
+			throw new \Exception( 'invalid_data' );
 		}
-		elseif ( $data['location'] )
+
+		if ( $data['lat'] AND $data['lng'] )
 		{
-			$coordinates = $this->getMapCoordinates( $data['location'] );
+			$lat = $data['lat'];
+			$lng = $data['lng'];
+		}
+		elseif ( $data['membermap_location'] )
+		{
+			$coordinates = $this->getMapCoordinates( $data['membermap_location'] );
 			
 			if ( $coordinates === false )
 			{
@@ -38,16 +43,17 @@ class _Map extends \IPS\Patterns\Singleton
 		}
 		else
 		{
-			throw new Exception( 'invalid_data' );
+			throw new \Exception( 'invalid_data' );
 		}
 		
 		$save = array(
+			'member_id'		=> $data['member_id'],
 			'lat'			=> $this->_floatVal( $lat ),
 			'lon'			=> $this->_floatVal( $lng )
 		);
 
 		
-		\IPS\Db::i()->replace( 'membermap_members', $save, 'member_id=' . \IPS\Member::loggedIn()->member_id );
+		\IPS\Db::i()->replace( 'membermap_members', $save, 'member_id=' . $data['member_id'] );
 
 		$this->recacheJsonFile();
 	}
@@ -103,6 +109,7 @@ class _Map extends \IPS\Patterns\Singleton
 
 		$this->formatMarkers( $markers );
 
+
 		$markers = array_chunk( $markers, 500 );
 
 		if ( ! is_dir( \IPS\ROOT_PATH . '/datastore/membermap_cache' ) )
@@ -145,6 +152,8 @@ class _Map extends \IPS\Patterns\Singleton
 		{
 			foreach( $markers as &$marker )
 			{
+				$marker['lat'] = round( (float)$marker['lat'], 5 );
+				$marker['lon'] = round( (float)$marker['lon'], 5 );
 				$marker['member_link'] = (string) \IPS\Http\Url::internal( 'app=core&module=members&controller=profile&id=' . $marker['member_id'], 'front', 'profile', $marker['members_seo_name'] ); 
 			}
 		}

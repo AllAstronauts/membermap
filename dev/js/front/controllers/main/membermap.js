@@ -437,6 +437,69 @@
 			{
 				reloadMap();
 			});
+
+			$( '#membermap_button_addLocation' ).click( function()
+			{
+				if ( typeof popups['addLocationPopup'] === 'object' )
+				{
+					popups['addLocationPopup'].destruct();
+					popups['addLocationPopup'].remove();
+					delete popups['addLocationPopup'];
+				}
+
+				popups['addLocationPopup'] = ips.ui.dialog.create({
+					title: ips.getString( 'membermap_location_title' ),
+					url: ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=showmap&do=add',
+					callback: function()
+					{
+						if( ! navigator.geolocation )
+						{
+							$( '#membermap_geolocation_wrapper' ).hide();
+						}
+						else
+						{
+							$( '#membermap_currentLocation' ).click( processGeolocation );
+						}
+
+						$( '#membermap_location' ).on( 'submit', function(e)
+						{
+							if ( $( '#membermap_location input[name="lat"]' ).val().length == 0 || $( '#membermap_location input[name="lng"]' ).val().length == 0 )
+							{
+								e.preventDefault();
+								return false;
+							}
+						});
+					}
+				});
+
+				popups['addLocationPopup'].show();
+				Debug.log( popups );
+			})
+		},
+
+
+
+		processGeolocation = function(e)
+		{
+			e.preventDefault();
+			if(navigator.geolocation)
+			{
+				navigator.geolocation.getCurrentPosition( function( position )
+				{
+					$( '#membermap_location input[name="lat"]' ).val( position.coords.latitude );
+					$( '#membermap_location input[name="lng"]' ).val( position.coords.longitude );
+
+					$( '#membermap_location' ).submit();
+				},
+				function( error )
+				{
+					jQuery('currentLocation').hide();
+				},
+				{
+					maximumAge: (1000 * 60 * 15),
+					enableHighAccuracy: true
+				});
+			}
 		},
 
 		setZoomLevel = function( setZoomLevel )
@@ -520,7 +583,7 @@
 				});
 				
 				var mapMarker = new L.Marker( 
-					[ this.latitude, this.longitude ], 
+					[ this.lat, this.lon ], 
 					{ 
 						title: this.title,
 						icon: icon,
