@@ -8,7 +8,7 @@
                 "binary": false,
                 "comment": "",
                 "decimals": null,
-                "default": "",
+                "default": "0",
                 "length": 8,
                 "name": "member_id",
                 "type": "MEDIUMINT",
@@ -22,10 +22,10 @@
                 "binary": false,
                 "comment": "",
                 "decimals": 6,
-                "default": "",
+                "default": "0.000000",
                 "length": 10,
                 "name": "lat",
-                "type": "FLOAT",
+                "type": "DOUBLE",
                 "unsigned": false,
                 "values": [],
                 "zerofill": false
@@ -36,10 +36,10 @@
                 "binary": false,
                 "comment": "",
                 "decimals": 6,
-                "default": "",
+                "default": "0.000000",
                 "length": 10,
                 "name": "lon",
-                "type": "FLOAT",
+                "type": "DOUBLE",
                 "unsigned": false,
                 "values": [],
                 "zerofill": false
@@ -57,8 +57,9 @@
                 ]
             }
         },
-        "collation": "utf8_unicode_ci",
-        "comment": "Member Markers"
+        "comment": "Member Markers",
+        "collation": "utf8mb4_unicode_ci",
+        "engine": "InnoDB"
     },
     "membermap_cmarkers_groups": {
         "name": "membermap_cmarkers_groups",

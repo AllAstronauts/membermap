@@ -26,5 +26,47 @@
             "core_sys_conf_settings",
             "conf_key='mmBingApiKey'"
         ]
+    },
+    "5": {
+        "method": "changeColumn",
+        "params": [
+            "membermap_members",
+            "lat",
+            {
+                "name": "lat",
+                "type": "DOUBLE",
+                "length": 10,
+                "decimals": 6,
+                "values": [],
+                "allow_null": false,
+                "default": 0,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "6": {
+        "method": "changeColumn",
+        "params": [
+            "membermap_members",
+            "lon",
+            {
+                "name": "lon",
+                "type": "DOUBLE",
+                "length": 10,
+                "decimals": 6,
+                "values": [],
+                "allow_null": false,
+                "default": 0,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
     }
 }
