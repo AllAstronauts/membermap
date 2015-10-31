@@ -22,8 +22,17 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 /**
  * Front Navigation Extension: membermap
  */
-class _membermap
+class _membermap extends \IPS\core\FrontNavigation\FrontNavigationAbstract
 {
+	/**
+	 * Get Type Title which will display in the AdminCP Menu Manager
+	 *
+	 * @return	string
+	 */
+	public static function typeTitle()
+	{
+		return \IPS\Member::loggedIn()->language()->addToStack('frontnavigation_membermap');
+	}
 	/**
 	 * Can access?
 	 *
@@ -41,7 +50,7 @@ class _membermap
 	 */
 	public function title()
 	{
-		return \IPS\Member::loggedIn()->language()->addToStack('__app_membermap');
+		return \IPS\Member::loggedIn()->language()->addToStack('frontnavigation_membermap');
 	}
 	
 	/**
