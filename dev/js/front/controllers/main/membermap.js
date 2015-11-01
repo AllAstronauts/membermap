@@ -465,13 +465,39 @@
 							$( '#membermap_currentLocation' ).click( processGeolocation );
 						}
 
-						$( '#membermap_location' ).on( 'submit', function(e)
-						{
-							if ( $( '#membermap_location input[name="lat"]' ).val().length == 0 || $( '#membermap_location input[name="lng"]' ).val().length == 0 )
+
+
+						ips.loader.get( ['https://maps.google.com/maps/api/js?sensor=false&libraries=places'] ).then( function () {
+							geocoder = new google.maps.Geocoder();
+				
+							$( '#elInput_membermap_location' ).keydown( function(event)
 							{
-								e.preventDefault();
-								return false;
-							}
+								if( event.keyCode === 13 ) 
+								{
+									event.preventDefault();
+									return false;
+								}
+							});
+
+							var autocomplete = new google.maps.places.Autocomplete( document.getElementById( 'elInput_membermap_location' ), { types: ['establishment', 'geocode'] } );
+							
+							google.maps.event.addListener( autocomplete, 'place_changed', function() 
+							{
+								var item = autocomplete.getPlace();
+								
+								$( '#membermap_form_location input[name="lat"]' ).val( item.geometry.location.lat() );
+								$( '#membermap_form_location input[name="lng"]' ).val( item.geometry.location.lng() );
+								$( '#elInput_membermap_location' ).val( item.formatted_address );
+							});
+
+							$( '#membermap_form_location' ).on( 'submit', function(e)
+							{
+								if ( $( '#membermap_form_location input[name="lat"]' ).val().length == 0 || $( '#membermap_form_location input[name="lng"]' ).val().length == 0 )
+								{
+									e.preventDefault();
+									return false;
+								}
+							});
 						});
 					}
 				});
@@ -490,14 +516,14 @@
 			{
 				navigator.geolocation.getCurrentPosition( function( position )
 				{
-					$( '#membermap_location input[name="lat"]' ).val( position.coords.latitude );
-					$( '#membermap_location input[name="lng"]' ).val( position.coords.longitude );
+					$( '#membermap_form_location input[name="lat"]' ).val( position.coords.latitude );
+					$( '#membermap_form_location input[name="lng"]' ).val( position.coords.longitude );
 
-					$( '#membermap_location' ).submit();
+					$( '#membermap_form_location' ).submit();
 				},
 				function( error )
 				{
-					jQuery('currentLocation').hide();
+					$('#membermap_geolocation_wrapper').hide();
 				},
 				{
 					maximumAge: (1000 * 60 * 15),
