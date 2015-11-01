@@ -148,9 +148,8 @@
 			mapServices.thunderforestlandscape = L.tileLayer.provider( 'Thunderforest.Landscape' );
 			mapServices.mapquest = L.tileLayer.provider('MapQuestOpen.OSM');			
 			mapServices.esriworldtopomap = L.tileLayer.provider( 'Esri.WorldTopoMap' );
-			mapServices.acetate = L.tileLayer.provider( 'Acetate' );
-			
-			
+			mapServices.nokia = L.tileLayer.provider( 'Nokia.terrainDay' );
+
 			var contextMenu = [];
 			if ( ! minimode )
 			{
@@ -278,7 +277,7 @@
 				"MapQuest": mapServices.mapquest,
 				"Thunderforest Landscape": mapServices.thunderforestlandscape,
 				'Esri WorldTopoMap': mapServices.esriworldtopomap,
-				'Acetate': mapServices.acetate
+				'Nokia': mapServices.nokia
 			};
 
 			overlayMaps = {
