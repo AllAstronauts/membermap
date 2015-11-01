@@ -25,9 +25,15 @@
 	min-height: 300px;	
 }
 
+#membermap_location > label {
+	display: none;
+}
 
+/* Google Autocomplete */
+.pac-container {
+	z-index: 5150 !important;
+}
 
-.shareMapLinks { width: 95%; font-size: 18px; color: #999; }
 .stretch_to_fit { -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box; width:100% }
 	.stretch_to_fit.expanded { height: 150px; }
 
