@@ -1,1 +1,8 @@
-{"application_title":"Member Map","app_author":"Stuart Silvester & Martin Aronsen","app_directory":"membermap","app_protected":false,"app_website":{"data":{"scheme":"http","host":"ipb.silvesterwebdesigns.com"},"queryString":[],"isInternal":false,"isFriendly":false},"app_update_check":{"data":{"scheme":"http","host":"ipb.silvesterwebdesigns.com","path":"\/update-check\/","query":"app=membermap"},"queryString":{"app":"membermap"},"isInternal":false,"isFriendly":false}}
+{
+    "application_title": "Member Map",
+    "app_author": "Stuart Silvester & Martin Aronsen",
+    "app_directory": "membermap",
+    "app_protected": 0,
+    "app_website": null,
+    "app_update_check": null
+}

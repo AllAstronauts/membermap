@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language>
+ <app key="membermap" version="100000">
+  <word key="__app_membermap" js="0">Member Map</word>
+  <word key="frontnavigation_membermap" js="0">Member Map</word>
+  <word key="menu__membermap_settings" js="0">Member Map</word>
+  <word key="module__membermap_membermap" js="0">Member Map</word>
+  <word key="menu__membermap_settings_permissions" js="0">Permissions</word>
+  <word key="membermap_button_addLocation" js="0">Add Location</word>
+  <word key="membermap_current_location" js="0">Use Current Location</word>
+  <word key="membermap_button_editLocation" js="1">Update Location</word>
+  <word key="membermap_location_title" js="1">Update Location</word>
+ </app>
+</language>
