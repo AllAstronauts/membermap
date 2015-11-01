@@ -184,9 +184,9 @@
 			var defaultMap = 'mapquest';
 			var newDefault = '';
 			
-			if ( ips.utils.cookie.get( 'membermap_baseMap' ) !== '' )
+			if ( typeof ips.utils.cookie.get( 'membermap_baseMap' ) == 'string' && ips.utils.cookie.get( 'membermap_baseMap' ).length > 0 )
 			{
-				newDefault = ips.utils.cookie.get( 'membermap_baseMap' );
+				newDefault = ips.utils.cookie.get( 'membermap_baseMap' ).toLowerCase();
 			}
 			
 			if ( defaultMapTypeId !== null )
@@ -285,6 +285,11 @@
 			};
 
 			activeLayers = new L.Control.ActiveLayers( baseMaps, overlayMaps, { collapsed: ( minimode || isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
+
+			map.on( 'baselayerchange', function( baselayer )
+			{
+				ips.utils.cookie.set( 'membermap_baseMap', baselayer.name );
+			});
 			
 			ips.membermap.map = map;
 		},
