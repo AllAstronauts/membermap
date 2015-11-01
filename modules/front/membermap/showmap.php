@@ -81,7 +81,9 @@ EOF;
 	{
 		\IPS\Output::i()->title		= \IPS\Member::loggedIn()->language()->addToStack( 'tripMap_add_blog' );
 
-		$geoLocForm =  new \IPS\Helpers\Form( 'membermap_geoLocation', NULL, NULL, array( 'id' => 'membermap_geoLocation' ) );
+		$geoLocForm =  new \IPS\Helpers\Form( 'membermap_form_geoLocation', NULL, NULL, array( 'id' => 'membermap_form_geoLocation' ) );
+		$geoLocForm->class = 'ipsForm_vertical ipsType_center';
+
 		$geoLocForm->addHeader( 'membermap_current_location' );
 		$geoLocForm->addHtml( '<li class="ipsType_center"><i class="fa fa-fw fa-4x fa-location-arrow"></i></li>' );
 		$geoLocForm->addHtml( '<li class="ipsType_center">This will use a feature in your browser to detect your current location using GPS, Cellphone triangulation, Wifi, Router, or IP address</li>' );
@@ -91,8 +93,8 @@ EOF;
 		//$form->addButton( 'continue', 'button', NULL, 'ipsButton ipsButton_primary', array( 'id' => 'membermap_currentLocation' ) );
 
 		
-		$form = new \IPS\Helpers\Form( 'membermap_location', NULL, NULL, array( 'id' => 'membermap_location' ) );
-		$form->class = 'ipsForm_vertical';
+		$form = new \IPS\Helpers\Form( 'membermap_form_location', NULL, NULL, array( 'id' => 'membermap_form_location' ) );
+		$form->class = 'ipsForm_vertical ipsType_center';
 
 		$form->addHeader( 'Search for your location' );
 		$form->add( new \IPS\Helpers\Form\Text( 'membermap_location', '', FALSE, array( 'placeholder' => "Enter your address / city / county / country, you can be as specific as you like" ), NULL, NULL, NULL, 'membermap_location' ) );
