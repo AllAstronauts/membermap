@@ -602,10 +602,12 @@
 				}
 				
 				var iconColor = 'darkblue';
+				var icon = 'user';
 
 				if ( this.member_id == ips.getSetting( 'member_id' ) )
 				{
 					/* This is me! */
+					icon = 'home';
 					iconColor = 'green';
 
 					/* Update the button label while we're here */
@@ -613,13 +615,15 @@
 				}
 
 				var icon = L.AwesomeMarkers.icon({
-					icon: 'male', 
-					color: iconColor
+					prefix: 'fa',
+					icon: icon, 
+					markerColor: iconColor
 				});
 
 				var spiderifiedIcon = L.AwesomeMarkers.icon({
-					icon: 'male', 
-					color: 'blue'
+					prefix: 'fa',
+					icon: 'users', 
+					markerColor: 'blue'
 				});
 				
 				var mapMarker = new L.Marker( 
