@@ -601,10 +601,20 @@
 					}
 				}
 				
+				var iconColor = 'darkblue';
+
+				if ( this.member_id == ips.getSetting( 'member_id' ) )
+				{
+					/* This is me! */
+					iconColor = 'green';
+
+					/* Update the button label while we're here */
+					$( '#membermap_button_addLocation' ).html( ips.getString( 'membermap_button_editLocation' ) );
+				}
 
 				var icon = L.AwesomeMarkers.icon({
 					icon: 'male', 
-					color: 'darkblue'
+					color: iconColor
 				});
 
 				var spiderifiedIcon = L.AwesomeMarkers.icon({
@@ -647,9 +657,11 @@
 				}
 				else
 				{
-					map.flyTo( bounds.getCenter() );
 					
-					map.flyToBounds( bounds );
+					map.flyToBounds( mapMarkers.getBounds(), { 
+						padding: [50, 50],
+						maxZoom: 11
+					});
 				}
 			}
 		},
