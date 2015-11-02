@@ -322,7 +322,7 @@
 				return;
 			}
 
-			if ( forceReload || ! ( 'localStorage' in window && window['localStorage'] !== null ) )
+			if ( forceReload || ! ips.utils.db.isEnabled() )
 			{
 				allMarkers = [];
 
@@ -362,10 +362,10 @@
 						/* Store data in browser when all AJAX calls complete */
 						promise.done(function()
 						{
-							if ( 'localStorage' in window && window['localStorage'] !== null )
+							if ( ips.utils.db.isEnabled() )
 							{
 								var date = new Date();
-								window['localStorage'].setItem( 'membermapMarkers', JSON.stringify({ time: ( date.getTime() / 1000 ), data: allMarkers }) );
+								ips.utils.db.set( 'membermap', 'markers', { time: ( date.getTime() / 1000 ), data: allMarkers } );
 							}
 						});
 					}
@@ -374,17 +374,15 @@
 			else
 			{
 				/* Get data from browser storage */
-				var data = window['localStorage'].getItem( 'membermapMarkers' );
+				var data = ips.utils.db.get('membermap', 'markers' );
 			
 				if ( data === null )
 				{
 					reloadMarkers();
 					return;
 				}
-				
-				data = JSON.parse( data );
 
-				if ( data.data.length > 0 && typeof data.data !== 'null' && typeof data.oldestMarker !== 'undefined' )
+				if ( data.data.length > 0 && typeof data.data !== 'null' )
 				{
 					/* Reload cache if it's older than 24 hrs */
 					var date = new Date( data.time * 1000 ),
@@ -399,16 +397,16 @@
 					showMarkers( false, data.data );
 					
 					/* Inform that we're showing markers from browser cache */
-					if ( oldMarkersIndicator === null && ! isMobileDevice )
+					if ( oldMarkersIndicator === null )
 					{
 						oldMarkersIndicator = new L.Control.MembermapOldMarkers({ callback: reloadMarkers, time: date });
 						ips.membermap.map.addControl( oldMarkersIndicator );
-				
 					}
 				}
 				else
 				{
 					reloadMarkers();
+					return;
 				}
 			}
 
