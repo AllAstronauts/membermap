@@ -78,7 +78,7 @@ EOF;
 
 	protected function add()
 	{
-		\IPS\Output::i()->title		= \IPS\Member::loggedIn()->language()->addToStack( 'tripMap_add_blog' );
+		\IPS\Output::i()->title	= \IPS\Member::loggedIn()->language()->addToStack( 'tripMap_add_blog' );
 
 		$geoLocForm =  new \IPS\Helpers\Form( 'membermap_form_geoLocation', NULL, NULL, array( 'id' => 'membermap_form_geoLocation' ) );
 		$geoLocForm->class = 'ipsForm_vertical ipsType_center';
@@ -89,9 +89,6 @@ EOF;
 		$geoLocForm->addButton( 'membermap_current_location', 'button', NULL, 'ipsButton ipsButton_primary', array( 'id' => 'membermap_currentLocation' ) );
 
 
-		//$form->addButton( 'continue', 'button', NULL, 'ipsButton ipsButton_primary', array( 'id' => 'membermap_currentLocation' ) );
-
-		
 		$form = new \IPS\Helpers\Form( 'membermap_form_location', NULL, NULL, array( 'id' => 'membermap_form_location' ) );
 		$form->class = 'ipsForm_vertical ipsType_center';
 
@@ -109,7 +106,7 @@ EOF;
 				$values['member_id'] = \IPS\Member::loggedIn()->member_id;
 
 				\IPS\membermap\Map::i()->saveMarker( $values );
-				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap' ) );
+				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap&dropBrowserCache=1' ) );
 				return;
 			}
 			catch( \Exception $e )
@@ -123,6 +120,4 @@ EOF;
 
 		\IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'map' )->addLocation( $geoLocForm, $form );
 	}
-	
-	// Create new methods with the same name as the 'do' parameter which should execute it
 }

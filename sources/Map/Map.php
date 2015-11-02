@@ -102,12 +102,12 @@ class _Map extends \IPS\Patterns\Singleton
 	{	
 		$markers = array();
 		
-		$markers = iterator_to_array( 
-						\IPS\Db::i()->select( 'membermap_members.*,  core_members.name, core_members.members_seo_name', 'membermap_members' )
+		$dbMarkers = iterator_to_array( 
+						\IPS\Db::i()->select( 'membermap_members.*,  core_members.*', 'membermap_members' )
 							->join( 'core_members', 'membermap_members.member_id=core_members.member_id' )
 		);
 
-		$this->formatMarkers( $markers );
+		$markers = $this->formatMarkers( $dbMarkers );
 
 
 		$markers = array_chunk( $markers, 500 );
@@ -146,19 +146,26 @@ class _Map extends \IPS\Patterns\Singleton
 		
 	}
 	
-	public function formatMarkers( array &$markers )
+	public function formatMarkers( array $markers )
 	{
+		$markersToKeep = array();
+
 		if ( is_array( $markers ) AND count( $markers ) )
 		{
-			foreach( $markers as &$marker )
+			foreach( $markers as $marker )
 			{
-				$marker['lat'] = round( (float)$marker['lat'], 5 );
-				$marker['lon'] = round( (float)$marker['lon'], 5 );
-				$marker['member_link'] = (string) \IPS\Http\Url::internal( 'app=core&module=members&controller=profile&id=' . $marker['member_id'], 'front', 'profile', $marker['members_seo_name'] ); 
+				$photo = \IPS\Member::photoUrl( $marker, TRUE );
+				
+				$markersToKeep[] = array(
+					'lat' 		=> round( (float)$marker['lat'], 5 ),
+					'lon' 		=> round( (float)$marker['lon'], 5 ),
+					'member_id'	=> $marker['member_id'],
+					'popup' 	=> \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker, $photo ),
+				);
 			}
 		}
 		
-		return $markers;
+		return $markersToKeep;
 	}
 
 

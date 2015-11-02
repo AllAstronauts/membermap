@@ -235,10 +235,7 @@
 				
 				oms.addListener( 'click', function( marker ) 
 				{
-					var popupContent = 	'<h3><a href="' + marker.markerData.member_link + '" target="_blank">' + marker.markerData.name + '</h3>';
-				
-					
-					popup.setContent( popupContent );
+					popup.setContent( marker.markerData.popup );
 					popup.setLatLng( marker.getLatLng() );
 					map.openPopup( popup );
 				});
@@ -271,6 +268,7 @@
 					map.setZoom( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 );
 				}
 			});
+
 			map.addLayer( mapMarkers );
 			
 			baseMaps = {
@@ -314,6 +312,11 @@
 		loadMarkers = function( forceReload )
 		{
 			forceReload = typeof forceReload !== 'undefined' ? forceReload : false;
+
+			if ( ips.utils.url.getParam( 'rebuildCache' ) == 1 || ips.utils.url.getParam( 'dropBrowserCache' ) == 1 )
+			{
+				forceReload = true;
+			}
 
 			/* Skip this if markers was loaded from DOM */
 			if ( allMarkers && allMarkers.length > 0 )
@@ -501,7 +504,6 @@
 				});
 
 				popups['addLocationPopup'].show();
-				Debug.log( popups );
 			})
 		},
 
