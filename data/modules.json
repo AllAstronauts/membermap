@@ -6,9 +6,9 @@
         }
     },
     "admin": {
-        "settings": {
-            "default_controller": "",
-            "protected": false
+        "membermap": {
+            "default_controller": "markers",
+            "protected": 0
         }
     }
 }

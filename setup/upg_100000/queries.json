@@ -68,5 +68,286 @@
                 "binary": false
             }
         ]
+    },
+    "7": {
+        "method": "changeColumn",
+        "params": [
+            "membermap_cmarkers",
+            "m_id",
+            {
+                "name": "marker_id",
+                "type": "MEDIUMINT",
+                "length": 5,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": true,
+                "binary": false
+            }
+        ]
+    },
+    "8": {
+        "method": "changeColumn",
+        "params": [
+            "membermap_cmarkers",
+            "title",
+            {
+                "name": "marker_name",
+                "type": "VARCHAR",
+                "length": 150,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "9": {
+        "method": "changeColumn",
+        "params": [
+            "membermap_cmarkers",
+            "description",
+            {
+                "name": "marker_description",
+                "type": "TEXT",
+                "length": 0,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "10": {
+        "method": "changeColumn",
+        "params": [
+            "membermap_cmarkers",
+            "lat",
+            {
+                "name": "marker_lat",
+                "type": "FLOAT",
+                "length": 10,
+                "decimals": 6,
+                "values": [],
+                "allow_null": false,
+                "default": "0.000000",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "11": {
+        "method": "changeColumn",
+        "params": [
+            "membermap_cmarkers",
+            "lon",
+            {
+                "name": "marker_lon",
+                "type": "FLOAT",
+                "length": 10,
+                "decimals": 6,
+                "values": [],
+                "allow_null": false,
+                "default": "0.000000",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "12": {
+        "method": "changeColumn",
+        "params": [
+            "membermap_cmarkers",
+            "g_id",
+            {
+                "name": "marker_parent_id",
+                "type": "MEDIUMINT",
+                "length": 5,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "13": {
+        "method": "changeColumn",
+        "params": [
+            "membermap_cmarkers_groups",
+            "id",
+            {
+                "name": "group_id",
+                "type": "MEDIUMINT",
+                "length": 5,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": true,
+                "binary": false
+            }
+        ]
+    },
+    "14": {
+        "method": "changeColumn",
+        "params": [
+            "membermap_cmarkers_groups",
+            "g_title",
+            {
+                "name": "group_title",
+                "type": "VARCHAR",
+                "length": 150,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "15": {
+        "method": "changeColumn",
+        "params": [
+            "membermap_cmarkers_groups",
+            "pin_colour",
+            {
+                "name": "group_pin_colour",
+                "type": "VARCHAR",
+                "length": 6,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "16": {
+        "method": "changeColumn",
+        "params": [
+            "membermap_cmarkers_groups",
+            "pin_bg_colour",
+            {
+                "name": "group_pin_bg_colour",
+                "type": "VARCHAR",
+                "length": 6,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "17": {
+        "method": "changeColumn",
+        "params": [
+            "membermap_cmarkers_groups",
+            "pin_icon",
+            {
+                "name": "group_pin_icon",
+                "type": "VARCHAR",
+                "length": 15,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "18": {
+        "method": "alterTable",
+        "params": [
+            "membermap_cmarkers_groups",
+            null,
+            "InnoDB"
+        ]
+    },
+    "19": {
+        "method": "changeColumn",
+        "params": [
+            "membermap_cmarkers_groups",
+            "group_title",
+            {
+                "name": "group_name",
+                "type": "VARCHAR",
+                "length": 150,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "20": {
+        "method": "changeColumn",
+        "params": [
+            "membermap_cmarkers",
+            "marker_description",
+            {
+                "name": "marker_description",
+                "type": "TEXT",
+                "length": 0,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": "",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
     }
 }

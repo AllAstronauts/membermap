@@ -1,8 +1,8 @@
 {
-    "settings": {
-        "permissions": {
+    "membermap": {
+        "markers": {
             "tab": "community",
-            "controller": "permissions",
+            "controller": "markers",
             "do": "",
             "restriction": null
         }
