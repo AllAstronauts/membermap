@@ -120,12 +120,14 @@ class _Markers extends \IPS\Node\Model
 	public function form( &$form )
 	{
 
+		\IPS\Output::i()->jsFiles[] = "https://maps.google.com/maps/api/js?sensor=false&libraries=places";
+
 		/* Build form */
 		$form->add( new \IPS\Helpers\Form\Text( 'marker_name', $this->id ? $this->name : '', TRUE, array( 'maxLength' => 64 ) ) );
 
 		$form->add( new \IPS\Helpers\Form\Text( 'marker_description', $this->id ? $this->description : '', FALSE ) );
 
-		$form->add( new \IPS\Helpers\Form\Node( 'marker_parent_id', $this->parent_id ? $this->parent_id : 0, FALSE, array(
+		$form->add( new \IPS\Helpers\Form\Node( 'marker_parent_id', $this->parent_id ? $this->parent_id : 0, TRUE, array(
 			'class'    => '\IPS\membermap\Custom\Groups'
 		) ) );
 	}

@@ -349,5 +349,47 @@
                 "binary": false
             }
         ]
+    },
+    "21": {
+        "method": "changeColumn",
+        "params": [
+            "membermap_cmarkers_groups",
+            "group_pin_colour",
+            {
+                "name": "group_pin_colour",
+                "type": "VARCHAR",
+                "length": 7,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "22": {
+        "method": "changeColumn",
+        "params": [
+            "membermap_cmarkers_groups",
+            "group_pin_bg_colour",
+            {
+                "name": "group_pin_bg_colour",
+                "type": "VARCHAR",
+                "length": 7,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
     }
 }

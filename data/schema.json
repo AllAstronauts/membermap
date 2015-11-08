@@ -81,7 +81,7 @@
             "group_pin_colour": {
                 "name": "group_pin_colour",
                 "type": "VARCHAR",
-                "length": 6,
+                "length": 7,
                 "decimals": null,
                 "values": [],
                 "allow_null": false,
@@ -95,7 +95,7 @@
             "group_pin_bg_colour": {
                 "name": "group_pin_bg_colour",
                 "type": "VARCHAR",
-                "length": 6,
+                "length": 7,
                 "decimals": null,
                 "values": [],
                 "allow_null": false,

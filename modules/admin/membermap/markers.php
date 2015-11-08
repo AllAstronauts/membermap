@@ -43,14 +43,14 @@ class _markers extends \IPS\Node\Controller
 
 
 		$buttons['add_group'] = array(
-			'icon'	=> 'folder-open',
+			'icon'	=> 'group',
 			'title'	=> 'membermap_add_group',
 			'link'	=> \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=markers&do=form' ),
 			'data'  => array( 'ipsDialog' => '', 'ipsDialog-title' => \IPS\Member::loggedIn()->language()->addToStack('membermap_add_group') )
 		);
 
 		$buttons['add_marker'] = array(
-			'icon'	=> 'plus-circle',
+			'icon'	=> 'map-marker',
 			'title'	=> 'membermap_add_marker',
 			'link'	=>  \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=markers&subnode=1&do=form' ),
 			'data'  => array( 'ipsDialog' => '', 'ipsDialog-title' => \IPS\Member::loggedIn()->language()->addToStack('membermap_add_marker') )
@@ -66,6 +66,8 @@ class _markers extends \IPS\Node\Controller
 	 */
 	protected function manage()
 	{
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'membermap.css', 'membermap' ) );
+	
 		$url = \IPS\Http\Url::internal( "app=membermap&module=membermap&controller=markers" );
 		
 		/* Display the table */

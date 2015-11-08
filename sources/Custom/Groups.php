@@ -61,7 +61,7 @@ class _Groups extends \IPS\Node\Model
 	/**
 	 * @brief	[ActiveRecord] Database ID Fields
 	 */
-	protected static $databaseIdFields = array('name');
+	protected static $databaseIdFields = array('group_name');
 	
 	/**
 	 * @brief	[Node] Parent ID Database Column
@@ -187,6 +187,16 @@ class _Groups extends \IPS\Node\Model
 				return true;
 			}
 		}));
+
+		$form->add( new \IPS\Helpers\Form\Text( 'group_pin_icon', $this->id ? $this->pin_icon : 'fa-globe', TRUE ) );
+		$form->add( new \IPS\Helpers\Form\Color( 'group_pin_colour', $this->id ? $this->pin_colour : '#FFFFFF', TRUE ) );
+		$form->add( new \IPS\Helpers\Form\Color( 'group_pin_bg_colour', $this->id ? $this->pin_bg_colour : '#00008B', TRUE ) );
+
+		$form->addDummy( 'group_marker_example', "<span class='marker' id='markerExample' style=''><i class='fa fa-fw' style=''></i></span>" );
+
+		$form->addMessage( 'group_contrast_warning', 'ipsMessage ipsMessage_warning', TRUE, 'contrastWarning' );
+
+		$form->attributes['data-controller'] = 'membermap.admin.membermap.groupform';
 	}
 
 	/**
@@ -202,12 +212,15 @@ class _Groups extends \IPS\Node\Model
 			$this->save();
 		}
 		
-		if( isset( $values['group_name'] ) )
+		foreach( array( 'group_name', 'group_pin_icon', 'group_pin_colour', 'group_pin_bg_colour' ) as $val )
 		{
-			$values['name'] = \IPS\Http\Url::seoTitle( $values['group_name'] );
-			unset( $values['group_name'] );
+			if( isset( $values[ $val ] ) )
+			{
+				$key = str_replace( 'group_', '', $val );
+				$values[ $key ] = $values[ $val ];
+				unset( $values[ $val ] );
+			}
 		}
-
 		return $values;
 	}
 }
