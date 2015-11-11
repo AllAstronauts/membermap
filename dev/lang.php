@@ -22,6 +22,10 @@ $lang = array(
 
 	'marker_name' => "Marker Title",
 	'marker_description' => "Marker Description",
+	'marker_lat' => "Latitude",
+	'marker_location' => "Location",
+	'marker_location_desc' => "Enter a location above to search for one, or enter the latitude and longitude manually below.",
+	'marker_lon' => "Longitude",
 	'marker_parent_id' => "Marker Group",
 
 );

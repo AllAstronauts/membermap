@@ -170,6 +170,8 @@ class _Groups extends \IPS\Node\Model
 	 */
 	public function form( &$form )
 	{
+		$form->attributes['data-controller'] = 'membermap.admin.membermap.groupform';
+		
 		/* Build form */
 		$form->add( new \IPS\Helpers\Form\Text( 'group_name', $this->id ? $this->name : '', TRUE, array( 'maxLength' => 64 ), function( $val )
 		{
@@ -196,7 +198,6 @@ class _Groups extends \IPS\Node\Model
 
 		$form->addMessage( 'group_contrast_warning', 'ipsMessage ipsMessage_warning', TRUE, 'contrastWarning' );
 
-		$form->attributes['data-controller'] = 'membermap.admin.membermap.groupform';
 	}
 
 	/**

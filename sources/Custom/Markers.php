@@ -119,8 +119,8 @@ class _Markers extends \IPS\Node\Model
 	 */
 	public function form( &$form )
 	{
-
-		\IPS\Output::i()->jsFiles[] = "https://maps.google.com/maps/api/js?sensor=false&libraries=places";
+		$form->attributes['data-controller'] = 'membermap.admin.membermap.markerform';
+		$form->attributes['id'] = 'membermap_add_marker';
 
 		/* Build form */
 		$form->add( new \IPS\Helpers\Form\Text( 'marker_name', $this->id ? $this->name : '', TRUE, array( 'maxLength' => 64 ) ) );
@@ -130,6 +130,12 @@ class _Markers extends \IPS\Node\Model
 		$form->add( new \IPS\Helpers\Form\Node( 'marker_parent_id', $this->parent_id ? $this->parent_id : 0, TRUE, array(
 			'class'    => '\IPS\membermap\Custom\Groups'
 		) ) );
+
+		$form->add( new \IPS\Helpers\Form\Text( 'marker_location', $this->id ? $this->location : '', FALSE, array(), NULL, NULL, NULL, 'marker_location' ) );
+
+		$form->add( new \IPS\Helpers\Form\Number( 'marker_lat', $this->id ? $this->lat : 0, TRUE, array( 'min' => -90, 'max' => 90, 'decimals' => TRUE ), NULL, NULL, NULL, 'marker_lat' ) );
+
+		$form->add( new \IPS\Helpers\Form\Number( 'marker_lon', $this->id ? $this->lon : 0, TRUE, array( 'min' => -180, 'max' => 180, 'decimals' => TRUE ), NULL, NULL, NULL, 'marker_lon' ) );
 	}
 
 	/**
@@ -150,21 +156,21 @@ class _Markers extends \IPS\Node\Model
 		
 		if ( isset( $values['marker_parent_id'] ) AND ( ! empty( $values['marker_parent_id'] ) OR $values['marker_parent_id'] === 0 ) )
 		{
-			$values['parent_id'] = ( $values['marker_parent_id'] === 0 ) ? 0 : $values['marker_parent_id']->id;
+			$values['parent_id'] = $values['marker_parent_id']->id;
 			unset( $values['marker_parent_id'] );
 		}
 
-		if ( isset( $values['marker_description'] ) )
+		foreach( array( 'marker_description', 'marker_name', 'marker_location', 'marker_lat', 'marker_lon' ) as $val )
 		{
-			$values['description'] = $values['marker_description'];
-			unset( $values['marker_description'] );
+			if ( isset( $values[ $val ] ) )
+			{
+				$key = str_replace( 'marker_', '', $val );
+
+				$values[ $key ] = $values[ $val ];
+				unset( $values[ $val ] );
+			}
 		}
-		
-		if( isset( $values['marker_name'] ) )
-		{
-			$values['name'] = $values['marker_name'];
-			unset( $values['marker_name'] );
-		}
+
 
 		return $values;
 	}
