@@ -94,6 +94,34 @@ class _Map extends \IPS\Patterns\Singleton
 	}
 
 	/**
+	 * Get a single member's location
+	 * 
+	 * @param 		int 	Member ID
+	 * @return		mixed 	Members location record, or false if non-existent
+	 */
+	public function getMarkerByMember( $memberId )
+	{
+		if ( ! intval( $memberId ) )
+		{
+			return false;
+		}
+
+		try
+		{
+			$marker = \IPS\Db::i()->select( '*', 'membermap_members', array( 'member_id=?', intval( $memberId ) ) )->first();
+		
+			if ( is_array( $marker ) AND count( $marker ) )
+			{
+				return $marker;
+			}
+		}
+		catch( \UnderflowException $e )
+		{
+			return false;
+		}
+	}
+
+	/**
 	 * Rewrite cache file
 	 * 
 	 * @return	array	Parsed list of markers
@@ -146,6 +174,12 @@ class _Map extends \IPS\Patterns\Singleton
 		
 	}
 	
+	/**
+	 * Do formatation to the array of markers
+	 * 
+	 * @param 		array 	Markers
+	 * @return		array	Markers
+	 */
 	public function formatMarkers( array $markers )
 	{
 		$markersToKeep = array();

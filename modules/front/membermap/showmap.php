@@ -78,7 +78,25 @@ EOF;
 
 	protected function add()
 	{
-		\IPS\Output::i()->title	= \IPS\Member::loggedIn()->language()->addToStack( 'tripMap_add_blog' );
+		if ( ! \IPS\Member::loggedIn()->member_id )
+		{
+			\IPS\Output::i()->error( 'no_permission', '', 403, '' );
+		}
+
+		/* Get the members location, if it exists */
+		$existing = \IPS\membermap\Map::i()->getMarkerByMember( \IPS\Member::loggedIn()->member_id );
+
+		\IPS\Output::i()->title	= \IPS\Member::loggedIn()->language()->addToStack( ( ! $existing ? 'membermap_button_addLocation' : 'membermap_button_editLocation' ) );
+
+		/* Check permissions */
+		if ( $existing AND ! \IPS\Member::loggedIn()->g_membermap_canEdit )
+		{
+			\IPS\Output::i()->error( 'membermap_error_cantEdit', '', 403, '' );
+		}
+		else if ( ! \IPS\Member::loggedIn()->g_membermap_canAdd )
+		{
+			\IPS\Output::i()->error( 'membermap_error_cantAdd', '', 403, '' );
+		}
 
 		$geoLocForm =  new \IPS\Helpers\Form( 'membermap_form_geoLocation', NULL, NULL, array( 'id' => 'membermap_form_geoLocation' ) );
 		$geoLocForm->class = 'ipsForm_vertical ipsType_center';
