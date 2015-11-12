@@ -122,7 +122,7 @@
                 "length": 0,
                 "decimals": null,
                 "values": [],
-                "allow_null": false,
+                "allow_null": true,
                 "default": "",
                 "comment": "",
                 "unsigned": false,
@@ -139,7 +139,7 @@
             "lat",
             {
                 "name": "marker_lat",
-                "type": "FLOAT",
+                "type": "DOUBLE",
                 "length": 10,
                 "decimals": 6,
                 "values": [],
@@ -160,7 +160,7 @@
             "lon",
             {
                 "name": "marker_lon",
-                "type": "FLOAT",
+                "type": "DOUBLE",
                 "length": 10,
                 "decimals": 6,
                 "values": [],
@@ -222,7 +222,7 @@
             "membermap_cmarkers_groups",
             "g_title",
             {
-                "name": "group_title",
+                "name": "group_name",
                 "type": "VARCHAR",
                 "length": 150,
                 "decimals": null,
@@ -245,7 +245,7 @@
             {
                 "name": "group_pin_colour",
                 "type": "VARCHAR",
-                "length": 6,
+                "length": 7,
                 "decimals": null,
                 "values": [],
                 "allow_null": false,
@@ -266,7 +266,7 @@
             {
                 "name": "group_pin_bg_colour",
                 "type": "VARCHAR",
-                "length": 6,
+                "length": 7,
                 "decimals": null,
                 "values": [],
                 "allow_null": false,
@@ -309,90 +309,6 @@
         ]
     },
     "19": {
-        "method": "changeColumn",
-        "params": [
-            "membermap_cmarkers_groups",
-            "group_title",
-            {
-                "name": "group_name",
-                "type": "VARCHAR",
-                "length": 150,
-                "decimals": null,
-                "values": [],
-                "allow_null": false,
-                "default": "",
-                "comment": "",
-                "unsigned": false,
-                "zerofill": false,
-                "auto_increment": false,
-                "binary": false
-            }
-        ]
-    },
-    "20": {
-        "method": "changeColumn",
-        "params": [
-            "membermap_cmarkers",
-            "marker_description",
-            {
-                "name": "marker_description",
-                "type": "TEXT",
-                "length": 0,
-                "decimals": null,
-                "values": [],
-                "allow_null": true,
-                "default": "",
-                "comment": "",
-                "unsigned": false,
-                "zerofill": false,
-                "auto_increment": false,
-                "binary": false
-            }
-        ]
-    },
-    "21": {
-        "method": "changeColumn",
-        "params": [
-            "membermap_cmarkers_groups",
-            "group_pin_colour",
-            {
-                "name": "group_pin_colour",
-                "type": "VARCHAR",
-                "length": 7,
-                "decimals": null,
-                "values": [],
-                "allow_null": false,
-                "default": "",
-                "comment": "",
-                "unsigned": false,
-                "zerofill": false,
-                "auto_increment": false,
-                "binary": false
-            }
-        ]
-    },
-    "22": {
-        "method": "changeColumn",
-        "params": [
-            "membermap_cmarkers_groups",
-            "group_pin_bg_colour",
-            {
-                "name": "group_pin_bg_colour",
-                "type": "VARCHAR",
-                "length": 7,
-                "decimals": null,
-                "values": [],
-                "allow_null": false,
-                "default": "",
-                "comment": "",
-                "unsigned": false,
-                "zerofill": false,
-                "auto_increment": false,
-                "binary": false
-            }
-        ]
-    },
-    "23": {
         "method": "addColumn",
         "params": [
             "membermap_cmarkers",
@@ -409,6 +325,51 @@
                 "zerofill": false,
                 "auto_increment": false,
                 "binary": false
+            }
+        ]
+    },
+    "20": {
+        "method": "addColumn",
+        "params": [
+            "core_groups",
+            {
+                "name": "g_membermap_canAdd",
+                "type": "TINYINT",
+                "length": 1,
+                "null": false,
+                "default": 0,
+                "comment": "Can add membermap location?",
+                "unsigned": true
+            }
+        ]
+    },
+    "21": {
+        "method": "addColumn",
+        "params": [
+            "core_groups",
+            {
+                "name": "g_membermap_canEdit",
+                "type": "TINYINT",
+                "length": 1,
+                "null": false,
+                "default": 0,
+                "comment": "Can edit membermap location?",
+                "unsigned": true
+            }
+        ]
+    },
+    "22": {
+        "method": "addColumn",
+        "params": [
+            "core_groups",
+            {
+                "name": "g_membermap_canDelete",
+                "type": "TINYINT",
+                "length": 1,
+                "null": false,
+                "default": 0,
+                "comment": "Can delete membermap location?",
+                "unsigned": true
             }
         ]
     }
