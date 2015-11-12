@@ -31,7 +31,7 @@ class membermap_hook_NumberInput extends _HOOK_CLASS_
 		}
 		else
 		{
-			parent::formatValue();
+			return parent::formatValue();
 		}
 	}
 }
