@@ -58,6 +58,22 @@ class _Map extends \IPS\Patterns\Singleton
 		$this->recacheJsonFile();
 	}
 
+
+	/**
+	 * Delete a marker
+	 *
+	 * @param 		int 	Member ID
+	 * @return 		bool
+	 */
+	public function deleteMarker( $memberId )
+	{
+		$memberId = intval( $memberId );
+
+		\IPS\Db::i()->delete( 'membermap_members', 'member_id=' . $memberId );
+
+		$this->recacheJsonFile();
+	}
+
 	/**
 	 * Query Google for map coordinates
 	 * 
@@ -145,6 +161,17 @@ class _Map extends \IPS\Patterns\Singleton
 			mkdir( \IPS\ROOT_PATH . '/datastore/membermap_cache' );
 			chmod( \IPS\ROOT_PATH . '/datastore/membermap_cache', \IPS\IPS_FOLDER_PERMISSION );
 		}
+
+		/* Remove all files from cache dir. 
+		 * We need to do this in case of situations were a file won't be overwritten (when deleting markers), 
+		 * and old markers will be left in place, or markers are shown multiple times.*/
+		foreach( glob( \IPS\ROOT_PATH . '/datastore/membermap_cache/*' ) as $file )
+		{
+			if ( is_file( $file ) )
+			{
+				unlink( $file );
+			}
+		}
 		
 		$fileCount = 1;
 		$fileList = array();
@@ -159,7 +186,6 @@ class _Map extends \IPS\Patterns\Singleton
 		}
 		
 		/* Build index file */
-		
 		$index = array(
 			'fileList'		=> $fileList
 		);

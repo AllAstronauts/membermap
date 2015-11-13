@@ -37,6 +37,8 @@
 			stuffSize = 0,
 			popups = [],
 
+			markerContext = {},
+
 			oldMarkersIndicator = null;
 	
 		var initMap = function()
@@ -203,10 +205,10 @@
 			{
 				zoom: ( zoomLevel || 7 ),
 				layers: [ mapServices[ defaultMap ] ],
-				contextmenu: ( minimode || isMobileDevice ? false : true ),
+				contextmenu: ( isMobileDevice ? false : true ),
 				contextmenuWidth: 180,
 				contextmenuItems: contextMenu,
-				fullscreenControl: minimode || isMobileDevice ? false : true,
+				fullscreenControl: isMobileDevice ? false : true,
 				loadingControl: isMobileDevice ? false : true,
 				attributionControl: true,
 				crs: L.CRS.EPSG3857
@@ -620,6 +622,16 @@
 					markerColor: 'blue'
 				});
 				
+
+				var contextMenu = [];
+				var enableContextMenu = false;
+
+				if ( ips.getSetting( 'is_supmod' ) ||  ( ips.getSetting( 'member_id' ) == this.member_id && ips.getSetting( 'membermap_canDelete' ) ) )
+				{
+					enableContextMenu = true;
+					contextMenu = getMarkerContextMenu( this );
+				}
+				
 				var mapMarker = new L.Marker( 
 					[ this.lat, this.lon ], 
 					{ 
@@ -628,7 +640,8 @@
 						spin: true,
 						spiderifiedIcon: spiderifiedIcon,
 						defaultIcon: icon,
-						contextmenu: false,
+						contextmenu: enableContextMenu,
+					    contextmenuItems: contextMenu
 					}
 				);
 				
@@ -662,6 +675,52 @@
 					});
 				}
 			}
+		},
+
+
+		getMarkerContextMenu = function( marker, markerData )
+		{
+			
+			if ( ips.getSetting( 'is_supmod' ) ||  ( ips.getSetting( 'member_id' ) == marker.member_id && ips.getSetting( 'membermap_canDelete' ) ) ) 
+			{
+				return [{
+					'text': 'Delete',
+					index: 0,
+					callback: function(e)
+					{
+						ips.ui.alert.show({
+							type: 'confirm',
+							callbacks:
+							{
+								'ok': function() 
+								{ 
+									var url = ips.getSetting('baseURL') + "index.php?app=membermap&module=membermap&controller=showmap&do=delete&member_id="+ marker.member_id;
+									ips.getAjax()({ 
+										url: url, 
+										type: 'GET'
+									}).done( function( data )
+									{
+										if ( data['error'] )
+										{
+											ips.ui.alert.show({ type: 'alert', message: data['error'] });
+										}
+										else
+										{
+											window.location.replace( ips.getSetting('baseURL') + "index.php?app=membermap&dropBrowserCache=1" );
+										}
+									}); 
+								}
+							}
+						});
+					}
+				},
+				{
+					separator: true,
+					index: 1
+				}];
+			}
+
+			return [];
 		},
 		
 		markerClickFunction = function( marker )

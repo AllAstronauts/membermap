@@ -58,24 +58,32 @@ class _showmap extends \IPS\Dispatcher\Controller
 		\IPS\Output::i()->sidebar['enabled'] = FALSE;
         \IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'map' )->showMap( json_encode( $markers ) );
 
-        if ( ! \IPS\Request::i()->embed )
-        {
-			\IPS\Session::i()->setLocation( \IPS\Http\Url::internal( 'app=membermap', 'front', 'membermap' ), array(), 'loc_membermap_viewing_membermap' );
-		}
+        /* Update session location */
+        \IPS\Session::i()->setLocation( \IPS\Http\Url::internal( 'app=membermap', 'front', 'membermap' ), array(), 'loc_membermap_viewing_membermap' );
 
+        /* Things we need to know in the Javascript */
         $is_supmod		= \IPS\Member::loggedIn()->modPermission() ?: 0;
         $member_id		= \IPS\Member::loggedIn()->member_id ?: 0;
+        $canEdit		= \IPS\Member::loggedIn()->group['g_membermap_canEdit'] ?: 0;
+        $canDelete		= \IPS\Member::loggedIn()->group['g_membermap_canDelete'] ?: 0;
+
         \IPS\Output::i()->endBodyCode .= <<<EOF
 		<script type='text/javascript'>
 			ips.setSetting( 'is_supmod', {$is_supmod} );
 			ips.setSetting( 'member_id', {$member_id} );
+			ips.setSetting( 'membermap_canEdit', {$canEdit} );
+			ips.setSetting( 'membermap_canDelete', {$canDelete} );
 
 			ips.membermap.initMap();
 		</script>
 EOF;
-
 	}
 
+	/**
+	 * Loads add/update location form
+	 *
+	 * @return	void
+	 */
 	protected function add()
 	{
 		if ( ! \IPS\Member::loggedIn()->member_id )
@@ -89,13 +97,13 @@ EOF;
 		\IPS\Output::i()->title	= \IPS\Member::loggedIn()->language()->addToStack( ( ! $existing ? 'membermap_button_addLocation' : 'membermap_button_editLocation' ) );
 
 		/* Check permissions */
-		if ( $existing AND ! \IPS\Member::loggedIn()->g_membermap_canEdit )
+		if ( $existing AND ! \IPS\Member::loggedIn()->group['g_membermap_canEdit'] )
 		{
 			\IPS\Output::i()->error( 'membermap_error_cantEdit', '', 403, '' );
 		}
-		else if ( ! \IPS\Member::loggedIn()->g_membermap_canAdd )
+		else if ( ! \IPS\Member::loggedIn()->group['g_membermap_canAdd'] )
 		{
-			\IPS\Output::i()->error( 'membermap_error_cantAdd', '', 403, '' );
+			\IPS\Output::i()->error( 'membermap_error_cantAdd', '123', 403, '' );
 		}
 
 		$geoLocForm =  new \IPS\Helpers\Form( 'membermap_form_geoLocation', NULL, NULL, array( 'id' => 'membermap_form_geoLocation' ) );
@@ -137,5 +145,36 @@ EOF;
 		}
 
 		\IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'map' )->addLocation( $geoLocForm, $form );
+	}
+
+	/**
+	 * Delete a marker
+	 *
+	 * @return	void
+	 */
+	protected function delete()
+	{
+		if ( ! \IPS\Member::loggedIn()->member_id OR ! intval( \IPS\Request::i()->member_id ) )
+		{
+			\IPS\Output::i()->error( 'no_permission', '1', 403, '' );
+		}
+
+		/* Get the marker */
+		$existing = \IPS\membermap\Map::i()->getMarkerByMember( intval( \IPS\Request::i()->member_id ) );
+
+		if ( $existing['member_id'] )
+		{
+			$is_supmod		= \IPS\Member::loggedIn()->modPermission() ?: 0;
+
+			if ( $is_supmod OR ( $existing['member_id'] == \IPS\Member::loggedIn()->member_id AND \IPS\Member::loggedIn()->group['g_membermap_canDelete'] ) )
+			{
+				\IPS\membermap\Map::i()->deleteMarker( $existing['member_id'] );
+				\IPS\Output::i()->json( 'OK' );
+			}
+		}
+
+		/* Fall back to a generic error */
+		\IPS\Output::i()->error( 'no_permission', '2', 403, '' );
+
 	}
 }
