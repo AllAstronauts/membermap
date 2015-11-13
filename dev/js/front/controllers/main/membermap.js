@@ -136,9 +136,8 @@
 			showMarkers( true );
 		},
 
-		setupMap = function(minimode)
+		setupMap = function()
 		{
-			minimode = typeof minimode !== 'undefined' ? minimode : false;
 
 			
 			var southWest = new L.LatLng( 56.83, -7.14 );
@@ -151,34 +150,32 @@
 			mapServices.nokia = L.tileLayer.provider( 'Nokia.terrainDay' );
 
 			var contextMenu = [];
-			if ( ! minimode )
+			
+			contextMenu.push(
 			{
-				contextMenu.push(
+				text: 'Center map here',
+				callback: function(e) 
 				{
-					text: 'Center map here',
-					callback: function(e) 
-					{
-						map.flyTo(e.latlng);
-					}
-				}, 
-				'-', 
+					map.flyTo(e.latlng);
+				}
+			}, 
+			'-', 
+			{
+				text: 'Zoom in',
+				icon: icons.zoomIn,
+				callback: function() 
 				{
-					text: 'Zoom in',
-					icon: icons.zoomIn,
-					callback: function() 
-					{
-						map.zoomIn();
-					}
-				}, 
+					map.zoomIn();
+				}
+			}, 
+			{
+				text: 'Zoom out',
+				icon: icons.zoomOut,
+				callback: function() 
 				{
-					text: 'Zoom out',
-					icon: icons.zoomOut,
-					callback: function() 
-					{
-						map.zoomOut();
-					}
-				});
-			}
+					map.zoomOut();
+				}
+			});
 			
 
 			var defaultMap = 'mapquest';
@@ -223,40 +220,37 @@
 
 			map.fitBounds( bounds );
 			
-			if ( ! minimode )
+			oms = new OverlappingMarkerSpiderfier( map, { keepSpiderfied: true } );
+			
+			var popup = new L.Popup({
+				offset: new L.Point(0, -20),
+				keepInView: true,
+				maxWidth: ( isMobileDevice ? 250 : 300 )
+			});
+			
+			oms.addListener( 'click', function( marker ) 
 			{
-				oms = new OverlappingMarkerSpiderfier( map, { keepSpiderfied: true } );
-				
-				var popup = new L.Popup({
-					offset: new L.Point(0, -20),
-					keepInView: true,
-					maxWidth: ( isMobileDevice ? 250 : 300 )
-				});
-				
-				oms.addListener( 'click', function( marker ) 
+				popup.setContent( marker.markerData.popup );
+				popup.setLatLng( marker.getLatLng() );
+				map.openPopup( popup );
+			});
+			
+			oms.addListener('spiderfy', function( omsMarkers ) 
+			{
+				omsMarkers.each( function( omsMarker )
 				{
-					popup.setContent( marker.markerData.popup );
-					popup.setLatLng( marker.getLatLng() );
-					map.openPopup( popup );
+					omsMarker.setIcon( omsMarker.options.spiderifiedIcon );
 				});
-				
-				oms.addListener('spiderfy', function( omsMarkers ) 
+				map.closePopup();
+			});
+			
+			oms.addListener('unspiderfy', function(omsMarkers) 
+			{
+				omsMarkers.each( function( omsMarker )
 				{
-					omsMarkers.each( function( omsMarker )
-					{
-						omsMarker.setIcon( omsMarker.options.spiderifiedIcon );
-					});
-					map.closePopup();
+					omsMarker.setIcon( omsMarker.options.defaultIcon );
 				});
-				
-				oms.addListener('unspiderfy', function(omsMarkers) 
-				{
-					omsMarkers.each( function( omsMarker )
-					{
-						omsMarker.setIcon( omsMarker.options.defaultIcon );
-					});
-				});
-			}
+			});
 
 			mapMarkers = new L.MarkerClusterGroup({ spiderfyOnMaxZoom: false, zoomToBoundsOnClick: false, disableClusteringAtZoom: ( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 ) });
 			
@@ -282,7 +276,7 @@
 				"Members": mapMarkers,
 			};
 
-			activeLayers = new L.Control.ActiveLayers( baseMaps, overlayMaps, { collapsed: ( minimode || isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
+			activeLayers = new L.Control.ActiveLayers( baseMaps, overlayMaps, { collapsed: ( isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
 
 			map.on( 'baselayerchange', function( baselayer )
 			{
