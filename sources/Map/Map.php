@@ -1,5 +1,13 @@
 <?php
-
+/**
+ * @brief		Map Library
+ * @author		<a href='http://ipb.silvesterwebdesigns.com'>Stuart Silvester & Martin Aronsen</a>
+ * @copyright	(c) 2015 Stuart Silvester & Martin Aronsen
+ * @package		IPS Social Suite
+ * @subpackage	Member Map
+ * @since		20 Oct 2015
+ * @version		3.0.0
+ */
 
 namespace IPS\membermap;
 

@@ -1,13 +1,12 @@
 <?php
 /**
- * @brief		Front Navigation Extension: membermap
- * @author		<a href='http://www.invisionpower.com'>Invision Power Services, Inc.</a>
- * @copyright	(c) 2001 - SVN_YYYY Invision Power Services, Inc.
- * @license		http://www.invisionpower.com/legal/standards/
+ * @brief		Front Navigation Extension
+ * @author		<a href='http://ipb.silvesterwebdesigns.com'>Stuart Silvester & Martin Aronsen</a>
+ * @copyright	(c) 2015 Stuart Silvester & Martin Aronsen
  * @package		IPS Social Suite
  * @subpackage	Member Map
- * @since		22 Oct 2015
- * @version		SVN_VERSION_NUMBER
+ * @since		20 Oct 2015
+ * @version		3.0.0
  */
 
 namespace IPS\membermap\extensions\core\FrontNavigation;

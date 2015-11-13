@@ -1,4 +1,13 @@
 //<?php
+/**
+ * @brief		\IPS\Helpers\Form\Number hook
+ * @author		<a href='http://ipb.silvesterwebdesigns.com'>Stuart Silvester & Martin Aronsen</a>
+ * @copyright	(c) 2015 Stuart Silvester & Martin Aronsen
+ * @package		IPS Social Suite
+ * @subpackage	Member Map
+ * @since		20 Oct 2015
+ * @version		3.0.0
+ */
 
 /*
  * Because of this: https://community.invisionpower.com/4bugtrack/active-reports/ipshelpersformnumber-causing-problems-with-floats-on-some-locales-r9015/

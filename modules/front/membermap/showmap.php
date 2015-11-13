@@ -1,4 +1,13 @@
 <?php
+/**
+ * @brief		Public Controller
+ * @author		<a href='http://ipb.silvesterwebdesigns.com'>Stuart Silvester & Martin Aronsen</a>
+ * @copyright	(c) 2015 Stuart Silvester & Martin Aronsen
+ * @package		IPS Social Suite
+ * @subpackage	Member Map
+ * @since		20 Oct 2015
+ * @version		3.0.0
+ */
 
 
 namespace IPS\membermap\modules\front\membermap;
@@ -27,7 +36,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 	}
 
 	/**
-	 * ...
+	 * Show the map
 	 *
 	 * @return	void
 	 */
@@ -35,11 +44,13 @@ class _showmap extends \IPS\Dispatcher\Controller
 	{
 		$markers = array();
 
+		/* Rebuild JSON cache if needed */
 		if ( ! is_file ( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-index.json' ) OR \IPS\Request::i()->rebuildCache === '1' )
 		{
 			\IPS\membermap\Map::i()->recacheJsonFile();
 		}
 
+		/* Load JS and CSS */
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'front_leaflet.js', 'membermap', 'front' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'front_main.js', 'membermap', 'front' ) );
 
