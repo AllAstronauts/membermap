@@ -65,49 +65,49 @@
         "name": "membermap_cmarkers_groups",
         "columns": {
             "group_id": {
+                "allow_null": false,
+                "auto_increment": true,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": null,
+                "length": 5,
                 "name": "group_id",
                 "type": "MEDIUMINT",
-                "length": 5,
-                "decimals": null,
-                "values": [],
-                "allow_null": false,
-                "default": null,
-                "comment": "",
                 "unsigned": false,
-                "zerofill": false,
-                "auto_increment": true,
-                "binary": false
+                "values": [],
+                "zerofill": false
+            },
+            "group_name": {
+                "allow_null": false,
+                "auto_increment": false,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": "",
+                "length": 150,
+                "name": "group_name",
+                "type": "VARCHAR",
+                "unsigned": false,
+                "values": [],
+                "zerofill": false
             },
             "group_pin_colour": {
+                "allow_null": false,
+                "auto_increment": false,
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": "",
+                "length": 7,
                 "name": "group_pin_colour",
                 "type": "VARCHAR",
-                "length": 7,
-                "decimals": null,
-                "values": [],
-                "allow_null": false,
-                "default": "",
-                "comment": "",
                 "unsigned": false,
-                "zerofill": false,
-                "auto_increment": false,
-                "binary": false
+                "values": [],
+                "zerofill": false
             },
             "group_pin_bg_colour": {
                 "name": "group_pin_bg_colour",
-                "type": "VARCHAR",
-                "length": 7,
-                "decimals": null,
-                "values": [],
-                "allow_null": false,
-                "default": "",
-                "comment": "",
-                "unsigned": false,
-                "zerofill": false,
-                "auto_increment": false,
-                "binary": false
-            },
-            "group_pin_icon": {
-                "name": "group_pin_icon",
                 "type": "VARCHAR",
                 "length": 15,
                 "decimals": null,
@@ -120,19 +120,19 @@
                 "auto_increment": false,
                 "binary": false
             },
-            "group_name": {
-                "name": "group_name",
-                "type": "VARCHAR",
-                "length": 150,
-                "decimals": null,
-                "values": [],
+            "group_pin_icon": {
                 "allow_null": false,
-                "default": "",
-                "comment": "",
-                "unsigned": false,
-                "zerofill": false,
                 "auto_increment": false,
-                "binary": false
+                "binary": false,
+                "comment": "",
+                "decimals": null,
+                "default": "",
+                "length": 30,
+                "name": "group_pin_icon",
+                "type": "VARCHAR",
+                "unsigned": false,
+                "values": [],
+                "zerofill": false
             }
         },
         "indexes": {
@@ -147,8 +147,8 @@
                 ]
             }
         },
-        "collation": "utf8_unicode_ci",
         "comment": "Custom Marker Groups",
+        "collation": "utf8mb4_unicode_ci",
         "engine": "InnoDB"
     },
     "membermap_cmarkers": {

@@ -266,7 +266,7 @@
             {
                 "name": "group_pin_bg_colour",
                 "type": "VARCHAR",
-                "length": 7,
+                "length": 15,
                 "decimals": null,
                 "values": [],
                 "allow_null": false,
@@ -287,7 +287,7 @@
             {
                 "name": "group_pin_icon",
                 "type": "VARCHAR",
-                "length": 15,
+                "length": 30,
                 "decimals": null,
                 "values": [],
                 "allow_null": false,

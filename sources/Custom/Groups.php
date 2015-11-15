@@ -199,14 +199,33 @@ class _Groups extends \IPS\Node\Model
 			}
 		}));
 
-		$form->add( new \IPS\Helpers\Form\Text( 'group_pin_icon', $this->id ? $this->pin_icon : 'fa-globe', TRUE ) );
-		$form->add( new \IPS\Helpers\Form\Color( 'group_pin_colour', $this->id ? $this->pin_colour : '#FFFFFF', TRUE ) );
-		$form->add( new \IPS\Helpers\Form\Color( 'group_pin_bg_colour', $this->id ? $this->pin_bg_colour : '#00008B', TRUE ) );
+		$radioOpt = array();
+		$colours = array( 
+			'red', 'darkred', 'lightred', 'orange', 'beige', 'green', 'darkgreen', 'lightgreen', 'blue', 'darkblue', 'lightblue',
+			'purple', 'darkpurple', 'pink', 'cadetblue', 'gray', 'lightgray', 'black', 'white'
+		);
 
-		$form->addDummy( 'group_marker_example', "<span class='marker' id='markerExample' style=''><i class='fa fa-fw' style=''></i></span>" );
+		$icon 		= $this->id ? $this->pin_icon : 'fa-globe';
+		$iconColour 	= $this->id ? $this->pin_colour : '#FFFFFF';
+		$bgColour 	= $this->id ? $this->pin_bg_colour : 'red';
 
-		$form->addMessage( 'group_contrast_warning', 'ipsMessage ipsMessage_warning', TRUE, 'contrastWarning' );
+		/* Selected a valid colour? */
+		$bgColour = in_array( $bgColour, $colours ) ? $bgColour : 'red';
 
+		foreach( $colours as $c )
+		{
+			$radioOpt[ $c ] = \IPS\Theme::i()->resource( "awesome-marker-icon-{$c}.png", "membermap", 'admin' );
+		}
+
+		$form->add( new \IPS\Helpers\Form\Text( 'group_pin_icon', $icon, TRUE ) );
+		$form->add( new \IPS\Helpers\Form\Color( 'group_pin_colour', $iconColour, TRUE ) );
+		$form->add( new \IPS\Helpers\Form\Radio( 'group_pin_bg_colour', $bgColour, TRUE, array(
+			'options' => $radioOpt,
+			'parse' => 'image',
+			'descriptions' => array( 'white' => 'White' ) /* Just because white is difficult to see on the page */
+		)));
+
+		$form->addDummy( 'group_marker_example', "<span class='awesome-marker awesome-marker-icon-{$bgColour}' id='markerExample'><i class='fa fa-fw {$icon}' style='color: {$iconColour}'></i></span>" );
 	}
 
 	/**
@@ -232,5 +251,17 @@ class _Groups extends \IPS\Node\Model
 			}
 		}
 		return $values;
+	}
+
+	/**
+	 * Save data
+	 *
+	 * @return void
+	 */
+	public function save()
+	{
+		parent::save();
+
+		\IPS\membermap\Map::i()->recacheJsonFile();
 	}
 }

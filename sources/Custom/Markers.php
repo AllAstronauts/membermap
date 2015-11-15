@@ -208,11 +208,8 @@ class _Markers extends \IPS\Node\Model
 	 */
 	public function save()
 	{
-		if ( $this->id )
-		{
-			\IPS\membermap\Map::i()->recacheJsonFile();
-		}
-
 		parent::save();
+
+		\IPS\membermap\Map::i()->recacheJsonFile();
 	}
 }

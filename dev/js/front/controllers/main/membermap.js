@@ -611,29 +611,42 @@
 					}
 				}
 				
-				var iconColor = 'darkblue';
-				var icon = 'user';
+				var bgColour 	= 'darkblue';
+				var icon 		= 'user';
+				var iconColour 	= 'white';
 
-				if ( this.member_id == ips.getSetting( 'member_id' ) )
+				if ( this.type == 'member' )
 				{
-					/* This is me! */
-					icon = 'home';
-					iconColor = 'green';
+					if ( this.member_id == ips.getSetting( 'member_id' ) )
+					{
+						/* This is me! */
+						icon = 'home';
+						bgColour = 'green';
 
-					/* Update the button label while we're here */
-					$( '#membermap_button_addLocation' ).html( ips.getString( 'membermap_button_editLocation' ) );
+						/* Update the button label while we're here */
+						$( '#membermap_button_addLocation' ).html( ips.getString( 'membermap_button_editLocation' ) );
+					}
+				}
+				else
+				{
+					iconColour 	= this.colour;
+					icon 		= this.icon || 'fa-map-marker';
+					bgColour 	= this.bgColour;
+
 				}
 
 				var icon = L.AwesomeMarkers.icon({
 					prefix: 'fa',
 					icon: icon, 
-					markerColor: iconColor
+					markerColor: bgColour,
+					iconColor: iconColour
 				});
 
 				var spiderifiedIcon = L.AwesomeMarkers.icon({
 					prefix: 'fa',
 					icon: 'users', 
-					markerColor: 'blue'
+					markerColor: bgColour,
+					iconColor: iconColour
 				});
 				
 
