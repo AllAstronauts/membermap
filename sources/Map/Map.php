@@ -218,6 +218,15 @@ class _Map extends \IPS\Patterns\Singleton
 		$markers = $this->formatMarkers( $dbMarkers );
 
 
+		$customMarkers = iterator_to_array( 
+						\IPS\Db::i()->select( 'membermap_cmarkers.*,  membermap_cmarkers_groups.*', 'membermap_cmarkers' )
+							->join( 'membermap_cmarkers_groups', 'membermap_cmarkers.marker_parent_id=membermap_cmarkers_groups.group_id' )
+		);
+
+		$custMarkers = $this->formatCustomMarkers( $customMarkers );
+
+		$markers = array_merge( $markers, $custMarkers );
+
 		$markers = array_chunk( $markers, 500 );
 
 		if ( ! is_dir( \IPS\ROOT_PATH . '/datastore/membermap_cache' ) )
@@ -281,10 +290,44 @@ class _Map extends \IPS\Patterns\Singleton
 				$photo = \IPS\Member::photoUrl( $marker, TRUE );
 				
 				$markersToKeep[] = array(
+					'type'		=> "member",
 					'lat' 		=> round( (float)$marker['lat'], 5 ),
 					'lon' 		=> round( (float)$marker['lon'], 5 ),
 					'member_id'	=> $marker['member_id'],
 					'popup' 	=> \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker, $photo ),
+				);
+			}
+		}
+		
+		return $markersToKeep;
+	}
+
+	/**
+	 * Do formatation to the array of markers
+	 * 
+	 * @param 		array 	Markers
+	 * @return		array	Markers
+	 */
+	public function formatCustomMarkers( array $markers )
+	{
+		$markersToKeep = array();
+		$validColours = array( 
+			'red', 'darkred', 'lightred', 'orange', 'beige', 'green', 'darkgreen', 'lightgreen', 'blue', 'darkblue', 'lightblue',
+			'purple', 'darkpurple', 'pink', 'cadetblue', 'gray', 'lightgray', 'black', 'white'
+		);
+
+		if ( is_array( $markers ) AND count( $markers ) )
+		{
+			foreach( $markers as $marker )
+			{
+				$markersToKeep[] = array(
+					'type'		=> "custom",
+					'lat' 		=> round( (float)$marker['marker_lat'], 5 ),
+					'lon' 		=> round( (float)$marker['marker_lon'], 5 ),
+					'popup' 	=> "<h3>{$marker['marker_name']}</h3><p class='desc'>{$marker['marker_description']}</p>",
+					'icon'		=> $marker['group_pin_icon'],
+					'colour'	=> $marker['group_pin_colour'],
+					'bgColour'	=> in_array( $marker['group_pin_bg_colour'], $validColours ) ? $marker['group_pin_bg_colour'] : 'red',
 				);
 			}
 		}
