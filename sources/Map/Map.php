@@ -18,9 +18,25 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 	exit;
 }
 
-class _Map extends \IPS\Patterns\Singleton
+class _Map
 {
 	protected static $instance = NULL;
+
+	/**
+	 * Get instance
+	 *
+	 * @return	static
+	 */
+	public static function i()
+	{
+		if( static::$instance === NULL )
+		{
+			$classname = get_called_class();
+			static::$instance = new $classname;
+		}
+		
+		return static::$instance;
+	}
 
 	/**
 	 * Save marker to database
