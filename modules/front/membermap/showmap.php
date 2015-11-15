@@ -186,6 +186,14 @@ EOF;
 
 		/* Fall back to a generic error */
 		\IPS\Output::i()->error( 'no_permission', '2', 403, '' );
+	}
 
+	protected function embed()
+	{
+		$this->manage();
+
+		\IPS\Output::i()->title = NULL;
+		\IPS\Output::i()->sidebar['enabled'] = FALSE;
+		\IPS\Output::i()->sendOutput( \IPS\Theme::i()->getTemplate( 'global', 'core' )->blankTemplate( \IPS\Output::i()->output ), 200, 'text/html', \IPS\Output::i()->httpHeaders );
 	}
 }

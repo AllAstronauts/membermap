@@ -60,6 +60,7 @@
 			setMobileDevice( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) );
 
 
+			/* Showing a single user or online user, get the markers from DOM */
 			var getByUser = ips.utils.url.getParam( 'filter' ) == 'getByUser' ? true : false;
 			var getOnlineUsers = ips.utils.url.getParam( 'filter' ) == 'getOnlineUsers' ? true : false;
 
@@ -82,6 +83,7 @@
 				setCenter( centerLat, centerLng );
 			}
 
+			/* Set zoom level from URL */
 			var initZoom = parseInt( ips.utils.url.getParam( 'zoom' ) );
 			
 			if ( initZoom )
@@ -89,11 +91,15 @@
 				setZoomLevel( initZoom );
 			}
 
+			/* Set default map from URL */
 			var defaultMap = ips.utils.url.getParam( 'map' );
 			if ( defaultMap )
 			{
 				setDefaultMap( defaultMap );
 			}
+
+			/* Are we embedding? */
+			setEmbed( ips.utils.url.getParam( 'do' ) == 'embed' ? 1 : 0 );
 
 			
 			/* Set a height of the map that fits our browser height */

@@ -1,4 +1,5 @@
 <ips:template parameters="$markers=''" />
+{{if request.do != 'embed'}}
 <div class="ipsPageHeader ipsClearfix">
 	<header class='ipsSpacer_bottom'>
 		<h1 class="ipsType_pageTitle">{lang="frontnavigation_membermap"}</h1>
@@ -11,6 +12,7 @@
 		</div>
 	</header>
 </div>
+{{endif}}
 
 <section>
 	<div id='membermapWrapper'>
