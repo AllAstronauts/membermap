@@ -1,0 +1,8 @@
+<ips:template parameters="$member" />
+<div class='ipsWidget ipsWidget_vertical cProfileSidebarBlock ipsBox ipsSpacer_bottom'>
+	<a href='{url="app=tripreport&filter=getByUser&member_id={$member->member_id}" seoTemplate="membermap"}'><h2 class='ipsWidget_title ipsType_reset'>{lang="frontnavigation_membermap"}</h2></a>
+	<div class='ipsWidget_inner ipsPad_half'>
+		<iframe src='{url="app=membermap&do=embed&filter=getByUser&member_id={$member->member_id}" seoTemplate="membermap"}' width='100%' height='300' frameborder='0' scrolling='no' marginheight='0' marginwidth='0'></iframe>
+		<span><a href='{url="app=tripreport&filter=getByUser&member_id={$member->member_id}" seoTemplate="membermap"}'>{lang="membermap_view_fullsize"}</a></small>
+	</div>
+</div>

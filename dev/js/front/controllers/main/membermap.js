@@ -410,7 +410,7 @@
 					showMarkers( false, data.data );
 					
 					/* Inform that we're showing markers from browser cache */
-					if ( oldMarkersIndicator === null )
+					if ( oldMarkersIndicator === null && ! isEmbedded )
 					{
 						oldMarkersIndicator = new L.Control.MembermapOldMarkers({ callback: reloadMarkers, time: date });
 						ips.membermap.map.addControl( oldMarkersIndicator );

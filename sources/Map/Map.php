@@ -20,6 +20,8 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 
 class _Map extends \IPS\Patterns\Singleton
 {
+	protected static $instance = NULL;
+
 	/**
 	 * Save marker to database
 	 * 

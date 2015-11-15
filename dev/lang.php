@@ -6,6 +6,7 @@ $lang = array(
 	'menu__membermap_membermap' => "Member Map",
 	'module__membermap_membermap' => "Member Map",
 	'group__membermap_membermap' => "Member Map",
+	'loc_membermap_viewing_membermap' => "Viewing the Member Map",
 	'g_membermap_canAdd' => "Can add location to map",
 	'g_membermap_canEdit' => "Can edit their location",
 	'g_membermap_canDelete' => "Can delete their location",
@@ -18,6 +19,8 @@ $lang = array(
 
 	'membermap_error_cantEdit' => "You are not allowed to edit your location.",
 	'membermap_error_cantAdd' => "You are not allowed to add a location.",
+
+	'membermap_view_fullsize' => "View fullsize map",
 
 	'group_contrast_warning' => "Your users may have trouble seeing the icon on the background, the contrast of the colours is too close.",
 	'group_marker_example' => "Marker Preview",
