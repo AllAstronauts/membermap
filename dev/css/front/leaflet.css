@@ -304,12 +304,12 @@
 	border-radius: 5px;
 	}
 .leaflet-control-layers-toggle {
-	background-image: url(images/layers.png);
+	background-image: url({resource="layers.png" app="membermap" location="front"});
 	width: 36px;
 	height: 36px;
 	}
 .leaflet-retina .leaflet-control-layers-toggle {
-	background-image: url(images/layers-2x.png);
+	background-image: url({resource="layers-2x.png" app="membermap" location="front"});
 	background-size: 26px 26px;
 	}
 .leaflet-touch .leaflet-control-layers-toggle {

@@ -50,6 +50,18 @@ class _showmap extends \IPS\Dispatcher\Controller
 			\IPS\membermap\Map::i()->recacheJsonFile();
 		}
 
+
+		$getByUser = intval( \IPS\Request::i()->member_id );
+
+		if ( \IPS\Request::i()->filter == 'getByUser' AND $getByUser )
+		{
+			$markers = \IPS\membermap\Map::i()->getMarkerByMember( $getByUser );
+		}
+		else if ( \IPS\Request::i()->filter == 'getOnlineUsers' )
+		{
+			$markers = \IPS\membermap\Map::i()->getMarkersByOnlineMembers();
+		}
+
 		/* Load JS and CSS */
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'front_leaflet.js', 'membermap', 'front' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'front_main.js', 'membermap', 'front' ) );

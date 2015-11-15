@@ -136,13 +136,67 @@ class _Map extends \IPS\Patterns\Singleton
 		
 			if ( is_array( $marker ) AND count( $marker ) )
 			{
-				return $marker;
+				return $this->formatMarkers( $marker );
 			}
 		}
 		catch( \UnderflowException $e )
 		{
 			return false;
 		}
+	}
+
+	/**
+     * Get all markers created by (or for) an online member
+     */
+    public function getMarkersByOnlineMembers()
+    {
+    	$doEmbed = (bool)\IPS\Request::i()->embed;
+		$rows 	 = $blogMarkers = $markers = array();
+
+		$where = array( 
+			array( "core_sessions.running_time>?", \IPS\DateTime::create()->sub( new \DateInterval( 'PT60M' ) )->getTimeStamp() ),
+			array( "core_sessions.login_type!=?", \IPS\Session\Front::LOGIN_TYPE_SPIDER )
+		);
+		
+		if ( !\IPS\Member::loggedIn()->isAdmin() )
+		{
+			$where[] = array( "core_sessions.login_type!=?", \IPS\Session\Front::LOGIN_TYPE_ANONYMOUS );
+		}
+
+		$where[] = "core_groups.g_hide_online_list=0";
+
+		$results = \IPS\Db::i()->select( 'core_sessions.*', 'core_sessions', $where )
+					->join( 'core_groups', 'core_groups.g_id=core_sessions.member_group' );
+
+		
+		foreach ( $results as $r )
+		{
+			$rows[ $r['member_id'] ] = $r;
+		}		
+		
+		if ( ! count( $rows ) )
+		{
+			return false;
+		}
+		/*
+		 * Get markers
+		 */
+
+		$dbMarkers = iterator_to_array( 
+						\IPS\Db::i()->select( 
+							'membermap_members.*, core_members.name, core_members.member_id, core_members.members_seo_name', 
+							'membermap_members', 
+							\IPS\Db::i()->in( 'membermap_members.member_id', array_keys( $rows ) ) 
+						)
+							->join( 'core_members', 'core_members.member_id=membermap_members.member_id' )
+		);
+
+		
+		
+		$markers = $this->formatMarkers( $dbMarkers );
+		
+		
+		return $markers;
 	}
 
 	/**

@@ -70,12 +70,20 @@
 				{
 					try {
 						var markersJSON = $.parseJSON( $( '#mapMarkers' ).html() );
-						setMarkers( markersJSON );
+						if ( markersJSON.length > 0 )
+						{
+							setMarkers( markersJSON );
+						}
+						else
+						{
+							ips.ui.flashMsg.show( ips.getString( 'membermap_no_results' ), { timeout: 3, position: 'bottom' } );
+						}
 					}
 					catch(err) {}
 				}
 			}
 
+			/* Set lat/lon from URL */
 			var centerLat = parseFloat( unescape( ips.utils.url.getParam( 'lat' ) ).replace( ',', '.' ) );
 			var centerLng = parseFloat( unescape( ips.utils.url.getParam( 'lng' ) ).replace( ',', '.' ) );
 			if ( centerLat && centerLng )
