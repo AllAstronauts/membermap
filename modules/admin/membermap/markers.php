@@ -133,24 +133,6 @@ class _markers extends \IPS\Node\Controller
 		);
 	}
 
-
-
-	/**
-	 * Delete
-	 *
-	 * @return	void
-	 */
-	protected function delete()
-	{
-		if ( isset( \IPS\Request::i()->id ) )
-		{
-			\IPS\cms\Pages\Page::deleteCompiled( \IPS\Request::i()->id );
-		}
-
-		parent::delete();
-	}
-
-
 	/**
 	 * Return HTML for a marker row
 	 *

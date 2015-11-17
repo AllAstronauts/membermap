@@ -91,7 +91,7 @@ class _Groups extends \IPS\Node\Model
 	/**
 	 * @brief	[Node] Node Title
 	 */
-	public static $nodeTitle = 'folder';
+	public static $nodeTitle = 'membermap_group';
 	
 	/**
 	 * @brief	[Node] Subnode class
@@ -262,6 +262,18 @@ class _Groups extends \IPS\Node\Model
 	{
 		parent::save();
 
+		\IPS\membermap\Map::i()->recacheJsonFile();
+	}
+
+	/**
+	 * Delete data
+	 *
+	 * @return void
+	 */
+	public function delete()
+	{
+		parent::delete();
+		
 		\IPS\membermap\Map::i()->recacheJsonFile();
 	}
 }

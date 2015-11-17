@@ -78,6 +78,11 @@ class _Markers extends \IPS\Node\Model
 	 */
 	public static $nodeSortable = TRUE;
 
+	/**
+	 * @brief	[Node] Node Title
+	 */
+	public static $nodeTitle = 'membermap_marker';
+
 
 	/**
 	 * Get sortable name
@@ -85,6 +90,17 @@ class _Markers extends \IPS\Node\Model
 	 * @return	string
 	 */
 	public function getSortableName()
+	{
+		return $this->name;
+	}
+
+
+	/**
+	 * [Node] Get Title
+	 *
+	 * @return	string|null
+	 */
+	protected function get__title()
 	{
 		return $this->name;
 	}
@@ -128,6 +144,15 @@ class _Markers extends \IPS\Node\Model
 	 */
 	public function form( &$form )
 	{
+		if ( \IPS\Request::i()->id )
+		{
+			\IPS\Output::i()->title = \IPS\Member::loggedIn()->language()->addToStack( 'membermap_edit_marker' ) . ': ' . \IPS\Output::i()->title;
+		}
+		else
+		{
+			\IPS\Output::i()->title = \IPS\Member::loggedIn()->language()->addToStack('membermap_add_marker');
+		}
+
 		$form->attributes['data-controller'] = 'membermap.admin.membermap.markerform';
 		$form->attributes['id'] = 'membermap_add_marker';
 
@@ -209,6 +234,18 @@ class _Markers extends \IPS\Node\Model
 	public function save()
 	{
 		parent::save();
+
+		\IPS\membermap\Map::i()->recacheJsonFile();
+	}
+
+	/**
+	 * Delete data
+	 *
+	 * @return void
+	 */
+	public function delete()
+	{
+		parent::delete();
 
 		\IPS\membermap\Map::i()->recacheJsonFile();
 	}

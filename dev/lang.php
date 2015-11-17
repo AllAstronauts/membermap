@@ -16,6 +16,7 @@ $lang = array(
 	'membermap_current_location' => "Use Current Location",
 	'membermap_add_marker' => "Add Custom Marker",
 	'membermap_add_group' => "Add Custom Marker Group",
+	'membermap_edit_marker' => "Edit Custom Marker",
 
 	'membermap_error_cantEdit' => "You are not allowed to edit your location.",
 	'membermap_error_cantAdd' => "You are not allowed to add a location.",
