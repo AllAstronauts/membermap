@@ -3,12 +3,39 @@
  <app key="membermap" version="100000">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
-  <word key="menu__membermap_settings" js="0">Member Map</word>
+  <word key="menu__membermap_membermap" js="0">Member Map</word>
   <word key="module__membermap_membermap" js="0">Member Map</word>
-  <word key="menu__membermap_settings_permissions" js="0">Permissions</word>
+  <word key="group__membermap_membermap" js="0">Member Map</word>
+  <word key="loc_membermap_viewing_membermap" js="0">Viewing the Member Map</word>
+  <word key="g_membermap_canAdd" js="0">Can add location to map</word>
+  <word key="g_membermap_canEdit" js="0">Can edit their location</word>
+  <word key="g_membermap_canDelete" js="0">Can delete their location</word>
+  <word key="menu__membermap_membermap_markers" js="0">Custom Markers</word>
   <word key="membermap_button_addLocation" js="0">Add Location</word>
+  <word key="membermap_button_editLocation" js="0">Update Location</word>
   <word key="membermap_current_location" js="0">Use Current Location</word>
+  <word key="membermap_add_marker" js="0">Add Custom Marker</word>
+  <word key="membermap_add_group" js="0">Add Custom Marker Group</word>
+  <word key="membermap_edit_marker" js="0">Edit Custom Marker</word>
+  <word key="membermap_error_cantEdit" js="0">You are not allowed to edit your location.</word>
+  <word key="membermap_error_cantAdd" js="0">You are not allowed to add a location.</word>
+  <word key="membermap_view_fullsize" js="0">View fullsize map</word>
+  <word key="group_contrast_warning" js="0">Your users may have trouble seeing the icon on the background, the contrast of the colours is too close.</word>
+  <word key="group_marker_example" js="0">Marker Preview</word>
+  <word key="group_name" js="0">Marker Group Name</word>
+  <word key="group_pin_icon" js="0">Marker Icon</word>
+  <word key="group_pin_icon_desc" js="0"><![CDATA[Choose any icon from the <a href='http://fontawesome.io/icons/' target='_blank'>Font Awesome 4.2 icon set</a>, input the full name in the box above, i.e. `fa-map-marker`]]></word>
+  <word key="group_pin_colour" js="0">Marker Icon Colour</word>
+  <word key="group_pin_bg_colour" js="0">Marker Background Colour</word>
+  <word key="marker_name" js="0">Marker Title</word>
+  <word key="marker_description" js="0">Marker Description</word>
+  <word key="marker_lat" js="0">Latitude</word>
+  <word key="marker_location" js="0">Location</word>
+  <word key="marker_location_desc" js="0">Enter a location above to search for one, or enter the latitude and longitude manually below.</word>
+  <word key="marker_lon" js="0">Longitude</word>
+  <word key="marker_parent_id" js="0">Marker Group</word>
   <word key="membermap_button_editLocation" js="1">Update Location</word>
   <word key="membermap_location_title" js="1">Update Location</word>
+  <word key="membermap_no_results" js="1">Couldn't find what you were looking for. Showing all members instead.</word>
  </app>
 </language>

@@ -715,7 +715,6 @@
 				}
 				else
 				{
-					
 					map.fitBounds( mapMarkers.getBounds(), { 
 						padding: [50, 50],
 						maxZoom: 11
