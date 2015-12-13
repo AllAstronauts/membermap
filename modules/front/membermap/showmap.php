@@ -69,12 +69,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'membermap.css', 'membermap' ) );
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.css', 'membermap' ) );
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'jquery-ui.css', 'membermap' ) );
-		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'Control.FullScreen.css', 'membermap' ) );
-		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'Control.Loading.css', 'membermap' ) );
-		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.awesome-markers.css', 'membermap' ) );
-		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.contextmenu.css', 'membermap' ) );
-		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'MarkerCluster.css', 'membermap' ) );
-		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'showLoading.css', 'membermap' ) );
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'plugins.combined.css', 'membermap' ) );
 
 		\IPS\Output::i()->title = \IPS\Member::loggedIn()->language()->addToStack( '__app_membermap' );
 		
@@ -185,9 +180,9 @@ EOF;
 		}
 
 		/* Get the marker */
-		$existing = \IPS\membermap\Map::i()->getMarkerByMember( intval( \IPS\Request::i()->member_id ) );
+		$existing = \IPS\membermap\Map::i()->getMarkerByMember( intval( \IPS\Request::i()->member_id ) )[0];
 
-		if ( $existing['member_id'] )
+		if ( isset( $existing['member_id'] ) )
 		{
 			$is_supmod		= \IPS\Member::loggedIn()->modPermission() ?: 0;
 
