@@ -589,6 +589,9 @@
 			dontRepan = typeof dontRepan !== 'undefined' ? dontRepan : false;
 			markers = typeof markers !== 'undefined' ? markers : false;
 
+			var getByUser 	= ips.utils.url.getParam( 'filter' ) == 'getByUser' ? true : false;
+			var memberId 	= parseInt( ips.utils.url.getParam( 'member_id' ) );
+
 			if ( markers === false )
 			{
 				markers = allMarkers;
@@ -686,6 +689,13 @@
 
 				oms.addMarker( mapMarker );
 				mapMarkers.addLayer( mapMarker );
+
+				if ( getByUser && memberId > 0 && this.type == 'member' && this.member_id == memberId )
+				{
+					dontRepan = true;
+					Debug.log( mapMarker );
+					map.flyTo( mapMarker.getLatLng(), 8 );
+				}
 			});
 			
 
