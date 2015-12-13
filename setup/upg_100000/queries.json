@@ -372,5 +372,12 @@
                 "unsigned": true
             }
         ]
+    },
+    "23": {
+        "method": "update",
+        "params": [
+            "membermap_cmarkers_groups",
+            "group_pin_bg_colour='red'"
+        ]
     }
 }
