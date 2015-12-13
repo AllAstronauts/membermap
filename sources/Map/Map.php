@@ -106,15 +106,7 @@ class _Map
 	 * @return		array	Map coordinates
 	 */
 	public function getMapCoordinates( $location )
-	{
-		static $fileManager = null;
-		
-		if ( $fileManager === null )
-		{
-			$classToLoad = IPSLib::loadLibrary( IPS_KERNEL_PATH . 'classFileManagement.php', 'classFileManagement' );
-			$fileManager = new $classToLoad();
-		}
-		
+	{	
 		if ( $location )
 		{
 			$result = \IPS\Http\Url::external( 'http://maps.googleapis.com/maps/api/geocode/json?sensor=false&amp;address=' . urlencode( $location ) )->request()->get()->decodeJson();
