@@ -626,7 +626,15 @@
 						bgColour = 'green';
 
 						/* Update the button label while we're here */
-						$( '#membermap_button_addLocation' ).html( ips.getString( 'membermap_button_editLocation' ) );
+						if ( ips.getSetting( 'membermap_canEdit' ) )
+						{
+							$( '#membermap_button_addLocation' ).html( ips.getString( 'membermap_button_editLocation' ) );
+						}
+						else
+						{
+							/* You don't have permission to update your location. Might as well remove the button */
+							$( '#membermap_button_addLocation' ).remove();
+						}
 					}
 				}
 				else

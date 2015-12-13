@@ -3,6 +3,7 @@
 <div class="ipsPageHeader ipsClearfix">
 	<header class='ipsSpacer_bottom'>
 		<h1 class="ipsType_pageTitle">{lang="frontnavigation_membermap"}</h1>
+		{{if \IPS\Member::loggedIn()->group['g_membermap_canAdd'] OR \IPS\Member::loggedIn()->group['g_membermap_canEdit']}}
 		<div class='ipsPos_right ipsResponsive_noFloat ipsResponsive_hidePhone'>
 			<ul class="ipsToolList ipsToolList_horizontal ipsClearfix">
 				<li class='ipsToolList_primaryAction'>
@@ -10,6 +11,7 @@
 				</li>
 			</ul>
 		</div>
+		{{endif}}
 	</header>
 </div>
 {{endif}}
