@@ -89,6 +89,7 @@ class _showmap extends \IPS\Dispatcher\Controller
         $member_id		= \IPS\Member::loggedIn()->member_id ?: 0;
         $canEdit		= \IPS\Member::loggedIn()->group['g_membermap_canEdit'] ?: 0;
         $canDelete		= \IPS\Member::loggedIn()->group['g_membermap_canDelete'] ?: 0;
+        $cacheTime 		= isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
 
         \IPS\Output::i()->endBodyCode .= <<<EOF
 		<script type='text/javascript'>
@@ -96,6 +97,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 			ips.setSetting( 'member_id', {$member_id} );
 			ips.setSetting( 'membermap_canEdit', {$canEdit} );
 			ips.setSetting( 'membermap_canDelete', {$canDelete} );
+			ips.setSetting( 'membermap_cacheTime', $cacheTime );
 
 			ips.membermap.initMap();
 		</script>

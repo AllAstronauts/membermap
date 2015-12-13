@@ -379,6 +379,7 @@
 							{
 								var date = new Date();
 								ips.utils.db.set( 'membermap', 'markers', { time: ( date.getTime() / 1000 ), data: allMarkers } );
+								ips.utils.db.set( 'membermap', 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
 							}
 						});
 					}
@@ -387,9 +388,10 @@
 			else
 			{
 				/* Get data from browser storage */
-				var data = ips.utils.db.get('membermap', 'markers' );
+				var data 		= ips.utils.db.get('membermap', 'markers' );
+				var cacheTime 	= ips.utils.db.get('membermap', 'cacheTime' );
 			
-				if ( data === null )
+				if ( data === null || cacheTime < ips.getSetting( 'membermap_cacheTime' ) )
 				{
 					reloadMarkers();
 					return;

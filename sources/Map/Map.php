@@ -286,6 +286,9 @@ class _Map
 		}
 		
 		\file_put_contents( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-index.json', json_encode( $index ) );
+
+		/* Store the timestamp of the cache to force the browser to purge its local storage */
+		\IPS\Data\Store::i()->membermap_cacheTime = time();
 		
 	}
 	
