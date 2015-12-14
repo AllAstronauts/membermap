@@ -301,14 +301,6 @@
         ]
     },
     "18": {
-        "method": "alterTable",
-        "params": [
-            "membermap_cmarkers_groups",
-            null,
-            "InnoDB"
-        ]
-    },
-    "19": {
         "method": "addColumn",
         "params": [
             "membermap_cmarkers",
@@ -328,7 +320,7 @@
             }
         ]
     },
-    "20": {
+    "19": {
         "method": "addColumn",
         "params": [
             "core_groups",
@@ -343,7 +335,7 @@
             }
         ]
     },
-    "21": {
+    "20": {
         "method": "addColumn",
         "params": [
             "core_groups",
@@ -358,7 +350,7 @@
             }
         ]
     },
-    "22": {
+    "21": {
         "method": "addColumn",
         "params": [
             "core_groups",
@@ -373,7 +365,7 @@
             }
         ]
     },
-    "23": {
+    "22": {
         "method": "update",
         "params": [
             "membermap_cmarkers_groups",
