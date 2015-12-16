@@ -478,39 +478,79 @@
 							$( '#membermap_currentLocation' ).click( processGeolocation );
 						}
 
-
-
-						ips.loader.get( ['https://maps.google.com/maps/api/js?sensor=false&libraries=places'] ).then( function () {
-							geocoder = new google.maps.Geocoder();
-				
-							$( '#elInput_membermap_location' ).keydown( function(event)
+						$( '#elInput_membermap_location' ).autocomplete({
+							source: function( request, response ) 
 							{
-								if( event.keyCode === 13 ) 
-								{
-									event.preventDefault();
-									return false;
-								}
-							});
+								ips.getAjax()({ 
+									//url: 'http://www.mapquestapi.com/geocoding/v1/address', 
+									url: 'http://open.mapquestapi.com/nominatim/v1/search.php',
+									type: 'get',
+									dataType: 'json',
+									data: {
+										key: "pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud",
 
-							var autocomplete = new google.maps.places.Autocomplete( document.getElementById( 'elInput_membermap_location' ), { types: ['establishment', 'geocode'] } );
-							
-							google.maps.event.addListener( autocomplete, 'place_changed', function() 
-							{
-								var item = autocomplete.getPlace();
-								
-								$( '#membermap_form_location input[name="lat"]' ).val( item.geometry.location.lat() );
-								$( '#membermap_form_location input[name="lng"]' ).val( item.geometry.location.lng() );
-								$( '#elInput_membermap_location' ).val( item.formatted_address );
-							});
+										// MapQuest Geocode
+										/*location: request.term,
+										outFormat: 'json'*/
 
-							$( '#membermap_form_location' ).on( 'submit', function(e)
+										// MapQuest Nominatim
+										format: 'json',
+										q: request.term,
+										extratags: 0,
+
+									},
+									success: function( data ) 
+									{
+										// MapQuest
+										/* If adminArea5 is empty, it's likely we don't have a result */
+										/*if ( data.results[0].locations[0].adminArea5 )
+										{
+											response( $.map( data.results[0].locations, function( item )
+											{
+												return {
+													value: item.adminArea5 + 
+														( item.adminArea4 ? ', ' + item.adminArea4 : '' ) + 
+														( item.adminArea3 ? ', ' + item.adminArea3 : '' ) + 
+														( item.adminArea2 ? ', ' + item.adminArea2 : '' ) +
+														( item.adminArea1 ? ', ' + item.adminArea1 : '' ),
+													latLng: item.latLng
+												};
+											}));
+										}
+										else
+										{
+											response([]);
+										}*/
+
+										// MapQuest Nominatim
+										response( $.map( data, function( item )
+										{
+											return {
+												value: item.display_name,
+												latLng: {
+													lat: item.lat,
+													lng: item.lon
+												}
+											};
+										}));
+
+									}
+								})
+							},
+							minLength: 3,
+							select: function( event, ui ) {
+								$( '#membermap_form_location input[name="lat"]' ).val( parseFloat( ui.item.latLng.lat).toFixed(6) );
+								$( '#membermap_form_location input[name="lng"]' ).val( parseFloat( ui.item.latLng.lng).toFixed(6) );
+							}
+						});
+
+						$( '#membermap_form_location' ).on( 'submit', function(e)
+						{
+							if ( $( '#membermap_form_location input[name="lat"]' ).val().length == 0 || $( '#membermap_form_location input[name="lng"]' ).val().length == 0 )
 							{
-								if ( $( '#membermap_form_location input[name="lat"]' ).val().length == 0 || $( '#membermap_form_location input[name="lng"]' ).val().length == 0 )
-								{
-									e.preventDefault();
-									return false;
-								}
-							});
+								e.preventDefault();
+								return false;
+							}
 						});
 					}
 				});
