@@ -56,17 +56,6 @@ class _Map
 			$lat = $data['lat'];
 			$lng = $data['lng'];
 		}
-		elseif ( $data['membermap_location'] )
-		{
-			$coordinates = $this->getMapCoordinates( $data['membermap_location'] );
-			
-			if ( $coordinates === false )
-			{
-				return false;
-			}
-			
-			list( $lat, $lng ) = $coordinates;
-		}
 		else
 		{
 			throw new \Exception( 'invalid_data' );
@@ -98,33 +87,6 @@ class _Map
 		\IPS\Db::i()->delete( 'membermap_members', 'member_id=' . $memberId );
 
 		$this->recacheJsonFile();
-	}
-
-	/**
-	 * Query Google for map coordinates
-	 * 
-	 * @return		array	Map coordinates
-	 */
-	public function getMapCoordinates( $location )
-	{	
-		if ( $location )
-		{
-			$result = \IPS\Http\Url::external( 'http://maps.googleapis.com/maps/api/geocode/json?sensor=false&amp;address=' . urlencode( $location ) )->request()->get()->decodeJson();
-			
-			if ( $result['status'] == 'ZERO_RESULTS' )
-			{
-				return false;
-			}
-			
-			if ( is_array( $result['results'][0]['types'] ) AND $result['results'][0]['types'][0] == 'country' )
-			{
-				return false;
-			}
-			
-			return array( $result['results'][0]['geometry']['location']['lat'], $result['results'][0]['geometry']['location']['lng'] );
-		}
-		
-		return false;
 	}
 
 	/**
