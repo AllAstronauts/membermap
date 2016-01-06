@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <javascript app="membermap">
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/leaflet" javascript_name="leaflet-src.js" javascript_type="controller" javascript_version="100000" javascript_position="1000050"><![CDATA[/*
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/leaflet" javascript_name="leaflet-src.js" javascript_type="controller" javascript_version="100001" javascript_position="1000050"><![CDATA[/*
  Leaflet 1.0.0-beta.2 (954e83d), a JS library for interactive maps. http://leafletjs.com
  (c) 2010-2015 Vladimir Agafonkin, (c) 2010-2011 CloudMade
 */
@@ -9626,8 +9626,8 @@ L.Map.include({
 
 }(window, document));
 //# sourceMappingURL=leaflet-src.map]]></file>
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/leaflet/plugins" javascript_name="ActiveLayers.js" javascript_type="controller" javascript_version="100000" javascript_position="1000100"><![CDATA[L.Control.ActiveLayers=L.Control.Layers.extend({getActiveBaseLayer:function(){return this._activeBaseLayer},getActiveOverlayLayers:function(){return this._activeOverlayLayers},onAdd:function(a){var b=L.Control.Layers.prototype.onAdd.call(this,a);return this._activeBaseLayer=this._findActiveBaseLayer(),this._activeOverlayLayers=this._findActiveOverlayLayers(),b},_findActiveBaseLayer:function(){var a=this._layers;for(var b in a)if(this._layers.hasOwnProperty(b)){var c=a[b];if(!c.overlay&&this._map.hasLayer(c.layer))return c}throw new Error("Control doesn't have any active base layer!")},_findActiveOverlayLayers:function(){var a={},b=this._layers;for(var c in b)if(this._layers.hasOwnProperty(c)){var d=b[c];d.overlay&&this._map.hasLayer(d.layer)&&(a[c]=d)}return a},_onLayerChange:function(){L.Control.Layers.prototype._onLayerChange.apply(this,arguments),this._recountLayers()},_onInputClick:function(){this._handlingClick=!0,this._recountLayers(),L.Control.Layers.prototype._onInputClick.call(this),this._handlingClick=!1},_recountLayers:function(){var a,b,c,d=this._form.getElementsByTagName("input"),e=d.length;for(a=0;e>a;a++)b=d[a],c=this._layers[b.layerId],b.checked&&!this._map.hasLayer(c.layer)?c.overlay?this._activeOverlayLayers[b.layerId]=c:this._activeBaseLayer=c:!b.checked&&this._map.hasLayer(c.layer)&&c.overlay&&delete this._activeOverlayLayers[b.layerId]}}),L.control.activeLayers=function(a,b,c){return new L.Control.ActiveLayers(a,b,c)};]]></file>
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/leaflet/plugins" javascript_name="Control.FullScreen.js" javascript_type="controller" javascript_version="100000" javascript_position="1000100"><![CDATA[L.Control.FullScreen = L.Control.extend({
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/leaflet/plugins" javascript_name="ActiveLayers.js" javascript_type="controller" javascript_version="100001" javascript_position="1000100"><![CDATA[L.Control.ActiveLayers=L.Control.Layers.extend({getActiveBaseLayer:function(){return this._activeBaseLayer},getActiveOverlayLayers:function(){return this._activeOverlayLayers},onAdd:function(a){var b=L.Control.Layers.prototype.onAdd.call(this,a);return this._activeBaseLayer=this._findActiveBaseLayer(),this._activeOverlayLayers=this._findActiveOverlayLayers(),b},_findActiveBaseLayer:function(){var a=this._layers;for(var b in a)if(this._layers.hasOwnProperty(b)){var c=a[b];if(!c.overlay&&this._map.hasLayer(c.layer))return c}throw new Error("Control doesn't have any active base layer!")},_findActiveOverlayLayers:function(){var a={},b=this._layers;for(var c in b)if(this._layers.hasOwnProperty(c)){var d=b[c];d.overlay&&this._map.hasLayer(d.layer)&&(a[c]=d)}return a},_onLayerChange:function(){L.Control.Layers.prototype._onLayerChange.apply(this,arguments),this._recountLayers()},_onInputClick:function(){this._handlingClick=!0,this._recountLayers(),L.Control.Layers.prototype._onInputClick.call(this),this._handlingClick=!1},_recountLayers:function(){var a,b,c,d=this._form.getElementsByTagName("input"),e=d.length;for(a=0;e>a;a++)b=d[a],c=this._layers[b.layerId],b.checked&&!this._map.hasLayer(c.layer)?c.overlay?this._activeOverlayLayers[b.layerId]=c:this._activeBaseLayer=c:!b.checked&&this._map.hasLayer(c.layer)&&c.overlay&&delete this._activeOverlayLayers[b.layerId]}}),L.control.activeLayers=function(a,b,c){return new L.Control.ActiveLayers(a,b,c)};]]></file>
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/leaflet/plugins" javascript_name="Control.FullScreen.js" javascript_type="controller" javascript_version="100001" javascript_position="1000100"><![CDATA[L.Control.FullScreen = L.Control.extend({
 	options: {
 		position: 'topleft',
 		title: 'Full Screen',
@@ -9793,7 +9793,7 @@ source : http://johndyer.name/native-fullscreen-javascript-api-plus-jquery-plugi
 	window.fullScreenApi = fullScreenApi;	
 })();
 ]]></file>
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/leaflet/plugins" javascript_name="Control.Loading.js" javascript_type="controller" javascript_version="100000" javascript_position="1000100"><![CDATA[/*
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/leaflet/plugins" javascript_name="Control.Loading.js" javascript_type="controller" javascript_version="100001" javascript_position="1000100"><![CDATA[/*
  * L.Control.Loading is a control that shows a loading indicator when tiles are
  * loading or when map-related AJAX requests are taking place.
  */
@@ -9999,7 +9999,7 @@ L.Control.loading = function(options) {
     return new L.Control.Loading(options);
 };
 ]]></file>
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/leaflet/plugins" javascript_name="leaflet-providers.js" javascript_type="controller" javascript_version="100000" javascript_position="1000100"><![CDATA[(function () {
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/leaflet/plugins" javascript_name="leaflet-providers.js" javascript_type="controller" javascript_version="100001" javascript_position="1000100"><![CDATA[(function () {
 	'use strict';
 
 	L.TileLayer.Provider = L.TileLayer.extend({
@@ -10469,7 +10469,7 @@ L.Control.loading = function(options) {
 }());
 
 ]]></file>
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/leaflet/plugins" javascript_name="leaflet.awesome-markers.js" javascript_type="controller" javascript_version="100000" javascript_position="1000100"><![CDATA[/*
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/leaflet/plugins" javascript_name="leaflet.awesome-markers.js" javascript_type="controller" javascript_version="100001" javascript_position="1000100"><![CDATA[/*
   Leaflet.AwesomeMarkers, a plugin that adds colorful iconic markers for Leaflet, based on the Font Awesome icons
   (c) 2012-2013, Lennard Voogdt
 
@@ -10591,7 +10591,7 @@ L.Control.loading = function(options) {
     };
 
 }(this, document));]]></file>
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/leaflet/plugins" javascript_name="leaflet.contextmenu-src.js" javascript_type="controller" javascript_version="100000" javascript_position="1000100"><![CDATA[/*
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/leaflet/plugins" javascript_name="leaflet.contextmenu-src.js" javascript_type="controller" javascript_version="100001" javascript_position="1000100"><![CDATA[/*
 	Leaflet.contextmenu, a context menu for Leaflet.
 	(c) 2013, Adam Ratcliffe, GeoSmart Maps Limited
 */
@@ -11008,7 +11008,7 @@ L.Marker.addInitHook(function () {
 
 L.Marker.include(L.Mixin.ContextMenu);
 ]]></file>
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/leaflet/plugins" javascript_name="leaflet.markercluster-src.js" javascript_type="controller" javascript_version="100000" javascript_position="1000100"><![CDATA[/*
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/leaflet/plugins" javascript_name="leaflet.markercluster-src.js" javascript_type="controller" javascript_version="100001" javascript_position="1000100"><![CDATA[/*
  Leaflet.markercluster, Provides Beautiful Animated Marker Clustering functionality for Leaflet, a JS library for interactive maps.
  https://github.com/Leaflet/Leaflet.markercluster
  (c) 2012-2013, Dave Leaver, smartrak
@@ -13225,7 +13225,7 @@ L.MarkerClusterGroup.include({
 
 
 }(window, document));]]></file>
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/leaflet/plugins" javascript_name="oms.min.js" javascript_type="controller" javascript_version="100000" javascript_position="1000100"><![CDATA[(function(){/*
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/leaflet/plugins" javascript_name="oms.min.js" javascript_type="controller" javascript_version="100001" javascript_position="1000100"><![CDATA[(function(){/*
  OverlappingMarkerSpiderfier
 https://github.com/jawj/OverlappingMarkerSpiderfier-Leaflet
 Copyright (c) 2011 - 2012 George MacKerron
@@ -13245,7 +13245,7 @@ e.push(b);delete this.unspiderfying;delete this.spiderfied;this.trigger("unspide
 d,g,f;if(null!=c.indexOf)return c.indexOf(b);a=g=0;for(f=c.length;g<f;a=++g)if(d=c[a],d===b)return a;return-1};return l}())}).call(this);}).call(this);
 /* Sun 6 May 2012 17:49:10 BST */
 ]]></file>
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/leaflet/plugins" javascript_name="Tooltip.js" javascript_type="controller" javascript_version="100000" javascript_position="1000100"><![CDATA[L.Tooltip = L.Class.extend({
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/leaflet/plugins" javascript_name="Tooltip.js" javascript_type="controller" javascript_version="100001" javascript_position="1000100"><![CDATA[L.Tooltip = L.Class.extend({
 	initialize: function (map) {
 		this._map = map;
 		this._popupPane = map._panes.popupPane;
@@ -13308,7 +13308,7 @@ d,g,f;if(null!=c.indexOf)return c.indexOf(b);a=g=0;for(f=c.length;g<f;a=++g)if(d
 		return this;
 	}
 });]]></file>
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/main" javascript_name="jquery-ui.js" javascript_type="controller" javascript_version="100000" javascript_position="1000150"><![CDATA[/*! jQuery UI - v1.11.4 - 2015-06-27
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/main" javascript_name="jquery-ui.js" javascript_type="controller" javascript_version="100001" javascript_position="1000150"><![CDATA[/*! jQuery UI - v1.11.4 - 2015-06-27
 * http://jqueryui.com
 * Includes: core.js, widget.js, mouse.js, resizable.js, progressbar.js, slider.js
 * Copyright 2015 jQuery Foundation and other contributors; Licensed MIT */
@@ -16338,7 +16338,7 @@ var slider = $.widget( "ui.slider", $.ui.mouse, {
 
 
 }));]]></file>
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/main" javascript_name="jquery.geocomplete.min.js" javascript_type="controller" javascript_version="100000" javascript_position="1000150"><![CDATA[/**
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/main" javascript_name="jquery.geocomplete.min.js" javascript_type="controller" javascript_version="100001" javascript_position="1000150"><![CDATA[/**
  * jQuery Geocoding and Places Autocomplete Plugin - V 1.4
  *
  * @author Martin Kleppe <kleppe@ubilabs.net>, 2012
@@ -16351,7 +16351,7 @@ var slider = $.widget( "ui.slider", $.ui.mouse, {
 // * by Martin Kleppe <kleppe@ubilabs.net>
 (function(a,b,c,d){function h(b,c){this.options=a.extend(!0,{},e,c),this.input=b,this.$input=a(b),this._defaults=e,this._name="geocomplete",this.init()}var e={bounds:!0,country:null,map:!1,details:!1,detailsAttribute:"name",location:!1,mapOptions:{zoom:14,scrollwheel:!1,mapTypeId:"roadmap"},markerOptions:{draggable:!1},maxZoom:16,types:["geocode"],blur:!1},f="street_address route intersection political country administrative_area_level_1 administrative_area_level_2 administrative_area_level_3 colloquial_area locality sublocality neighborhood premise subpremise postal_code natural_feature airport park point_of_interest post_box street_number floor room lat lng viewport location formatted_address location_type bounds".split(" "),g="id url website vicinity reference name rating international_phone_number icon formatted_phone_number".split(" ");a.extend(h.prototype,{init:function(){this.initMap(),this.initMarker(),this.initGeocoder(),this.initDetails(),this.initLocation()},initMap:function(){if(this.options.map){if("function"==typeof this.options.map.setCenter)return this.map=this.options.map,d;this.map=new google.maps.Map(a(this.options.map)[0],this.options.mapOptions),google.maps.event.addListener(this.map,"click",a.proxy(this.mapClicked,this))}},initMarker:function(){if(this.map){var b=a.extend(this.options.markerOptions,{map:this.map});b.disabled||(this.marker=new google.maps.Marker(b),google.maps.event.addListener(this.marker,"dragend",a.proxy(this.markerDragged,this)))}},initGeocoder:function(){var b={types:this.options.types,bounds:this.options.bounds===!0?null:this.options.bounds,componentRestrictions:this.options.componentRestrictions};this.options.country&&(b.componentRestrictions={country:this.options.country}),this.autocomplete=new google.maps.places.Autocomplete(this.input,b),this.geocoder=new google.maps.Geocoder,this.map&&this.options.bounds===!0&&this.autocomplete.bindTo("bounds",this.map),google.maps.event.addListener(this.autocomplete,"place_changed",a.proxy(this.placeChanged,this)),this.$input.keypress(function(a){return 13===a.keyCode?!1:d}),this.$input.bind("geocode",a.proxy(function(){this.find()},this)),this.options.blur===!0&&this.$input.blur(a.proxy(function(){this.find()},this))},initDetails:function(){function e(a){d[a]=b.find("["+c+"="+a+"]")}if(this.options.details){var b=a(this.options.details),c=this.options.detailsAttribute,d={};a.each(f,function(a,b){e(b),e(b+"_short")}),a.each(g,function(a,b){e(b)}),this.$details=b,this.details=d}},initLocation:function(){var b,a=this.options.location;if(a){if("string"==typeof a)return this.find(a),d;a instanceof Array&&(b=new google.maps.LatLng(a[0],a[1])),a instanceof google.maps.LatLng&&(b=a),b&&(this.map&&this.map.setCenter(b),this.marker&&this.marker.setPosition(b))}},find:function(a){this.geocode({address:a||this.$input.val()})},geocode:function(b){this.options.bounds&&!b.bounds&&(b.bounds=this.options.bounds===!0?this.map&&this.map.getBounds():this.options.bounds),this.options.country&&(b.region=this.options.country),this.geocoder.geocode(b,a.proxy(this.handleGeocode,this))},handleGeocode:function(a,b){if(b===google.maps.GeocoderStatus.OK){var c=a[0];this.$input.val(c.formatted_address),this.update(c),a.length>1&&this.trigger("geocode:multiple",a)}else this.trigger("geocode:error",b)},trigger:function(a,b){this.$input.trigger(a,[b])},center:function(a){a.viewport?(this.map.fitBounds(a.viewport),this.map.getZoom()>this.options.maxZoom&&this.map.setZoom(this.options.maxZoom)):(this.map.setZoom(this.options.maxZoom),this.map.setCenter(a.location)),this.marker&&(this.marker.setPosition(a.location),this.marker.setAnimation(this.options.markerOptions.animation))},update:function(a){this.map&&this.center(a.geometry),this.$details&&this.fillDetails(a),this.trigger("geocode:result",a)},fillDetails:function(b){var c={},d=b.geometry,e=d.viewport,f=d.bounds;a.each(b.address_components,function(a,b){var d=b.types[0];c[d]=b.long_name,c[d+"_short"]=b.short_name}),a.each(g,function(a,d){c[d]=b[d]}),a.extend(c,{formatted_address:b.formatted_address,location_type:d.location_type||"PLACES",viewport:e,bounds:f,location:d.location,lat:d.location.lat(),lng:d.location.lng()}),a.each(this.details,a.proxy(function(a,b){var d=c[a];this.setDetail(b,d)},this)),this.data=c},setDetail:function(a,b){b===d?b="":"function"==typeof b.toUrlValue&&(b=b.toUrlValue()),a.is(":input")?a.val(b):a.text(b)},markerDragged:function(a){this.trigger("geocode:dragged",a.latLng)},mapClicked:function(a){this.trigger("geocode:click",a.latLng)},resetMarker:function(){this.marker.setPosition(this.data.location),this.setDetail(this.details.lat,this.data.location.lat()),this.setDetail(this.details.lng,this.data.location.lng())},placeChanged:function(){var a=this.autocomplete.getPlace();a.geometry?this.update(a):this.find(a.name)}}),a.fn.geocomplete=function(b){var c="plugin_geocomplete";if("string"==typeof b){var d=a(this).data(c)||a(this).geocomplete().data(c),e=d[b];return"function"==typeof e?(e.apply(d,Array.prototype.slice.call(arguments,1)),a(this)):(2==arguments.length&&(e=arguments[1]),e)}return this.each(function(){var d=a.data(this,c);d||(d=new h(this,b),a.data(this,c,d))})}})(jQuery,window,document);
 ]]></file>
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/main" javascript_name="jquery.showLoading.min.js" javascript_type="controller" javascript_version="100000" javascript_position="1000150"><![CDATA[﻿/*
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/main" javascript_name="jquery.showLoading.min.js" javascript_type="controller" javascript_version="100001" javascript_position="1000150"><![CDATA[﻿/*
  * jQuery showLoading plugin v1.0
  * 
  * Copyright (c) 2009 Jim Keller
@@ -16386,7 +16386,7 @@ return this;};jQuery.fn.hideLoading=function(options){var settings={};jQuery.ext
 else{indicatorID=jQuery(this).attr('id');}
 jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(document.body).find('#loading-indicator-'+indicatorID+'-overlay').remove();return this;};
 ]]></file>
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/main" javascript_name="membermap.js" javascript_type="controller" javascript_version="100000" javascript_position="1000150"><![CDATA[/**
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/main" javascript_name="membermap.js" javascript_type="controller" javascript_version="100001" javascript_position="1000150"><![CDATA[/**
  * Trip Report, by Martin Aronsen
  */
 ;( function($, _, undefined){
@@ -17240,43 +17240,43 @@ L.Control.MembermapOldMarkers = L.Control.extend({
         return container;
     }
 });]]></file>
- <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.groupform.js" javascript_type="controller" javascript_version="100000" javascript_position="1000050">;( function($, _, undefined){&#13;
-	&quot;use strict&quot;;&#13;
-&#13;
-	ips.controller.register('membermap.admin.membermap.groupform', {&#13;
-&#13;
-		initialize: function () {&#13;
-			this.monitorColourPickers();&#13;
-		},&#13;
-&#13;
-		monitorColourPickers: function()&#13;
-		{&#13;
-			var self		= this;&#13;
-			var icon 		= $( 'input[name=&quot;group_pin_icon&quot;]' ).eq(0);&#13;
-			var iconColour 	= $( 'input[name=&quot;group_pin_colour&quot;]' ).eq(0);&#13;
-			var bgColour 	= $( 'input[name=&quot;group_pin_bg_colour&quot;]' );&#13;
-&#13;
-&#13;
-			bgColour.on('change', function()&#13;
-			{&#13;
-				var colour = $( 'input[name=&quot;group_pin_bg_colour&quot;]:checked' ).val();&#13;
-				$( '#markerExample' ).removeClass().addClass( 'awesome-marker awesome-marker-icon-' + colour )&#13;
-			});&#13;
-&#13;
-			iconColour.on('change', function()&#13;
-			{&#13;
-				$('#markerExample i').css({ 'color': '#' + iconColour.val() });&#13;
-			});&#13;
-&#13;
-			icon.on('change', function()&#13;
-			{&#13;
-				$('#markerExample i').removeClass().addClass( 'fa fa-fw' ).addClass( icon.val() );&#13;
-			});&#13;
-&#13;
-		}&#13;
-	});&#13;
+ <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.groupform.js" javascript_type="controller" javascript_version="100001" javascript_position="1000050">;( function($, _, undefined){
+	&quot;use strict&quot;;
+
+	ips.controller.register('membermap.admin.membermap.groupform', {
+
+		initialize: function () {
+			this.monitorColourPickers();
+		},
+
+		monitorColourPickers: function()
+		{
+			var self		= this;
+			var icon 		= $( 'input[name=&quot;group_pin_icon&quot;]' ).eq(0);
+			var iconColour 	= $( 'input[name=&quot;group_pin_colour&quot;]' ).eq(0);
+			var bgColour 	= $( 'input[name=&quot;group_pin_bg_colour&quot;]' );
+
+
+			bgColour.on('change', function()
+			{
+				var colour = $( 'input[name=&quot;group_pin_bg_colour&quot;]:checked' ).val();
+				$( '#markerExample' ).removeClass().addClass( 'awesome-marker awesome-marker-icon-' + colour )
+			});
+
+			iconColour.on('change', function()
+			{
+				$('#markerExample i').css({ 'color': '#' + iconColour.val() });
+			});
+
+			icon.on('change', function()
+			{
+				$('#markerExample i').removeClass().addClass( 'fa fa-fw' ).addClass( icon.val() );
+			});
+
+		}
+	});
 }(jQuery, _));</file>
- <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.markerform.js" javascript_type="controller" javascript_version="100000" javascript_position="1000050"><![CDATA[;( function($, _, undefined){
+ <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.markerform.js" javascript_type="controller" javascript_version="100001" javascript_position="1000050"><![CDATA[;( function($, _, undefined){
 	"use strict";
 
 	ips.controller.register('membermap.admin.membermap.markerform', {
