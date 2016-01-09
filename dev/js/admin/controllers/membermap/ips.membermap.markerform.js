@@ -10,28 +10,71 @@
 
 		setup: function()
 		{
-			ips.loader.get( ['https://maps.google.com/maps/api/js?sensor=false&libraries=places'] ).then( function () {
-				var geocoder = new google.maps.Geocoder();
-
-				$( '#elInput_marker_location' ).keydown( function(event)
+			$( '#elInput_marker_location' ).autocomplete({
+				source: function( request, response ) 
 				{
-					if( event.keyCode === 13 ) 
-					{
-						event.preventDefault();
-						return false;
-					}
-				});
+					ips.getAjax()({ 
+						//url: 'http://www.mapquestapi.com/geocoding/v1/address', 
+						url: 'http://open.mapquestapi.com/nominatim/v1/search.php',
+						type: 'get',
+						dataType: 'json',
+						data: {
+							key: "pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud",
 
-				var autocomplete = new google.maps.places.Autocomplete( document.getElementById( 'elInput_marker_location' ), { types: ['establishment', 'geocode'] } );
-				
-				google.maps.event.addListener( autocomplete, 'place_changed', function() 
+							// MapQuest Geocode
+							/*location: request.term,
+							outFormat: 'json'*/
+
+							// MapQuest Nominatim
+							format: 'json',
+							q: request.term,
+							extratags: 0,
+
+						},
+						success: function( data ) 
+						{
+							// MapQuest
+							/* If adminArea5 is empty, it's likely we don't have a result */
+							/*if ( data.results[0].locations[0].adminArea5 )
+							{
+								response( $.map( data.results[0].locations, function( item )
+								{
+									return {
+										value: item.adminArea5 + 
+											( item.adminArea4 ? ', ' + item.adminArea4 : '' ) + 
+											( item.adminArea3 ? ', ' + item.adminArea3 : '' ) + 
+											( item.adminArea2 ? ', ' + item.adminArea2 : '' ) +
+											( item.adminArea1 ? ', ' + item.adminArea1 : '' ),
+										latLng: item.latLng
+									};
+								}));
+							}
+							else
+							{
+								response([]);
+							}*/
+
+							// MapQuest Nominatim
+							response( $.map( data, function( item )
+							{
+								return {
+									value: item.display_name,
+									latLng: {
+										lat: item.lat,
+										lng: item.lon
+									}
+								};
+							}));
+
+						}
+					})
+				},
+				minLength: 3,
+				select: function( event, ui ) 
 				{
-					var item = autocomplete.getPlace();
-					
-					$( '#membermap_add_marker input[name="marker_lat"]').val( parseFloat( item.geometry.location.lat() ).toFixed(6) );
-					$( '#membermap_add_marker input[name="marker_lon"]' ).val( parseFloat( item.geometry.location.lng() ).toFixed(6) );
-					$( '#elInput_marker_location' ).val( ( item.name || item.formatted_address ) );
-				});
+					$( '#membermap_add_marker input[name="marker_lat"]').val( parseFloat( ui.item.latLng.lat ).toFixed(6) );
+					$( '#membermap_add_marker input[name="marker_lon"]' ).val( parseFloat( ui.item.latLng.lng ).toFixed(6) );
+				}
 			});
 		}
 	});

@@ -162,7 +162,8 @@ class _Markers extends \IPS\Node\Model
 		$form->add( new \IPS\Helpers\Form\Text( 'marker_description', $this->id ? $this->description : '', FALSE ) );
 
 		$form->add( new \IPS\Helpers\Form\Node( 'marker_parent_id', $this->parent_id ? $this->parent_id : 0, TRUE, array(
-			'class'    => '\IPS\membermap\Custom\Groups'
+			'class'		=> '\IPS\membermap\Custom\Groups',
+			'subnodes'	=> false,
 		) ) );
 
 		$form->add( new \IPS\Helpers\Form\Text( 'marker_location', $this->id ? $this->location : '', FALSE, array(), NULL, NULL, NULL, 'marker_location' ) );
