@@ -60,6 +60,11 @@ class _Map
 		{
 			throw new \Exception( 'invalid_data' );
 		}
+
+		if ( $lat == 0 AND $lng == 0 )
+		{
+			throw new \Exception( 'invalid_data' );
+		}
 		
 		$save = array(
 			'member_id'		=> $data['member_id'],
@@ -259,6 +264,12 @@ class _Map
 		{
 			foreach( $markers as $marker )
 			{
+				if ( $marker['lat'] == 0 AND $marker['lon'] == 0 )
+				{
+					\IPS\Db::i()->delete( 'membermap_members', array( 'member_id=?', $marker['member_id'] ) );
+					continue;
+				}
+
 				$photo = \IPS\Member::photoUrl( $marker, TRUE );
 				
 				$markersToKeep[] = array(

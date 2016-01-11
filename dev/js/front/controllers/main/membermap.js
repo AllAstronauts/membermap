@@ -646,6 +646,12 @@
 
 			$.each( markers, function() 
 			{		
+				/* Don't show these, as they all end up in the middle of the middle of the South Atlantic Ocean. */
+				if ( this.lat == 0 && this.lon == 0 )
+				{
+					return;
+				}
+
 				/* Report written by selected member? */
 				if ( typeof memberSearch !== 'undefined' )
 				{
