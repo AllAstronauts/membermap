@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="100001">
+ <app key="membermap" version="100002">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
   <word key="menu__membermap_membermap" js="0">Member Map</word>
@@ -10,6 +10,8 @@
   <word key="g_membermap_canAdd" js="0">Can add location to map</word>
   <word key="g_membermap_canEdit" js="0">Can edit their location</word>
   <word key="g_membermap_canDelete" js="0">Can delete their location</word>
+  <word key="g_membermap_markerColour" js="0">Marker Colour</word>
+  <word key="g_membermap_markerColour_desc" js="0">The members own marker will always be green</word>
   <word key="menu__membermap_membermap_markers" js="0">Custom Markers</word>
   <word key="membermap_button_addLocation" js="0">Add Location</word>
   <word key="membermap_button_editLocation" js="0">Update Location</word>
@@ -37,5 +39,11 @@
   <word key="membermap_button_editLocation" js="1">Update Location</word>
   <word key="membermap_location_title" js="1">Update Location</word>
   <word key="membermap_no_results" js="1">Couldn't find what you were looking for. Showing all members instead.</word>
+  <word key="membermap_zoomIn" js="1">Zoom In</word>
+  <word key="membermap_zoomOut" js="1">Zoom Out</word>
+  <word key="membermap_centerMap" js="1">Center map here</word>
+  <word key="membermap_context_addLocation" js="1">Add Location</word>
+  <word key="membermap_context_editLocation" js="1">Edit Location</word>
+  <word key="membermap_confirm_updateLocation" js="1">Are you sure you want to add/update your location to this position?</word>
  </app>
 </language>
