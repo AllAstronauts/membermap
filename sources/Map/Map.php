@@ -111,6 +111,7 @@ class _Map
 		{
 			$marker = \IPS\Db::i()->select( '*', 'membermap_members', array( 'membermap_members.member_id=?', intval( $memberId ) ) )
 					->join( 'core_members', 'membermap_members.member_id=core_members.member_id' )
+					->join( 'core_groups', 'core_members.member_group_id=core_groups.g_id' )
 					->first();
 					
 			return $this->formatMarkers( array( $marker ) );
