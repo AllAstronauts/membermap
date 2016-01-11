@@ -1,0 +1,17 @@
+{
+    "1": {
+        "method": "addColumn",
+        "params": [
+            "core_groups",
+            {
+                "name": "g_membermap_markerColour",
+                "type": "VARCHAR",
+                "length": 15,
+                "null": false,
+                "default": "darkblue",
+                "comment": "Marker Colour",
+                "unsigned": false
+            }
+        ]
+    }
+}

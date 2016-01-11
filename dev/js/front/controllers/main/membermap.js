@@ -697,6 +697,13 @@
 							flyToZoom 	= 10;
 						}
 					}
+					else
+					{
+						if ( this.markerColour )
+						{
+							bgColour = this.markerColour;
+						}
+					}
 				}
 				else
 				{

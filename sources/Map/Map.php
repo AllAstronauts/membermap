@@ -185,8 +185,9 @@ class _Map
 		$markers = array();
 		
 		$dbMarkers = iterator_to_array( 
-						\IPS\Db::i()->select( 'membermap_members.*,  core_members.*', 'membermap_members' )
+						\IPS\Db::i()->select( 'membermap_members.*,  core_members.*, core_groups.g_membermap_markerColour', 'membermap_members' )
 							->join( 'core_members', 'membermap_members.member_id=core_members.member_id' )
+							->join( 'core_groups', 'core_members.member_group_id=core_groups.g_id' )
 		);
 
 		$markers = $this->formatMarkers( $dbMarkers );
@@ -273,11 +274,12 @@ class _Map
 				$photo = \IPS\Member::photoUrl( $marker, TRUE );
 				
 				$markersToKeep[] = array(
-					'type'		=> "member",
-					'lat' 		=> round( (float)$marker['lat'], 5 ),
-					'lon' 		=> round( (float)$marker['lon'], 5 ),
-					'member_id'	=> $marker['member_id'],
-					'popup' 	=> \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker, $photo ),
+					'type'			=> "member",
+					'lat' 			=> round( (float)$marker['lat'], 5 ),
+					'lon' 			=> round( (float)$marker['lon'], 5 ),
+					'member_id'		=> $marker['member_id'],
+					'popup' 		=> \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker, $photo ),
+					'markerColour' 	=> $marker['g_membermap_markerColour'] ?: 'darkblue',
 				);
 			}
 		}
