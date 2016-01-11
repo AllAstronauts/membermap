@@ -166,10 +166,10 @@
 			mapServices.nokia = L.tileLayer.provider( 'Nokia.terrainDay' );
 
 			var contextMenu = [];
-			
+
 			contextMenu.push(
 			{
-				text: 'Center map here',
+				text: ips.getString( 'membermap_centerMap' ),
 				callback: function(e) 
 				{
 					map.flyTo(e.latlng);
@@ -177,7 +177,7 @@
 			}, 
 			'-', 
 			{
-				text: 'Zoom in',
+				text: ips.getString( 'membermap_zoomIn' ),
 				icon: icons.zoomIn,
 				callback: function() 
 				{
@@ -185,7 +185,7 @@
 				}
 			}, 
 			{
-				text: 'Zoom out',
+				text: ips.getString( 'membermap_zoomOut' ),
 				icon: icons.zoomOut,
 				callback: function() 
 				{
@@ -645,6 +645,8 @@
 
 			var memberSearch = $( '#elInput_membermap_memberName_wrapper .cToken' ).eq(0).attr( 'data-value' );
 
+			var hasLocation = false;
+
 			$.each( markers, function() 
 			{		
 				/* Don't show these, as they all end up in the middle of the middle of the South Atlantic Ocean. */
@@ -685,6 +687,8 @@
 							/* You don't have permission to update your location. Might as well remove the button */
 							$( '#membermap_button_addLocation' ).remove();
 						}
+
+						hasLocation = true;
 
 						if ( ips.utils.url.getParam( 'goHome' ) == 1 )
 						{
@@ -751,6 +755,28 @@
 					map.flyTo( mapMarker.getLatLng(), flyToZoom );
 				}
 			});
+
+			if ( ips.getSetting( 'member_id' ) )
+			{
+				if ( hasLocation && ips.getSetting( 'membermap_canEdit' ) )
+				{
+					map.contextmenu.insertItem(
+					{
+						'text': ips.getString( 'membermap_context_editLocation' ),
+						callback: updateLocation
+					}, 0 );
+					map.contextmenu.insertItem( { separator: true }, 1 );
+				}
+				else if ( ! hasLocation && ips.getSetting( 'membermap_canAdd' ) )
+				{
+					map.contextmenu.insertItem(
+					{
+						'text': ips.getString( 'membermap_context_addLocation' ),
+						callback: updateLocation
+					}, 0 );
+					map.contextmenu.insertItem( { separator: true }, 1 );
+				}
+			}
 			
 
 			
@@ -775,6 +801,41 @@
 					});
 				}
 			}
+		},
+
+		updateLocation = function( e )
+		{
+			Debug.log( e );
+			ips.ui.alert.show({
+				type: 'confirm',
+				message: ips.getString( 'membermap_confirm_updateLocation' ),
+				callbacks:
+				{
+					'ok': function() 
+					{ 
+						var url = ips.getSetting('baseURL') + "index.php?app=membermap&module=membermap&controller=showmap&do=add&csrfKey=" + ips.getSetting( 'csrfKey' );
+						ips.getAjax()({ 
+							url: url,
+							data: {
+								lat: e.latlng.lat,
+								lng: e.latlng.lng,
+								'membermap_form_location_submitted': 1
+							},
+							type: 'POST'
+						}).done( function( data )
+						{
+							if ( data['error'] )
+							{
+								ips.ui.alert.show({ type: 'alert', message: data['error'] });
+							}
+							else
+							{
+								window.location.replace( ips.getSetting('baseURL') + "index.php?app=membermap&dropBrowserCache=1&goHome=1" );
+							}
+						}); 
+					}
+				}
+			});
 		},
 
 
