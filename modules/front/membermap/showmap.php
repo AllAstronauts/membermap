@@ -65,7 +65,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 		/* Load JS and CSS */
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'front_leaflet.js', 'membermap', 'front' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'front_main.js', 'membermap', 'front' ) );
-		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'framework/jquery-ui.js', 'membermap', 'global' ) );
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'jquery/jquery-ui.js', 'membermap', 'interface' ) );
 
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'membermap.css', 'membermap' ) );
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.css', 'membermap' ) );
@@ -83,6 +83,7 @@ class _showmap extends \IPS\Dispatcher\Controller
         /* Things we need to know in the Javascript */
         $is_supmod		= \IPS\Member::loggedIn()->modPermission() ?: 0;
         $member_id		= \IPS\Member::loggedIn()->member_id ?: 0;
+        $canAdd			= \IPS\Member::loggedIn()->group['g_membermap_canAdd'] ?: 0;
         $canEdit		= \IPS\Member::loggedIn()->group['g_membermap_canEdit'] ?: 0;
         $canDelete		= \IPS\Member::loggedIn()->group['g_membermap_canDelete'] ?: 0;
         $cacheTime 		= isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
@@ -91,6 +92,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 		<script type='text/javascript'>
 			ips.setSetting( 'is_supmod', {$is_supmod} );
 			ips.setSetting( 'member_id', {$member_id} );
+			ips.setSetting( 'membermap_canAdd', {$canAdd} );
 			ips.setSetting( 'membermap_canEdit', {$canEdit} );
 			ips.setSetting( 'membermap_canDelete', {$canDelete} );
 			ips.setSetting( 'membermap_cacheTime', $cacheTime );
@@ -153,7 +155,7 @@ EOF;
 				$values['member_id'] = \IPS\Member::loggedIn()->member_id;
 
 				\IPS\membermap\Map::i()->saveMarker( $values );
-				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap&dropBrowserCache=1' ) );
+				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap&dropBrowserCache=1&goHome=1' ) );
 				return;
 			}
 			catch( \Exception $e )

@@ -24,6 +24,11 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
  */
 class _membermap
 {
+	private $colours = array( 
+			'red', 'darkred', 'lightred', 'orange', 'beige', 'green', 'darkgreen', 'lightgreen', 'blue', 'darkblue', 'lightblue',
+			'purple', 'darkpurple', 'pink', 'cadetblue', 'gray', 'lightgray', 'black', 'white'
+	);
+
 	/**
 	 * Process Form
 	 *
@@ -33,9 +38,24 @@ class _membermap
 	 */
 	public function process( &$form, $group )
 	{		
+		$bgColour 	= $group->g_membermap_markerColour ? $group->g_membermap_markerColour : 'darkblue';
+
+		/* Selected a valid colour? */
+		$bgColour = in_array( $bgColour, $this->colours ) ? $bgColour : 'darkblue';
+
+		foreach( $this->colours as $c )
+		{
+			$radioOpt[ $c ] = \IPS\Theme::i()->resource( "awesome-marker-icon-{$c}.png", "membermap", 'admin' );
+		}
+
 		$form->add( new \IPS\Helpers\Form\YesNo( 'g_membermap_canAdd', $group->g_membermap_canAdd ) );
 		$form->add( new \IPS\Helpers\Form\YesNo( 'g_membermap_canEdit', $group->g_membermap_canEdit ) );
 		$form->add( new \IPS\Helpers\Form\YesNo( 'g_membermap_canDelete', $group->g_membermap_canDelete ) );
+		$form->add( new \IPS\Helpers\Form\Radio( 'g_membermap_markerColour', $bgColour, TRUE, array(
+			'options' => $radioOpt,
+			'parse' => 'image',
+			'descriptions' => array( 'white' => 'White' ) /* Just because white is difficult to see on the page */
+		)));
 	}
 	
 	/**
@@ -47,8 +67,14 @@ class _membermap
 	 */
 	public function save( $values, &$group )
 	{
+		$bgColour 	= $values['g_membermap_markerColour'] ? $values['g_membermap_markerColour'] : 'darkblue';
+
+		/* Selected a valid colour? */
+		$bgColour = in_array( $bgColour, $this->colours ) ? $bgColour : 'darkblue';
+
 		$group->g_membermap_canAdd 	= $values['g_membermap_canAdd'];
 		$group->g_membermap_canEdit 	= $values['g_membermap_canEdit'];
 		$group->g_membermap_canDelete = $values['g_membermap_canDelete'];
+		$group->g_membermap_markerColour = $bgColour;
 	}
 }

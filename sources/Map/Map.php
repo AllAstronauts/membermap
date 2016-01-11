@@ -60,6 +60,11 @@ class _Map
 		{
 			throw new \Exception( 'invalid_data' );
 		}
+
+		if ( $lat == 0 AND $lng == 0 )
+		{
+			throw new \Exception( 'invalid_data' );
+		}
 		
 		$save = array(
 			'member_id'		=> $data['member_id'],
@@ -106,6 +111,7 @@ class _Map
 		{
 			$marker = \IPS\Db::i()->select( '*', 'membermap_members', array( 'membermap_members.member_id=?', intval( $memberId ) ) )
 					->join( 'core_members', 'membermap_members.member_id=core_members.member_id' )
+					->join( 'core_groups', 'core_members.member_group_id=core_groups.g_id' )
 					->first();
 					
 			return $this->formatMarkers( array( $marker ) );
@@ -180,8 +186,9 @@ class _Map
 		$markers = array();
 		
 		$dbMarkers = iterator_to_array( 
-						\IPS\Db::i()->select( 'membermap_members.*,  core_members.*', 'membermap_members' )
+						\IPS\Db::i()->select( 'membermap_members.*,  core_members.*, core_groups.g_membermap_markerColour', 'membermap_members' )
 							->join( 'core_members', 'membermap_members.member_id=core_members.member_id' )
+							->join( 'core_groups', 'core_members.member_group_id=core_groups.g_id' )
 		);
 
 		$markers = $this->formatMarkers( $dbMarkers );
@@ -259,14 +266,21 @@ class _Map
 		{
 			foreach( $markers as $marker )
 			{
+				if ( $marker['lat'] == 0 AND $marker['lon'] == 0 )
+				{
+					\IPS\Db::i()->delete( 'membermap_members', array( 'member_id=?', $marker['member_id'] ) );
+					continue;
+				}
+
 				$photo = \IPS\Member::photoUrl( $marker, TRUE );
 				
 				$markersToKeep[] = array(
-					'type'		=> "member",
-					'lat' 		=> round( (float)$marker['lat'], 5 ),
-					'lon' 		=> round( (float)$marker['lon'], 5 ),
-					'member_id'	=> $marker['member_id'],
-					'popup' 	=> \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker, $photo ),
+					'type'			=> "member",
+					'lat' 			=> round( (float)$marker['lat'], 5 ),
+					'lon' 			=> round( (float)$marker['lon'], 5 ),
+					'member_id'		=> $marker['member_id'],
+					'popup' 		=> \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker, $photo ),
+					'markerColour' 	=> $marker['g_membermap_markerColour'] ?: 'darkblue',
 				);
 			}
 		}
