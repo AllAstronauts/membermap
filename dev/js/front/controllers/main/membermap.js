@@ -631,6 +631,7 @@
 
 			var getByUser 	= ips.utils.url.getParam( 'filter' ) == 'getByUser' ? true : false;
 			var memberId 	= parseInt( ips.utils.url.getParam( 'member_id' ) );
+			var flyToZoom 	= 8;
 
 			if ( markers === false )
 			{
@@ -683,6 +684,13 @@
 						{
 							/* You don't have permission to update your location. Might as well remove the button */
 							$( '#membermap_button_addLocation' ).remove();
+						}
+
+						if ( ips.utils.url.getParam( 'goHome' ) == 1 )
+						{
+							getByUser 	= true;
+							memberId 	= this.member_id;
+							flyToZoom 	= 10;
 						}
 					}
 				}
@@ -740,7 +748,7 @@
 				{
 					dontRepan = true;
 					Debug.log( mapMarker );
-					map.flyTo( mapMarker.getLatLng(), 8 );
+					map.flyTo( mapMarker.getLatLng(), flyToZoom );
 				}
 			});
 			

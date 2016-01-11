@@ -153,7 +153,7 @@ EOF;
 				$values['member_id'] = \IPS\Member::loggedIn()->member_id;
 
 				\IPS\membermap\Map::i()->saveMarker( $values );
-				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap&dropBrowserCache=1' ) );
+				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap&dropBrowserCache=1&goHome=1' ) );
 				return;
 			}
 			catch( \Exception $e )
