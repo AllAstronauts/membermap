@@ -571,11 +571,48 @@
 					$( '#membermap_form_location input[name="lat"]' ).val( position.coords.latitude );
 					$( '#membermap_form_location input[name="lng"]' ).val( position.coords.longitude );
 
-					$( '#membermap_form_location' ).submit();
+					ips.getAjax()({ 
+						url: 'http://www.mapquestapi.com/geocoding/v1/reverse', 
+						type: 'get',
+						dataType: 'json',
+						data: {
+							key: "pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud",
+							lat: position.coords.latitude,
+							lng: position.coords.longitude
+
+						},
+						success: function( data ) 
+						{
+							// MapQuest
+							/* If adminArea5 is empty, it's likely we don't have a result */
+							if ( data.results[0].locations[0].adminArea5 )
+							{
+								var item = data.results[0].locations[0];
+								var location = item.adminArea5 + 
+											( item.adminArea4 ? ', ' + item.adminArea4 : '' ) + 
+											( item.adminArea3 ? ', ' + item.adminArea3 : '' ) + 
+											( item.adminArea2 ? ', ' + item.adminArea2 : '' ) +
+											( item.adminArea1 ? ', ' + item.adminArea1 : '' );
+
+								$( '#elInput_membermap_location' ).val( location );
+
+								$( '#membermap_form_location' ).submit();
+									
+							}
+							else
+							{
+								$( '#membermap_geolocation_wrapper' ).hide();
+								$( '#membermap_addLocation_error' ).html( ips.getString( 'memebermap_geolocation_error' ) ).show();
+							}
+
+						}
+					});
+
 				},
 				function( error )
 				{
-					$('#membermap_geolocation_wrapper').hide();
+					$( '#membermap_addLocation_error' ).append( 'ERROR(' + error.code + '): ' + error.message ).append( '<br />' + ips.getString( 'memebermap_geolocation_error' ) ).show();
+					$( '#membermap_geolocation_wrapper' ).hide();
 				},
 				{
 					maximumAge: (1000 * 60 * 15),
