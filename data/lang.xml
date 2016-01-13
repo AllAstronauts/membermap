@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="100002">
+ <app key="membermap" version="100003">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
   <word key="menu__membermap_membermap" js="0">Member Map</word>
@@ -21,6 +21,7 @@
   <word key="membermap_edit_marker" js="0">Edit Custom Marker</word>
   <word key="membermap_error_cantEdit" js="0">You are not allowed to edit your location.</word>
   <word key="membermap_error_cantAdd" js="0">You are not allowed to add a location.</word>
+  <word key="membermap_error_noGroups" js="0">You need to create a Custom Marker Group first.</word>
   <word key="membermap_view_fullsize" js="0">View fullsize map</word>
   <word key="group_contrast_warning" js="0">Your users may have trouble seeing the icon on the background, the contrast of the colours is too close.</word>
   <word key="group_marker_example" js="0">Marker Preview</word>
@@ -31,11 +32,13 @@
   <word key="group_pin_bg_colour" js="0">Marker Background Colour</word>
   <word key="marker_name" js="0">Marker Title</word>
   <word key="marker_description" js="0">Marker Description</word>
-  <word key="marker_lat" js="0">Latitude</word>
+  <word key="marker_lat" js="0">Latitude (N)</word>
   <word key="marker_location" js="0">Location</word>
-  <word key="marker_location_desc" js="0">Enter a location above to search for one, or enter the latitude and longitude manually below.</word>
-  <word key="marker_lon" js="0">Longitude</word>
+  <word key="marker_location_desc" js="0">Enter a location above to search for one, enter the latitude and longitude manually below, or select the location in a map</word>
+  <word key="marker_lon" js="0">Longitude (E)</word>
   <word key="marker_parent_id" js="0">Marker Group</word>
+  <word key="marker_addViaMap" js="0">Show in map</word>
+  <word key="marker_addViaMap_button" js="0">Select location in map</word>
   <word key="membermap_button_editLocation" js="1">Update Location</word>
   <word key="membermap_location_title" js="1">Update Location</word>
   <word key="membermap_no_results" js="1">Couldn't find what you were looking for. Showing all members instead.</word>
@@ -45,5 +48,6 @@
   <word key="membermap_context_addLocation" js="1">Add Location</word>
   <word key="membermap_context_editLocation" js="1">Edit Location</word>
   <word key="membermap_confirm_updateLocation" js="1">Are you sure you want to add/update your location to this position?</word>
+  <word key="marker_addViaMap" js="1">Select location in map</word>
  </app>
 </language>
