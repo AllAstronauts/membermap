@@ -342,6 +342,7 @@
 				$.ajax( ipsSettings.baseURL.replace('&amp;','&') + 'datastore/membermap_cache/membermap-index.json',
 				{	
 					cache : false,
+					dataType: 'json',
 					success: function( res )
 					{
 						if ( typeof res.error !== 'undefined' )
@@ -362,6 +363,7 @@
 								$.ajax({
 									url: ipsSettings.baseURL.replace('&amp;','&') + '/datastore/' + file,
 									cache : false,
+									dataType: 'json',
 									success:function( res )
 									{
 										/* Show marker layer */
