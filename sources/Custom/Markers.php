@@ -144,6 +144,11 @@ class _Markers extends \IPS\Node\Model
 	 */
 	public function form( &$form )
 	{
+		if ( count( \IPS\membermap\Custom\Groups::roots() ) == 0 )
+		{
+			\IPS\Output::i()->error( 'membermap_error_noGroups', '', 403, '' );
+		}
+
 		if ( \IPS\Request::i()->id )
 		{
 			\IPS\Output::i()->title = \IPS\Member::loggedIn()->language()->addToStack( 'membermap_edit_marker' ) . ': ' . \IPS\Output::i()->title;
