@@ -87,7 +87,7 @@
 			/* Setup map popup */
 			$( '#marker_addViaMap' ).click( function()
 			{
-				ips.loader.get( [ 'membermap/front/controllers/leaflet/leaflet-src.js', 'membermap/front/controllers/leaflet/plugins/leaflet-providers.js', 'membermap/front/controllers/leaflet/plugins/leaflet.awesome-markers.js' ] ).then( function () 
+				ips.loader.get( [ 'membermap/interface/leaflet/leaflet-src.js', 'membermap/interface/leaflet/plugins/leaflet-providers.js', 'membermap/interface/leaflet/plugins/leaflet.awesome-markers.js' ] ).then( function () 
 				{
 					if(  _.isObject( that.popup ) )
 					{
