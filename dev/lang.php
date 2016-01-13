@@ -35,10 +35,12 @@ $lang = array(
 
 	'marker_name' => "Marker Title",
 	'marker_description' => "Marker Description",
-	'marker_lat' => "Latitude",
+	'marker_lat' => "Latitude (N)",
 	'marker_location' => "Location",
-	'marker_location_desc' => "Enter a location above to search for one, or enter the latitude and longitude manually below.",
-	'marker_lon' => "Longitude",
+	'marker_location_desc' => "Enter a location above to search for one, enter the latitude and longitude manually below, or select the location in a map",
+	'marker_lon' => "Longitude (E)",
 	'marker_parent_id' => "Marker Group",
+	'marker_addViaMap' => "Show in map",
+	'marker_addViaMap_button' => "Select location in map",
 
 );

@@ -154,8 +154,6 @@
 
 		setupMap = function()
 		{
-
-			
 			var southWest = new L.LatLng( 56.83, -7.14 );
 			var northEast = new L.LatLng( 74.449, 37.466 );
 			bounds = new L.LatLngBounds(southWest, northEast);
@@ -742,7 +740,6 @@
 					{ 
 						title: this.title,
 						icon: icon,
-						spin: true,
 						spiderifiedIcon: spiderifiedIcon,
 						defaultIcon: icon,
 						contextmenu: enableContextMenu,
