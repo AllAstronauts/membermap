@@ -10,5 +10,9 @@ $lang = array(
 	'membermap_context_addLocation' => "Add Location",
 	'membermap_context_editLocation' => "Edit Location",
 	'membermap_confirm_updateLocation' => "Are you sure you want to add/update your location to this position?",
+<<<<<<< HEAD
 	'memebermap_geolocation_error' => "We were unable to find your location automatically. Please use the search field below.",
+=======
+	'marker_addViaMap' => "Select location in map",
+>>>>>>> Add a popup map in the custom marker form.
 );
