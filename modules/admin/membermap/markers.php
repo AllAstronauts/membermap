@@ -77,6 +77,9 @@ class _markers extends \IPS\Node\Controller
 	 */
 	protected function manage()
 	{
+
+		/* Javascript & CSS */
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'admin_membermap.js', 'membermap', 'admin' ) );
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'membermap.css', 'membermap' ) );
 	
 		$url = \IPS\Http\Url::internal( "app=membermap&module=membermap&controller=markers" );

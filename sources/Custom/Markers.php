@@ -144,6 +144,11 @@ class _Markers extends \IPS\Node\Model
 	 */
 	public function form( &$form )
 	{
+		if ( count( \IPS\membermap\Custom\Groups::roots() ) == 0 )
+		{
+			\IPS\Output::i()->error( 'membermap_error_noGroups', '', 403, '' );
+		}
+
 		if ( \IPS\Request::i()->id )
 		{
 			\IPS\Output::i()->title = \IPS\Member::loggedIn()->language()->addToStack( 'membermap_edit_marker' ) . ': ' . \IPS\Output::i()->title;
@@ -152,6 +157,9 @@ class _Markers extends \IPS\Node\Model
 		{
 			\IPS\Output::i()->title = \IPS\Member::loggedIn()->language()->addToStack('membermap_add_marker');
 		}
+
+
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.css', 'membermap', 'global' ) );
 
 		$form->attributes['data-controller'] = 'membermap.admin.membermap.markerform';
 		$form->attributes['id'] = 'membermap_add_marker';
@@ -171,6 +179,8 @@ class _Markers extends \IPS\Node\Model
 		$form->add( new \IPS\Helpers\Form\Number( 'marker_lat', $this->id ? $this->lat : 0, TRUE, array( 'min' => -90, 'max' => 90, 'decimals' => TRUE ), NULL, NULL, NULL, 'marker_lat' ) );
 
 		$form->add( new \IPS\Helpers\Form\Number( 'marker_lon', $this->id ? $this->lon : 0, TRUE, array( 'min' => -180, 'max' => 180, 'decimals' => TRUE ), NULL, NULL, NULL, 'marker_lon' ) );
+
+		$form->addDummy( 'marker_addViaMap', '<button type="button" id="marker_addViaMap" role="button">' . \IPS\Member::loggedIn()->language()->addToStack( 'marker_addViaMap_button' ) . '</button>' );
 	}
 
 	/**
