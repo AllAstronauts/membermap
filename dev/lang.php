@@ -22,6 +22,7 @@ $lang = array(
 
 	'membermap_error_cantEdit' => "You are not allowed to edit your location.",
 	'membermap_error_cantAdd' => "You are not allowed to add a location.",
+	'membermap_error_noGroups' => "You need to create a Custom Marker Group first.",
 
 	'membermap_view_fullsize' => "View fullsize map",
 
