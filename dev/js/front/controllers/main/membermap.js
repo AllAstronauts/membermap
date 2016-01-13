@@ -39,7 +39,9 @@
 
 			markerContext = {},
 
-			oldMarkersIndicator = null;
+			oldMarkersIndicator = null,
+
+			hasLocation = false;
 	
 		var initMap = function()
 		{
@@ -446,6 +448,32 @@
 					}
 				});
 			}
+
+
+			
+			/* Contextual menu */
+			/* Needs to run this after the markers, as we need to know if we're editing or adding the location */
+			if ( ips.getSetting( 'member_id' ) )
+			{
+				if ( hasLocation && ips.getSetting( 'membermap_canEdit' ) )
+				{
+					map.contextmenu.insertItem(
+					{
+						'text': ips.getString( 'membermap_context_editLocation' ),
+						callback: updateLocation
+					}, 0 );
+					map.contextmenu.insertItem( { separator: true }, 1 );
+				}
+				else if ( ! hasLocation && ips.getSetting( 'membermap_canAdd' ) )
+				{
+					map.contextmenu.insertItem(
+					{
+						'text': ips.getString( 'membermap_context_addLocation' ),
+						callback: updateLocation
+					}, 0 );
+					map.contextmenu.insertItem( { separator: true }, 1 );
+				}
+			}
 			
 
 			
@@ -762,30 +790,7 @@
 				}
 			});
 
-			if ( ips.getSetting( 'member_id' ) )
-			{
-				if ( hasLocation && ips.getSetting( 'membermap_canEdit' ) )
-				{
-					map.contextmenu.insertItem(
-					{
-						'text': ips.getString( 'membermap_context_editLocation' ),
-						callback: updateLocation
-					}, 0 );
-					map.contextmenu.insertItem( { separator: true }, 1 );
-				}
-				else if ( ! hasLocation && ips.getSetting( 'membermap_canAdd' ) )
-				{
-					map.contextmenu.insertItem(
-					{
-						'text': ips.getString( 'membermap_context_addLocation' ),
-						callback: updateLocation
-					}, 0 );
-					map.contextmenu.insertItem( { separator: true }, 1 );
-				}
-			}
-			
-
-			
+			/* We don't want to move the map around if we're changing filters or reloading markers */
 			if ( dontRepan === false )
 			{
 				if ( initialCenter instanceof L.LatLng )
