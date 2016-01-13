@@ -13687,6 +13687,7 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 				$.ajax( ipsSettings.baseURL.replace('&amp;','&') + 'datastore/membermap_cache/membermap-index.json',
 				{	
 					cache : false,
+					dataType: 'json',
 					success: function( res )
 					{
 						if ( typeof res.error !== 'undefined' )
@@ -13707,6 +13708,7 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 								$.ajax({
 									url: ipsSettings.baseURL.replace('&amp;','&') + '/datastore/' + file,
 									cache : false,
+									dataType: 'json',
 									success:function( res )
 									{
 										/* Show marker layer */
@@ -14319,121 +14321,121 @@ L.Control.MembermapOldMarkers = L.Control.extend({
         return container;
     }
 });]]></file>
- <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.groupform.js" javascript_type="controller" javascript_version="100002" javascript_position="1000050">;( function($, _, undefined){&#13;
-	&quot;use strict&quot;;&#13;
-&#13;
-	ips.controller.register('membermap.admin.membermap.groupform', {&#13;
-&#13;
-		initialize: function () {&#13;
-			this.monitorColourPickers();&#13;
-		},&#13;
-&#13;
-		monitorColourPickers: function()&#13;
-		{&#13;
-			var self		= this;&#13;
-			var icon 		= $( 'input[name=&quot;group_pin_icon&quot;]' ).eq(0);&#13;
-			var iconColour 	= $( 'input[name=&quot;group_pin_colour&quot;]' ).eq(0);&#13;
-			var bgColour 	= $( 'input[name=&quot;group_pin_bg_colour&quot;]' );&#13;
-&#13;
-&#13;
-			bgColour.on('change', function()&#13;
-			{&#13;
-				var colour = $( 'input[name=&quot;group_pin_bg_colour&quot;]:checked' ).val();&#13;
-				$( '#markerExample' ).removeClass().addClass( 'awesome-marker awesome-marker-icon-' + colour )&#13;
-			});&#13;
-&#13;
-			iconColour.on('change', function()&#13;
-			{&#13;
-				$('#markerExample i').css({ 'color': '#' + iconColour.val() });&#13;
-			});&#13;
-&#13;
-			icon.on('change', function()&#13;
-			{&#13;
-				$('#markerExample i').removeClass().addClass( 'fa fa-fw' ).addClass( icon.val() );&#13;
-			});&#13;
-&#13;
-		}&#13;
-	});&#13;
+ <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.groupform.js" javascript_type="controller" javascript_version="100002" javascript_position="1000050">;( function($, _, undefined){
+	&quot;use strict&quot;;
+
+	ips.controller.register('membermap.admin.membermap.groupform', {
+
+		initialize: function () {
+			this.monitorColourPickers();
+		},
+
+		monitorColourPickers: function()
+		{
+			var self		= this;
+			var icon 		= $( 'input[name=&quot;group_pin_icon&quot;]' ).eq(0);
+			var iconColour 	= $( 'input[name=&quot;group_pin_colour&quot;]' ).eq(0);
+			var bgColour 	= $( 'input[name=&quot;group_pin_bg_colour&quot;]' );
+
+
+			bgColour.on('change', function()
+			{
+				var colour = $( 'input[name=&quot;group_pin_bg_colour&quot;]:checked' ).val();
+				$( '#markerExample' ).removeClass().addClass( 'awesome-marker awesome-marker-icon-' + colour )
+			});
+
+			iconColour.on('change', function()
+			{
+				$('#markerExample i').css({ 'color': '#' + iconColour.val() });
+			});
+
+			icon.on('change', function()
+			{
+				$('#markerExample i').removeClass().addClass( 'fa fa-fw' ).addClass( icon.val() );
+			});
+
+		}
+	});
 }(jQuery, _));</file>
- <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.markerform.js" javascript_type="controller" javascript_version="100002" javascript_position="1000050">;( function($, _, undefined){&#13;
-	&quot;use strict&quot;;&#13;
-&#13;
-	ips.controller.register('membermap.admin.membermap.markerform', {&#13;
-&#13;
-		initialize: function () &#13;
-		{&#13;
-			this.setup();&#13;
-		},&#13;
-&#13;
-		setup: function()&#13;
-		{&#13;
-			$( '#elInput_marker_location' ).autocomplete({&#13;
-				source: function( request, response ) &#13;
-				{&#13;
-					ips.getAjax()({ &#13;
-						//url: 'http://www.mapquestapi.com/geocoding/v1/address', &#13;
-						url: 'http://open.mapquestapi.com/nominatim/v1/search.php',&#13;
-						type: 'get',&#13;
-						dataType: 'json',&#13;
-						data: {&#13;
-							key: &quot;pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud&quot;,&#13;
-&#13;
-							// MapQuest Geocode&#13;
-							/*location: request.term,&#13;
-							outFormat: 'json'*/&#13;
-&#13;
-							// MapQuest Nominatim&#13;
-							format: 'json',&#13;
-							q: request.term,&#13;
-							extratags: 0,&#13;
-&#13;
-						},&#13;
-						success: function( data ) &#13;
-						{&#13;
-							// MapQuest&#13;
-							/* If adminArea5 is empty, it's likely we don't have a result */&#13;
-							/*if ( data.results[0].locations[0].adminArea5 )&#13;
-							{&#13;
-								response( $.map( data.results[0].locations, function( item )&#13;
-								{&#13;
-									return {&#13;
-										value: item.adminArea5 + &#13;
-											( item.adminArea4 ? ', ' + item.adminArea4 : '' ) + &#13;
-											( item.adminArea3 ? ', ' + item.adminArea3 : '' ) + &#13;
-											( item.adminArea2 ? ', ' + item.adminArea2 : '' ) +&#13;
-											( item.adminArea1 ? ', ' + item.adminArea1 : '' ),&#13;
-										latLng: item.latLng&#13;
-									};&#13;
-								}));&#13;
-							}&#13;
-							else&#13;
-							{&#13;
-								response([]);&#13;
-							}*/&#13;
-&#13;
-							// MapQuest Nominatim&#13;
-							response( $.map( data, function( item )&#13;
-							{&#13;
-								return {&#13;
-									value: item.display_name,&#13;
-									latLng: {&#13;
-										lat: item.lat,&#13;
-										lng: item.lon&#13;
-									}&#13;
-								};&#13;
-							}));&#13;
-&#13;
-						}&#13;
-					})&#13;
-				},&#13;
-				minLength: 3,&#13;
-				select: function( event, ui ) &#13;
-				{&#13;
-					$( '#membermap_add_marker input[name=&quot;marker_lat&quot;]').val( parseFloat( ui.item.latLng.lat ).toFixed(6) );&#13;
-					$( '#membermap_add_marker input[name=&quot;marker_lon&quot;]' ).val( parseFloat( ui.item.latLng.lng ).toFixed(6) );&#13;
-				}&#13;
-			});&#13;
-		}&#13;
-	});&#13;
+ <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.markerform.js" javascript_type="controller" javascript_version="100002" javascript_position="1000050">;( function($, _, undefined){
+	&quot;use strict&quot;;
+
+	ips.controller.register('membermap.admin.membermap.markerform', {
+
+		initialize: function () 
+		{
+			this.setup();
+		},
+
+		setup: function()
+		{
+			$( '#elInput_marker_location' ).autocomplete({
+				source: function( request, response ) 
+				{
+					ips.getAjax()({ 
+						//url: 'http://www.mapquestapi.com/geocoding/v1/address', 
+						url: 'http://open.mapquestapi.com/nominatim/v1/search.php',
+						type: 'get',
+						dataType: 'json',
+						data: {
+							key: &quot;pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud&quot;,
+
+							// MapQuest Geocode
+							/*location: request.term,
+							outFormat: 'json'*/
+
+							// MapQuest Nominatim
+							format: 'json',
+							q: request.term,
+							extratags: 0,
+
+						},
+						success: function( data ) 
+						{
+							// MapQuest
+							/* If adminArea5 is empty, it's likely we don't have a result */
+							/*if ( data.results[0].locations[0].adminArea5 )
+							{
+								response( $.map( data.results[0].locations, function( item )
+								{
+									return {
+										value: item.adminArea5 + 
+											( item.adminArea4 ? ', ' + item.adminArea4 : '' ) + 
+											( item.adminArea3 ? ', ' + item.adminArea3 : '' ) + 
+											( item.adminArea2 ? ', ' + item.adminArea2 : '' ) +
+											( item.adminArea1 ? ', ' + item.adminArea1 : '' ),
+										latLng: item.latLng
+									};
+								}));
+							}
+							else
+							{
+								response([]);
+							}*/
+
+							// MapQuest Nominatim
+							response( $.map( data, function( item )
+							{
+								return {
+									value: item.display_name,
+									latLng: {
+										lat: item.lat,
+										lng: item.lon
+									}
+								};
+							}));
+
+						}
+					})
+				},
+				minLength: 3,
+				select: function( event, ui ) 
+				{
+					$( '#membermap_add_marker input[name=&quot;marker_lat&quot;]').val( parseFloat( ui.item.latLng.lat ).toFixed(6) );
+					$( '#membermap_add_marker input[name=&quot;marker_lon&quot;]' ).val( parseFloat( ui.item.latLng.lng ).toFixed(6) );
+				}
+			});
+		}
+	});
 }(jQuery, _));</file>
 </javascript>
