@@ -10,7 +10,6 @@
 			oms = null,
 			geocoder = null,
 			defaultMapTypeId = null,
-			activeLayers = null,
 			
 			zoomLevel = null,
 			previousZoomLevel = null,
@@ -292,7 +291,7 @@
 				"Members": mapMarkers,
 			};
 
-			activeLayers = new L.Control.ActiveLayers( baseMaps, overlayMaps, { collapsed: ( isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
+			L.control.layers( baseMaps, overlayMaps, { collapsed: ( isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
 
 			map.on( 'baselayerchange', function( baselayer )
 			{
