@@ -159,10 +159,10 @@
 			var northEast = new L.LatLng( 74.449, 37.466 );
 			bounds = new L.LatLngBounds(southWest, northEast);
 
+			mapServices.esriworldstreetmap = L.tileLayer.provider( 'Esri.WorldStreetMap' );
 			mapServices.thunderforestlandscape = L.tileLayer.provider( 'Thunderforest.Landscape' );
 			mapServices.mapquest = L.tileLayer.provider('MapQuestOpen.OSM');			
 			mapServices.esriworldtopomap = L.tileLayer.provider( 'Esri.WorldTopoMap' );
-			mapServices.nokia = L.tileLayer.provider( 'Nokia.terrainDay' );
 
 			var contextMenu = [];
 
@@ -284,7 +284,7 @@
 				"MapQuest": mapServices.mapquest,
 				"Thunderforest Landscape": mapServices.thunderforestlandscape,
 				'Esri WorldTopoMap': mapServices.esriworldtopomap,
-				'Nokia': mapServices.nokia
+				'Esri World Street Map': mapServices.esriworldstreetmap
 			};
 
 			overlayMaps = {
@@ -295,7 +295,7 @@
 
 			map.on( 'baselayerchange', function( baselayer )
 			{
-				ips.utils.cookie.set( 'membermap_baseMap', baselayer.name );
+				ips.utils.cookie.set( 'membermap_baseMap', baselayer.name.toLowerCase().replace( /\s/g, '' ) );
 			});
 			
 			ips.membermap.map = map;
