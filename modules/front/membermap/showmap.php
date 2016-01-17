@@ -48,6 +48,12 @@ class _showmap extends \IPS\Dispatcher\Controller
 		if ( ! is_file ( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-index.json' ) OR \IPS\Request::i()->rebuildCache === '1' )
 		{
 			\IPS\membermap\Map::i()->recacheJsonFile();
+
+			/* We clicked the tools menu item to force a rebuild */
+			if ( \IPS\Request::i()->isAjax() )
+			{
+				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap', NULL, 'membermap' ) );
+			}
 		}
 
 
@@ -83,7 +89,6 @@ class _showmap extends \IPS\Dispatcher\Controller
 		\IPS\Output::i()->title = \IPS\Member::loggedIn()->language()->addToStack( '__app_membermap' );
 		
 		\IPS\Output::i()->sidebar['enabled'] = FALSE;
-        \IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'map' )->showMap( json_encode( $markers ) );
 
         /* Update session location */
         \IPS\Session::i()->setLocation( \IPS\Http\Url::internal( 'app=membermap', 'front', 'membermap' ), array(), 'loc_membermap_viewing_membermap' );
@@ -108,6 +113,8 @@ class _showmap extends \IPS\Dispatcher\Controller
 			ips.membermap.initMap();
 		</script>
 EOF;
+
+        \IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'map' )->showMap( json_encode( $markers ), $cacheTime );
 	}
 
 	/**

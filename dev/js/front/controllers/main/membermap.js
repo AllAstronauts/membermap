@@ -334,6 +334,12 @@
 				return;
 			}
 
+			if ( ! ips.utils.db.isEnabled() )
+			{
+				$( '#elToolsMenuBrowserCache' ).addClass( 'ipsMenu_itemDisabled' );
+				$( '#elToolsMenuBrowserCache a' ).append( '(Not supported)' );
+			}
+
 			if ( forceReload || ! ips.utils.db.isEnabled() )
 			{
 				allMarkers = [];
@@ -381,6 +387,9 @@
 								var date = new Date();
 								ips.utils.db.set( 'membermap', 'markers', { time: ( date.getTime() / 1000 ), data: allMarkers } );
 								ips.utils.db.set( 'membermap', 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
+
+
+								$( '#elToolsMenuBrowserCache a time' ).html( '(Last update: ' + ips.utils.time.readable( date.getTime() / 1000 ) + ')' );
 							}
 						});
 					}
@@ -418,6 +427,8 @@
 						oldMarkersIndicator = new L.Control.MembermapOldMarkers({ callback: reloadMarkers, time: date });
 						ips.membermap.map.addControl( oldMarkersIndicator );
 					}
+
+					$( '#elToolsMenuBrowserCache a time' ).html( '(Last update: ' + ips.utils.time.readable( date / 1000 ) + ')' );
 				}
 				else
 				{
@@ -732,6 +743,10 @@
 								memberId 	= this.member_id;
 								flyToZoom 	= 10;
 							}
+
+							/* Update tools menu item */
+							$( '#elToolsMenuGoHome' ).removeClass( 'ipsMenu_itemDisabled' );
+							
 						}
 						else
 						{
@@ -995,9 +1010,8 @@ L.Control.MembermapOldMarkers = L.Control.extend({
         var container = L.DomUtil.create('div', 'leaflet-control-layers leaflet-control-layers-expanded leaflet-control-regobs-warning');
 		//container.setOpacity( 1 );
         /* Date */
-        var date = this.options.time.toLocaleString();
 		var info = L.DomUtil.create('p', '', container);
-		info.innerHTML = ips.getString( 'membermap_cached_markers', {date: date} );
+		info.innerHTML = ips.getString( 'membermap_cached_markers', {date: ips.utils.time.localeDateString( this.options.time, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric' } )} );
 		
         var link = L.DomUtil.create('a', 'test', container);
 		link.innerHTML = 'Refresh';

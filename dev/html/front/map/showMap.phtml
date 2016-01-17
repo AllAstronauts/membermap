@@ -1,17 +1,41 @@
-<ips:template parameters="$markers=''" />
+<ips:template parameters="$markers='', $cacheTime=0" />
 {{if request.do != 'embed'}}
 <div class="ipsPageHeader ipsClearfix">
 	<header class='ipsSpacer_bottom'>
 		<h1 class="ipsType_pageTitle">{lang="frontnavigation_membermap"}</h1>
-		{{if \IPS\Member::loggedIn()->group['g_membermap_canAdd'] OR \IPS\Member::loggedIn()->group['g_membermap_canEdit']}}
 		<div class='ipsPos_right ipsResponsive_noFloat'>
 			<ul class="ipsToolList ipsToolList_horizontal ipsClearfix">
+				{{if \IPS\Member::loggedIn()->group['g_membermap_canAdd'] OR \IPS\Member::loggedIn()->group['g_membermap_canEdit']}}
 				<li class='ipsToolList_primaryAction'>
 					<a class="ipsButton ipsButton_medium ipsButton_important ipsButton_fullWidth" href="#" title='' id="membermap_button_addLocation">{lang="membermap_button_addLocation"}</a>
 				</li>
+				{{endif}}
+				<li class='ipsToolList_primaryAction ipsResponsive_hidePhone'>
+					<a href='#elToolsMenu' id='elToolsMenu' data-ipsmenu class='ipsButton ipsButton_normal ipsButton_medium'>
+						 &nbsp;Tools <i class='fa fa-caret-down'></i>
+					</a>
+					<div id='elToolsMenu_menu' class='ipsMenu ipsMenu_auto ipsHide'>
+						<ul>
+							<li class="ipsMenu_item ipsMenu_itemDisabled" id="elToolsMenuGoHome">
+								<a href="{url='app=membermap&goHome=1' seoTemplate='membermap'}">{lang="membermap_goHome"}</a>
+							</li>
+
+							<li class='ipsMenu_sep'><hr></li>
+
+							<li class="ipsMenu_item" id='elToolsMenuBrowserCache'>
+								<a href="{url='app=membermap&dropBrowserCache=1' seoTemplate='membermap'}">{lang="membermap_rebuildBrowserCache"} <time></time></a>
+							</li>
+
+							{{if \IPS\Member::loggedIn()->isAdmin()}}
+							<li class="ipsMenu_item" >
+								<a href="{url='app=membermap&rebuildCache=1' seoTemplate='membermap'}" data-action='ipsMenu_ping'>{lang="membermap_rebuildServerCache" htmlsprintf="\IPS\DateTime::ts( $cacheTime )->html( true, true )"}</a>
+							</li>
+							{{endif}}
+						</ul>
+					</div>
+				</li>
 			</ul>
 		</div>
-		{{endif}}
 	</header>
 </div>
 {{endif}}

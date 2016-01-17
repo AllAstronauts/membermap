@@ -43,5 +43,7 @@ $lang = array(
 	'marker_parent_id' => "Marker Group",
 	'marker_addViaMap' => "Show in map",
 	'marker_addViaMap_button' => "Select location in map",
-
+	'membermap_goHome' => "Go to my location",
+	'membermap_rebuildBrowserCache' => "Rebuild Browser Cache",
+	'membermap_rebuildServerCache' => "Rebuild Server Cache (Last Update: %s)",
 );
