@@ -447,32 +447,6 @@
 					}
 				});
 			}
-
-
-			
-			/* Contextual menu */
-			/* Needs to run this after the markers, as we need to know if we're editing or adding the location */
-			if ( ips.getSetting( 'member_id' ) )
-			{
-				if ( hasLocation && ips.getSetting( 'membermap_canEdit' ) )
-				{
-					map.contextmenu.insertItem(
-					{
-						'text': ips.getString( 'membermap_context_editLocation' ),
-						callback: updateLocation
-					}, 0 );
-					map.contextmenu.insertItem( { separator: true }, 1 );
-				}
-				else if ( ! hasLocation && ips.getSetting( 'membermap_canAdd' ) )
-				{
-					map.contextmenu.insertItem(
-					{
-						'text': ips.getString( 'membermap_context_addLocation' ),
-						callback: updateLocation
-					}, 0 );
-					map.contextmenu.insertItem( { separator: true }, 1 );
-				}
-			}
 			
 
 			
@@ -696,135 +670,159 @@
 			var getByUser 	= ips.utils.url.getParam( 'filter' ) == 'getByUser' ? true : false;
 			var memberId 	= parseInt( ips.utils.url.getParam( 'member_id' ) );
 			var flyToZoom 	= 8;
+			var hasLocation = false;
 
 			if ( markers === false )
 			{
 				markers = allMarkers;
 			}
 
-			if ( markers.length === 0 )
+			if ( markers.length > 0 )
 			{
-				return false;
-			}
 
-			var memberSearch = $( '#elInput_membermap_memberName_wrapper .cToken' ).eq(0).attr( 'data-value' );
+				var memberSearch = $( '#elInput_membermap_memberName_wrapper .cToken' ).eq(0).attr( 'data-value' );
 
-			var hasLocation = false;
 
-			$.each( markers, function() 
-			{		
-				/* Don't show these, as they all end up in the middle of the middle of the South Atlantic Ocean. */
-				if ( this.lat == 0 && this.lon == 0 )
-				{
-					return;
-				}
-
-				/* Report written by selected member? */
-				if ( typeof memberSearch !== 'undefined' )
-				{
-					/* Names of 'null' are deleted members */
-					if (this.name == null || memberSearch.toLowerCase() !== this.name.toLowerCase() )
+				$.each( markers, function() 
+				{		
+					/* Don't show these, as they all end up in the middle of the middle of the South Atlantic Ocean. */
+					if ( this.lat == 0 && this.lon == 0 )
 					{
 						return;
 					}
-				}
-				
-				var bgColour 	= 'darkblue';
-				var icon 		= 'user';
-				var iconColour 	= 'white';
 
-				if ( this.type == 'member' )
-				{
-					if ( this.member_id == ips.getSetting( 'member_id' ) )
+					/* Report written by selected member? */
+					if ( typeof memberSearch !== 'undefined' )
 					{
-						/* This is me! */
-						icon = 'home';
-						bgColour = 'green';
-
-						/* Update the button label while we're here */
-						if ( ips.getSetting( 'membermap_canEdit' ) )
+						/* Names of 'null' are deleted members */
+						if (this.name == null || memberSearch.toLowerCase() !== this.name.toLowerCase() )
 						{
-							$( '#membermap_button_addLocation' ).html( ips.getString( 'membermap_button_editLocation' ) );
+							return;
+						}
+					}
+					
+					var bgColour 	= 'darkblue';
+					var icon 		= 'user';
+					var iconColour 	= 'white';
+
+					if ( this.type == 'member' )
+					{
+						if ( this.member_id == ips.getSetting( 'member_id' ) )
+						{
+							/* This is me! */
+							icon = 'home';
+							bgColour = 'green';
+
+							/* Update the button label while we're here */
+							if ( ips.getSetting( 'membermap_canEdit' ) )
+							{
+								$( '#membermap_button_addLocation' ).html( ips.getString( 'membermap_button_editLocation' ) );
+							}
+							else
+							{
+								/* You don't have permission to update your location. Might as well remove the button */
+								$( '#membermap_button_addLocation' ).remove();
+							}
+
+							hasLocation = true;
+
+							if ( ips.utils.url.getParam( 'goHome' ) == 1 )
+							{
+								getByUser 	= true;
+								memberId 	= this.member_id;
+								flyToZoom 	= 10;
+							}
 						}
 						else
 						{
-							/* You don't have permission to update your location. Might as well remove the button */
-							$( '#membermap_button_addLocation' ).remove();
-						}
-
-						hasLocation = true;
-
-						if ( ips.utils.url.getParam( 'goHome' ) == 1 )
-						{
-							getByUser 	= true;
-							memberId 	= this.member_id;
-							flyToZoom 	= 10;
+							if ( this.markerColour )
+							{
+								bgColour = this.markerColour;
+							}
 						}
 					}
 					else
 					{
-						if ( this.markerColour )
-						{
-							bgColour = this.markerColour;
+						iconColour 	= this.colour;
+						icon 		= this.icon || 'fa-map-marker';
+						bgColour 	= this.bgColour;
+
+					}
+
+					var icon = L.AwesomeMarkers.icon({
+						prefix: 'fa',
+						icon: icon, 
+						markerColor: bgColour,
+						iconColor: iconColour
+					});
+
+					var spiderifiedIcon = L.AwesomeMarkers.icon({
+						prefix: 'fa',
+						icon: 'users', 
+						markerColor: bgColour,
+						iconColor: iconColour
+					});
+					
+
+					var contextMenu = [];
+					var enableContextMenu = false;
+
+					if ( ips.getSetting( 'is_supmod' ) ||  ( ips.getSetting( 'member_id' ) == this.member_id && ips.getSetting( 'membermap_canDelete' ) ) )
+					{
+						enableContextMenu = true;
+						contextMenu = getMarkerContextMenu( this );
+					}
+					
+					var mapMarker = new L.Marker( 
+						[ this.lat, this.lon ], 
+						{ 
+							title: this.title,
+							icon: icon,
+							spiderifiedIcon: spiderifiedIcon,
+							defaultIcon: icon,
+							contextmenu: enableContextMenu,
+						    contextmenuItems: contextMenu
 						}
+					);
+					
+					mapMarker.markerData = this;
+
+					oms.addMarker( mapMarker );
+					mapMarkers.addLayer( mapMarker );
+
+					if ( getByUser && memberId > 0 && this.type == 'member' && this.member_id == memberId )
+					{
+						dontRepan = true;
+						map.flyTo( mapMarker.getLatLng(), flyToZoom );
 					}
-				}
-				else
-				{
-					iconColour 	= this.colour;
-					icon 		= this.icon || 'fa-map-marker';
-					bgColour 	= this.bgColour;
-
-				}
-
-				var icon = L.AwesomeMarkers.icon({
-					prefix: 'fa',
-					icon: icon, 
-					markerColor: bgColour,
-					iconColor: iconColour
 				});
+			}
 
-				var spiderifiedIcon = L.AwesomeMarkers.icon({
-					prefix: 'fa',
-					icon: 'users', 
-					markerColor: bgColour,
-					iconColor: iconColour
-				});
-				
 
-				var contextMenu = [];
-				var enableContextMenu = false;
-
-				if ( ips.getSetting( 'is_supmod' ) ||  ( ips.getSetting( 'member_id' ) == this.member_id && ips.getSetting( 'membermap_canDelete' ) ) )
+			/* Contextual menu */
+			/* Needs to run this after the markers, as we need to know if we're editing or adding the location */
+			if ( ips.getSetting( 'member_id' ) )
+			{
+				if ( hasLocation && ips.getSetting( 'membermap_canEdit' ) )
 				{
-					enableContextMenu = true;
-					contextMenu = getMarkerContextMenu( this );
+					map.contextmenu.insertItem(
+					{
+						'text': ips.getString( 'membermap_context_editLocation' ),
+						callback: updateLocation
+					}, 0 );
+					map.contextmenu.insertItem( { separator: true }, 1 );
 				}
-				
-				var mapMarker = new L.Marker( 
-					[ this.lat, this.lon ], 
-					{ 
-						title: this.title,
-						icon: icon,
-						spiderifiedIcon: spiderifiedIcon,
-						defaultIcon: icon,
-						contextmenu: enableContextMenu,
-					    contextmenuItems: contextMenu
-					}
-				);
-				
-				mapMarker.markerData = this;
-
-				oms.addMarker( mapMarker );
-				mapMarkers.addLayer( mapMarker );
-
-				if ( getByUser && memberId > 0 && this.type == 'member' && this.member_id == memberId )
+				else if ( ! hasLocation && ips.getSetting( 'membermap_canAdd' ) )
 				{
-					dontRepan = true;
-					Debug.log( mapMarker );
-					map.flyTo( mapMarker.getLatLng(), flyToZoom );
+					map.contextmenu.insertItem(
+					{
+						'text': ips.getString( 'membermap_context_addLocation' ),
+						callback: updateLocation
+					}, 0 );
+					map.contextmenu.insertItem( { separator: true }, 1 );
 				}
-			});
+			}
+
 
 			/* We don't want to move the map around if we're changing filters or reloading markers */
 			if ( dontRepan === false )
@@ -999,7 +997,7 @@ L.Control.MembermapOldMarkers = L.Control.extend({
         /* Date */
         var date = this.options.time.toLocaleString();
 		var info = L.DomUtil.create('p', '', container);
-		info.innerHTML = 'Showing cached markers<br /> from ' + date;
+		info.innerHTML = ips.getString( 'membermap_cached_markers', {date: date} );
 		
         var link = L.DomUtil.create('a', 'test', container);
 		link.innerHTML = 'Refresh';
