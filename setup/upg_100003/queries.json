@@ -38,5 +38,19 @@
                 "binary": false
             }
         ]
+    },
+    "3": {
+        "method": "update",
+        "params": [
+            "core_applications",
+            {
+                "app_update_last_check": 0,
+                "app_update_version": null
+            },
+            [
+                "app_directory=?",
+                "membermap"
+            ]
+        ]
     }
 }
