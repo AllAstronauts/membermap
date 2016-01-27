@@ -583,6 +583,11 @@
 					$( '#membermap_form_location input[name="lat"]' ).val( position.coords.latitude );
 					$( '#membermap_form_location input[name="lng"]' ).val( position.coords.longitude );
 
+					$( '#membermap_form_location' ).submit();
+					return;
+
+					/* Skip this for now, will have to see how many requests this app consumes per month */
+
 					ips.getAjax()({ 
 						url: 'http://www.mapquestapi.com/geocoding/v1/reverse', 
 						type: 'get',

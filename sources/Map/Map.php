@@ -70,8 +70,7 @@ class _Map
 			'member_id'			=> $data['member_id'],
 			'lat'				=> $this->_floatVal( $lat ),
 			'lon'				=> $this->_floatVal( $lng ),
-			'marker_date'		=> time(),
-			'marker_location' 	=> $data['membermap_location'],
+			'marker_date'		=> time()
 		);
 
 		
