@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <theme name="Default" author_name="Invision Power Services, Inc" author_url="http://www.invisionpower.com">
- <template template_group="map" template_name="addLocation" template_data="$form1, $form2" template_location="front" template_app="membermap"><![CDATA[<div class='ipsColumns ipsColumns_bothSpacing ipsColumns_halfSpacing'>
+ <template template_group="map" template_name="addLocation" template_data="$form1, $form2" template_location="front" template_app="membermap"><![CDATA[<div class='ipsMessage ipsMessage_error' style='display: none' id='membermap_addLocation_error'></div>
+<div class='ipsColumns ipsColumns_bothSpacing ipsColumns_halfSpacing'>
 	<div id='membermap_geolocation_wrapper' class='ipsColumn ipsColumn_medium'>{$form1|raw}</div>
 	<div class='ipsColumn ipsColumn_medium'>{$form2|raw}</div>
 </div>]]></template>
@@ -17,19 +18,43 @@
 		<span><a href='{url="app=tripreport&filter=getByUser&member_id={$member->member_id}" seoTemplate="membermap"}'>{lang="membermap_view_fullsize"}</a></small>
 	</div>
 </div>]]></template>
- <template template_group="map" template_name="showMap" template_data="$markers=''" template_location="front" template_app="membermap"><![CDATA[{{if request.do != 'embed'}}
+ <template template_group="map" template_name="showMap" template_data="$markers='', $cacheTime=0" template_location="front" template_app="membermap"><![CDATA[{{if request.do != 'embed'}}
 <div class="ipsPageHeader ipsClearfix">
 	<header class='ipsSpacer_bottom'>
 		<h1 class="ipsType_pageTitle">{lang="frontnavigation_membermap"}</h1>
-		{{if \IPS\Member::loggedIn()->group['g_membermap_canAdd'] OR \IPS\Member::loggedIn()->group['g_membermap_canEdit']}}
 		<div class='ipsPos_right ipsResponsive_noFloat'>
 			<ul class="ipsToolList ipsToolList_horizontal ipsClearfix">
+				{{if \IPS\Member::loggedIn()->group['g_membermap_canAdd'] OR \IPS\Member::loggedIn()->group['g_membermap_canEdit']}}
 				<li class='ipsToolList_primaryAction'>
 					<a class="ipsButton ipsButton_medium ipsButton_important ipsButton_fullWidth" href="#" title='' id="membermap_button_addLocation">{lang="membermap_button_addLocation"}</a>
 				</li>
+				{{endif}}
+				<li class='ipsToolList_primaryAction ipsResponsive_hidePhone'>
+					<a href='#elToolsMenu' id='elToolsMenu' data-ipsmenu class='ipsButton ipsButton_normal ipsButton_medium'>
+						 &nbsp;Tools <i class='fa fa-caret-down'></i>
+					</a>
+					<div id='elToolsMenu_menu' class='ipsMenu ipsMenu_auto ipsHide'>
+						<ul>
+							<li class="ipsMenu_item ipsMenu_itemDisabled" id="elToolsMenuGoHome">
+								<a href="{url='app=membermap&goHome=1' seoTemplate='membermap'}">{lang="membermap_goHome"}</a>
+							</li>
+
+							<li class='ipsMenu_sep'><hr></li>
+
+							<li class="ipsMenu_item" id='elToolsMenuBrowserCache'>
+								<a href="{url='app=membermap&dropBrowserCache=1' seoTemplate='membermap'}">{lang="membermap_rebuildBrowserCache"} <time></time></a>
+							</li>
+
+							{{if \IPS\Member::loggedIn()->isAdmin()}}
+							<li class="ipsMenu_item" >
+								<a href="{url='app=membermap&rebuildCache=1' seoTemplate='membermap'}" data-action='ipsMenu_ping'>{lang="membermap_rebuildServerCache" htmlsprintf="\IPS\DateTime::ts( $cacheTime )->html( true, true )"}</a>
+							</li>
+							{{endif}}
+						</ul>
+					</div>
+				</li>
 			</ul>
 		</div>
-		{{endif}}
 	</header>
 </div>
 {{endif}}

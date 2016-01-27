@@ -131,7 +131,7 @@
 						that.marker.setLatLng( new L.LatLng( parseFloat( $( '#membermap_add_marker input[name="marker_lat"]' ).val() ), parseFloat( $( '#membermap_add_marker input[name="marker_lon"]' ).val() ) ) );
 						that.marker.setOpacity( 1 );
 
-						that.infowindow.setContent( $( '#elInput_marker_location' ).val() + '<br />' );
+						that.infowindow.setContent( $( '#elInput_marker_name' ).val() + '<br />' + $( '#elInput_marker_location' ).val() );
 
 						that.marker.openPopup();
 					
@@ -171,15 +171,15 @@
 			this.bounds = new L.LatLngBounds(southWest, northEast);
 
 			var mapServices = {};
+			mapServices.esriworldstreetmap = L.tileLayer.provider( 'Esri.WorldStreetMap' );
 			mapServices.thunderforestlandscape = L.tileLayer.provider( 'Thunderforest.Landscape' );
 			mapServices.mapquest = L.tileLayer.provider('MapQuestOpen.OSM');			
 			mapServices.esriworldtopomap = L.tileLayer.provider( 'Esri.WorldTopoMap' );
-			mapServices.nokia = L.tileLayer.provider( 'Nokia.terrainDay' );
 
 			this.map = L.map( 'mapCanvas', 
 			{
 				zoom: 7,
-				layers: [ mapServices.nokia ],
+				layers: [ mapServices.mapquest ],
 				attributionControl: true,
 				crs: L.CRS.EPSG3857
 			});
@@ -189,10 +189,10 @@
 
 			
 			var baseMaps = {
-				'Nokia': mapServices.nokia,
 				"MapQuest": mapServices.mapquest,
 				"Thunderforest Landscape": mapServices.thunderforestlandscape,
-				'Esri WorldTopoMap': mapServices.esriworldtopomap
+				'Esri WorldTopoMap': mapServices.esriworldtopomap,
+				'Esri World Street Map': mapServices.esriworldstreetmap
 			};
 
 			L.control.layers( baseMaps ).addTo( this.map );

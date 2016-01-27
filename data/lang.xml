@@ -39,6 +39,9 @@
   <word key="marker_parent_id" js="0">Marker Group</word>
   <word key="marker_addViaMap" js="0">Show in map</word>
   <word key="marker_addViaMap_button" js="0">Select location in map</word>
+  <word key="membermap_goHome" js="0">Go to my location</word>
+  <word key="membermap_rebuildBrowserCache" js="0">Rebuild Browser Cache</word>
+  <word key="membermap_rebuildServerCache" js="0">Rebuild Server Cache (Last Update: %s)</word>
   <word key="membermap_button_editLocation" js="1">Update Location</word>
   <word key="membermap_location_title" js="1">Update Location</word>
   <word key="membermap_no_results" js="1">Couldn't find what you were looking for. Showing all members instead.</word>
@@ -48,6 +51,8 @@
   <word key="membermap_context_addLocation" js="1">Add Location</word>
   <word key="membermap_context_editLocation" js="1">Edit Location</word>
   <word key="membermap_confirm_updateLocation" js="1">Are you sure you want to add/update your location to this position?</word>
+  <word key="memebermap_geolocation_error" js="1">We were unable to find your location automatically. Please use the search field below.</word>
+  <word key="membermap_cached_markers" js="1"><![CDATA[Showing cached markers<br /> from {{date}}]]></word>
   <word key="marker_addViaMap" js="1">Select location in map</word>
  </app>
 </language>
