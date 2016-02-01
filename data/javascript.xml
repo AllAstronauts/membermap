@@ -1237,7 +1237,7 @@ L.Control.MembermapOldMarkers = L.Control.extend({
 						that.marker.setLatLng( new L.LatLng( parseFloat( $( '#membermap_add_marker input[name="marker_lat"]' ).val() ), parseFloat( $( '#membermap_add_marker input[name="marker_lon"]' ).val() ) ) );
 						that.marker.setOpacity( 1 );
 
-						that.infowindow.setContent( $( '#elInput_marker_location' ).val() + '<br />' );
+						that.infowindow.setContent( $( '#elInput_marker_name' ).val() + '<br />' + $( '#elInput_marker_location' ).val() );
 
 						that.marker.openPopup();
 					
