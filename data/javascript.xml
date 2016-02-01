@@ -1068,41 +1068,41 @@ L.Control.MembermapOldMarkers = L.Control.extend({
         return container;
     }
 });]]></file>
- <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.groupform.js" javascript_type="controller" javascript_version="100003" javascript_position="1000050">;( function($, _, undefined){
-	&quot;use strict&quot;;
-
-	ips.controller.register('membermap.admin.membermap.groupform', {
-
-		initialize: function () {
-			this.monitorColourPickers();
-		},
-
-		monitorColourPickers: function()
-		{
-			var self		= this;
-			var icon 		= $( 'input[name=&quot;group_pin_icon&quot;]' ).eq(0);
-			var iconColour 	= $( 'input[name=&quot;group_pin_colour&quot;]' ).eq(0);
-			var bgColour 	= $( 'input[name=&quot;group_pin_bg_colour&quot;]' );
-
-
-			bgColour.on('change', function()
-			{
-				var colour = $( 'input[name=&quot;group_pin_bg_colour&quot;]:checked' ).val();
-				$( '#markerExample' ).removeClass().addClass( 'awesome-marker awesome-marker-icon-' + colour )
-			});
-
-			iconColour.on('change', function()
-			{
-				$('#markerExample i').css({ 'color': '#' + iconColour.val() });
-			});
-
-			icon.on('change', function()
-			{
-				$('#markerExample i').removeClass().addClass( 'fa fa-fw' ).addClass( icon.val() );
-			});
-
-		}
-	});
+ <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.groupform.js" javascript_type="controller" javascript_version="100003" javascript_position="1000050">;( function($, _, undefined){&#13;
+	&quot;use strict&quot;;&#13;
+&#13;
+	ips.controller.register('membermap.admin.membermap.groupform', {&#13;
+&#13;
+		initialize: function () {&#13;
+			this.monitorColourPickers();&#13;
+		},&#13;
+&#13;
+		monitorColourPickers: function()&#13;
+		{&#13;
+			var self		= this;&#13;
+			var icon 		= $( 'input[name=&quot;group_pin_icon&quot;]' ).eq(0);&#13;
+			var iconColour 	= $( 'input[name=&quot;group_pin_colour&quot;]' ).eq(0);&#13;
+			var bgColour 	= $( 'input[name=&quot;group_pin_bg_colour&quot;]' );&#13;
+&#13;
+&#13;
+			bgColour.on('change', function()&#13;
+			{&#13;
+				var colour = $( 'input[name=&quot;group_pin_bg_colour&quot;]:checked' ).val();&#13;
+				$( '#markerExample' ).removeClass().addClass( 'awesome-marker awesome-marker-icon-' + colour )&#13;
+			});&#13;
+&#13;
+			iconColour.on('change', function()&#13;
+			{&#13;
+				$('#markerExample i').css({ 'color': '#' + iconColour.val() });&#13;
+			});&#13;
+&#13;
+			icon.on('change', function()&#13;
+			{&#13;
+				$('#markerExample i').removeClass().addClass( 'fa fa-fw' ).addClass( icon.val() );&#13;
+			});&#13;
+&#13;
+		}&#13;
+	});&#13;
 }(jQuery, _));</file>
  <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.markerform.js" javascript_type="controller" javascript_version="100003" javascript_position="1000050"><![CDATA[;( function($, _, undefined){
 	"use strict";

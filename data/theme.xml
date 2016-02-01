@@ -68,8 +68,8 @@
 </section>
 
 <div id='mapMarkers' class='ipsHide'>{$markers|raw}</div>]]></template>
- <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="Control.FullScreen.css">.leaflet-control-zoom-fullscreen { background-image: url( {resource=&quot;icon-fullscreen.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;} ); }
-.leaflet-container:-webkit-full-screen { width: 100% !important; height: 100% !important; z-index: 99999; }
+ <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="Control.FullScreen.css">.leaflet-control-zoom-fullscreen { background-image: url( {resource=&quot;icon-fullscreen.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;} ); }&#13;
+.leaflet-container:-webkit-full-screen { width: 100% !important; height: 100% !important; z-index: 99999; }&#13;
 .leaflet-pseudo-fullscreen { position: fixed !important; width: 100% !important; height: 100% !important; top: 0px !important; left: 0px !important; z-index: 99999; }</css>
  <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="Control.Loading.css"><![CDATA[.leaflet-control-loading {
     /* This is where your loading indicator would go */
@@ -792,182 +792,182 @@
 	border-radius: 8px;
 }
 ]]></css>
- <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="leaflet.awesome-markers.css">/*
-Author: L. Voogdt
-License: MIT
-Version: 1.0
-*/
-
-/* Marker setup */
-.awesome-marker {
-  background: url({resource=&quot;markers-soft.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;}) no-repeat 0 0;
-  width: 35px;
-  height: 46px;
-  position:absolute;
-  left:0;
-  top:0;
-  display: block;
-  text-align: center;
-}
-
-.awesome-marker-shadow {
-  background: url({resource=&quot;markers-shadow.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;}) no-repeat 0 0;
-  width: 36px;
-  height: 16px;
-}
-
-/* Retina displays */
-@media (min--moz-device-pixel-ratio: 1.5),(-o-min-device-pixel-ratio: 3/2),
-(-webkit-min-device-pixel-ratio: 1.5),(min-device-pixel-ratio: 1.5),(min-resolution: 1.5dppx) {
- .awesome-marker {
-  background-image: url({resource=&quot;markers-soft@2x.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;});
-  background-size: 720px 46px;
- }
- .awesome-marker-shadow {
-  background-image: url({resource=&quot;markers-shadow@2x.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;});
-  background-size: 35px 16px;
- }
-}
-
-.awesome-marker i {
-  color: #333;
-  margin-top: 5px;
-  display: inline-block;
-  font-size: 25px;
-}
-
-.awesome-marker .icon-white {
-  color: #fff;
-}
-
-/* Colors */
-.awesome-marker-icon-red {
-  background-position: 0 0;
-}
-
-.awesome-marker-icon-darkred {
-  background-position: -180px 0;
-}
-
-.awesome-marker-icon-lightred {
-  background-position: -360px 0;
-}
-
-.awesome-marker-icon-orange {
-  background-position: -36px 0;
-}
-
-.awesome-marker-icon-beige {
-  background-position: -396px 0;
-}
-
-.awesome-marker-icon-green {
-  background-position: -72px 0;
-}
-
-.awesome-marker-icon-darkgreen {
-  background-position: -252px 0;
-}
-
-.awesome-marker-icon-lightgreen {
-  background-position: -432px 0;
-}
-
-.awesome-marker-icon-blue {
-  background-position: -108px 0;
-}
-
-.awesome-marker-icon-darkblue {
-  background-position: -216px 0;
-}
-
-.awesome-marker-icon-lightblue {
-  background-position: -468px 0;
-}
-
-.awesome-marker-icon-purple {
-  background-position: -144px 0;
-}
-
-.awesome-marker-icon-darkpurple {
-  background-position: -288px 0;
-}
-
-.awesome-marker-icon-pink {
-  background-position: -504px 0;
-}
-
-.awesome-marker-icon-cadetblue {
-  background-position: -324px 0;
-}
-
-.awesome-marker-icon-white {
-  background-position: -574px 0;
-}
-
-.awesome-marker-icon-gray {
-  background-position: -648px 0;
-}
-
-.awesome-marker-icon-lightgray {
-  background-position: -612px 0;
-}
-
-.awesome-marker-icon-black {
-  background-position: -682px 0;
+ <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="leaflet.awesome-markers.css">/*&#13;
+Author: L. Voogdt&#13;
+License: MIT&#13;
+Version: 1.0&#13;
+*/&#13;
+&#13;
+/* Marker setup */&#13;
+.awesome-marker {&#13;
+  background: url({resource=&quot;markers-soft.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;}) no-repeat 0 0;&#13;
+  width: 35px;&#13;
+  height: 46px;&#13;
+  position:absolute;&#13;
+  left:0;&#13;
+  top:0;&#13;
+  display: block;&#13;
+  text-align: center;&#13;
+}&#13;
+&#13;
+.awesome-marker-shadow {&#13;
+  background: url({resource=&quot;markers-shadow.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;}) no-repeat 0 0;&#13;
+  width: 36px;&#13;
+  height: 16px;&#13;
+}&#13;
+&#13;
+/* Retina displays */&#13;
+@media (min--moz-device-pixel-ratio: 1.5),(-o-min-device-pixel-ratio: 3/2),&#13;
+(-webkit-min-device-pixel-ratio: 1.5),(min-device-pixel-ratio: 1.5),(min-resolution: 1.5dppx) {&#13;
+ .awesome-marker {&#13;
+  background-image: url({resource=&quot;markers-soft@2x.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;});&#13;
+  background-size: 720px 46px;&#13;
+ }&#13;
+ .awesome-marker-shadow {&#13;
+  background-image: url({resource=&quot;markers-shadow@2x.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;});&#13;
+  background-size: 35px 16px;&#13;
+ }&#13;
+}&#13;
+&#13;
+.awesome-marker i {&#13;
+  color: #333;&#13;
+  margin-top: 5px;&#13;
+  display: inline-block;&#13;
+  font-size: 25px;&#13;
+}&#13;
+&#13;
+.awesome-marker .icon-white {&#13;
+  color: #fff;&#13;
+}&#13;
+&#13;
+/* Colors */&#13;
+.awesome-marker-icon-red {&#13;
+  background-position: 0 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-darkred {&#13;
+  background-position: -180px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-lightred {&#13;
+  background-position: -360px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-orange {&#13;
+  background-position: -36px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-beige {&#13;
+  background-position: -396px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-green {&#13;
+  background-position: -72px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-darkgreen {&#13;
+  background-position: -252px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-lightgreen {&#13;
+  background-position: -432px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-blue {&#13;
+  background-position: -108px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-darkblue {&#13;
+  background-position: -216px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-lightblue {&#13;
+  background-position: -468px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-purple {&#13;
+  background-position: -144px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-darkpurple {&#13;
+  background-position: -288px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-pink {&#13;
+  background-position: -504px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-cadetblue {&#13;
+  background-position: -324px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-white {&#13;
+  background-position: -574px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-gray {&#13;
+  background-position: -648px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-lightgray {&#13;
+  background-position: -612px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-black {&#13;
+  background-position: -682px 0;&#13;
 }</css>
- <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="leaflet.contextmenu.css">.leaflet-contextmenu {
-    display: none;
-	box-shadow: 0 1px 7px rgba(0,0,0,0.4);
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
-    padding: 4px 0;
-    background-color: #fff;
-    cursor: default;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	user-select: none;
-}
-
-.leaflet-contextmenu a.leaflet-contextmenu-item {
-    display: block;
-    color: #222;
-    font-size: 12px;
-    line-height: 20px;
-    text-decoration: none;
-    padding: 0 12px;
-    border-top: 1px solid transparent;
-    border-bottom: 1px solid transparent;
-    cursor: default;
-}
-
-.leaflet-contextmenu a.leaflet-contextmenu-item-disabled {
-    opacity: 0.5;
-}
-
-.leaflet-contextmenu a.leaflet-contextmenu-item:hover {
-    background-color: #f4f4f4;
-    border-top: 1px solid #f0f0f0;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.leaflet-contextmenu a.leaflet-contextmenu-item-disabled:hover {
-    background-color: inherit;
-    border-top: 1px solid transparent;
-    border-bottom: 1px solid transparent;
-}
-
-.leaflet-contextmenu-icon {
-    margin: 2px 8px 0 0;
-    width: 16px;
-    height: 16px;
-    float: left;
-    border: 0;
-}
-
-.leaflet-contextmenu-separator {
-    border-bottom: 1px solid #ccc;
-    margin: 5px 0;
+ <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="leaflet.contextmenu.css">.leaflet-contextmenu {&#13;
+    display: none;&#13;
+	box-shadow: 0 1px 7px rgba(0,0,0,0.4);&#13;
+	-webkit-border-radius: 4px;&#13;
+	border-radius: 4px;&#13;
+    padding: 4px 0;&#13;
+    background-color: #fff;&#13;
+    cursor: default;&#13;
+	-webkit-user-select: none;&#13;
+	-moz-user-select: none;&#13;
+	user-select: none;&#13;
+}&#13;
+&#13;
+.leaflet-contextmenu a.leaflet-contextmenu-item {&#13;
+    display: block;&#13;
+    color: #222;&#13;
+    font-size: 12px;&#13;
+    line-height: 20px;&#13;
+    text-decoration: none;&#13;
+    padding: 0 12px;&#13;
+    border-top: 1px solid transparent;&#13;
+    border-bottom: 1px solid transparent;&#13;
+    cursor: default;&#13;
+}&#13;
+&#13;
+.leaflet-contextmenu a.leaflet-contextmenu-item-disabled {&#13;
+    opacity: 0.5;&#13;
+}&#13;
+&#13;
+.leaflet-contextmenu a.leaflet-contextmenu-item:hover {&#13;
+    background-color: #f4f4f4;&#13;
+    border-top: 1px solid #f0f0f0;&#13;
+    border-bottom: 1px solid #f0f0f0;&#13;
+}&#13;
+&#13;
+.leaflet-contextmenu a.leaflet-contextmenu-item-disabled:hover {&#13;
+    background-color: inherit;&#13;
+    border-top: 1px solid transparent;&#13;
+    border-bottom: 1px solid transparent;&#13;
+}&#13;
+&#13;
+.leaflet-contextmenu-icon {&#13;
+    margin: 2px 8px 0 0;&#13;
+    width: 16px;&#13;
+    height: 16px;&#13;
+    float: left;&#13;
+    border: 0;&#13;
+}&#13;
+&#13;
+.leaflet-contextmenu-separator {&#13;
+    border-bottom: 1px solid #ccc;&#13;
+    margin: 5px 0;&#13;
 }</css>
  <css css_location="global" css_app="membermap" css_attributes="" css_path="." css_name="leaflet.css">/* required styles */&#13;
 &#13;
@@ -1479,239 +1479,239 @@ Version: 1.0
 	border: 1px solid #666;&#13;
 	}&#13;
 </css>
- <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="MarkerCluster.css">.leaflet-cluster-anim .leaflet-marker-icon, .leaflet-cluster-anim .leaflet-marker-shadow {
-	-webkit-transition: -webkit-transform 0.2s ease-out, opacity 0.2s ease-in;
-	-moz-transition: -moz-transform 0.2s ease-out, opacity 0.2s ease-in;
-	-o-transition: -o-transform 0.2s ease-out, opacity 0.2s ease-in;
-	transition: transform 0.2s ease-out, opacity 0.2s ease-in;
-	}
-
-
-.marker-cluster-small {
-	background-color: rgba(181, 226, 140, 0.6);
-	}
-.marker-cluster-small div {
-	background-color: rgba(110, 204, 57, 0.6);
-	}
-
-.marker-cluster-medium {
-	background-color: rgba(241, 211, 87, 0.6);
-	}
-.marker-cluster-medium div {
-	background-color: rgba(240, 194, 12, 0.6);
-	}
-
-.marker-cluster-large {
-	background-color: rgba(253, 156, 115, 0.6);
-	}
-.marker-cluster-large div {
-	background-color: rgba(241, 128, 23, 0.6);
-	}
-
-.marker-cluster {
-	background-clip: padding-box;
-	border-radius: 20px;
-	}
-.marker-cluster div {
-	width: 30px;
-	height: 30px;
-	margin-left: 5px;
-	margin-top: 5px;
-
-	text-align: center;
-	border-radius: 15px;
-	font: 12px &quot;Helvetica Neue&quot;, Arial, Helvetica, sans-serif;
-	}
-.marker-cluster span {
-	line-height: 30px;
+ <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="MarkerCluster.css">.leaflet-cluster-anim .leaflet-marker-icon, .leaflet-cluster-anim .leaflet-marker-shadow {&#13;
+	-webkit-transition: -webkit-transform 0.2s ease-out, opacity 0.2s ease-in;&#13;
+	-moz-transition: -moz-transform 0.2s ease-out, opacity 0.2s ease-in;&#13;
+	-o-transition: -o-transform 0.2s ease-out, opacity 0.2s ease-in;&#13;
+	transition: transform 0.2s ease-out, opacity 0.2s ease-in;&#13;
+	}&#13;
+&#13;
+&#13;
+.marker-cluster-small {&#13;
+	background-color: rgba(181, 226, 140, 0.6);&#13;
+	}&#13;
+.marker-cluster-small div {&#13;
+	background-color: rgba(110, 204, 57, 0.6);&#13;
+	}&#13;
+&#13;
+.marker-cluster-medium {&#13;
+	background-color: rgba(241, 211, 87, 0.6);&#13;
+	}&#13;
+.marker-cluster-medium div {&#13;
+	background-color: rgba(240, 194, 12, 0.6);&#13;
+	}&#13;
+&#13;
+.marker-cluster-large {&#13;
+	background-color: rgba(253, 156, 115, 0.6);&#13;
+	}&#13;
+.marker-cluster-large div {&#13;
+	background-color: rgba(241, 128, 23, 0.6);&#13;
+	}&#13;
+&#13;
+.marker-cluster {&#13;
+	background-clip: padding-box;&#13;
+	border-radius: 20px;&#13;
+	}&#13;
+.marker-cluster div {&#13;
+	width: 30px;&#13;
+	height: 30px;&#13;
+	margin-left: 5px;&#13;
+	margin-top: 5px;&#13;
+&#13;
+	text-align: center;&#13;
+	border-radius: 15px;&#13;
+	font: 12px &quot;Helvetica Neue&quot;, Arial, Helvetica, sans-serif;&#13;
+	}&#13;
+.marker-cluster span {&#13;
+	line-height: 30px;&#13;
 	}</css>
- <css css_location="admin" css_app="membermap" css_attributes="" css_path="." css_name="membermap.css">#mapWrapper {
-  position: relative;
-  overflow: hidden;
-  min-height: 300px;
-}
-
-  #mapWrapper img {
-    max-width: none;
-  }
- 
-#mapCanvas {
-  width: 100%;
-  height: 100%;
-  min-height: 300px;  
-}
-
-span.marker:after
-{
-    border-color: blue transparent;
-	border-top-color: inherit;
-    border-image: none;
-    border-style: solid;
-    border-width: 15px 15px 0px 0px;
-    content: &quot;&quot;;
-    display: block;
-   /* left: 0px;*/
-    position: absolute;
-  	top: 30px;
-	opacity: 0.6;
-    width: 0;
-}
-
-span.marker
-{
-	width: 30px;
-	height: 30px;
-	background-color: darkblue;
-	border-top-color: darkblue;
-	position: relative;
-	line-height: 30px;
-	display: inline-block;
-}
-
-span.marker .fa
-{
-	width: 30px;
-	text-align: center;
-	line-height: 30px;
-	color: #FFF;
-	font-size: 19px;
-}
-
-span.marker:hover
-{
-	background-color: #333 !important;
-	cursor: pointer;
-}
-
-span.marker:hover .fa
-{
-	color: #FFFFFF !important;
-}
-
-#contrastWarning {
-	display:none; 
-}
-
-/*
-Author: L. Voogdt
-License: MIT
-Version: 1.0
-*/
-
-/* Marker setup */
-.awesome-marker {
-  background: url({resource=&quot;markers-soft.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;}) no-repeat 0 0;
-  width: 35px;
-  height: 46px;
-  display: block;
-  text-align: center;
-}
-
-.awesome-marker-shadow {
-  background: url({resource=&quot;markers-shadow.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;}) no-repeat 0 0;
-  width: 36px;
-  height: 16px;
-}
-
-/* Retina displays */
-@media (min--moz-device-pixel-ratio: 1.5),(-o-min-device-pixel-ratio: 3/2),
-(-webkit-min-device-pixel-ratio: 1.5),(min-device-pixel-ratio: 1.5),(min-resolution: 1.5dppx) {
- .awesome-marker {
-  background-image: url({resource=&quot;markers-soft@2x.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;});
-  background-size: 720px 46px;
- }
- .awesome-marker-shadow {
-  background-image: url({resource=&quot;markers-shadow@2x.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;});
-  background-size: 35px 16px;
- }
-}
-
-.awesome-marker i {
-  color: #333;
-  margin-top: 5px;
-  display: inline-block;
-  font-size: 25px;
-}
-
-.awesome-marker .icon-white {
-  color: #fff;
-}
-
-/* Colors */
-.awesome-marker-icon-red {
-  background-position: 0 0;
-}
-
-.awesome-marker-icon-darkred {
-  background-position: -180px 0;
-}
-
-.awesome-marker-icon-lightred {
-  background-position: -360px 0;
-}
-
-.awesome-marker-icon-orange {
-  background-position: -36px 0;
-}
-
-.awesome-marker-icon-beige {
-  background-position: -396px 0;
-}
-
-.awesome-marker-icon-green {
-  background-position: -72px 0;
-}
-
-.awesome-marker-icon-darkgreen {
-  background-position: -252px 0;
-}
-
-.awesome-marker-icon-lightgreen {
-  background-position: -432px 0;
-}
-
-.awesome-marker-icon-blue {
-  background-position: -108px 0;
-}
-
-.awesome-marker-icon-darkblue {
-  background-position: -216px 0;
-}
-
-.awesome-marker-icon-lightblue {
-  background-position: -468px 0;
-}
-
-.awesome-marker-icon-purple {
-  background-position: -144px 0;
-}
-
-.awesome-marker-icon-darkpurple {
-  background-position: -288px 0;
-}
-
-.awesome-marker-icon-pink {
-  background-position: -504px 0;
-}
-
-.awesome-marker-icon-cadetblue {
-  background-position: -324px 0;
-}
-
-.awesome-marker-icon-white {
-  background-position: -574px 0;
-}
-
-.awesome-marker-icon-gray {
-  background-position: -648px 0;
-}
-
-.awesome-marker-icon-lightgray {
-  background-position: -612px 0;
-}
-
-.awesome-marker-icon-black {
-  background-position: -682px 0;
+ <css css_location="admin" css_app="membermap" css_attributes="" css_path="." css_name="membermap.css">#mapWrapper {&#13;
+  position: relative;&#13;
+  overflow: hidden;&#13;
+  min-height: 300px;&#13;
+}&#13;
+&#13;
+  #mapWrapper img {&#13;
+    max-width: none;&#13;
+  }&#13;
+ &#13;
+#mapCanvas {&#13;
+  width: 100%;&#13;
+  height: 100%;&#13;
+  min-height: 300px;  &#13;
+}&#13;
+&#13;
+span.marker:after&#13;
+{&#13;
+    border-color: blue transparent;&#13;
+	border-top-color: inherit;&#13;
+    border-image: none;&#13;
+    border-style: solid;&#13;
+    border-width: 15px 15px 0px 0px;&#13;
+    content: &quot;&quot;;&#13;
+    display: block;&#13;
+   /* left: 0px;*/&#13;
+    position: absolute;&#13;
+  	top: 30px;&#13;
+	opacity: 0.6;&#13;
+    width: 0;&#13;
+}&#13;
+&#13;
+span.marker&#13;
+{&#13;
+	width: 30px;&#13;
+	height: 30px;&#13;
+	background-color: darkblue;&#13;
+	border-top-color: darkblue;&#13;
+	position: relative;&#13;
+	line-height: 30px;&#13;
+	display: inline-block;&#13;
+}&#13;
+&#13;
+span.marker .fa&#13;
+{&#13;
+	width: 30px;&#13;
+	text-align: center;&#13;
+	line-height: 30px;&#13;
+	color: #FFF;&#13;
+	font-size: 19px;&#13;
+}&#13;
+&#13;
+span.marker:hover&#13;
+{&#13;
+	background-color: #333 !important;&#13;
+	cursor: pointer;&#13;
+}&#13;
+&#13;
+span.marker:hover .fa&#13;
+{&#13;
+	color: #FFFFFF !important;&#13;
+}&#13;
+&#13;
+#contrastWarning {&#13;
+	display:none; &#13;
+}&#13;
+&#13;
+/*&#13;
+Author: L. Voogdt&#13;
+License: MIT&#13;
+Version: 1.0&#13;
+*/&#13;
+&#13;
+/* Marker setup */&#13;
+.awesome-marker {&#13;
+  background: url({resource=&quot;markers-soft.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;}) no-repeat 0 0;&#13;
+  width: 35px;&#13;
+  height: 46px;&#13;
+  display: block;&#13;
+  text-align: center;&#13;
+}&#13;
+&#13;
+.awesome-marker-shadow {&#13;
+  background: url({resource=&quot;markers-shadow.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;}) no-repeat 0 0;&#13;
+  width: 36px;&#13;
+  height: 16px;&#13;
+}&#13;
+&#13;
+/* Retina displays */&#13;
+@media (min--moz-device-pixel-ratio: 1.5),(-o-min-device-pixel-ratio: 3/2),&#13;
+(-webkit-min-device-pixel-ratio: 1.5),(min-device-pixel-ratio: 1.5),(min-resolution: 1.5dppx) {&#13;
+ .awesome-marker {&#13;
+  background-image: url({resource=&quot;markers-soft@2x.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;});&#13;
+  background-size: 720px 46px;&#13;
+ }&#13;
+ .awesome-marker-shadow {&#13;
+  background-image: url({resource=&quot;markers-shadow@2x.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;});&#13;
+  background-size: 35px 16px;&#13;
+ }&#13;
+}&#13;
+&#13;
+.awesome-marker i {&#13;
+  color: #333;&#13;
+  margin-top: 5px;&#13;
+  display: inline-block;&#13;
+  font-size: 25px;&#13;
+}&#13;
+&#13;
+.awesome-marker .icon-white {&#13;
+  color: #fff;&#13;
+}&#13;
+&#13;
+/* Colors */&#13;
+.awesome-marker-icon-red {&#13;
+  background-position: 0 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-darkred {&#13;
+  background-position: -180px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-lightred {&#13;
+  background-position: -360px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-orange {&#13;
+  background-position: -36px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-beige {&#13;
+  background-position: -396px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-green {&#13;
+  background-position: -72px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-darkgreen {&#13;
+  background-position: -252px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-lightgreen {&#13;
+  background-position: -432px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-blue {&#13;
+  background-position: -108px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-darkblue {&#13;
+  background-position: -216px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-lightblue {&#13;
+  background-position: -468px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-purple {&#13;
+  background-position: -144px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-darkpurple {&#13;
+  background-position: -288px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-pink {&#13;
+  background-position: -504px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-cadetblue {&#13;
+  background-position: -324px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-white {&#13;
+  background-position: -574px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-gray {&#13;
+  background-position: -648px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-lightgray {&#13;
+  background-position: -612px 0;&#13;
+}&#13;
+&#13;
+.awesome-marker-icon-black {&#13;
+  background-position: -682px 0;&#13;
 }</css>
  <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="membermap.css"><![CDATA[
 
