@@ -1012,16 +1012,15 @@ L.Control.MembermapOldMarkers = L.Control.extend({
     }, 
     onAdd: function (map) {
         // create the control container with a particular class name
-        var container = L.DomUtil.create('div', 'leaflet-control-layers leaflet-control-layers-expanded leaflet-control-regobs-warning');
+        var container = L.DomUtil.create('div', 'leaflet-control-layers leaflet-control-layers-expanded leaflet-control-cached-warning');
 		//container.setOpacity( 1 );
         /* Date */
 		var info = L.DomUtil.create('p', '', container);
 		info.innerHTML = ips.getString( 'membermap_cached_markers', {date: ips.utils.time.localeDateString( this.options.time, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric' } )} );
 		
         var link = L.DomUtil.create('a', 'test', container);
-		link.innerHTML = 'Refresh';
+		link.innerHTML = ips.getString( 'membermap_cached_markers_refresh' );
 		link.href = '#';
-		link.title = 'Tittel';
 		
 		L.DomEvent
 		    .on(link, 'click', L.DomEvent.preventDefault)
