@@ -12,5 +12,6 @@ $lang = array(
 	'membermap_confirm_updateLocation' => "Are you sure you want to add/update your location to this position?",
 	'memebermap_geolocation_error' => "We were unable to find your location automatically. Please use the search field below.",
 	'membermap_cached_markers' => "Showing cached markers<br /> from {{date}}",
+	'membermap_cached_markers_refresh' => "Refresh",
 	'marker_addViaMap' => "Select location in map",
 );

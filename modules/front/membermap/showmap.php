@@ -108,7 +108,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 			ips.setSetting( 'membermap_canAdd', {$canAdd} );
 			ips.setSetting( 'membermap_canEdit', {$canEdit} );
 			ips.setSetting( 'membermap_canDelete', {$canDelete} );
-			ips.setSetting( 'membermap_cacheTime', $cacheTime );
+			ips.setSetting( 'membermap_cacheTime', {$cacheTime} );
 
 			ips.membermap.initMap();
 		</script>
@@ -149,15 +149,15 @@ EOF;
 
 		$geoLocForm->addHeader( 'membermap_current_location' );
 		$geoLocForm->addHtml( '<li class="ipsType_center"><i class="fa fa-fw fa-4x fa-location-arrow"></i></li>' );
-		$geoLocForm->addHtml( '<li class="ipsType_center">This will use a feature in your browser to detect your current location using GPS, Cellphone triangulation, Wifi, Router, or IP address</li>' );
+		$geoLocForm->addHtml( '<li class="ipsType_center">' . \IPS\Member::loggedIn()->language()->addToStack( 'membermap_geolocation_desc' ) . '</li>' );
 		$geoLocForm->addButton( 'membermap_current_location', 'button', NULL, 'ipsButton ipsButton_primary', array( 'id' => 'membermap_currentLocation' ) );
 
 
 		$form = new \IPS\Helpers\Form( 'membermap_form_location', NULL, NULL, array( 'id' => 'membermap_form_location' ) );
 		$form->class = 'ipsForm_vertical ipsType_center';
 
-		$form->addHeader( 'Search for your location' );
-		$form->add( new \IPS\Helpers\Form\Text( 'membermap_location', '', FALSE, array( 'placeholder' => "Enter your address / city / county / country, you can be as specific as you like" ), NULL, NULL, NULL, 'membermap_location' ) );
+		$form->addHeader( 'membermap_form_location' );
+		$form->add( new \IPS\Helpers\Form\Text( 'membermap_location', '', FALSE, array( 'placeholder' => \IPS\Member::loggedIn()->language()->addToStack( 'membermap_form_placeholder' ) ), NULL, NULL, NULL, 'membermap_location' ) );
 		$form->addButton( 'save', 'submit', NULL, 'ipsPos_center ipsButton ipsButton_primary', array( 'id' => 'membermap_locationSubmit' ) );
 
 		$form->hiddenValues['lat'] = \IPS\Request::i()->lat;
