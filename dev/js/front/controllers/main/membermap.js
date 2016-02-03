@@ -729,15 +729,14 @@
 							icon = 'home';
 							bgColour = 'green';
 
+							$( '#membermap_addLocation_wrapper' ).hide();
+							$( '#membermap_myLocation_wrapper' ).show();
+
 							/* Update the button label while we're here */
-							if ( ips.getSetting( 'membermap_canEdit' ) )
+							if ( ! ips.getSetting( 'membermap_canEdit' ) )
 							{
-								$( '#membermap_button_addLocation' ).html( ips.getString( 'membermap_button_editLocation' ) );
-							}
-							else
-							{
-								/* You don't have permission to update your location. Might as well remove the button */
-								$( '#membermap_button_addLocation' ).remove();
+								$( 'li#membermap_button_addLocation' ).addClass( 'ipsMenu_itemDisabled' );
+								$( 'li#membermap_button_addLocation' ).attr( 'data-ipsTooltip', '' ).attr( 'title', ips.getString( 'membermap_cannot_edit_location' ) );
 							}
 
 							hasLocation = true;
@@ -748,9 +747,6 @@
 								memberId 	= this.member_id;
 								flyToZoom 	= 10;
 							}
-
-							/* Update tools menu item */
-							$( '#elToolsMenuGoHome' ).removeClass( 'ipsMenu_itemDisabled' );
 							
 						}
 						else

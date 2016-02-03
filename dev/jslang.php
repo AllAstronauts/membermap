@@ -14,4 +14,5 @@ $lang = array(
 	'membermap_cached_markers' => "Showing cached markers<br /> from {{date}}",
 	'membermap_cached_markers_refresh' => "Refresh",
 	'marker_addViaMap' => "Select location in map",
+	'membermap_cannot_edit_location' => "You do not have permission to edit your location.",
 );

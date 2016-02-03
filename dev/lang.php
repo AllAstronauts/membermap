@@ -22,6 +22,7 @@ $lang = array(
 	'membermap_edit_marker' => "Edit Custom Marker",
 	'membermap_form_location' => "Search for your location",
 	'membermap_form_placeholder' => "Enter your address / city / county / country, you can be as specific as you like",
+	'membermap_button_myLocation' => "My Location",
 
 	'membermap_error_cantEdit' => "You are not allowed to edit your location.",
 	'membermap_error_cantAdd' => "You are not allowed to add a location.",
