@@ -137,6 +137,16 @@ class _Markers extends \IPS\Node\Model
 	}
 
 	/**
+	 * [Node] Get Node Description
+	 *
+	 * @return	string|null
+	 */
+	protected function get_description()
+	{
+		return isset( $this->_data['description'] ) ? $this->_data['description'] : NULL;
+	}
+
+	/**
 	 * [Node] Add/Edit Form
 	 *
 	 * @param	\IPS\Helpers\Form	$form	The form
@@ -167,10 +177,11 @@ class _Markers extends \IPS\Node\Model
 		$form->attributes['data-controller'] = 'membermap.admin.membermap.markerform';
 		$form->attributes['id'] = 'membermap_add_marker';
 
+
 		/* Build form */
 		$form->add( new \IPS\Helpers\Form\Text( 'marker_name', $this->id ? $this->name : '', TRUE, array( 'maxLength' => 64 ) ) );
 
-		$form->add( new \IPS\Helpers\Form\Text( 'marker_description', $this->id ? $this->description : '', FALSE ) );
+		$form->add( new \IPS\Helpers\Form\TextArea( 'marker_description', $this->id ? $this->description : '', FALSE, array( 'rows' => 3 ) ) );
 
 		$form->add( new \IPS\Helpers\Form\Node( 'marker_parent_id', $this->parent_id ? $this->parent_id : 0, TRUE, array(
 			'class'		=> '\IPS\membermap\Custom\Groups',
