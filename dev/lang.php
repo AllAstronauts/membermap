@@ -16,12 +16,17 @@ $lang = array(
 	'membermap_button_addLocation' => "Add Location",
 	'membermap_button_editLocation' => "Update Location",
 	'membermap_current_location' => "Use Current Location",
+	'membermap_geolocation_desc' => "This will use a feature in your browser to detect your current location using GPS, Cellphone triangulation, Wifi, Router, or IP address",
 	'membermap_add_marker' => "Add Custom Marker",
 	'membermap_add_group' => "Add Custom Marker Group",
 	'membermap_edit_marker' => "Edit Custom Marker",
+	'membermap_form_location' => "Search for your location",
+	'membermap_form_placeholder' => "Enter your address / city / county / country, you can be as specific as you like",
+	'membermap_button_myLocation' => "My Location",
 
 	'membermap_error_cantEdit' => "You are not allowed to edit your location.",
 	'membermap_error_cantAdd' => "You are not allowed to add a location.",
+	'membermap_error_noGroups' => "You need to create a Custom Marker Group first.",
 
 	'membermap_view_fullsize' => "View fullsize map",
 
@@ -35,10 +40,14 @@ $lang = array(
 
 	'marker_name' => "Marker Title",
 	'marker_description' => "Marker Description",
-	'marker_lat' => "Latitude",
+	'marker_lat' => "Latitude (N)",
 	'marker_location' => "Location",
-	'marker_location_desc' => "Enter a location above to search for one, or enter the latitude and longitude manually below.",
-	'marker_lon' => "Longitude",
+	'marker_location_desc' => "Enter a location above to search for one, enter the latitude and longitude manually below, or select the location in a map",
+	'marker_lon' => "Longitude (E)",
 	'marker_parent_id' => "Marker Group",
-
+	'marker_addViaMap' => "Show in map",
+	'marker_addViaMap_button' => "Select location in map",
+	'membermap_goHome' => "Go to my location",
+	'membermap_rebuildBrowserCache' => "Rebuild Browser Cache",
+	'membermap_rebuildServerCache' => "Rebuild Server Cache (Last Update: %s)",
 );

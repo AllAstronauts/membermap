@@ -67,9 +67,10 @@ class _Map
 		}
 		
 		$save = array(
-			'member_id'		=> $data['member_id'],
-			'lat'			=> $this->_floatVal( $lat ),
-			'lon'			=> $this->_floatVal( $lng )
+			'member_id'			=> $data['member_id'],
+			'lat'				=> $this->_floatVal( $lat ),
+			'lon'				=> $this->_floatVal( $lng ),
+			'marker_date'		=> time()
 		);
 
 		

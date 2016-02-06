@@ -10,7 +10,6 @@
 			oms = null,
 			geocoder = null,
 			defaultMapTypeId = null,
-			activeLayers = null,
 			
 			zoomLevel = null,
 			previousZoomLevel = null,
@@ -39,7 +38,9 @@
 
 			markerContext = {},
 
-			oldMarkersIndicator = null;
+			oldMarkersIndicator = null,
+
+			hasLocation = false;
 	
 		var initMap = function()
 		{
@@ -154,16 +155,14 @@
 
 		setupMap = function()
 		{
-
-			
 			var southWest = new L.LatLng( 56.83, -7.14 );
 			var northEast = new L.LatLng( 74.449, 37.466 );
 			bounds = new L.LatLngBounds(southWest, northEast);
 
+			mapServices.esriworldstreetmap = L.tileLayer.provider( 'Esri.WorldStreetMap' );
 			mapServices.thunderforestlandscape = L.tileLayer.provider( 'Thunderforest.Landscape' );
 			mapServices.mapquest = L.tileLayer.provider('MapQuestOpen.OSM');			
 			mapServices.esriworldtopomap = L.tileLayer.provider( 'Esri.WorldTopoMap' );
-			mapServices.nokia = L.tileLayer.provider( 'Nokia.terrainDay' );
 
 			var contextMenu = [];
 
@@ -285,18 +284,18 @@
 				"MapQuest": mapServices.mapquest,
 				"Thunderforest Landscape": mapServices.thunderforestlandscape,
 				'Esri WorldTopoMap': mapServices.esriworldtopomap,
-				'Nokia': mapServices.nokia
+				'Esri World Street Map': mapServices.esriworldstreetmap
 			};
 
 			overlayMaps = {
 				"Members": mapMarkers,
 			};
 
-			activeLayers = new L.Control.ActiveLayers( baseMaps, overlayMaps, { collapsed: ( isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
+			L.control.layers( baseMaps, overlayMaps, { collapsed: ( isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
 
 			map.on( 'baselayerchange', function( baselayer )
 			{
-				ips.utils.cookie.set( 'membermap_baseMap', baselayer.name );
+				ips.utils.cookie.set( 'membermap_baseMap', baselayer.name.toLowerCase().replace( /\s/g, '' ) );
 			});
 			
 			ips.membermap.map = map;
@@ -335,6 +334,12 @@
 				return;
 			}
 
+			if ( ! ips.utils.db.isEnabled() )
+			{
+				$( '#elToolsMenuBrowserCache' ).addClass( 'ipsMenu_itemDisabled' );
+				$( '#elToolsMenuBrowserCache a' ).append( '(Not supported)' );
+			}
+
 			if ( forceReload || ! ips.utils.db.isEnabled() )
 			{
 				allMarkers = [];
@@ -342,6 +347,7 @@
 				$.ajax( ipsSettings.baseURL.replace('&amp;','&') + 'datastore/membermap_cache/membermap-index.json',
 				{	
 					cache : false,
+					dataType: 'json',
 					success: function( res )
 					{
 						if ( typeof res.error !== 'undefined' )
@@ -362,6 +368,7 @@
 								$.ajax({
 									url: ipsSettings.baseURL.replace('&amp;','&') + '/datastore/' + file,
 									cache : false,
+									dataType: 'json',
 									success:function( res )
 									{
 										/* Show marker layer */
@@ -380,6 +387,9 @@
 								var date = new Date();
 								ips.utils.db.set( 'membermap', 'markers', { time: ( date.getTime() / 1000 ), data: allMarkers } );
 								ips.utils.db.set( 'membermap', 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
+
+
+								$( '#elToolsMenuBrowserCache a time' ).html( '(Last update: ' + ips.utils.time.readable( date.getTime() / 1000 ) + ')' );
 							}
 						});
 					}
@@ -417,6 +427,8 @@
 						oldMarkersIndicator = new L.Control.MembermapOldMarkers({ callback: reloadMarkers, time: date });
 						ips.membermap.map.addControl( oldMarkersIndicator );
 					}
+
+					$( '#elToolsMenuBrowserCache a time' ).html( '(Last update: ' + ips.utils.time.readable( date / 1000 ) + ')' );
 				}
 				else
 				{
@@ -572,10 +584,52 @@
 					$( '#membermap_form_location input[name="lng"]' ).val( position.coords.longitude );
 
 					$( '#membermap_form_location' ).submit();
+					return;
+
+					/* Skip this for now, will have to see how many requests this app consumes per month */
+
+					ips.getAjax()({ 
+						url: 'http://www.mapquestapi.com/geocoding/v1/reverse', 
+						type: 'get',
+						dataType: 'json',
+						data: {
+							key: "pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud",
+							lat: position.coords.latitude,
+							lng: position.coords.longitude
+
+						},
+						success: function( data ) 
+						{
+							// MapQuest
+							/* If adminArea5 is empty, it's likely we don't have a result */
+							if ( data.results[0].locations[0].adminArea5 )
+							{
+								var item = data.results[0].locations[0];
+								var location = item.adminArea5 + 
+											( item.adminArea4 ? ', ' + item.adminArea4 : '' ) + 
+											( item.adminArea3 ? ', ' + item.adminArea3 : '' ) + 
+											( item.adminArea2 ? ', ' + item.adminArea2 : '' ) +
+											( item.adminArea1 ? ', ' + item.adminArea1 : '' );
+
+								$( '#elInput_membermap_location' ).val( location );
+
+								$( '#membermap_form_location' ).submit();
+									
+							}
+							else
+							{
+								$( '#membermap_geolocation_wrapper' ).hide();
+								$( '#membermap_addLocation_error' ).html( ips.getString( 'memebermap_geolocation_error' ) ).show();
+							}
+
+						}
+					});
+
 				},
 				function( error )
 				{
-					$('#membermap_geolocation_wrapper').hide();
+					$( '#membermap_addLocation_error' ).append( 'ERROR(' + error.code + '): ' + error.message ).append( '<br />' + ips.getString( 'memebermap_geolocation_error' ) ).show();
+					$( '#membermap_geolocation_wrapper' ).hide();
 				},
 				{
 					maximumAge: (1000 * 60 * 15),
@@ -632,137 +686,137 @@
 			var getByUser 	= ips.utils.url.getParam( 'filter' ) == 'getByUser' ? true : false;
 			var memberId 	= parseInt( ips.utils.url.getParam( 'member_id' ) );
 			var flyToZoom 	= 8;
+			var hasLocation = false;
 
 			if ( markers === false )
 			{
 				markers = allMarkers;
 			}
 
-			if ( markers.length === 0 )
+			if ( markers.length > 0 )
 			{
-				return false;
-			}
 
-			var memberSearch = $( '#elInput_membermap_memberName_wrapper .cToken' ).eq(0).attr( 'data-value' );
+				var memberSearch = $( '#elInput_membermap_memberName_wrapper .cToken' ).eq(0).attr( 'data-value' );
 
-			var hasLocation = false;
 
-			$.each( markers, function() 
-			{		
-				/* Don't show these, as they all end up in the middle of the middle of the South Atlantic Ocean. */
-				if ( this.lat == 0 && this.lon == 0 )
-				{
-					return;
-				}
-
-				/* Report written by selected member? */
-				if ( typeof memberSearch !== 'undefined' )
-				{
-					/* Names of 'null' are deleted members */
-					if (this.name == null || memberSearch.toLowerCase() !== this.name.toLowerCase() )
+				$.each( markers, function() 
+				{		
+					/* Don't show these, as they all end up in the middle of the middle of the South Atlantic Ocean. */
+					if ( this.lat == 0 && this.lon == 0 )
 					{
 						return;
 					}
-				}
-				
-				var bgColour 	= 'darkblue';
-				var icon 		= 'user';
-				var iconColour 	= 'white';
 
-				if ( this.type == 'member' )
-				{
-					if ( this.member_id == ips.getSetting( 'member_id' ) )
+					/* Report written by selected member? */
+					if ( typeof memberSearch !== 'undefined' )
 					{
-						/* This is me! */
-						icon = 'home';
-						bgColour = 'green';
-
-						/* Update the button label while we're here */
-						if ( ips.getSetting( 'membermap_canEdit' ) )
+						/* Names of 'null' are deleted members */
+						if (this.name == null || memberSearch.toLowerCase() !== this.name.toLowerCase() )
 						{
-							$( '#membermap_button_addLocation' ).html( ips.getString( 'membermap_button_editLocation' ) );
+							return;
+						}
+					}
+					
+					var bgColour 	= 'darkblue';
+					var icon 		= 'user';
+					var iconColour 	= 'white';
+
+					if ( this.type == 'member' )
+					{
+						if ( this.member_id == ips.getSetting( 'member_id' ) )
+						{
+							/* This is me! */
+							icon = 'home';
+							bgColour = 'green';
+
+							$( '#membermap_addLocation_wrapper' ).hide();
+							$( '#membermap_myLocation_wrapper' ).show();
+
+							/* Update the button label while we're here */
+							if ( ! ips.getSetting( 'membermap_canEdit' ) )
+							{
+								$( 'li#membermap_button_addLocation' ).addClass( 'ipsMenu_itemDisabled' );
+								$( 'li#membermap_button_addLocation' ).attr( 'data-ipsTooltip', '' ).attr( 'title', ips.getString( 'membermap_cannot_edit_location' ) );
+							}
+
+							hasLocation = true;
+
+							if ( ips.utils.url.getParam( 'goHome' ) == 1 )
+							{
+								getByUser 	= true;
+								memberId 	= this.member_id;
+								flyToZoom 	= 10;
+							}
+							
 						}
 						else
 						{
-							/* You don't have permission to update your location. Might as well remove the button */
-							$( '#membermap_button_addLocation' ).remove();
-						}
-
-						hasLocation = true;
-
-						if ( ips.utils.url.getParam( 'goHome' ) == 1 )
-						{
-							getByUser 	= true;
-							memberId 	= this.member_id;
-							flyToZoom 	= 10;
+							if ( this.markerColour )
+							{
+								bgColour = this.markerColour;
+							}
 						}
 					}
 					else
 					{
-						if ( this.markerColour )
-						{
-							bgColour = this.markerColour;
+						iconColour 	= this.colour;
+						icon 		= this.icon || 'fa-map-marker';
+						bgColour 	= this.bgColour;
+
+					}
+
+					var icon = L.AwesomeMarkers.icon({
+						prefix: 'fa',
+						icon: icon, 
+						markerColor: bgColour,
+						iconColor: iconColour
+					});
+
+					var spiderifiedIcon = L.AwesomeMarkers.icon({
+						prefix: 'fa',
+						icon: 'users', 
+						markerColor: bgColour,
+						iconColor: iconColour
+					});
+					
+
+					var contextMenu = [];
+					var enableContextMenu = false;
+
+					if ( ips.getSetting( 'is_supmod' ) ||  ( ips.getSetting( 'member_id' ) == this.member_id && ips.getSetting( 'membermap_canDelete' ) ) )
+					{
+						enableContextMenu = true;
+						contextMenu = getMarkerContextMenu( this );
+					}
+					
+					var mapMarker = new L.Marker( 
+						[ this.lat, this.lon ], 
+						{ 
+							title: this.title,
+							icon: icon,
+							spiderifiedIcon: spiderifiedIcon,
+							defaultIcon: icon,
+							contextmenu: enableContextMenu,
+						    contextmenuItems: contextMenu
 						}
+					);
+					
+					mapMarker.markerData = this;
+
+					oms.addMarker( mapMarker );
+					mapMarkers.addLayer( mapMarker );
+
+					if ( getByUser && memberId > 0 && this.type == 'member' && this.member_id == memberId )
+					{
+						dontRepan = true;
+						map.flyTo( mapMarker.getLatLng(), flyToZoom );
 					}
-				}
-				else
-				{
-					iconColour 	= this.colour;
-					icon 		= this.icon || 'fa-map-marker';
-					bgColour 	= this.bgColour;
-
-				}
-
-				var icon = L.AwesomeMarkers.icon({
-					prefix: 'fa',
-					icon: icon, 
-					markerColor: bgColour,
-					iconColor: iconColour
 				});
+			}
 
-				var spiderifiedIcon = L.AwesomeMarkers.icon({
-					prefix: 'fa',
-					icon: 'users', 
-					markerColor: bgColour,
-					iconColor: iconColour
-				});
-				
 
-				var contextMenu = [];
-				var enableContextMenu = false;
-
-				if ( ips.getSetting( 'is_supmod' ) ||  ( ips.getSetting( 'member_id' ) == this.member_id && ips.getSetting( 'membermap_canDelete' ) ) )
-				{
-					enableContextMenu = true;
-					contextMenu = getMarkerContextMenu( this );
-				}
-				
-				var mapMarker = new L.Marker( 
-					[ this.lat, this.lon ], 
-					{ 
-						title: this.title,
-						icon: icon,
-						spin: true,
-						spiderifiedIcon: spiderifiedIcon,
-						defaultIcon: icon,
-						contextmenu: enableContextMenu,
-					    contextmenuItems: contextMenu
-					}
-				);
-				
-				mapMarker.markerData = this;
-
-				oms.addMarker( mapMarker );
-				mapMarkers.addLayer( mapMarker );
-
-				if ( getByUser && memberId > 0 && this.type == 'member' && this.member_id == memberId )
-				{
-					dontRepan = true;
-					Debug.log( mapMarker );
-					map.flyTo( mapMarker.getLatLng(), flyToZoom );
-				}
-			});
-
+			/* Contextual menu */
+			/* Needs to run this after the markers, as we need to know if we're editing or adding the location */
 			if ( ips.getSetting( 'member_id' ) )
 			{
 				if ( hasLocation && ips.getSetting( 'membermap_canEdit' ) )
@@ -784,9 +838,9 @@
 					map.contextmenu.insertItem( { separator: true }, 1 );
 				}
 			}
-			
 
-			
+
+			/* We don't want to move the map around if we're changing filters or reloading markers */
 			if ( dontRepan === false )
 			{
 				if ( initialCenter instanceof L.LatLng )
@@ -954,17 +1008,15 @@ L.Control.MembermapOldMarkers = L.Control.extend({
     }, 
     onAdd: function (map) {
         // create the control container with a particular class name
-        var container = L.DomUtil.create('div', 'leaflet-control-layers leaflet-control-layers-expanded leaflet-control-regobs-warning');
+        var container = L.DomUtil.create('div', 'leaflet-control-layers leaflet-control-layers-expanded leaflet-control-cached-warning');
 		//container.setOpacity( 1 );
         /* Date */
-        var date = this.options.time.toLocaleString();
 		var info = L.DomUtil.create('p', '', container);
-		info.innerHTML = 'Showing cached markers<br /> from ' + date;
+		info.innerHTML = ips.getString( 'membermap_cached_markers', {date: ips.utils.time.localeDateString( this.options.time, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric' } )} );
 		
         var link = L.DomUtil.create('a', 'test', container);
-		link.innerHTML = 'Refresh';
+		link.innerHTML = ips.getString( 'membermap_cached_markers_refresh' );
 		link.href = '#';
-		link.title = 'Tittel';
 		
 		L.DomEvent
 		    .on(link, 'click', L.DomEvent.preventDefault)

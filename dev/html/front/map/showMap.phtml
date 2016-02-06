@@ -1,17 +1,54 @@
-<ips:template parameters="$markers=''" />
+<ips:template parameters="$markers='', $cacheTime=0" />
 {{if request.do != 'embed'}}
 <div class="ipsPageHeader ipsClearfix">
 	<header class='ipsSpacer_bottom'>
 		<h1 class="ipsType_pageTitle">{lang="frontnavigation_membermap"}</h1>
-		{{if \IPS\Member::loggedIn()->group['g_membermap_canAdd'] OR \IPS\Member::loggedIn()->group['g_membermap_canEdit']}}
 		<div class='ipsPos_right ipsResponsive_noFloat'>
 			<ul class="ipsToolList ipsToolList_horizontal ipsClearfix">
-				<li class='ipsToolList_primaryAction'>
+				{{if \IPS\Member::loggedIn()->group['g_membermap_canAdd'] OR \IPS\Member::loggedIn()->group['g_membermap_canEdit']}}
+				<li id='membermap_addLocation_wrapper' class='ipsToolList_primaryAction'>
 					<a class="ipsButton ipsButton_medium ipsButton_important ipsButton_fullWidth" href="#" title='' id="membermap_button_addLocation">{lang="membermap_button_addLocation"}</a>
 				</li>
+				<li id='membermap_myLocation_wrapper' class='ipsToolList_primaryAction' style='display:none;'>
+					<a class="ipsButton ipsButton_medium ipsButton_important ipsButton_fullWidth" data-ipsmenu href='#elMyLocationMenu' id='elMyLocationMenu' title=''>
+						{lang="membermap_button_myLocation"} <i class='fa fa-caret-down'></i>
+					</a>
+					<div id='elMyLocationMenu_menu' class='ipsMenu ipsMenu_auto ipsHide'>
+						<ul>
+							<li class="ipsMenu_item" id="membermap_button_addLocation">
+								<a href="#">{lang="membermap_button_editLocation"}</a>
+							</li>
+
+							<li class='ipsMenu_sep'><hr></li>
+
+							<li class="ipsMenu_item" id="elMyLocationMenuGoHome">
+								<a href="{url='app=membermap&goHome=1' seoTemplate='membermap'}">{lang="membermap_goHome"}</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+				{{endif}}
+
+				{{if \IPS\Member::loggedIn()->isAdmin()}}
+				<li class='ipsToolList_primaryAction ipsResponsive_hidePhone'>
+					<a href='#elToolsMenu' id='elToolsMenu' data-ipsmenu class='ipsButton ipsButton_normal ipsButton_medium'>
+						 &nbsp;Admin Tools <i class='fa fa-caret-down'></i>
+					</a>
+					<div id='elToolsMenu_menu' class='ipsMenu ipsMenu_auto ipsHide'>
+						<ul>
+							<li class="ipsMenu_item" id='elToolsMenuBrowserCache'>
+								<a href="{url='app=membermap&dropBrowserCache=1' seoTemplate='membermap'}">{lang="membermap_rebuildBrowserCache"} <time></time></a>
+							</li>
+
+							<li class="ipsMenu_item" >
+								<a href="{url='app=membermap&rebuildCache=1' seoTemplate='membermap'}" data-action='ipsMenu_ping'>{lang="membermap_rebuildServerCache" htmlsprintf="\IPS\DateTime::ts( $cacheTime )->html( true, true )"}</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+				{{endif}}
 			</ul>
 		</div>
-		{{endif}}
 	</header>
 </div>
 {{endif}}
