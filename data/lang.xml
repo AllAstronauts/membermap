@@ -16,9 +16,13 @@
   <word key="membermap_button_addLocation" js="0">Add Location</word>
   <word key="membermap_button_editLocation" js="0">Update Location</word>
   <word key="membermap_current_location" js="0">Use Current Location</word>
+  <word key="membermap_geolocation_desc" js="0">This will use a feature in your browser to detect your current location using GPS, Cellphone triangulation, Wifi, Router, or IP address</word>
   <word key="membermap_add_marker" js="0">Add Custom Marker</word>
   <word key="membermap_add_group" js="0">Add Custom Marker Group</word>
   <word key="membermap_edit_marker" js="0">Edit Custom Marker</word>
+  <word key="membermap_form_location" js="0">Search for your location</word>
+  <word key="membermap_form_placeholder" js="0">Enter your address / city / county / country, you can be as specific as you like</word>
+  <word key="membermap_button_myLocation" js="0">My Location</word>
   <word key="membermap_error_cantEdit" js="0">You are not allowed to edit your location.</word>
   <word key="membermap_error_cantAdd" js="0">You are not allowed to add a location.</word>
   <word key="membermap_error_noGroups" js="0">You need to create a Custom Marker Group first.</word>
@@ -53,6 +57,8 @@
   <word key="membermap_confirm_updateLocation" js="1">Are you sure you want to add/update your location to this position?</word>
   <word key="memebermap_geolocation_error" js="1">We were unable to find your location automatically. Please use the search field below.</word>
   <word key="membermap_cached_markers" js="1"><![CDATA[Showing cached markers<br /> from {{date}}]]></word>
+  <word key="membermap_cached_markers_refresh" js="1">Refresh</word>
   <word key="marker_addViaMap" js="1">Select location in map</word>
+  <word key="membermap_cannot_edit_location" js="1">You do not have permission to edit your location.</word>
  </app>
 </language>
