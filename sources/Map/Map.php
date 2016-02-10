@@ -308,13 +308,15 @@ class _Map
 			foreach( $markers as $marker )
 			{
 				$markersToKeep[] = array(
-					'type'		=> "custom",
-					'lat' 		=> round( (float)$marker['marker_lat'], 5 ),
-					'lon' 		=> round( (float)$marker['marker_lon'], 5 ),
-					'popup' 	=> "<h3>{$marker['marker_name']}</h3><p class='desc'>{$marker['marker_description']}</p>",
-					'icon'		=> $marker['group_pin_icon'],
-					'colour'	=> $marker['group_pin_colour'],
-					'bgColour'	=> in_array( $marker['group_pin_bg_colour'], $validColours ) ? $marker['group_pin_bg_colour'] : 'red',
+					'type'			=> "custom",
+					'lat' 			=> round( (float)$marker['marker_lat'], 5 ),
+					'lon' 			=> round( (float)$marker['marker_lon'], 5 ),
+					'popup' 		=> "<h3>{$marker['marker_name']}</h3><p class='desc'>{$marker['marker_description']}</p>",
+					'icon'			=> $marker['group_pin_icon'],
+					'colour'		=> $marker['group_pin_colour'],
+					'bgColour'		=> in_array( $marker['group_pin_bg_colour'], $validColours ) ? $marker['group_pin_bg_colour'] : 'red',
+					'parent_id' 	=> $marker['marker_parent_id'],
+					'parent_name' 	=> $marker['group_name'],
 				);
 			}
 		}

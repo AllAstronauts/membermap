@@ -18,8 +18,9 @@
 			
 			baseMaps = {},
 			overlayMaps = {},
+			overlayControl = null,
 			
-			mapMarkers = null,
+			memberMarkers = null,
 			allMarkers = [],
 			
 			icons = [],
@@ -140,7 +141,7 @@
 		
 		clear =function()
 		{
-			mapMarkers.clearLayers();
+			memberMarkers.clearLayers();
 		},
 		
 		reloadMap = function()
@@ -233,9 +234,9 @@
 			map.fitBounds( bounds );
 			
 
-			mapMarkers = new L.MarkerClusterGroup({ spiderfyOnMaxZoom: false, zoomToBoundsOnClick: false, disableClusteringAtZoom: ( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 ) });
+			memberMarkers = new L.MarkerClusterGroup({ zoomToBoundsOnClick: false, disableClusteringAtZoom: ( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 ) });
 			
-			mapMarkers.on( 'clusterclick', function (a) 
+			memberMarkers.on( 'clusterclick', function (a) 
 			{
 				map.fitBounds( a.layer._bounds );
 				if ( map.getZoom() > ( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 ) )
@@ -244,7 +245,7 @@
 				}
 			});
 
-			map.addLayer( mapMarkers );
+			map.addLayer( memberMarkers );
 			
 			baseMaps = {
 				"MapQuest": mapServices.mapquest,
@@ -253,11 +254,10 @@
 				'Esri World Street Map': mapServices.esriworldstreetmap
 			};
 
-			overlayMaps = {
-				"Members": mapMarkers,
-			};
+			overlayMaps[ ips.getString( 'membermap_overlay_members' ) ] = memberMarkers;
 
-			L.control.layers( baseMaps, overlayMaps, { collapsed: ( isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
+
+			overlayControl = L.control.layers( baseMaps, overlayMaps, { collapsed: ( isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
 
 			map.on( 'baselayerchange', function( baselayer )
 			{
@@ -661,9 +661,9 @@
 
 			if ( markers.length > 0 )
 			{
-
 				var memberSearch = $( '#elInput_membermap_memberName_wrapper .cToken' ).eq(0).attr( 'data-value' );
 
+				var counter = 0;
 
 				$.each( markers, function() 
 				{		
@@ -749,7 +749,7 @@
 					var contextMenu = [];
 					var enableContextMenu = false;
 
-					if ( ips.getSetting( 'is_supmod' ) ||  ( ips.getSetting( 'member_id' ) == this.member_id && ips.getSetting( 'membermap_canDelete' ) ) )
+					if ( this.type == 'member' && ( ips.getSetting( 'is_supmod' ) ||  ( ips.getSetting( 'member_id' ) == this.member_id && ips.getSetting( 'membermap_canDelete' ) ) ) )
 					{
 						enableContextMenu = true;
 						contextMenu = getMarkerContextMenu( this );
@@ -767,14 +767,34 @@
 					
 					mapMarker.markerData = this;
 
-					mapMarkers.addLayer( mapMarker );
+					if ( this.type == 'member' )
+					{
+						memberMarkers.addLayer( mapMarker );
+					}
+					else
+					{
+						if( typeof overlayMaps[ this.parent_id ] !== undefined )
+						{
+							overlayMaps[ this.parent_id ] = L.layerGroup().addTo( map );
+							overlayControl.addOverlay( overlayMaps[ this.parent_id ], this.parent_name );
+						}
+						
+						overlayMaps[ this.parent_id ].addLayer( mapMarker );
+					}
 
+					/* Count the number of markers we have on the map */
+					counter = counter + 1;
+
+					/* Pan directly to our home location, if that's what we wanted */
 					if ( getByUser && memberId > 0 && this.type == 'member' && this.member_id == memberId )
 					{
 						dontRepan = true;
 						map.flyTo( mapMarker.getLatLng(), flyToZoom );
 					}
 				});
+
+				/* Update the counter */
+				$( '#membermap_counter span' ).html( counter );
 			}
 
 
@@ -819,7 +839,7 @@
 				}
 				else
 				{
-					map.fitBounds( mapMarkers.getBounds(), { 
+					map.fitBounds( memberMarkers.getBounds(), { 
 						padding: [50, 50],
 						maxZoom: 11
 					});

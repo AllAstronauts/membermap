@@ -15,4 +15,5 @@ $lang = array(
 	'membermap_cached_markers_refresh' => "Refresh",
 	'marker_addViaMap' => "Select location in map",
 	'membermap_cannot_edit_location' => "You do not have permission to edit your location.",
+	'membermap_overlay_members' => "Members",
 );
