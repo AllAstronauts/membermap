@@ -1,5 +1,5 @@
 /**
- * Trip Report, by Martin Aronsen
+ * Member Map, by Stuart Silvester & Martin Aronsen
  */
 ;( function($, _, undefined){
 	"use strict";
@@ -10,7 +10,6 @@
 			defaultMapTypeId = null,
 			
 			zoomLevel = null,
-			previousZoomLevel = null,
 			
 			initialCenter = null,
 			
@@ -24,9 +23,6 @@
 			allMarkers = [],
 			
 			icons = [],
-			infoWindow = null,
-			info = null,
-			currentPlace = null,
 			isMobileDevice = false,
 			isEmbedded = false,
 			
@@ -34,8 +30,6 @@
 			
 			stuffSize = 0,
 			popups = [],
-
-			markerContext = {},
 
 			oldMarkersIndicator = null,
 
@@ -373,11 +367,11 @@
 					return;
 				}
 
-				if ( data.data.length > 0 && typeof data.data !== 'null' )
+				if ( data.data.length > 0 && typeof data.data !== null )
 				{
 					/* Reload cache if it's older than 24 hrs */
 					var date = new Date( data.time * 1000 ),
-					nowdate = new Date;
+					nowdate = new Date();
 					if ( ( ( nowdate.getTime() - date.getTime() ) / 1000 ) > 86400 )
 					{
 						reloadMarkers();
@@ -433,7 +427,7 @@
 				reloadMap();
 			});
 
-			$( '#membermap_button_addLocation' ).click( function()
+			$( '#membermap_button_addLocation, #membermap_button_editLocation' ).click( function()
 			{
 				if ( typeof popups['addLocationPopup'] === 'object' )
 				{
@@ -513,7 +507,7 @@
 										}));
 
 									}
-								})
+								});
 							},
 							minLength: 3,
 							select: function( event, ui ) {
@@ -524,7 +518,7 @@
 
 						$( '#membermap_form_location' ).on( 'submit', function(e)
 						{
-							if ( $( '#membermap_form_location input[name="lat"]' ).val().length == 0 || $( '#membermap_form_location input[name="lng"]' ).val().length == 0 )
+							if ( $( '#membermap_form_location input[name="lat"]' ).val().length === 0 || $( '#membermap_form_location input[name="lng"]' ).val().length === 0 )
 							{
 								e.preventDefault();
 								return false;
@@ -534,7 +528,7 @@
 				});
 
 				popups['addLocationPopup'].show();
-			})
+			});
 		},
 
 
@@ -652,7 +646,6 @@
 			var getByUser 	= ips.utils.url.getParam( 'filter' ) == 'getByUser' ? true : false;
 			var memberId 	= parseInt( ips.utils.url.getParam( 'member_id' ) );
 			var flyToZoom 	= 8;
-			var hasLocation = false;
 
 			if ( markers === false )
 			{
@@ -668,7 +661,7 @@
 				$.each( markers, function() 
 				{		
 					/* Don't show these, as they all end up in the middle of the middle of the South Atlantic Ocean. */
-					if ( this.lat == 0 && this.lon == 0 )
+					if ( this.lat === 0 && this.lon === 0 )
 					{
 						return;
 					}
@@ -677,7 +670,7 @@
 					if ( typeof memberSearch !== 'undefined' )
 					{
 						/* Names of 'null' are deleted members */
-						if (this.name == null || memberSearch.toLowerCase() !== this.name.toLowerCase() )
+						if (this.name === null || memberSearch.toLowerCase() !== this.name.toLowerCase() )
 						{
 							return;
 						}
@@ -731,16 +724,9 @@
 
 					}
 
-					var icon = L.AwesomeMarkers.icon({
+					var _icon = L.AwesomeMarkers.icon({
 						prefix: 'fa',
 						icon: icon, 
-						markerColor: bgColour,
-						iconColor: iconColour
-					});
-
-					var spiderifiedIcon = L.AwesomeMarkers.icon({
-						prefix: 'fa',
-						icon: 'users', 
 						markerColor: bgColour,
 						iconColor: iconColour
 					});
@@ -759,7 +745,7 @@
 						[ this.lat, this.lon ], 
 						{ 
 							title: this.title,
-							icon: icon,
+							icon: _icon,
 							contextmenu: enableContextMenu,
 						    contextmenuItems: contextMenu
 						}
@@ -926,44 +912,6 @@
 			}
 
 			return [];
-		},
-		
-		markerClickFunction = function( marker )
-		{
-			var hidingMarker = currentPlace;
-			
-	
-			var zoomIn = function( info ) 
-			{
-				previousZoomLevel = map.getZoom();
-				
-				//map.setCenter( marker.getLatLng() );
-				map.flyTo( marker.getLatLng() );
-				if ( map.getZoom() <= 11 )
-				{
-					map.setZoom( 11 );
-				}
-				
-			};
-			
-			if ( currentPlace ) 
-			{
-				if ( hidingMarker !== marker ) 
-				{
-					zoomIn( marker.markerData );
-				}
-				else
-				{
-					currentPlace = null;
-					map.setZoom( previousZoomLevel );
-				}
-			} 
-			else 
-			{
-				zoomIn( marker.markerData );
-			}
-			
-			currentPlace = marker;
 		};
 
 		return {
