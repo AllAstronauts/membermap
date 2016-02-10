@@ -7,8 +7,6 @@
 	ips.createModule('ips.membermap', function() 
 	{
 		var map = null,
-			oms = null,
-			geocoder = null,
 			defaultMapTypeId = null,
 			
 			zoomLevel = null,
@@ -143,7 +141,6 @@
 		clear =function()
 		{
 			mapMarkers.clearLayers();
-			oms.clearMarkers();
 		},
 		
 		reloadMap = function()
@@ -235,37 +232,6 @@
 
 			map.fitBounds( bounds );
 			
-			oms = new OverlappingMarkerSpiderfier( map, { keepSpiderfied: true } );
-			
-			var popup = new L.Popup({
-				offset: new L.Point(0, -20),
-				keepInView: true,
-				maxWidth: ( isMobileDevice ? 250 : 300 )
-			});
-			
-			oms.addListener( 'click', function( marker ) 
-			{
-				popup.setContent( marker.markerData.popup );
-				popup.setLatLng( marker.getLatLng() );
-				map.openPopup( popup );
-			});
-			
-			oms.addListener('spiderfy', function( omsMarkers ) 
-			{
-				omsMarkers.each( function( omsMarker )
-				{
-					omsMarker.setIcon( omsMarker.options.spiderifiedIcon );
-				});
-				map.closePopup();
-			});
-			
-			oms.addListener('unspiderfy', function(omsMarkers) 
-			{
-				omsMarkers.each( function( omsMarker )
-				{
-					omsMarker.setIcon( omsMarker.options.defaultIcon );
-				});
-			});
 
 			mapMarkers = new L.MarkerClusterGroup({ spiderfyOnMaxZoom: false, zoomToBoundsOnClick: false, disableClusteringAtZoom: ( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 ) });
 			
@@ -794,16 +760,13 @@
 						{ 
 							title: this.title,
 							icon: icon,
-							spiderifiedIcon: spiderifiedIcon,
-							defaultIcon: icon,
 							contextmenu: enableContextMenu,
 						    contextmenuItems: contextMenu
 						}
-					);
+					).bindPopup( this.popup );
 					
 					mapMarker.markerData = this;
 
-					oms.addMarker( mapMarker );
 					mapMarkers.addLayer( mapMarker );
 
 					if ( getByUser && memberId > 0 && this.type == 'member' && this.member_id == memberId )
