@@ -1,1 +1,6 @@
-[]
+[
+    {
+        "key": "membermap_activemaps",
+        "default": ""
+    }
+]

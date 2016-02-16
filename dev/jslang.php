@@ -16,4 +16,6 @@ $lang = array(
 	'marker_addViaMap' => "Select location in map",
 	'membermap_cannot_edit_location' => "You do not have permission to edit your location.",
 	'membermap_overlay_members' => "Members",
+	'membermap_defaultProvider' => "Default",
+	'membermap_mapmanager_cant_save' => "We couldn't save your chosen maps",
 );

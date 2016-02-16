@@ -140,7 +140,6 @@
 		
 		reloadMap = function()
 		{
-			Debug.log( "Reloading map" );
 			clear();
 			showMarkers( true );
 		},
@@ -151,10 +150,28 @@
 			var northEast = new L.LatLng( 74.449, 37.466 );
 			bounds = new L.LatLngBounds(southWest, northEast);
 
-			mapServices.esriworldstreetmap = L.tileLayer.provider( 'Esri.WorldStreetMap' );
-			mapServices.thunderforestlandscape = L.tileLayer.provider( 'Thunderforest.Landscape' );
-			mapServices.mapquest = L.tileLayer.provider('MapQuestOpen.OSM');			
-			mapServices.esriworldtopomap = L.tileLayer.provider( 'Esri.WorldTopoMap' );
+			var defaultMaps = ips.getSetting( 'membermap_defaultMaps' );
+			var defaultMap = '';
+
+			$.each( defaultMaps.basemaps, function( id, name )
+			{
+				try 
+				{
+					var key = name.toLowerCase().replace( '.', '' );
+					var prettyName = name.replace( '.', ' ' );
+
+					baseMaps[ prettyName ] = mapServices[ key ] = L.tileLayer.provider( name );
+
+					if ( defaultMap == '' )
+					{
+						defaultMap = key;
+					}
+				}
+				catch(e)
+				{
+					Debug.log( e.message );
+				}
+			});
 
 			var contextMenu = [];
 
@@ -185,7 +202,6 @@
 			});
 			
 
-			var defaultMap = 'mapquest';
 			var newDefault = '';
 			
 			if ( typeof ips.utils.cookie.get( 'membermap_baseMap' ) == 'string' && ips.utils.cookie.get( 'membermap_baseMap' ).length > 0 )
@@ -219,7 +235,6 @@
 				crs: L.CRS.EPSG3857
 			});
 			
-			
 			if ( isMobileDevice === false ) 
 			{
 				L.control.scale().addTo(map);
@@ -241,15 +256,22 @@
 
 			map.addLayer( memberMarkers );
 			
-			baseMaps = {
-				"MapQuest": mapServices.mapquest,
-				"Thunderforest Landscape": mapServices.thunderforestlandscape,
-				'Esri WorldTopoMap': mapServices.esriworldtopomap,
-				'Esri World Street Map': mapServices.esriworldstreetmap
-			};
 
 			overlayMaps[ ips.getString( 'membermap_overlay_members' ) ] = memberMarkers;
 
+			$.each( defaultMaps.overlays, function( id, name )
+			{
+				try 
+				{
+					var prettyName = name.replace( '.', ' ' );
+
+					overlayMaps[ prettyName ] = L.tileLayer.provider( name );
+				}
+				catch(e)
+				{
+					Debug.log( e.message );
+				}
+			});
 
 			overlayControl = L.control.layers( baseMaps, overlayMaps, { collapsed: ( isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
 
@@ -455,7 +477,7 @@
 							{
 								ips.getAjax()({ 
 									//url: 'http://www.mapquestapi.com/geocoding/v1/address', 
-									url: 'http://open.mapquestapi.com/nominatim/v1/search.php',
+									url: 'https://open.mapquestapi.com/nominatim/v1/search.php',
 									type: 'get',
 									dataType: 'json',
 									data: {
@@ -640,8 +662,8 @@
 	
 		showMarkers = function( dontRepan, markers )
 		{
-			dontRepan = typeof dontRepan !== 'undefined' ? dontRepan : false;
-			markers = typeof markers !== 'undefined' ? markers : false;
+			dontRepan = typeof dontRepan !== undefined ? dontRepan : false;
+			markers = typeof markers !== undefined ? markers : false;
 
 			var getByUser 	= ips.utils.url.getParam( 'filter' ) == 'getByUser' ? true : false;
 			var memberId 	= parseInt( ips.utils.url.getParam( 'member_id' ) );
@@ -835,7 +857,6 @@
 
 		updateLocation = function( e )
 		{
-			Debug.log( e );
 			ips.ui.alert.show({
 				type: 'confirm',
 				message: ips.getString( 'membermap_confirm_updateLocation' ),

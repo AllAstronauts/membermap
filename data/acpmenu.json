@@ -5,6 +5,12 @@
             "controller": "markers",
             "do": "",
             "restriction": null
+        },
+        "mapmanager": {
+            "tab": "community",
+            "controller": "mapmanager",
+            "do": "",
+            "restriction": "mapmanager_manage"
         }
     }
 }

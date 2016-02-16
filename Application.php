@@ -16,6 +16,16 @@ namespace IPS\membermap;
  */
 class _Application extends \IPS\Application
 {
+
+	public static $defaultMaps = array(
+		'basemaps' => array(
+			1 => 'MapQuestOpen.OSM',
+			2 => 'Thunderforest.Landscape',
+			3 => 'Esri.WorldStreetMap',
+			4 => 'Esri.WorldTopoMap',
+		)
+	);
+
 	/**
 	 * Install 'other' items.
 	 *
@@ -29,6 +39,22 @@ class _Application extends \IPS\Application
 			$group->g_membermap_canAdd = TRUE;
 			$group->save();
 		}
+	}
+
+	public static function getEnabledMaps()
+	{
+		$defaultMaps = self::$defaultMaps;
+
+		if ( \IPS\Settings::i()->membermap_activemaps )
+		{
+			$maps = json_decode( \IPS\Settings::i()->membermap_activemaps, true );
+			if ( is_array( $maps ) )
+			{
+				$defaultMaps = $maps;
+			}
+		}
+
+		return $defaultMaps;
 	}
 
 	/**
