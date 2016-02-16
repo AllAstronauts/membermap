@@ -42,6 +42,13 @@ class _mapmanager extends \IPS\Dispatcher\Controller
 
 		\IPS\Output::i()->jsVars['membermap_defaultMaps'] = $defaultMaps;
 
+		\IPS\Output::i()->sidebar['actions']['preview'] = array(
+			'icon'	=> 'eye',
+			'link'	=> \IPS\Http\Url::external( 'https://leaflet-extras.github.io/leaflet-providers/preview/index.html' ),
+			'title'	=> 'membermap_mapmanager_preview',
+			'target' => '_blank',
+		);
+
 		\IPS\Output::i()->title  = \IPS\Member::loggedIn()->language()->addToStack('menu__membermap_membermap_mapmanager');
 		\IPS\Output::i()->output .= \IPS\Theme::i()->getTemplate( 'mapmanager' )->wrapper();
 	}

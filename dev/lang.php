@@ -18,6 +18,7 @@ $lang = array(
 	'membermap_mapmanager_availMaps' => "Available Maps",
 	'membermap_mapmanager_activeOverlays' => "Active Overlays",
 	'membermap_mapmanager_availOverlays' => "Available Overlays",
+	'membermap_mapmanager_preview' => "A preview of (almost) all maps and overlays can be seen here",
 	'membermap_button_addLocation' => "Add Location",
 	'membermap_button_editLocation' => "Update Location",
 	'membermap_current_location' => "Use Current Location",
