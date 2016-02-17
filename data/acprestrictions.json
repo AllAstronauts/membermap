@@ -2,6 +2,9 @@
     "membermap": {
         "mapmanager": {
             "mapmanager_manage": "mapmanager_manage"
+        },
+        "settings": {
+            "settings_manage": "settings_manage"
         }
     }
 }

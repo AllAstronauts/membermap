@@ -2,5 +2,17 @@
     {
         "key": "membermap_activemaps",
         "default": ""
+    },
+    {
+        "key": "membermap_bbox",
+        "default": ""
+    },
+    {
+        "key": "membermap_bbox_location",
+        "default": ""
+    },
+    {
+        "key": "membermap_enable_clustering",
+        "default": "1"
     }
 ]
