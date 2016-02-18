@@ -477,7 +477,7 @@
 							{
 								ips.getAjax()({ 
 									//url: 'http://www.mapquestapi.com/geocoding/v1/address', 
-									url: 'https://open.mapquestapi.com/nominatim/v1/search.php',
+									url: '//open.mapquestapi.com/nominatim/v1/search.php',
 									type: 'get',
 									dataType: 'json',
 									data: {
@@ -571,7 +571,7 @@
 					/* Skip this for now, will have to see how many requests this app consumes per month */
 
 					ips.getAjax()({ 
-						url: 'http://www.mapquestapi.com/geocoding/v1/reverse', 
+						url: '//www.mapquestapi.com/geocoding/v1/reverse', 
 						type: 'get',
 						dataType: 'json',
 						data: {

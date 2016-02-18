@@ -20,7 +20,7 @@
 				{
 					ips.getAjax()({ 
 						//url: 'http://www.mapquestapi.com/geocoding/v1/address', 
-						url: 'http://open.mapquestapi.com/nominatim/v1/search.php',
+						url: '//open.mapquestapi.com/nominatim/v1/search.php',
 						type: 'get',
 						dataType: 'json',
 						data: {
