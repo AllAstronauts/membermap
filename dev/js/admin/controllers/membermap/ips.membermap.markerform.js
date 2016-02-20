@@ -171,29 +171,39 @@
 			this.bounds = new L.LatLngBounds(southWest, northEast);
 
 			var mapServices = {};
-			mapServices.esriworldstreetmap = L.tileLayer.provider( 'Esri.WorldStreetMap' );
-			mapServices.thunderforestlandscape = L.tileLayer.provider( 'Thunderforest.Landscape' );
-			mapServices.mapquest = L.tileLayer.provider('MapQuestOpen.OSM');			
-			mapServices.esriworldtopomap = L.tileLayer.provider( 'Esri.WorldTopoMap' );
+			var baseMaps = {};
+			var defaultMaps = ips.getSetting( 'membermap_defaultMaps' );
+			var defaultMap = '';
+
+			$.each( defaultMaps.basemaps, function( id, name )
+			{
+				try 
+				{
+					var key = name.toLowerCase().replace( '.', '' );
+					var prettyName = name.replace( '.', ' ' );
+
+					baseMaps[ prettyName ] = mapServices[ key ] = L.tileLayer.provider( name );
+
+					if ( defaultMap == '' )
+					{
+						defaultMap = key;
+					}
+				}
+				catch(e)
+				{
+					Debug.log( e.message );
+				}
+			});
 
 			this.map = L.map( 'mapCanvas', 
 			{
 				zoom: 7,
-				layers: [ mapServices.mapquest ],
+				layers: [ mapServices[ defaultMap ] ],
 				attributionControl: true,
 				crs: L.CRS.EPSG3857
 			});
 
 			this.map.fitBounds( this.bounds );
-
-
-			
-			var baseMaps = {
-				"MapQuest": mapServices.mapquest,
-				"Thunderforest Landscape": mapServices.thunderforestlandscape,
-				'Esri WorldTopoMap': mapServices.esriworldtopomap,
-				'Esri World Street Map': mapServices.esriworldstreetmap
-			};
 
 			L.control.layers( baseMaps ).addTo( this.map );
 
