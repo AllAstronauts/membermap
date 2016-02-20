@@ -26,6 +26,18 @@ class _Application extends \IPS\Application
 		)
 	);
 
+	public static $apiKeys = array(
+		'mapquest' => "pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud",
+	);
+
+	public function init()
+	{
+		if ( \IPS\Settings::i()->membermap_mapQuestAPI )
+		{
+			self::$apiKeys['mapquest'] = \IPS\Settings::i()->membermap_mapQuestAPI;
+		}
+	}
+
 	/**
 	 * Install 'other' items.
 	 *
@@ -39,6 +51,22 @@ class _Application extends \IPS\Application
 			$group->g_membermap_canAdd = TRUE;
 			$group->save();
 		}
+	}
+
+	public static function getApiKeys( $service )
+	{
+		try
+		{
+			if ( $service )
+			{
+				return self::$apiKeys[ $service ];
+			}
+		}
+		catch( \Exception $e )
+		{
+		}
+
+		return self::$apiKeys;
 	}
 
 	public static function getEnabledMaps()

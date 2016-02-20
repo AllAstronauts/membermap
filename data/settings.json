@@ -14,5 +14,9 @@
     {
         "key": "membermap_enable_clustering",
         "default": "1"
+    },
+    {
+        "key": "membermap_mapQuestAPI",
+        "default": ""
     }
 ]

@@ -481,7 +481,7 @@
 									type: 'get',
 									dataType: 'json',
 									data: {
-										key: "pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud",
+										key: ips.getSetting( 'membermap_mapquestAPI' ),
 
 										// MapQuest Geocode
 										/*location: request.term,

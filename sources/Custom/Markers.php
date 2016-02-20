@@ -157,6 +157,12 @@ class _Markers extends \IPS\Node\Model
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'admin_membermap.js', 'membermap', 'admin' ) );
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'membermap.css', 'membermap' ) );
 
+		
+		/* Get enabled maps */
+		$defaultMaps = \IPS\membermap\Application::getEnabledMaps();
+		\IPS\Output::i()->jsVars['membermap_defaultMaps'] = $defaultMaps;
+		\IPS\Output::i()->jsVars['membermap_mapquestAPI'] = \IPS\membermap\Application::getApiKeys( 'mapquest' ); 
+
 		if ( count( \IPS\membermap\Custom\Groups::roots() ) == 0 )
 		{
 			\IPS\Output::i()->error( 'membermap_error_noGroups', '', 403, '' );

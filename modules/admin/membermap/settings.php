@@ -37,6 +37,8 @@ class _settings extends \IPS\Dispatcher\Controller
 
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'jquery/jquery-ui.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'jquery-ui.css', 'membermap', 'global' ) );
+		
+		\IPS\Output::i()->jsVars['membermap_mapquestAPI'] = \IPS\membermap\Application::getApiKeys( 'mapquest' ); 
 
 		$form = new \IPS\Helpers\Form;
 		$form->attributes['data-controller'] 	= 'membermap.admin.membermap.settings';
@@ -46,8 +48,12 @@ class _settings extends \IPS\Dispatcher\Controller
 
 		$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_enable_clustering', \IPS\Settings::i()->membermap_enable_clustering ) );
 		$form->add( new \IPS\Helpers\Form\Text( 'membermap_bbox_location', \IPS\Settings::i()->membermap_bbox_location, FALSE, array(), NULL, NULL, NULL, 'membermap_bbox_location' ) );
-
 		$form->hiddenValues['membermap_bbox'] = \IPS\Settings::i()->membermap_bbox;
+
+
+		$form->addHeader('api_settings');
+		$form->add( new \IPS\Helpers\Form\Text( 'membermap_mapQuestAPI', \IPS\Settings::i()->membermap_mapQuestAPI, FALSE, array(), NULL, NULL, NULL, 'membermap_mapQuestAPI' ) );
+
 		
 
 

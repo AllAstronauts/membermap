@@ -103,7 +103,11 @@ class _showmap extends \IPS\Dispatcher\Controller
         \IPS\Output::i()->jsVars['membermap_canEdit']	= \IPS\Member::loggedIn()->group['g_membermap_canEdit'] ?: 0;
         \IPS\Output::i()->jsVars['cmembermap_anDelete']	= \IPS\Member::loggedIn()->group['g_membermap_canDelete'] ?: 0;
         \IPS\Output::i()->jsVars['membermap_cacheTime'] = isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
+		\IPS\Output::i()->jsVars['membermap_bbox'] 		= json_decode( \IPS\Settings::i()->membermap_bbox ); 
 		\IPS\Output::i()->jsVars['membermap_defaultMaps'] = $defaultMaps;
+		\IPS\Output::i()->jsVars['membermap_mapquestAPI'] = \IPS\membermap\Application::getApiKeys( 'mapquest' ); 
+		\IPS\Output::i()->jsVars['membermap_enable_clustering'] = \IPS\Settings::i()->membermap_enable_clustering == 1 ? 1 : 0;
+
 
         \IPS\Output::i()->endBodyCode .= <<<EOF
 		<script type='text/javascript'>

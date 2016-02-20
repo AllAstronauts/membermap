@@ -24,7 +24,7 @@
 						type: 'get',
 						dataType: 'json',
 						data: {
-							key: "pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud",
+							key: ips.getSetting( 'membermap_mapquestAPI' ),
 
 							// MapQuest Geocode
 							/*location: request.term,
@@ -204,11 +204,11 @@
 			var that = this;
 
 			ips.getAjax()({ 
-				url: 'http://www.mapquestapi.com/geocoding/v1/reverse', 
+				url: '//www.mapquestapi.com/geocoding/v1/reverse', 
 				type: 'get',
 				dataType: 'json',
 				data: {
-					key: "pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud",
+					key: ips.getSetting( 'membermap_mapquestAPI' ),
 					lat: lat,
 					lng: lng
 
