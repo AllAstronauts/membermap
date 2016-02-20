@@ -27,6 +27,7 @@
 			isEmbedded = false,
 			
 			bounds = null,
+			forceBounds = false,
 			
 			stuffSize = 0,
 			popups = [],
@@ -146,8 +147,20 @@
 
 		setupMap = function()
 		{
-			var southWest = new L.LatLng( 56.83, -7.14 );
-			var northEast = new L.LatLng( 74.449, 37.466 );
+			var bbox = ips.getSetting( 'membermap_bbox' );
+
+			if ( bbox.minLat && bbox.minLng && bbox.maxLat && bbox.maxLng )
+			{
+				var southWest = new L.LatLng( bbox.minLat, bbox.minLng );
+				var northEast = new L.LatLng( bbox.maxLat, bbox.maxLng );
+
+				forceBounds = true;
+			}
+			else
+			{
+				var southWest = new L.LatLng( 56.83, -7.14 );
+				var northEast = new L.LatLng( 74.449, 37.466 );
+			}
 			bounds = new L.LatLngBounds(southWest, northEast);
 
 			var defaultMaps = ips.getSetting( 'membermap_defaultMaps' );
@@ -240,19 +253,16 @@
 				L.control.scale().addTo(map);
 			}
 
-			map.fitBounds( bounds );
+			map.fitBounds( bounds, { maxZoom: ( zoomLevel || 7 ) } );
 			
-
-			memberMarkers = new L.MarkerClusterGroup({ zoomToBoundsOnClick: false, disableClusteringAtZoom: ( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 ) });
-			
-			memberMarkers.on( 'clusterclick', function (a) 
+			if ( ips.getSetting( 'membermap_enable_clustering' ) == 1 )
 			{
-				map.fitBounds( a.layer._bounds );
-				if ( map.getZoom() > ( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 ) )
-				{
-					map.setZoom( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 );
-				}
-			});
+				memberMarkers = new L.MarkerClusterGroup({ zoomToBoundsOnClick: true, disableClusteringAtZoom: ( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 ) });
+			}
+			else
+			{
+				memberMarkers = new L.FeatureGroup();
+			}
 
 			map.addLayer( memberMarkers );
 			
@@ -668,6 +678,11 @@
 			var getByUser 	= ips.utils.url.getParam( 'filter' ) == 'getByUser' ? true : false;
 			var memberId 	= parseInt( ips.utils.url.getParam( 'member_id' ) );
 			var flyToZoom 	= 8;
+
+			if ( forceBounds )
+			{
+				dontRepan = true;
+			}
 
 			if ( markers === false )
 			{
