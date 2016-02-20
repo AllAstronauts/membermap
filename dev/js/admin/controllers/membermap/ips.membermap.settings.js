@@ -37,10 +37,10 @@
 								return {
 									value: item.display_name,
 									bbox: {
-										minLng: parseFloat( item.boundingbox[0] ).toFixed( 6 ),
-										minLat: parseFloat( item.boundingbox[1] ).toFixed( 6 ),
-										maxLng: parseFloat( item.boundingbox[2] ).toFixed( 6 ),
-										maxLat: parseFloat( item.boundingbox[3] ).toFixed( 6 )
+										minLat: parseFloat( item.boundingbox[0] ).toFixed( 6 ),
+										maxLat: parseFloat( item.boundingbox[1] ).toFixed( 6 ),
+										minLng: parseFloat( item.boundingbox[2] ).toFixed( 6 ),
+										maxLng: parseFloat( item.boundingbox[3] ).toFixed( 6 )
 									}
 								};
 							}));
