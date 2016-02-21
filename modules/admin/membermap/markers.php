@@ -35,6 +35,8 @@ class _markers extends \IPS\Node\Controller
 	 */
 	public function execute()
 	{
+		\IPS\Dispatcher::i()->checkAcpPermission( 'markers_manage' );
+
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'jquery/jquery-ui.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/leaflet-src.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/leaflet-providers.js', 'membermap', 'interface' ) );
@@ -157,21 +159,22 @@ class _markers extends \IPS\Node\Controller
 	public static function getMarkerRow( $marker, $url )
 	{
 		return \IPS\Theme::i()->getTemplate( 'trees', 'core' )->row( 
-			$url, 
-			$marker->id, 
-			$marker->name, 
-			false, 
-			$marker->getButtons( \IPS\Http\url::internal('app=membermap&module=membermap&controller=markers'), true ), 
-			$marker->location, 
-			'map-marker', 
-			NULL, 
-			FALSE, 
-			NULL, 
-			NULL, 
-			NULL, 
-			FALSE, 
-			FALSE, 
-			FALSE 
+			$url,
+			$marker->id,
+			$marker->name,
+			false,
+			$marker->getButtons( \IPS\Http\url::internal('app=membermap&module=membermap&controller=markers'), true ),
+			$marker->location,
+			'map-marker',
+			NULL,
+			FALSE,
+			NULL,
+			NULL,
+			NULL,
+			FALSE,
+			FALSE,
+			FALSE,
+			FALSE
 		);
 	}
 

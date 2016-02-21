@@ -11,6 +11,14 @@ $lang = array(
 	'module__membermap_membermap' => "Member Map",
 	'group__membermap_membermap' => "Member Map",
 
+	'r__mapmanager' => "Map Manager",
+	'r__mapmanager_manage' => "Can manage Map Manager?",
+	'r__markers' => "Custom Markers",
+	'r__markers_manage' => "Can view Custom Markers?",
+	'r__markers_add' => "Can add Custom Markers?",
+	'r__markers_edit' => "Can edit Custom Markers?",
+	'r__markers_delete' => "Can delete Custom Markers?",
+
 	'map_settings' => "Map Settings",
 	'api_settings' => "API Keys",
 	'membermap_enable_clustering' => "Enable Marker Clustering?",
