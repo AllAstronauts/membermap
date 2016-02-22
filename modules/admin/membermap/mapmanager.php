@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * @brief		Map Manager Controller
+ * @author		<a href='http://ipb.silvesterwebdesigns.com'>Stuart Silvester & Martin Aronsen</a>
+ * @copyright	(c) 2015 Stuart Silvester & Martin Aronsen
+ * @package		IPS Social Suite
+ * @subpackage	Member Map
+ * @since		20 Oct 2015
+ * @version		3.0.1
+ */
 
 namespace IPS\membermap\modules\admin\membermap;
 
@@ -22,6 +31,8 @@ class _mapmanager extends \IPS\Dispatcher\Controller
 	 */
 	public function execute()
 	{
+		\IPS\Dispatcher::i()->checkAcpPermission( 'mapmanager_manage' );
+
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/leaflet-src.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/leaflet-providers.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'admin_membermap.js', 'membermap', 'admin' ) );

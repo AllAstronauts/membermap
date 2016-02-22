@@ -215,7 +215,12 @@ class _Markers extends \IPS\Node\Model
 		/* Build form */
 		$form->add( new \IPS\Helpers\Form\Text( 'marker_name', $this->id ? $this->name : '', TRUE, array( 'maxLength' => 64 ) ) );
 
-		$form->add( new \IPS\Helpers\Form\TextArea( 'marker_description', $this->id ? $this->description : '', FALSE, array( 'rows' => 3 ) ) );
+		//$form->add( new \IPS\Helpers\Form\TextArea( 'marker_description', $this->id ? $this->description : '', FALSE, array( 'rows' => 3 ) ) );
+		$form->add( new \IPS\Helpers\Form\Editor( 'marker_description', $this->id ? $this->description : '', FALSE, array(
+				'app'         => 'membermap',
+				'key'         => 'markers',
+				'autoSaveKey' => 'custom-markers-' . ( $this->id ? $this->id : 'new' ),
+				'attachIds'	  => ( $this->id ) ? array( $this->id ) : NULL ) ) );
 
 		$form->add( new \IPS\Helpers\Form\Node( 'marker_parent_id', $this->parent_id ? $this->parent_id : 0, TRUE, array(
 			'class'		=> '\IPS\membermap\Custom\Groups',
@@ -244,7 +249,10 @@ class _Markers extends \IPS\Node\Model
 		if ( !$this->id )
 		{
 			$this->save();
+
+			\IPS\File::claimAttachments( 'custom-markers-new', $this->id );
 		}
+
 		
 		
 		if ( isset( $values['marker_parent_id'] ) AND ( ! empty( $values['marker_parent_id'] ) OR $values['marker_parent_id'] === 0 ) )

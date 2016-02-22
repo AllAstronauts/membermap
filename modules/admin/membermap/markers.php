@@ -6,7 +6,7 @@
  * @package		IPS Social Suite
  * @subpackage	Member Map
  * @since		20 Oct 2015
- * @version		3.0.0
+ * @version		3.0.1
  */
 
 namespace IPS\membermap\modules\admin\membermap;

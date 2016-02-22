@@ -7,7 +7,7 @@
 	ips.createModule('ips.membermap', function() 
 	{
 		var map = null,
-			defaultMapTypeId = null,
+			defaultMaps = {},
 			
 			zoomLevel = null,
 			
@@ -55,6 +55,9 @@
 			setMobileDevice( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) );
 
 
+			defaultMaps = ips.getSetting( 'membermap_defaultMaps' );
+
+
 			/* Showing a single user or online user, get the markers from DOM */
 			var getByUser = ips.utils.url.getParam( 'filter' ) == 'getByUser' ? true : false;
 			var getOnlineUsers = ips.utils.url.getParam( 'filter' ) == 'getOnlineUsers' ? true : false;
@@ -94,13 +97,6 @@
 				setZoomLevel( initZoom );
 			}
 
-			/* Set default map from URL */
-			var defaultMap = ips.utils.url.getParam( 'map' );
-			if ( defaultMap )
-			{
-				setDefaultMap( defaultMap );
-			}
-
 			/* Are we embedding? */
 			setEmbed( ips.utils.url.getParam( 'do' ) == 'embed' ? 1 : 0 );
 
@@ -108,12 +104,42 @@
 			/* Set a height of the map that fits our browser height */
 			setMapHeight();
 			
+			/* Prep the map */
 			setupMap();
 			
 
 			/* Load all markers */
 			loadMarkers();
-		
+
+			/* Count all markers in each overlay */
+			$.each( overlayControl._layers, function( id, layer )
+			{
+				if ( layer.overlay == true )
+				{
+					var count = layer.layer.getLayers().length;
+					if ( count > 0 )
+					{
+						overlayControl._layers[ id ].name = overlayControl._layers[ id ].name + " (" + count + ")";
+					}
+				}
+			});
+			overlayControl._update();
+			
+			/* Insert 3rd-party overlay last */
+			$.each( defaultMaps.overlays, function( id, name )
+			{
+				try 
+				{
+					var prettyName = name.replace( '.', ' ' );
+
+					overlayControl.addOverlay( L.tileLayer.provider( name ), prettyName );
+				}
+				catch(e)
+				{
+					Debug.log( e.message );
+				}
+			});
+			
 			
 			/* Init events */
 			initEvents();	
@@ -122,11 +148,6 @@
 		setMobileDevice = function( bool )
 		{
 			isMobileDevice = bool;
-		},
-		
-		setDefaultMap = function( map )
-		{
-			defaultMapTypeId = map;
 		},
 		
 		setEmbed = function( bool )
@@ -163,7 +184,6 @@
 			}
 			bounds = new L.LatLngBounds(southWest, northEast);
 
-			var defaultMaps = ips.getSetting( 'membermap_defaultMaps' );
 			var defaultMap = '';
 
 			$.each( defaultMaps.basemaps, function( id, name )
@@ -222,11 +242,6 @@
 				newDefault = ips.utils.cookie.get( 'membermap_baseMap' ).toLowerCase();
 			}
 			
-			if ( defaultMapTypeId !== null )
-			{
-				newDefault = defaultMapTypeId;
-			}
-			
 			if ( newDefault !== '' )
 			{
 				if ( mapServices[ newDefault ] !== undefined )
@@ -268,20 +283,6 @@
 			
 
 			overlayMaps[ ips.getString( 'membermap_overlay_members' ) ] = memberMarkers;
-
-			$.each( defaultMaps.overlays, function( id, name )
-			{
-				try 
-				{
-					var prettyName = name.replace( '.', ' ' );
-
-					overlayMaps[ prettyName ] = L.tileLayer.provider( name );
-				}
-				catch(e)
-				{
-					Debug.log( e.message );
-				}
-			});
 
 			overlayControl = L.control.layers( baseMaps, overlayMaps, { collapsed: ( isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
 
@@ -585,7 +586,7 @@
 						type: 'get',
 						dataType: 'json',
 						data: {
-							key: "pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud",
+							key: ips.getSetting( 'membermap_mapquestAPI' ),
 							lat: position.coords.latitude,
 							lng: position.coords.longitude
 
@@ -691,8 +692,6 @@
 
 			if ( markers.length > 0 )
 			{
-				var memberSearch = $( '#elInput_membermap_memberName_wrapper .cToken' ).eq(0).attr( 'data-value' );
-
 				var counter = 0;
 
 				$.each( markers, function() 
@@ -702,20 +701,11 @@
 					{
 						return;
 					}
-
-					/* Report written by selected member? */
-					if ( typeof memberSearch !== 'undefined' )
-					{
-						/* Names of 'null' are deleted members */
-						if (this.name === null || memberSearch.toLowerCase() !== this.name.toLowerCase() )
-						{
-							return;
-						}
-					}
 					
 					var bgColour 	= 'darkblue';
 					var icon 		= 'user';
 					var iconColour 	= 'white';
+					var popupOptions = {};
 
 					if ( this.type == 'member' )
 					{
@@ -759,6 +749,9 @@
 						icon 		= this.icon || 'fa-map-marker';
 						bgColour 	= this.bgColour;
 
+						popupOptions = {
+							minWidth: 320
+						}
 					}
 
 					var _icon = L.AwesomeMarkers.icon({
@@ -786,7 +779,7 @@
 							contextmenu: enableContextMenu,
 						    contextmenuItems: contextMenu
 						}
-					).bindPopup( this.popup );
+					).bindPopup( this.popup, ( popupOptions || {} ) );
 					
 					mapMarker.markerData = this;
 
@@ -952,7 +945,6 @@
 
 		return {
 			initMap: initMap,
-			setDefaultMap: setDefaultMap,
 			setMarkers: setMarkers,
 			setCenter: setCenter,
 			setZoomLevel: setZoomLevel,
