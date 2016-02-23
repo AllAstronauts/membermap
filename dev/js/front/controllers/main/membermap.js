@@ -318,6 +318,8 @@
 			if ( ips.utils.url.getParam( 'rebuildCache' ) == 1 || ips.utils.url.getParam( 'dropBrowserCache' ) == 1 )
 			{
 				forceReload = true;
+				removeURIParam( 'rebuildCache' );
+				removeURIParam( 'dropBrowserCache' );
 			}
 
 			/* Skip this if markers was loaded from DOM */
@@ -732,6 +734,8 @@
 								getByUser 	= true;
 								memberId 	= this.member_id;
 								flyToZoom 	= 10;
+
+								removeURIParam( 'goHome' );
 							}
 							
 						}
@@ -941,6 +945,25 @@
 			}
 
 			return [];
+		},
+
+		removeURIParam = function( param )
+		{
+			var urlObject = ips.utils.url.getURIObject();
+
+			delete urlObject.queryKey[ param ];
+
+			if( urlObject.queryKey.length > 0 )
+			{
+				var newQuery = $.param( urlObject.queryKey );
+				var newUrl = History.getBaseUrl() + '?' + newQuery;
+			}
+			else
+			{
+				var newUrl = History.getBaseUrl();
+			}
+
+			History.pushState( null, null, newUrl );
 		};
 
 		return {
