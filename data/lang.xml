@@ -22,7 +22,7 @@
   <word key="membermap_bbox_location" js="0">Define Forced Bounding Box</word>
   <word key="membermap_bbox_location_desc" js="0">Use the field above to search for a location that will always be in center of your map. The map will only focus on this area, regardless of markers outside of it. Try a few of the results from the search untill you find one that suits your needs.</word>
   <word key="membermap_mapQuestAPI" js="0">MapQuest API Key</word>
-  <word key="membermap_mapQuestAPI_desc" js="0"><![CDATA[Sign up for your own API Key at <a href='https://developer.mapquest.com/' target='_blank'>MapQuest</a>. Some features in the future will require your to do this.]]></word>
+  <word key="membermap_mapQuestAPI_desc" js="0"><![CDATA[Sign up for your own API Key at <a href='https://developer.mapquest.com/' target='_blank'>MapQuest</a>. Some features in the future will require you to do this.]]></word>
   <word key="membermap_bbox_zoom" js="0">Default Zoom Level</word>
   <word key="membermap_bbox_zoom_desc" js="0">Only affective when a bounding box is defined.</word>
   <word key="loc_membermap_viewing_membermap" js="0">Viewing the Member Map</word>

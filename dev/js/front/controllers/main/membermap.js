@@ -139,7 +139,7 @@
 			/* Bounding Box */
 			var bbox = ips.getSetting( 'membermap_bbox' );
 
-			if ( bbox.minLat && bbox.minLng && bbox.maxLat && bbox.maxLng )
+			if ( bbox !== null && bbox.minLat && bbox.minLng && bbox.maxLat && bbox.maxLng )
 			{
 				var southWest = new L.LatLng( bbox.minLat, bbox.minLng );
 				var northEast = new L.LatLng( bbox.maxLat, bbox.maxLng );
@@ -397,7 +397,7 @@
 					/* Inform that we're showing markers from browser cache */
 					if ( oldMarkersIndicator === null && ! isEmbedded )
 					{
-						oldMarkersIndicator = new L.Control.MembermapOldMarkers({ callback: reloadMarkers, time: date });
+						oldMarkersIndicator = new L.Control.MembermapOldMarkers({ callback: function() { window.location.href = ips.getSetting('baseURL') + 'index.php?app=membermap&dropBrowserCache=1' }, time: date });
 						ips.membermap.map.addControl( oldMarkersIndicator );
 					}
 
@@ -417,8 +417,7 @@
 			/* Count all markers in each overlay */
 			$.each( overlayControl._layers, function( id, layer )
 			{
-				Debug.log( layer );
-				if ( layer.overlay == true )
+				if ( layer.overlay == true && layer.layer.getLayers() !== 'undefined' && layer.layer.getLayers().length > 0 )
 				{
 					var count = layer.layer.getLayers().length;
 					if ( count > 0 )
@@ -429,19 +428,23 @@
 			});
 
 			/* Insert 3rd-party overlay last */
-			$.each( defaultMaps.overlays, function( id, name )
+			if ( $.isArray( defaultMaps.overlays ) && defaultMaps.overlays.length > 0 )
 			{
-				try 
+				$.each( defaultMaps.overlays, function( id, name )
 				{
-					var prettyName = name.replace( '.', ' ' );
+					try 
+					{
+						var prettyName = name.replace( '.', ' ' );
 
-					overlayControl.addOverlay( L.tileLayer.provider( name ), prettyName );
-				}
-				catch(e)
-				{
-					Debug.log( e.message );
-				}
-			});
+						overlayControl.addOverlay( L.tileLayer.provider( name ), prettyName );
+					}
+					catch(e)
+					{
+						Debug.log( e.message );
+					}
+				});
+			}
+
 			overlayControl._update();
 		},
 		
@@ -961,20 +964,27 @@
 		removeURIParam = function( param )
 		{
 			var urlObject = ips.utils.url.getURIObject();
+			var queryKeys = urlObject.queryKey;
 
-			delete urlObject.queryKey[ param ];
+			delete queryKeys[ param ];
 
-			if( urlObject.queryKey.length > 0 )
+			if( Object.keys( queryKeys ).length > 0 )
 			{
-				var newQuery = $.param( urlObject.queryKey );
-				var newUrl = History.getBaseUrl() + '?' + newQuery;
+				var newQuery = Object.keys( queryKeys ).reduce( function(a,k)
+				{
+					var v = ( queryKeys[k] !== "" ) ? k + '=' + encodeURIComponent( queryKeys[k] ) : k;
+					a.push( v );
+					return a
+				}, [] ).join( '&' );
+
+				var newUrl = window.location.origin + window.location.pathname + '?' + newQuery;
 			}
 			else
 			{
-				var newUrl = History.getBaseUrl();
+				var newUrl = window.location.origin + window.location.pathname;
 			}
 
-			History.pushState( null, null, newUrl );
+			History.replaceState( null, document.title, newUrl );
 		};
 
 		return {
