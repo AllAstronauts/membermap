@@ -99,47 +99,15 @@
 
 			/* Are we embedding? */
 			setEmbed( ips.utils.url.getParam( 'do' ) == 'embed' ? 1 : 0 );
-
-			
+		
 			/* Set a height of the map that fits our browser height */
 			setMapHeight();
 			
 			/* Prep the map */
 			setupMap();
 			
-
 			/* Load all markers */
-			loadMarkers();
-
-			/* Count all markers in each overlay */
-			$.each( overlayControl._layers, function( id, layer )
-			{
-				if ( layer.overlay == true )
-				{
-					var count = layer.layer.getLayers().length;
-					if ( count > 0 )
-					{
-						overlayControl._layers[ id ].name = overlayControl._layers[ id ].name + " (" + count + ")";
-					}
-				}
-			});
-			overlayControl._update();
-			
-			/* Insert 3rd-party overlay last */
-			$.each( defaultMaps.overlays, function( id, name )
-			{
-				try 
-				{
-					var prettyName = name.replace( '.', ' ' );
-
-					overlayControl.addOverlay( L.tileLayer.provider( name ), prettyName );
-				}
-				catch(e)
-				{
-					Debug.log( e.message );
-				}
-			});
-			
+			loadMarkers();			
 			
 			/* Init events */
 			initEvents();	
@@ -377,6 +345,8 @@
 						/* Store data in browser when all AJAX calls complete */
 						promise.done(function()
 						{
+							updateOverlays();
+
 							if ( ips.utils.db.isEnabled() )
 							{
 								var date = new Date();
@@ -415,6 +385,7 @@
 
 					allMarkers = data.data;
 					showMarkers( false, data.data );
+					updateOverlays();
 					
 					/* Inform that we're showing markers from browser cache */
 					if ( oldMarkersIndicator === null && ! isEmbedded )
@@ -432,6 +403,39 @@
 				}
 			}
 
+		},
+
+		updateOverlays = function()
+		{
+			/* Count all markers in each overlay */
+			$.each( overlayControl._layers, function( id, layer )
+			{
+				Debug.log( layer );
+				if ( layer.overlay == true )
+				{
+					var count = layer.layer.getLayers().length;
+					if ( count > 0 )
+					{
+						overlayControl._layers[ id ].name = overlayControl._layers[ id ].name + " (" + count + ")";
+					}
+				}
+			});
+
+			/* Insert 3rd-party overlay last */
+			$.each( defaultMaps.overlays, function( id, name )
+			{
+				try 
+				{
+					var prettyName = name.replace( '.', ' ' );
+
+					overlayControl.addOverlay( L.tileLayer.provider( name ), prettyName );
+				}
+				catch(e)
+				{
+					Debug.log( e.message );
+				}
+			});
+			overlayControl._update();
 		},
 		
 		initEvents = function()
