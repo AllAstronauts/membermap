@@ -40,6 +40,7 @@ $lang = array(
 	'group_pin_icon_desc' => "Choose any icon from the <a href='http://fontawesome.io/icons/' target='_blank'>Font Awesome icon set</a>, input the full name in the box above, i.e. `fa-map-marker`",
 	'group_pin_colour' => "Marker Icon Colour",
 	'group_pin_bg_colour' => "Marker Background Colour",
+	'group_pin_bg_colour_white' => "White",
 
 	'membermap_mapmanager_activeMaps' => "Active Maps",
 	'membermap_mapmanager_availMaps' => "Available Maps",
@@ -47,6 +48,7 @@ $lang = array(
 	'membermap_mapmanager_availOverlays' => "Available Overlays",
 	'membermap_mapmanager_preview' => "A preview of (almost) all maps and overlays can be seen here",
 
+	'membermap_adminTools' => "Admin Tools",
 	'membermap_button_addLocation' => "Add Location",
 	'membermap_button_editLocation' => "Update Location",
 	'membermap_current_location' => "Use Current Location",
@@ -77,4 +79,5 @@ $lang = array(
 	'membermap_goHome' => "Go to my location",
 	'membermap_rebuildBrowserCache' => "Rebuild Browser Cache",
 	'membermap_rebuildServerCache' => "Rebuild Server Cache (Last Update: %s)",
+	'membermap_rebuildServerCache_notSet' => "Rebuild Server Cache (Not created yet)",
 );

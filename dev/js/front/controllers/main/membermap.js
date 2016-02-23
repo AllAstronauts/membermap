@@ -382,7 +382,7 @@
 								ips.utils.db.set( 'membermap', 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
 
 
-								$( '#elToolsMenuBrowserCache a time' ).html( '(Last update: ' + ips.utils.time.readable( date.getTime() / 1000 ) + ')' );
+								$( '#elToolsMenuBrowserCache a time' ).html( '(' + ips.getString( 'membermap_browserCache_update' ) + ': ' + ips.utils.time.readable( date.getTime() / 1000 ) + ')' );
 							}
 						});
 					}
@@ -421,7 +421,7 @@
 						ips.membermap.map.addControl( oldMarkersIndicator );
 					}
 
-					$( '#elToolsMenuBrowserCache a time' ).html( '(Last update: ' + ips.utils.time.readable( date / 1000 ) + ')' );
+					$( '#elToolsMenuBrowserCache a time' ).html( '(' + ips.getString( 'membermap_browserCache_update' ) + ': ' + ips.utils.time.readable( date / 1000 ) + ')' );
 				}
 				else
 				{

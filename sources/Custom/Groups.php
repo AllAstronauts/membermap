@@ -250,7 +250,7 @@ class _Groups extends \IPS\Node\Model
 		$form->add( new \IPS\Helpers\Form\Radio( 'group_pin_bg_colour', $bgColour, TRUE, array(
 			'options' => $radioOpt,
 			'parse' => 'image',
-			'descriptions' => array( 'white' => 'White' ) /* Just because white is difficult to see on the page */
+			'descriptions' => array( 'white' => \IPS\Member::loggedIn()->language()->addToStack( 'group_pin_bg_colour_white' ) ) /* Just because white is difficult to see on the page */
 		)));
 
 		$form->addDummy( 'group_marker_example', "<span class='awesome-marker awesome-marker-icon-{$bgColour}' id='markerExample'><i class='fa fa-fw {$icon}' style='color: {$iconColour}'></i></span>" );

@@ -20,4 +20,5 @@ $lang = array(
 	'membermap_mapmanager_cant_save' => "We couldn't save your chosen maps",
 	'membermap_noHTTPS' => "HTTP Only",
 	'membermap_noHTTPS_desc' => "This provider only serves content over the HTTP protocol, this will not work if you&rsquo;re using HTTPS",
+	'membermap_browserCache_update'	=> "Last Update",
 );
