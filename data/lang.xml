@@ -1,18 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="100003">
+ <app key="membermap" version="100004">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
   <word key="menu__membermap_membermap" js="0">Member Map</word>
+  <word key="menu__membermap_membermap_markers" js="0">Custom Markers</word>
+  <word key="menu__membermap_membermap_mapmanager" js="0">Map Manager</word>
+  <word key="menu__membermap_membermap_settings" js="0">Settings</word>
   <word key="module__membermap_membermap" js="0">Member Map</word>
   <word key="group__membermap_membermap" js="0">Member Map</word>
+  <word key="r__mapmanager" js="0">Map Manager</word>
+  <word key="r__mapmanager_manage" js="0">Can manage Map Manager?</word>
+  <word key="r__markers" js="0">Custom Markers</word>
+  <word key="r__markers_manage" js="0">Can view Custom Markers?</word>
+  <word key="r__markers_add" js="0">Can add Custom Markers?</word>
+  <word key="r__markers_edit" js="0">Can edit Custom Markers?</word>
+  <word key="r__markers_delete" js="0">Can delete Custom Markers?</word>
+  <word key="map_settings" js="0">Map Settings</word>
+  <word key="api_settings" js="0">API Keys</word>
+  <word key="membermap_enable_clustering" js="0">Enable Marker Clustering?</word>
+  <word key="membermap_bbox_location" js="0">Define Forced Bounding Box</word>
+  <word key="membermap_bbox_location_desc" js="0">Use the field above to search for a location that will always be in center of your map. The map will only focus on this area, regardless of markers outside of it. Try a few of the results from the search untill you find one that suits your needs.</word>
+  <word key="membermap_mapQuestAPI" js="0">MapQuest API Key</word>
+  <word key="membermap_mapQuestAPI_desc" js="0"><![CDATA[Sign up for your own API Key at <a href='https://developer.mapquest.com/' target='_blank'>MapQuest</a>. Some features in the future will require your to do this.]]></word>
+  <word key="membermap_bbox_zoom" js="0">Default Zoom Level</word>
+  <word key="membermap_bbox_zoom_desc" js="0">Only affective when a bounding box is defined.</word>
   <word key="loc_membermap_viewing_membermap" js="0">Viewing the Member Map</word>
   <word key="g_membermap_canAdd" js="0">Can add location to map</word>
   <word key="g_membermap_canEdit" js="0">Can edit their location</word>
   <word key="g_membermap_canDelete" js="0">Can delete their location</word>
   <word key="g_membermap_markerColour" js="0">Marker Colour</word>
   <word key="g_membermap_markerColour_desc" js="0">The members own marker will always be green</word>
-  <word key="menu__membermap_membermap_markers" js="0">Custom Markers</word>
+  <word key="group_contrast_warning" js="0">Your users may have trouble seeing the icon on the background, the contrast of the colours is too close.</word>
+  <word key="group_marker_example" js="0">Marker Preview</word>
+  <word key="group_name" js="0">Marker Group Name</word>
+  <word key="group_pin_icon" js="0">Marker Icon</word>
+  <word key="group_pin_icon_desc" js="0"><![CDATA[Choose any icon from the <a href='http://fontawesome.io/icons/' target='_blank'>Font Awesome icon set</a>, input the full name in the box above, i.e. `fa-map-marker`]]></word>
+  <word key="group_pin_colour" js="0">Marker Icon Colour</word>
+  <word key="group_pin_bg_colour" js="0">Marker Background Colour</word>
+  <word key="group_pin_bg_colour_white" js="0">White</word>
+  <word key="membermap_mapmanager_activeMaps" js="0">Active Maps</word>
+  <word key="membermap_mapmanager_availMaps" js="0">Available Maps</word>
+  <word key="membermap_mapmanager_activeOverlays" js="0">Active Overlays</word>
+  <word key="membermap_mapmanager_availOverlays" js="0">Available Overlays</word>
+  <word key="membermap_mapmanager_preview" js="0">A preview of (almost) all maps and overlays can be seen here</word>
+  <word key="membermap_adminTools" js="0">Admin Tools</word>
   <word key="membermap_button_addLocation" js="0">Add Location</word>
   <word key="membermap_button_editLocation" js="0">Update Location</word>
   <word key="membermap_current_location" js="0">Use Current Location</word>
@@ -26,14 +58,8 @@
   <word key="membermap_error_cantEdit" js="0">You are not allowed to edit your location.</word>
   <word key="membermap_error_cantAdd" js="0">You are not allowed to add a location.</word>
   <word key="membermap_error_noGroups" js="0">You need to create a Custom Marker Group first.</word>
+  <word key="membermap_showing_markers" js="0"><![CDATA[Showing <span>0</span> markers]]></word>
   <word key="membermap_view_fullsize" js="0">View fullsize map</word>
-  <word key="group_contrast_warning" js="0">Your users may have trouble seeing the icon on the background, the contrast of the colours is too close.</word>
-  <word key="group_marker_example" js="0">Marker Preview</word>
-  <word key="group_name" js="0">Marker Group Name</word>
-  <word key="group_pin_icon" js="0">Marker Icon</word>
-  <word key="group_pin_icon_desc" js="0"><![CDATA[Choose any icon from the <a href='http://fontawesome.io/icons/' target='_blank'>Font Awesome 4.2 icon set</a>, input the full name in the box above, i.e. `fa-map-marker`]]></word>
-  <word key="group_pin_colour" js="0">Marker Icon Colour</word>
-  <word key="group_pin_bg_colour" js="0">Marker Background Colour</word>
   <word key="marker_name" js="0">Marker Title</word>
   <word key="marker_description" js="0">Marker Description</word>
   <word key="marker_lat" js="0">Latitude (N)</word>
@@ -46,6 +72,7 @@
   <word key="membermap_goHome" js="0">Go to my location</word>
   <word key="membermap_rebuildBrowserCache" js="0">Rebuild Browser Cache</word>
   <word key="membermap_rebuildServerCache" js="0">Rebuild Server Cache (Last Update: %s)</word>
+  <word key="membermap_rebuildServerCache_notSet" js="0">Rebuild Server Cache (Not created yet)</word>
   <word key="membermap_button_editLocation" js="1">Update Location</word>
   <word key="membermap_location_title" js="1">Update Location</word>
   <word key="membermap_no_results" js="1">Couldn't find what you were looking for. Showing all members instead.</word>
@@ -60,5 +87,11 @@
   <word key="membermap_cached_markers_refresh" js="1">Refresh</word>
   <word key="marker_addViaMap" js="1">Select location in map</word>
   <word key="membermap_cannot_edit_location" js="1">You do not have permission to edit your location.</word>
+  <word key="membermap_overlay_members" js="1">Members</word>
+  <word key="membermap_defaultProvider" js="1">Default</word>
+  <word key="membermap_mapmanager_cant_save" js="1">We couldn't save your chosen maps</word>
+  <word key="membermap_noHTTPS" js="1">HTTP Only</word>
+  <word key="membermap_noHTTPS_desc" js="1"><![CDATA[This provider only serves content over the HTTP protocol, this will not work if you&rsquo;re using HTTPS]]></word>
+  <word key="membermap_browserCache_update" js="1">Last Update</word>
  </app>
 </language>

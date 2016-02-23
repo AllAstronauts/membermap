@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <javascript app="membermap">
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/main" javascript_name="jquery.showLoading.min.js" javascript_type="controller" javascript_version="100003" javascript_position="1000050"><![CDATA[﻿/*
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/main" javascript_name="jquery.showLoading.min.js" javascript_type="controller" javascript_version="100004" javascript_position="1000050"><![CDATA[﻿/*
  * jQuery showLoading plugin v1.0
  * 
  * Copyright (c) 2009 Jim Keller
@@ -35,8 +35,8 @@ return this;};jQuery.fn.hideLoading=function(options){var settings={};jQuery.ext
 else{indicatorID=jQuery(this).attr('id');}
 jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(document.body).find('#loading-indicator-'+indicatorID+'-overlay').remove();return this;};
 ]]></file>
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/main" javascript_name="membermap.js" javascript_type="controller" javascript_version="100003" javascript_position="1000050"><![CDATA[/**
- * Trip Report, by Martin Aronsen
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/main" javascript_name="membermap.js" javascript_type="controller" javascript_version="100004" javascript_position="1000050"><![CDATA[/**
+ * Member Map, by Stuart Silvester & Martin Aronsen
  */
 ;( function($, _, undefined){
 	"use strict";
@@ -44,12 +44,9 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 	ips.createModule('ips.membermap', function() 
 	{
 		var map = null,
-			oms = null,
-			geocoder = null,
-			defaultMapTypeId = null,
+			defaultMaps = {},
 			
 			zoomLevel = null,
-			previousZoomLevel = null,
 			
 			initialCenter = null,
 			
@@ -57,23 +54,20 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 			
 			baseMaps = {},
 			overlayMaps = {},
+			overlayControl = null,
 			
-			mapMarkers = null,
+			memberMarkers = null,
 			allMarkers = [],
 			
 			icons = [],
-			infoWindow = null,
-			info = null,
-			currentPlace = null,
 			isMobileDevice = false,
 			isEmbedded = false,
 			
 			bounds = null,
+			forceBounds = false,
 			
 			stuffSize = 0,
 			popups = [],
-
-			markerContext = {},
 
 			oldMarkersIndicator = null,
 
@@ -96,6 +90,9 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 			});
 
 			setMobileDevice( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) );
+
+
+			defaultMaps = ips.getSetting( 'membermap_defaultMaps' );
 
 
 			/* Showing a single user or online user, get the markers from DOM */
@@ -137,26 +134,17 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 				setZoomLevel( initZoom );
 			}
 
-			/* Set default map from URL */
-			var defaultMap = ips.utils.url.getParam( 'map' );
-			if ( defaultMap )
-			{
-				setDefaultMap( defaultMap );
-			}
-
 			/* Are we embedding? */
 			setEmbed( ips.utils.url.getParam( 'do' ) == 'embed' ? 1 : 0 );
-
-			
+		
 			/* Set a height of the map that fits our browser height */
 			setMapHeight();
 			
+			/* Prep the map */
 			setupMap();
 			
-
 			/* Load all markers */
-			loadMarkers();
-		
+			loadMarkers();			
 			
 			/* Init events */
 			initEvents();	
@@ -167,11 +155,6 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 			isMobileDevice = bool;
 		},
 		
-		setDefaultMap = function( map )
-		{
-			defaultMapTypeId = map;
-		},
-		
 		setEmbed = function( bool )
 		{
 			isEmbedded = bool;
@@ -179,27 +162,61 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 		
 		clear =function()
 		{
-			mapMarkers.clearLayers();
-			oms.clearMarkers();
+			memberMarkers.clearLayers();
 		},
 		
 		reloadMap = function()
 		{
-			Debug.log( "Reloading map" );
 			clear();
 			showMarkers( true );
 		},
 
 		setupMap = function()
 		{
-			var southWest = new L.LatLng( 56.83, -7.14 );
-			var northEast = new L.LatLng( 74.449, 37.466 );
+			/* Bounding Box */
+			var bbox = ips.getSetting( 'membermap_bbox' );
+
+			if ( bbox.minLat && bbox.minLng && bbox.maxLat && bbox.maxLng )
+			{
+				var southWest = new L.LatLng( bbox.minLat, bbox.minLng );
+				var northEast = new L.LatLng( bbox.maxLat, bbox.maxLng );
+
+				forceBounds = true;
+
+				if ( ips.getSetting( 'membermap_bbox_zoom' ) )
+				{
+					setZoomLevel( ips.getSetting( 'membermap_bbox_zoom' ) );
+				}
+			}
+			else
+			{
+				/* Default bounding box */
+				var southWest = new L.LatLng( 56.83, -7.14 );
+				var northEast = new L.LatLng( 74.449, 37.466 );
+			}
 			bounds = new L.LatLngBounds(southWest, northEast);
 
-			mapServices.esriworldstreetmap = L.tileLayer.provider( 'Esri.WorldStreetMap' );
-			mapServices.thunderforestlandscape = L.tileLayer.provider( 'Thunderforest.Landscape' );
-			mapServices.mapquest = L.tileLayer.provider('MapQuestOpen.OSM');			
-			mapServices.esriworldtopomap = L.tileLayer.provider( 'Esri.WorldTopoMap' );
+			var defaultMap = '';
+
+			$.each( defaultMaps.basemaps, function( id, name )
+			{
+				try 
+				{
+					var key = name.toLowerCase().replace( '.', '' );
+					var prettyName = name.replace( '.', ' ' );
+
+					baseMaps[ prettyName ] = mapServices[ key ] = L.tileLayer.provider( name );
+
+					if ( defaultMap == '' )
+					{
+						defaultMap = key;
+					}
+				}
+				catch(e)
+				{
+					Debug.log( e.message );
+				}
+			});
 
 			var contextMenu = [];
 
@@ -230,17 +247,11 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 			});
 			
 
-			var defaultMap = 'mapquest';
 			var newDefault = '';
 			
 			if ( typeof ips.utils.cookie.get( 'membermap_baseMap' ) == 'string' && ips.utils.cookie.get( 'membermap_baseMap' ).length > 0 )
 			{
 				newDefault = ips.utils.cookie.get( 'membermap_baseMap' ).toLowerCase();
-			}
-			
-			if ( defaultMapTypeId !== null )
-			{
-				newDefault = defaultMapTypeId;
 			}
 			
 			if ( newDefault !== '' )
@@ -264,71 +275,28 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 				crs: L.CRS.EPSG3857
 			});
 			
-			
 			if ( isMobileDevice === false ) 
 			{
 				L.control.scale().addTo(map);
 			}
 
-			map.fitBounds( bounds );
+			map.fitBounds( bounds, { maxZoom: ( zoomLevel || 7 ) } );
 			
-			oms = new OverlappingMarkerSpiderfier( map, { keepSpiderfied: true } );
-			
-			var popup = new L.Popup({
-				offset: new L.Point(0, -20),
-				keepInView: true,
-				maxWidth: ( isMobileDevice ? 250 : 300 )
-			});
-			
-			oms.addListener( 'click', function( marker ) 
+			if ( ips.getSetting( 'membermap_enable_clustering' ) == 1 )
 			{
-				popup.setContent( marker.markerData.popup );
-				popup.setLatLng( marker.getLatLng() );
-				map.openPopup( popup );
-			});
-			
-			oms.addListener('spiderfy', function( omsMarkers ) 
+				memberMarkers = new L.MarkerClusterGroup({ zoomToBoundsOnClick: true, disableClusteringAtZoom: ( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 ) });
+			}
+			else
 			{
-				omsMarkers.each( function( omsMarker )
-				{
-					omsMarker.setIcon( omsMarker.options.spiderifiedIcon );
-				});
-				map.closePopup();
-			});
+				memberMarkers = new L.FeatureGroup();
+			}
+
+			map.addLayer( memberMarkers );
 			
-			oms.addListener('unspiderfy', function(omsMarkers) 
-			{
-				omsMarkers.each( function( omsMarker )
-				{
-					omsMarker.setIcon( omsMarker.options.defaultIcon );
-				});
-			});
 
-			mapMarkers = new L.MarkerClusterGroup({ spiderfyOnMaxZoom: false, zoomToBoundsOnClick: false, disableClusteringAtZoom: ( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 ) });
-			
-			mapMarkers.on( 'clusterclick', function (a) 
-			{
-				map.fitBounds( a.layer._bounds );
-				if ( map.getZoom() > ( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 ) )
-				{
-					map.setZoom( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 );
-				}
-			});
+			overlayMaps[ ips.getString( 'membermap_overlay_members' ) ] = memberMarkers;
 
-			map.addLayer( mapMarkers );
-			
-			baseMaps = {
-				"MapQuest": mapServices.mapquest,
-				"Thunderforest Landscape": mapServices.thunderforestlandscape,
-				'Esri WorldTopoMap': mapServices.esriworldtopomap,
-				'Esri World Street Map': mapServices.esriworldstreetmap
-			};
-
-			overlayMaps = {
-				"Members": mapMarkers,
-			};
-
-			L.control.layers( baseMaps, overlayMaps, { collapsed: ( isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
+			overlayControl = L.control.layers( baseMaps, overlayMaps, { collapsed: ( isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
 
 			map.on( 'baselayerchange', function( baselayer )
 			{
@@ -362,6 +330,8 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 			if ( ips.utils.url.getParam( 'rebuildCache' ) == 1 || ips.utils.url.getParam( 'dropBrowserCache' ) == 1 )
 			{
 				forceReload = true;
+				removeURIParam( 'rebuildCache' );
+				removeURIParam( 'dropBrowserCache' );
 			}
 
 			/* Skip this if markers was loaded from DOM */
@@ -419,6 +389,8 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 						/* Store data in browser when all AJAX calls complete */
 						promise.done(function()
 						{
+							updateOverlays();
+
 							if ( ips.utils.db.isEnabled() )
 							{
 								var date = new Date();
@@ -426,7 +398,7 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 								ips.utils.db.set( 'membermap', 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
 
 
-								$( '#elToolsMenuBrowserCache a time' ).html( '(Last update: ' + ips.utils.time.readable( date.getTime() / 1000 ) + ')' );
+								$( '#elToolsMenuBrowserCache a time' ).html( '(' + ips.getString( 'membermap_browserCache_update' ) + ': ' + ips.utils.time.readable( date.getTime() / 1000 ) + ')' );
 							}
 						});
 					}
@@ -444,11 +416,11 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 					return;
 				}
 
-				if ( data.data.length > 0 && typeof data.data !== 'null' )
+				if ( data.data.length > 0 && typeof data.data !== null )
 				{
 					/* Reload cache if it's older than 24 hrs */
 					var date = new Date( data.time * 1000 ),
-					nowdate = new Date;
+					nowdate = new Date();
 					if ( ( ( nowdate.getTime() - date.getTime() ) / 1000 ) > 86400 )
 					{
 						reloadMarkers();
@@ -457,6 +429,7 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 
 					allMarkers = data.data;
 					showMarkers( false, data.data );
+					updateOverlays();
 					
 					/* Inform that we're showing markers from browser cache */
 					if ( oldMarkersIndicator === null && ! isEmbedded )
@@ -465,7 +438,7 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 						ips.membermap.map.addControl( oldMarkersIndicator );
 					}
 
-					$( '#elToolsMenuBrowserCache a time' ).html( '(Last update: ' + ips.utils.time.readable( date / 1000 ) + ')' );
+					$( '#elToolsMenuBrowserCache a time' ).html( '(' + ips.getString( 'membermap_browserCache_update' ) + ': ' + ips.utils.time.readable( date / 1000 ) + ')' );
 				}
 				else
 				{
@@ -474,6 +447,39 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 				}
 			}
 
+		},
+
+		updateOverlays = function()
+		{
+			/* Count all markers in each overlay */
+			$.each( overlayControl._layers, function( id, layer )
+			{
+				Debug.log( layer );
+				if ( layer.overlay == true )
+				{
+					var count = layer.layer.getLayers().length;
+					if ( count > 0 )
+					{
+						overlayControl._layers[ id ].name = overlayControl._layers[ id ].name + " (" + count + ")";
+					}
+				}
+			});
+
+			/* Insert 3rd-party overlay last */
+			$.each( defaultMaps.overlays, function( id, name )
+			{
+				try 
+				{
+					var prettyName = name.replace( '.', ' ' );
+
+					overlayControl.addOverlay( L.tileLayer.provider( name ), prettyName );
+				}
+				catch(e)
+				{
+					Debug.log( e.message );
+				}
+			});
+			overlayControl._update();
 		},
 		
 		initEvents = function()
@@ -504,7 +510,7 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 				reloadMap();
 			});
 
-			$( '#membermap_button_addLocation' ).click( function()
+			$( '#membermap_button_addLocation, #membermap_button_editLocation' ).click( function()
 			{
 				if ( typeof popups['addLocationPopup'] === 'object' )
 				{
@@ -532,11 +538,11 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 							{
 								ips.getAjax()({ 
 									//url: 'http://www.mapquestapi.com/geocoding/v1/address', 
-									url: 'http://open.mapquestapi.com/nominatim/v1/search.php',
+									url: '//open.mapquestapi.com/nominatim/v1/search.php',
 									type: 'get',
 									dataType: 'json',
 									data: {
-										key: "pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud",
+										key: ips.getSetting( 'membermap_mapquestAPI' ),
 
 										// MapQuest Geocode
 										/*location: request.term,
@@ -584,7 +590,7 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 										}));
 
 									}
-								})
+								});
 							},
 							minLength: 3,
 							select: function( event, ui ) {
@@ -595,7 +601,7 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 
 						$( '#membermap_form_location' ).on( 'submit', function(e)
 						{
-							if ( $( '#membermap_form_location input[name="lat"]' ).val().length == 0 || $( '#membermap_form_location input[name="lng"]' ).val().length == 0 )
+							if ( $( '#membermap_form_location input[name="lat"]' ).val().length === 0 || $( '#membermap_form_location input[name="lng"]' ).val().length === 0 )
 							{
 								e.preventDefault();
 								return false;
@@ -605,7 +611,7 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 				});
 
 				popups['addLocationPopup'].show();
-			})
+			});
 		},
 
 
@@ -626,11 +632,11 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 					/* Skip this for now, will have to see how many requests this app consumes per month */
 
 					ips.getAjax()({ 
-						url: 'http://www.mapquestapi.com/geocoding/v1/reverse', 
+						url: '//www.mapquestapi.com/geocoding/v1/reverse', 
 						type: 'get',
 						dataType: 'json',
 						data: {
-							key: "pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud",
+							key: ips.getSetting( 'membermap_mapquestAPI' ),
 							lat: position.coords.latitude,
 							lng: position.coords.longitude
 
@@ -717,13 +723,17 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 	
 		showMarkers = function( dontRepan, markers )
 		{
-			dontRepan = typeof dontRepan !== 'undefined' ? dontRepan : false;
-			markers = typeof markers !== 'undefined' ? markers : false;
+			dontRepan = typeof dontRepan !== undefined ? dontRepan : false;
+			markers = typeof markers !== undefined ? markers : false;
 
 			var getByUser 	= ips.utils.url.getParam( 'filter' ) == 'getByUser' ? true : false;
 			var memberId 	= parseInt( ips.utils.url.getParam( 'member_id' ) );
 			var flyToZoom 	= 8;
-			var hasLocation = false;
+
+			if ( forceBounds )
+			{
+				dontRepan = true;
+			}
 
 			if ( markers === false )
 			{
@@ -732,31 +742,20 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 
 			if ( markers.length > 0 )
 			{
-
-				var memberSearch = $( '#elInput_membermap_memberName_wrapper .cToken' ).eq(0).attr( 'data-value' );
-
+				var counter = 0;
 
 				$.each( markers, function() 
 				{		
 					/* Don't show these, as they all end up in the middle of the middle of the South Atlantic Ocean. */
-					if ( this.lat == 0 && this.lon == 0 )
+					if ( this.lat === 0 && this.lon === 0 )
 					{
 						return;
-					}
-
-					/* Report written by selected member? */
-					if ( typeof memberSearch !== 'undefined' )
-					{
-						/* Names of 'null' are deleted members */
-						if (this.name == null || memberSearch.toLowerCase() !== this.name.toLowerCase() )
-						{
-							return;
-						}
 					}
 					
 					var bgColour 	= 'darkblue';
 					var icon 		= 'user';
 					var iconColour 	= 'white';
+					var popupOptions = {};
 
 					if ( this.type == 'member' )
 					{
@@ -783,6 +782,8 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 								getByUser 	= true;
 								memberId 	= this.member_id;
 								flyToZoom 	= 10;
+
+								removeURIParam( 'goHome' );
 							}
 							
 						}
@@ -800,18 +801,14 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 						icon 		= this.icon || 'fa-map-marker';
 						bgColour 	= this.bgColour;
 
+						popupOptions = {
+							minWidth: 320
+						}
 					}
 
-					var icon = L.AwesomeMarkers.icon({
+					var _icon = L.AwesomeMarkers.icon({
 						prefix: 'fa',
 						icon: icon, 
-						markerColor: bgColour,
-						iconColor: iconColour
-					});
-
-					var spiderifiedIcon = L.AwesomeMarkers.icon({
-						prefix: 'fa',
-						icon: 'users', 
 						markerColor: bgColour,
 						iconColor: iconColour
 					});
@@ -820,7 +817,7 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 					var contextMenu = [];
 					var enableContextMenu = false;
 
-					if ( ips.getSetting( 'is_supmod' ) ||  ( ips.getSetting( 'member_id' ) == this.member_id && ips.getSetting( 'membermap_canDelete' ) ) )
+					if ( this.type == 'member' && ( ips.getSetting( 'is_supmod' ) ||  ( ips.getSetting( 'member_id' ) == this.member_id && ips.getSetting( 'membermap_canDelete' ) ) ) )
 					{
 						enableContextMenu = true;
 						contextMenu = getMarkerContextMenu( this );
@@ -830,25 +827,42 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 						[ this.lat, this.lon ], 
 						{ 
 							title: this.title,
-							icon: icon,
-							spiderifiedIcon: spiderifiedIcon,
-							defaultIcon: icon,
+							icon: _icon,
 							contextmenu: enableContextMenu,
 						    contextmenuItems: contextMenu
 						}
-					);
+					).bindPopup( this.popup, ( popupOptions || {} ) );
 					
 					mapMarker.markerData = this;
 
-					oms.addMarker( mapMarker );
-					mapMarkers.addLayer( mapMarker );
+					if ( this.type == 'member' )
+					{
+						memberMarkers.addLayer( mapMarker );
+					}
+					else
+					{
+						if( typeof overlayMaps[ this.parent_id ] !== undefined )
+						{
+							overlayMaps[ this.parent_id ] = L.layerGroup().addTo( map );
+							overlayControl.addOverlay( overlayMaps[ this.parent_id ], this.parent_name );
+						}
+						
+						overlayMaps[ this.parent_id ].addLayer( mapMarker );
+					}
 
+					/* Count the number of markers we have on the map */
+					counter = counter + 1;
+
+					/* Pan directly to our home location, if that's what we wanted */
 					if ( getByUser && memberId > 0 && this.type == 'member' && this.member_id == memberId )
 					{
 						dontRepan = true;
 						map.flyTo( mapMarker.getLatLng(), flyToZoom );
 					}
 				});
+
+				/* Update the counter */
+				$( '#membermap_counter span' ).html( counter );
 			}
 
 
@@ -893,7 +907,7 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 				}
 				else
 				{
-					map.fitBounds( mapMarkers.getBounds(), { 
+					map.fitBounds( memberMarkers.getBounds(), { 
 						padding: [50, 50],
 						maxZoom: 11
 					});
@@ -903,7 +917,6 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 
 		updateLocation = function( e )
 		{
-			Debug.log( e );
 			ips.ui.alert.show({
 				type: 'confirm',
 				message: ips.getString( 'membermap_confirm_updateLocation' ),
@@ -981,48 +994,28 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 
 			return [];
 		},
-		
-		markerClickFunction = function( marker )
+
+		removeURIParam = function( param )
 		{
-			var hidingMarker = currentPlace;
-			
-	
-			var zoomIn = function( info ) 
+			var urlObject = ips.utils.url.getURIObject();
+
+			delete urlObject.queryKey[ param ];
+
+			if( urlObject.queryKey.length > 0 )
 			{
-				previousZoomLevel = map.getZoom();
-				
-				//map.setCenter( marker.getLatLng() );
-				map.flyTo( marker.getLatLng() );
-				if ( map.getZoom() <= 11 )
-				{
-					map.setZoom( 11 );
-				}
-				
-			};
-			
-			if ( currentPlace ) 
-			{
-				if ( hidingMarker !== marker ) 
-				{
-					zoomIn( marker.markerData );
-				}
-				else
-				{
-					currentPlace = null;
-					map.setZoom( previousZoomLevel );
-				}
-			} 
-			else 
-			{
-				zoomIn( marker.markerData );
+				var newQuery = $.param( urlObject.queryKey );
+				var newUrl = History.getBaseUrl() + '?' + newQuery;
 			}
-			
-			currentPlace = marker;
+			else
+			{
+				var newUrl = History.getBaseUrl();
+			}
+
+			History.pushState( null, null, newUrl );
 		};
 
 		return {
 			initMap: initMap,
-			setDefaultMap: setDefaultMap,
 			setMarkers: setMarkers,
 			setCenter: setCenter,
 			setZoomLevel: setZoomLevel,
@@ -1063,43 +1056,221 @@ L.Control.MembermapOldMarkers = L.Control.extend({
         return container;
     }
 });]]></file>
- <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.groupform.js" javascript_type="controller" javascript_version="100003" javascript_position="1000050">;( function($, _, undefined){&#13;
-	&quot;use strict&quot;;&#13;
-&#13;
-	ips.controller.register('membermap.admin.membermap.groupform', {&#13;
-&#13;
-		initialize: function () {&#13;
-			this.monitorColourPickers();&#13;
-		},&#13;
-&#13;
-		monitorColourPickers: function()&#13;
-		{&#13;
-			var self		= this;&#13;
-			var icon 		= $( 'input[name=&quot;group_pin_icon&quot;]' ).eq(0);&#13;
-			var iconColour 	= $( 'input[name=&quot;group_pin_colour&quot;]' ).eq(0);&#13;
-			var bgColour 	= $( 'input[name=&quot;group_pin_bg_colour&quot;]' );&#13;
-&#13;
-&#13;
-			bgColour.on('change', function()&#13;
-			{&#13;
-				var colour = $( 'input[name=&quot;group_pin_bg_colour&quot;]:checked' ).val();&#13;
-				$( '#markerExample' ).removeClass().addClass( 'awesome-marker awesome-marker-icon-' + colour )&#13;
-			});&#13;
-&#13;
-			iconColour.on('change', function()&#13;
-			{&#13;
-				$('#markerExample i').css({ 'color': '#' + iconColour.val() });&#13;
-			});&#13;
-&#13;
-			icon.on('change', function()&#13;
-			{&#13;
-				$('#markerExample i').removeClass().addClass( 'fa fa-fw' ).addClass( icon.val() );&#13;
-			});&#13;
-&#13;
-		}&#13;
-	});&#13;
+ <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.groupform.js" javascript_type="controller" javascript_version="100004" javascript_position="1000050">;( function($, _, undefined){
+	&quot;use strict&quot;;
+
+	ips.controller.register('membermap.admin.membermap.groupform', {
+
+		initialize: function () {
+			this.monitorColourPickers();
+		},
+
+		monitorColourPickers: function()
+		{
+			var self		= this;
+			var icon 		= $( 'input[name=&quot;group_pin_icon&quot;]' ).eq(0);
+			var iconColour 	= $( 'input[name=&quot;group_pin_colour&quot;]' ).eq(0);
+			var bgColour 	= $( 'input[name=&quot;group_pin_bg_colour&quot;]' );
+
+
+			bgColour.on('change', function()
+			{
+				var colour = $( 'input[name=&quot;group_pin_bg_colour&quot;]:checked' ).val();
+				$( '#markerExample' ).removeClass().addClass( 'awesome-marker awesome-marker-icon-' + colour )
+			});
+
+			iconColour.on('change', function()
+			{
+				$('#markerExample i').css({ 'color': '#' + iconColour.val() });
+			});
+
+			icon.on('change', function()
+			{
+				$('#markerExample i').removeClass().addClass( 'fa fa-fw' ).addClass( icon.val() );
+			});
+
+		}
+	});
 }(jQuery, _));</file>
- <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.markerform.js" javascript_type="controller" javascript_version="100003" javascript_position="1000050"><![CDATA[;( function($, _, undefined){
+ <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.mapmanager.js" javascript_type="controller" javascript_version="100004" javascript_position="1000050"><![CDATA[;( function($, _, undefined){
+	"use strict";
+
+	ips.controller.register('membermap.admin.membermap.mapmanager', {
+		baseLayers: {},
+		overlays: {},
+
+		initialize: function () 
+		{
+			this.fetchMapProviders();
+			this.populateManager();
+		},
+
+		populateManager: function()
+		{
+			var that = this;
+			var defaultMaps = ips.getSetting( 'membermap_defaultMaps' );
+
+			$.each( this.baseLayers, function( name, layer )
+			{
+				var order = $.inArray( name, defaultMaps.basemaps );
+				var noHTTPS = layer._url.indexOf('//') === 0 || layer._url.indexOf( 'https:' ) === 0 ? false : true;
+
+				var item = ips.templates.render('mapManager.listItem', {
+					name: name,
+					type: 'basemap',
+					order: ( order !== -1 ? order : '' ),
+					noHTTPS: noHTTPS
+				});
+				
+				if ( order == -1 )
+				{
+					$( '#mapManager_availMaps' ).append( item );
+				}
+				else
+				{
+					$( '#mapManager_activeMaps' ).append( item );
+				}
+			});
+
+			$.each( this.overlays, function( name, layer )
+			{
+				var order = $.inArray( name, defaultMaps.overlays );
+				var noHTTPS = layer._url.indexOf('//') === 0 || layer._url.indexOf( 'https:' ) === 0 ? false : true;
+
+				var item = ips.templates.render('mapManager.listItem', {
+					name: name,
+					type: 'overlay',
+					order: ( order !== -1 ? order : '' ),
+					noHTTPS: noHTTPS
+				});
+				if ( order == -1 )
+				{
+					$( '#mapManager_availOverlays' ).append( item );
+				}
+				else
+				{
+					$( '#mapManager_activeOverlays' ).append( item );
+				}
+			});
+
+			/* Sort the list of active maps, as they're now in the order they appear in leaflet-providers */
+			var mapWrapper = $('#mapManager_activeMaps');
+
+			mapWrapper.find('li').sort( function( a, b ) 
+			{
+				return ($(b).data('order')) < ($(a).data('order')) ? 1 : -1;   
+			}).appendTo( mapWrapper );
+
+			var overlayWrapper = $('#mapManager_activeOverlays');
+
+			overlayWrapper.find('li').sort( function( a, b ) 
+			{
+				return ($(b).data('order')) < ($(a).data('order')) ? 1 : -1;   
+			}).appendTo( overlayWrapper );
+
+			$( '#mapManager_availMaps, #mapManager_activeMaps' ).sortable({
+				connectWith: '.mapManager_baseMaps',
+				placeholder: "cMenuManager_emptyHover",
+				update: _.bind( this.update, this )
+			}).disableSelection();
+
+			$( '#mapManager_availOverlays, #mapManager_activeOverlays' ).sortable({
+				connectWith: '.mapManager_overlays',
+				placeholder: "cMenuManager_emptyHover",
+				update: _.bind( this.update, this )
+			}).disableSelection();
+		},
+
+		fetchMapProviders: function () 
+		{
+			var that = this;
+
+			L.tileLayer.provider.eachLayer( function( name ) 
+			{
+				var layer = L.tileLayer.provider(name);
+
+				if ( that.isOverlay( name, layer ) ) 
+				{
+					that.overlays[ name ] = layer;
+				}
+				else
+				{
+					that.baseLayers[ name ] = layer;
+				}
+
+			} );
+		},
+
+		isOverlay: function ( providerName, layer ) 
+		{
+			if ( layer.options.opacity && layer.options.opacity < 1 ) 
+			{
+				return true;
+			}
+
+			var overlayPatterns = [
+				'^(OpenWeatherMap|OpenSeaMap)',
+				'OpenMapSurfer.AdminBounds',
+				'Stamen.Toner(Hybrid|Lines|Labels)',
+				'Acetate.(foreground|labels|roads)',
+				'Hydda.RoadsAndLabels'
+			];
+
+			return providerName.match('(' + overlayPatterns.join('|') + ')') !== null;
+		},
+
+		update: function()
+		{
+			this.save();
+		},
+
+		save: function()
+		{
+			var baseMaps = $( '#mapManager_activeMaps' ).sortable( 'toArray', { attribute: 'data-provider' } );
+			var overlays = $( '#mapManager_activeOverlays' ).sortable( 'toArray', { attribute: 'data-provider' } );
+
+			ips.getAjax()( '?app=membermap&module=membermap&controller=mapmanager&do=update', {
+				data: {
+					maps: { 'basemaps': baseMaps, 'overlays': overlays }
+				}
+			})
+				.done( function () {
+					// No need to do anything
+				})
+				.fail( function () {
+					ips.ui.alert.show( {
+						type: 'alert',
+						icon: 'warn',
+						message: ips.getString('membermap_mapmanager_cant_save'),
+						callbacks: {}
+					});
+				});
+
+		}
+	});
+}(jQuery, _));
+
+if ( typeof L !== 'undefined' )
+{
+	L.tileLayer.provider.eachLayer = function (callback) {
+		for (var provider in L.TileLayer.Provider.providers) {
+			
+			/* Ignore those who require an API key */
+			if( provider === 'HERE' || provider === 'MapBox' )
+			{
+				continue;
+			}
+			if (L.TileLayer.Provider.providers[provider].variants) {
+				for (var variant in L.TileLayer.Provider.providers[provider].variants) {
+					callback(provider + '.' + variant);
+				}
+			} else {
+				callback(provider);
+			}
+		}
+	};
+}]]></file>
+ <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.markerform.js" javascript_type="controller" javascript_version="100004" javascript_position="1000050"><![CDATA[;( function($, _, undefined){
 	"use strict";
 
 	ips.controller.register('membermap.admin.membermap.markerform', {
@@ -1121,11 +1292,11 @@ L.Control.MembermapOldMarkers = L.Control.extend({
 				{
 					ips.getAjax()({ 
 						//url: 'http://www.mapquestapi.com/geocoding/v1/address', 
-						url: 'http://open.mapquestapi.com/nominatim/v1/search.php',
+						url: '//open.mapquestapi.com/nominatim/v1/search.php',
 						type: 'get',
 						dataType: 'json',
 						data: {
-							key: "pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud",
+							key: ips.getSetting( 'membermap_mapquestAPI' ),
 
 							// MapQuest Geocode
 							/*location: request.term,
@@ -1272,29 +1443,39 @@ L.Control.MembermapOldMarkers = L.Control.extend({
 			this.bounds = new L.LatLngBounds(southWest, northEast);
 
 			var mapServices = {};
-			mapServices.esriworldstreetmap = L.tileLayer.provider( 'Esri.WorldStreetMap' );
-			mapServices.thunderforestlandscape = L.tileLayer.provider( 'Thunderforest.Landscape' );
-			mapServices.mapquest = L.tileLayer.provider('MapQuestOpen.OSM');			
-			mapServices.esriworldtopomap = L.tileLayer.provider( 'Esri.WorldTopoMap' );
+			var baseMaps = {};
+			var defaultMaps = ips.getSetting( 'membermap_defaultMaps' );
+			var defaultMap = '';
+
+			$.each( defaultMaps.basemaps, function( id, name )
+			{
+				try 
+				{
+					var key = name.toLowerCase().replace( '.', '' );
+					var prettyName = name.replace( '.', ' ' );
+
+					baseMaps[ prettyName ] = mapServices[ key ] = L.tileLayer.provider( name );
+
+					if ( defaultMap == '' )
+					{
+						defaultMap = key;
+					}
+				}
+				catch(e)
+				{
+					Debug.log( e.message );
+				}
+			});
 
 			this.map = L.map( 'mapCanvas', 
 			{
 				zoom: 7,
-				layers: [ mapServices.mapquest ],
+				layers: [ mapServices[ defaultMap ] ],
 				attributionControl: true,
 				crs: L.CRS.EPSG3857
 			});
 
 			this.map.fitBounds( this.bounds );
-
-
-			
-			var baseMaps = {
-				"MapQuest": mapServices.mapquest,
-				"Thunderforest Landscape": mapServices.thunderforestlandscape,
-				'Esri WorldTopoMap': mapServices.esriworldtopomap,
-				'Esri World Street Map': mapServices.esriworldstreetmap
-			};
 
 			L.control.layers( baseMaps ).addTo( this.map );
 
@@ -1305,11 +1486,11 @@ L.Control.MembermapOldMarkers = L.Control.extend({
 			var that = this;
 
 			ips.getAjax()({ 
-				url: 'http://www.mapquestapi.com/geocoding/v1/reverse', 
+				url: '//www.mapquestapi.com/geocoding/v1/reverse', 
 				type: 'get',
 				dataType: 'json',
 				data: {
-					key: "pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud",
+					key: ips.getSetting( 'membermap_mapquestAPI' ),
 					lat: lat,
 					lng: lng
 
@@ -1348,4 +1529,76 @@ L.Control.MembermapOldMarkers = L.Control.extend({
 		}
 	});
 }(jQuery, _));]]></file>
+ <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.settings.js" javascript_type="controller" javascript_version="100004" javascript_position="1000050">;( function($, _, undefined){
+	&quot;use strict&quot;;
+
+	ips.controller.register('membermap.admin.membermap.settings', {
+
+		initialize: function () 
+		{
+			$( '#elInput_membermap_bbox_location' ).autocomplete({
+				source: function( request, response ) 
+				{
+					ips.getAjax()({ 
+						//url: 'http://www.mapquestapi.com/geocoding/v1/address', 
+						url: 'https://open.mapquestapi.com/nominatim/v1/search.php',
+						type: 'get',
+						dataType: 'json',
+						data: {
+							key: ips.getSetting( 'membermap_mapquestAPI' ),
+
+							// MapQuest Geocode
+							/*location: request.term,
+							outFormat: 'json'*/
+
+							// MapQuest Nominatim
+							format: 'json',
+							q: request.term,
+							extratags: 0,
+
+						},
+						success: function( data ) 
+						{
+							// MapQuest
+
+							// MapQuest Nominatim
+							response( $.map( data, function( item )
+							{
+								Debug.log( item );
+								return {
+									value: item.display_name,
+									bbox: {
+										minLat: parseFloat( item.boundingbox[0] ).toFixed( 6 ),
+										maxLat: parseFloat( item.boundingbox[1] ).toFixed( 6 ),
+										minLng: parseFloat( item.boundingbox[2] ).toFixed( 6 ),
+										maxLng: parseFloat( item.boundingbox[3] ).toFixed( 6 )
+									}
+								};
+							}));
+
+						}
+					});
+				},
+				minLength: 3,
+				select: function( event, ui ) 
+				{
+					$( '#membermap_form_settings input[name=&quot;membermap_bbox&quot;]').val( JSON.stringify( ui.item.bbox ) );
+				}
+			});
+		}
+	});
+}(jQuery, _));</file>
+ <file javascript_app="membermap" javascript_location="admin" javascript_path="templates" javascript_name="ips.templates.membermap.js" javascript_type="template" javascript_version="100004" javascript_position="1000100"><![CDATA[ips.templates.set( 'mapManager.listItem', "\
+	<li data-provider='{{name}}' data-type='{{type}}' data-order='{{order}}'>\
+		<div class='cMenuManager_leaf'>\
+			<h3 class='cMenuManager_leafTitle'>\
+				{{name}}\
+				{{#noHTTPS}}<span data-ipsTooltip title='{{#lang}}membermap_noHTTPS_desc{{/lang}}' class='ipsBadge ipsBadge_negative'>{{#lang}}membermap_noHTTPS{{/lang}}</span>{{/noHTTPS}}\
+				<span class='ipsPos_right defaultProvider'>\
+					<span class='ipsBadge ipsBadge_positive'>{{#lang}}membermap_defaultProvider{{/lang}}</span>\
+				</span>\
+			</h3>\
+		</div>\
+	</li>\
+");]]></file>
 </javascript>
