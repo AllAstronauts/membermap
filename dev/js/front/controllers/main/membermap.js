@@ -136,6 +136,7 @@
 
 		setupMap = function()
 		{
+			/* Bounding Box */
 			var bbox = ips.getSetting( 'membermap_bbox' );
 
 			if ( bbox.minLat && bbox.minLng && bbox.maxLat && bbox.maxLng )
@@ -144,9 +145,15 @@
 				var northEast = new L.LatLng( bbox.maxLat, bbox.maxLng );
 
 				forceBounds = true;
+
+				if ( ips.getSetting( 'membermap_bbox_zoom' ) )
+				{
+					setZoomLevel( ips.getSetting( 'membermap_bbox_zoom' ) );
+				}
 			}
 			else
 			{
+				/* Default bounding box */
 				var southWest = new L.LatLng( 56.83, -7.14 );
 				var northEast = new L.LatLng( 74.449, 37.466 );
 			}

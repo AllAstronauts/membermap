@@ -12,6 +12,10 @@
         "default": ""
     },
     {
+        "key": "membermap_bbox_zoom",
+        "default": "7"
+    },
+    {
         "key": "membermap_enable_clustering",
         "default": "1"
     },

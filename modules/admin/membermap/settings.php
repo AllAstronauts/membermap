@@ -57,6 +57,7 @@ class _settings extends \IPS\Dispatcher\Controller
 
 		$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_enable_clustering', \IPS\Settings::i()->membermap_enable_clustering ) );
 		$form->add( new \IPS\Helpers\Form\Text( 'membermap_bbox_location', \IPS\Settings::i()->membermap_bbox_location, FALSE, array(), NULL, NULL, NULL, 'membermap_bbox_location' ) );
+		$form->add( new \IPS\Helpers\Form\Number( 'membermap_bbox_zoom', intval( \IPS\Settings::i()->membermap_bbox_zoom ), FALSE, array( 'min' => 1, 'max' => 18 ) ) );
 		$form->hiddenValues['membermap_bbox'] = \IPS\Settings::i()->membermap_bbox;
 
 

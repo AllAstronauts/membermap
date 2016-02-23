@@ -26,6 +26,8 @@ $lang = array(
 	'membermap_bbox_location_desc' => "Use the field above to search for a location that will always be in center of your map. The map will only focus on this area, regardless of markers outside of it. Try a few of the results from the search untill you find one that suits your needs.",
 	'membermap_mapQuestAPI' => "MapQuest API Key",
 	'membermap_mapQuestAPI_desc' => "Sign up for your own API Key at <a href='https://developer.mapquest.com/' target='_blank'>MapQuest</a>. Some features in the future will require your to do this.",
+	'membermap_bbox_zoom' => "Default Zoom Level",
+	'membermap_bbox_zoom_desc' => "Only affective when a bounding box is defined.",
 
 	'loc_membermap_viewing_membermap' => "Viewing the Member Map",
 	'g_membermap_canAdd' => "Can add location to map",
