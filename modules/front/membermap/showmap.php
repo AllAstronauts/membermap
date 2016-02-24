@@ -101,7 +101,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 		\IPS\Output::i()->jsVars['member_id']			= \IPS\Member::loggedIn()->member_id ?: 0;
 		\IPS\Output::i()->jsVars['membermap_canAdd']	= \IPS\Member::loggedIn()->group['g_membermap_canAdd'] ?: 0;
         \IPS\Output::i()->jsVars['membermap_canEdit']	= \IPS\Member::loggedIn()->group['g_membermap_canEdit'] ?: 0;
-        \IPS\Output::i()->jsVars['cmembermap_anDelete']	= \IPS\Member::loggedIn()->group['g_membermap_canDelete'] ?: 0;
+        \IPS\Output::i()->jsVars['membermap_canDelete']	= \IPS\Member::loggedIn()->group['g_membermap_canDelete'] ?: 0;
         \IPS\Output::i()->jsVars['membermap_cacheTime'] = isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
 		\IPS\Output::i()->jsVars['membermap_bbox'] 		= json_decode( \IPS\Settings::i()->membermap_bbox );
 		\IPS\Output::i()->jsVars['membermap_bbox_zoom'] = intval( \IPS\Settings::i()->membermap_bbox_zoom );
