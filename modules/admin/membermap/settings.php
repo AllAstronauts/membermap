@@ -73,6 +73,11 @@ class _settings extends \IPS\Dispatcher\Controller
 		{
 			$values['membermap_bbox'] = \IPS\Request::i()->membermap_bbox;
 
+			if ( empty( $values['membermap_bbox_location'] ) )
+			{
+				$values['membermap_bbox'] = "";
+			}
+
 			$form->saveAsSettings( $values );
 			\IPS\Session::i()->log( 'acplogs__tripreport_settings' );
 		}

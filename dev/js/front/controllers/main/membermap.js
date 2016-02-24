@@ -833,7 +833,7 @@
 					}
 					else
 					{
-						if( typeof overlayMaps[ this.parent_id ] !== undefined )
+						if( typeof overlayMaps[ this.parent_id ] === "undefined" )
 						{
 							overlayMaps[ this.parent_id ] = L.layerGroup().addTo( map );
 							overlayControl.addOverlay( overlayMaps[ this.parent_id ], this.parent_name );
