@@ -5,6 +5,8 @@
 	<div id='membermap_geolocation_wrapper' class='ipsColumn ipsColumn_medium'>{$form1|raw}</div>
 	<div class='ipsColumn ipsColumn_medium'>{$form2|raw}</div>
 </div>]]></template>
+ <template template_group="map" template_name="customMarkerPopup" template_data="$marker" template_location="front" template_app="membermap"><![CDATA[<h3>{$marker['marker_name']}</h3>
+{$marker['marker_description']|raw}]]></template>
  <template template_group="map" template_name="popupContent" template_data="$marker, $photo" template_location="front" template_app="membermap"><![CDATA[<h3>
 	<a href='{url="app=core&module=members&controller=profile&id={$marker['member_id']}" seoTemplate="profile" base="front" seoTitle="$marker['members_seo_name']"}' target='_blank'>{$marker['name']}</a>
 </h3>
@@ -34,7 +36,7 @@
 					</a>
 					<div id='elMyLocationMenu_menu' class='ipsMenu ipsMenu_auto ipsHide'>
 						<ul>
-							<li class="ipsMenu_item" id="membermap_button_addLocation">
+							<li class="ipsMenu_item" id="membermap_button_editLocation">
 								<a href="#">{lang="membermap_button_editLocation"}</a>
 							</li>
 
@@ -51,7 +53,7 @@
 				{{if \IPS\Member::loggedIn()->isAdmin()}}
 				<li class='ipsToolList_primaryAction ipsResponsive_hidePhone'>
 					<a href='#elToolsMenu' id='elToolsMenu' data-ipsmenu class='ipsButton ipsButton_normal ipsButton_medium'>
-						 &nbsp;Admin Tools <i class='fa fa-caret-down'></i>
+						 &nbsp;{lang="membermap_adminTools"} <i class='fa fa-caret-down'></i>
 					</a>
 					<div id='elToolsMenu_menu' class='ipsMenu ipsMenu_auto ipsHide'>
 						<ul>
@@ -60,7 +62,13 @@
 							</li>
 
 							<li class="ipsMenu_item" >
-								<a href="{url='app=membermap&rebuildCache=1' seoTemplate='membermap'}" data-action='ipsMenu_ping'>{lang="membermap_rebuildServerCache" htmlsprintf="\IPS\DateTime::ts( $cacheTime )->html( true, true )"}</a>
+								<a href="{url='app=membermap&rebuildCache=1' seoTemplate='membermap'}" data-action='ipsMenu_ping'>
+									{{if $cacheTime > 0}}
+										{lang="membermap_rebuildServerCache" htmlsprintf="\IPS\DateTime::ts( $cacheTime )->html( true, true )"}
+									{{else}}
+										{lang="membermap_rebuildServerCache_notSet"}
+									{{endif}}
+								</a>
 							</li>
 						</ul>
 					</div>
@@ -78,9 +86,80 @@
 			<div id='mapCanvas'></div>
 		</div>
 	</div>
+	<div class='ipsPad_top' id="membermap_counter">
+		<p>{lang="membermap_showing_markers"}</p>
+	</div>
 </section>
 
 <div id='mapMarkers' class='ipsHide'>{$markers|raw}</div>]]></template>
+ <template template_group="mapmanager" template_name="wrapper" template_data="" template_location="admin" template_app="membermap"><![CDATA[<div data-controller="membermap.admin.membermap.mapmanager">
+	<div class='cMenuManager'>
+		<div class='ipsColumns ipsColumns_collapsePhone'>
+			<div class='ipsColumn ipsColumn_veryWide cMenuManager_column'>
+				<div class='cMenuManager_editorWrapper'>
+					<div class='cMenuManager_main' data-manager='main'>
+						<h2 class='acpBlock_title acpBlock_titleSmall acpBlock_titleDark ipsSpacer_top ipsSpacer_half'>
+							{lang="membermap_mapmanager_activeMaps"}
+						</h2>
+
+						<div class='cMenuManager_root'>
+							<ol class='cMenuManager_branch mapManager_baseMaps' id="mapManager_activeMaps">
+							</ol>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class='ipsColumn ipsColumn_veryWide cMenuManager_column'>
+				<div class='cMenuManager_editorWrapper'>
+					<div class='cMenuManager_main' data-manager='main'>
+						<h2 class='acpBlock_title acpBlock_titleSmall acpBlock_titleDark ipsSpacer_top ipsSpacer_half'>
+							{lang="membermap_mapmanager_availMaps"}
+						</h2>
+
+						<div class='cMenuManager_root'>
+							<ol class='cMenuManager_branch mapManager_baseMaps' id="mapManager_availMaps">
+							</ol>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class='ipsClearfix'></div>
+
+
+		<div class='ipsColumns ipsColumns_collapsePhone'>
+			<div class='ipsColumn ipsColumn_veryWide cMenuManager_column'>
+				<div class='cMenuManager_editorWrapper'>
+					<div class='cMenuManager_main' data-manager='main'>
+						<h2 class='acpBlock_title acpBlock_titleSmall acpBlock_titleDark ipsSpacer_top ipsSpacer_half'>
+							{lang="membermap_mapmanager_activeOverlays"}
+						</h2>
+
+						<div class='cMenuManager_root'>
+							<ol class='cMenuManager_branch mapManager_overlays' id="mapManager_activeOverlays">
+							</ol>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class='ipsColumn ipsColumn_veryWide cMenuManager_column'>
+				<div class='cMenuManager_editorWrapper'>
+					<div class='cMenuManager_main' data-manager='main'>
+						<h2 class='acpBlock_title acpBlock_titleSmall acpBlock_titleDark ipsSpacer_top ipsSpacer_half'>
+							{lang="membermap_mapmanager_availOverlays"}
+						</h2>
+
+						<div class='cMenuManager_root'>
+							<ol class='cMenuManager_branch mapManager_overlays' id="mapManager_availOverlays">
+							</ol>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>]]></template>
  <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="Control.FullScreen.css">.leaflet-control-zoom-fullscreen { background-image: url( {resource=&quot;icon-fullscreen.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;} ); }&#13;
 .leaflet-container:-webkit-full-screen { width: 100% !important; height: 100% !important; z-index: 99999; }&#13;
 .leaflet-pseudo-fullscreen { position: fixed !important; width: 100% !important; height: 100% !important; top: 0px !important; left: 0px !important; z-index: 99999; }</css>
@@ -433,7 +512,7 @@
 }
 .ui-widget-header {
 	border: 1px solid #aaaaaa;
-	background: #cccccc url( {resource="images/ui-bg_highlight-soft_75_cccccc_1x100.png" app="membermap" location="global"} ) 50% 50% repeat-x;
+	background: #cccccc url( {resource="ui-bg_highlight-soft_75_cccccc_1x100.png" app="membermap" location="global"} ) 50% 50% repeat-x;
 	color: #222222;
 	font-weight: bold;
 }
@@ -447,7 +526,7 @@
 .ui-widget-content .ui-state-default,
 .ui-widget-header .ui-state-default {
 	border: 1px solid #d3d3d3;
-	background: #e6e6e6 url( {resource="images/ui-bg_glass_75_e6e6e6_1x400.png" app="membermap" location="global"} ) 50% 50% repeat-x;
+	background: #e6e6e6 url( {resource="ui-bg_glass_75_e6e6e6_1x400.png" app="membermap" location="global"} ) 50% 50% repeat-x;
 	font-weight: normal;
 	color: #555555;
 }
@@ -464,7 +543,7 @@
 .ui-widget-content .ui-state-focus,
 .ui-widget-header .ui-state-focus {
 	border: 1px solid #999999;
-	background: #dadada url( {resource="images/ui-bg_glass_75_dadada_1x400.png" app="membermap" location="global"} ) 50% 50% repeat-x;
+	background: #dadada url( {resource="ui-bg_glass_75_dadada_1x400.png" app="membermap" location="global"} ) 50% 50% repeat-x;
 	font-weight: normal;
 	color: #212121;
 }
@@ -483,7 +562,7 @@
 .ui-widget-content .ui-state-active,
 .ui-widget-header .ui-state-active {
 	border: 1px solid #aaaaaa;
-	background: #ffffff url( {resource="images/ui-bg_glass_65_ffffff_1x400.png" app="membermap" location="global"} ) 50% 50% repeat-x;
+	background: #ffffff url( {resource="ui-bg_glass_65_ffffff_1x400.png" app="membermap" location="global"} ) 50% 50% repeat-x;
 	font-weight: normal;
 	color: #212121;
 }
@@ -500,7 +579,7 @@
 .ui-widget-content .ui-state-highlight,
 .ui-widget-header .ui-state-highlight {
 	border: 1px solid #fcefa1;
-	background: #fbf9ee url( {resource="images/ui-bg_glass_55_fbf9ee_1x400.png" app="membermap" location="global"} ) 50% 50% repeat-x;
+	background: #fbf9ee url( {resource="ui-bg_glass_55_fbf9ee_1x400.png" app="membermap" location="global"} ) 50% 50% repeat-x;
 	color: #363636;
 }
 .ui-state-highlight a,
@@ -512,7 +591,7 @@
 .ui-widget-content .ui-state-error,
 .ui-widget-header .ui-state-error {
 	border: 1px solid #cd0a0a;
-	background: #fef1ec url( {resource="images/ui-bg_glass_95_fef1ec_1x400.png" app="membermap" location="global"} ) 50% 50% repeat-x;
+	background: #fef1ec url( {resource="ui-bg_glass_95_fef1ec_1x400.png" app="membermap" location="global"} ) 50% 50% repeat-x;
 	color: #cd0a0a;
 }
 .ui-state-error a,
@@ -558,27 +637,27 @@
 }
 .ui-icon,
 .ui-widget-content .ui-icon {
-	background-image: url( {resource="images/ui-icons_222222_256x240.png" app="membermap" location="global"} );
+	background-image: url( {resource="ui-icons_222222_256x240.png" app="membermap" location="global"} );
 }
 .ui-widget-header .ui-icon {
-	background-image: url( {resource="images/ui-icons_222222_256x240.png" app="membermap" location="global"} );
+	background-image: url( {resource="ui-icons_222222_256x240.png" app="membermap" location="global"} );
 }
 .ui-state-default .ui-icon {
-	background-image: url( {resource="images/ui-icons_888888_256x240.png" app="membermap" location="global"} );
+	background-image: url( {resource="ui-icons_888888_256x240.png" app="membermap" location="global"} );
 }
 .ui-state-hover .ui-icon,
 .ui-state-focus .ui-icon {
-	background-image: url( {resource="images/ui-icons_454545_256x240.png" app="membermap" location="global"} );
+	background-image: url( {resource="ui-icons_454545_256x240.png" app="membermap" location="global"} );
 }
 .ui-state-active .ui-icon {
-	background-image: url( {resource="images/ui-icons_454545_256x240.png" app="membermap" location="global"} );
+	background-image: url( {resource="ui-icons_454545_256x240.png" app="membermap" location="global"} );
 }
 .ui-state-highlight .ui-icon {
-	background-image: url( {resource="images/ui-icons_2e83ff_256x240.png" app="membermap" location="global"} );
+	background-image: url( {resource="ui-icons_2e83ff_256x240.png" app="membermap" location="global"} );
 }
 .ui-state-error .ui-icon,
 .ui-state-error-text .ui-icon {
-	background-image: url( {resource="images/ui-icons_cd0a0a_256x240.png" app="membermap" location="global"} );
+	background-image: url( {resource="ui-icons_cd0a0a_256x240.png" app="membermap" location="global"} );
 }
 
 
@@ -1725,7 +1804,25 @@ Version: 1.0&#13;
 &#13;
 .awesome-marker-icon-black {&#13;
   background-position: -682px 0;&#13;
-}</css>
+}&#13;
+&#13;
+&#13;
+/* Map Manager */&#13;
+.defaultProvider {&#13;
+  visibility: hidden;&#13;
+}&#13;
+  #mapManager_activeMaps li:first-child .defaultProvider {&#13;
+    visibility: visible;&#13;
+  }&#13;
+&#13;
+.cMenuManager_root {&#13;
+    max-height: 500px;&#13;
+    overflow: auto;&#13;
+}&#13;
+  .cMenuManager_root ol {&#13;
+    border-left: none !important;&#13;
+    min-height: 100px;&#13;
+  }</css>
  <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="membermap.css"><![CDATA[
 
 #membermapWrapper {
@@ -1744,7 +1841,7 @@ Version: 1.0&#13;
 }
 
 	#mapWrapper img {
-		max-width: none;
+		/*max-width: none;*/
 	}
  
 #mapCanvas {
@@ -1753,8 +1850,13 @@ Version: 1.0&#13;
 	min-height: 300px;	
 }
 
+
 #membermap_location > label {
 	display: none;
+}
+
+.leaflet-popup-content .ipsImage {
+	width: 100%;
 }
 
 /* Google Autocomplete */

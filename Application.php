@@ -19,10 +19,10 @@ class _Application extends \IPS\Application
 
 	public static $defaultMaps = array(
 		'basemaps' => array(
-			1 => 'MapQuestOpen.OSM',
-			2 => 'Thunderforest.Landscape',
-			3 => 'Esri.WorldStreetMap',
-			4 => 'Esri.WorldTopoMap',
+			'MapQuestOpen.OSM',
+			'Thunderforest.Landscape',
+			'Esri.WorldStreetMap',
+			'Esri.WorldTopoMap',
 		)
 	);
 
