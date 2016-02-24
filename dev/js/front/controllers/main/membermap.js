@@ -399,7 +399,7 @@
 					/* Inform that we're showing markers from browser cache */
 					if ( oldMarkersIndicator === null && ! isEmbedded )
 					{
-						oldMarkersIndicator = new L.Control.MembermapOldMarkers({ callback: function() { window.location.href = ips.getSetting('baseURL') + 'index.php?app=membermap&dropBrowserCache=1' }, time: date });
+						oldMarkersIndicator = new L.Control.MembermapOldMarkers({ callback: function() { window.location.href = ips.getSetting('baseURL') + 'index.php?app=membermap&dropBrowserCache=1'; }, time: date });
 						ips.membermap.map.addControl( oldMarkersIndicator );
 					}
 
@@ -795,7 +795,7 @@
 
 						popupOptions = {
 							minWidth: 320
-						}
+						};
 					}
 
 					var _icon = L.AwesomeMarkers.icon({
@@ -974,7 +974,7 @@
 				{
 					var v = ( queryKeys[k] !== "" ) ? k + '=' + encodeURIComponent( queryKeys[k] ) : k;
 					a.push( v );
-					return a
+					return a;
 				}, [] ).join( '&' );
 
 				var newUrl = window.location.origin + window.location.pathname + '?' + newQuery;
