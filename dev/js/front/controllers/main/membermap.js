@@ -1,5 +1,5 @@
 /**
- * Trip Report, by Martin Aronsen
+ * Member Map, by Stuart Silvester & Martin Aronsen
  */
 ;( function($, _, undefined){
 	"use strict";
@@ -7,12 +7,9 @@
 	ips.createModule('ips.membermap', function() 
 	{
 		var map = null,
-			oms = null,
-			geocoder = null,
-			defaultMapTypeId = null,
+			defaultMaps = {},
 			
 			zoomLevel = null,
-			previousZoomLevel = null,
 			
 			initialCenter = null,
 			
@@ -20,25 +17,24 @@
 			
 			baseMaps = {},
 			overlayMaps = {},
+			overlayControl = null,
 			
-			mapMarkers = null,
+			memberMarkers = null,
 			allMarkers = [],
 			
 			icons = [],
-			infoWindow = null,
-			info = null,
-			currentPlace = null,
 			isMobileDevice = false,
 			isEmbedded = false,
 			
 			bounds = null,
+			forceBounds = false,
 			
 			stuffSize = 0,
 			popups = [],
 
-			markerContext = {},
-
 			oldMarkersIndicator = null,
+
+			counter = 0,
 
 			hasLocation = false;
 	
@@ -59,6 +55,9 @@
 			});
 
 			setMobileDevice( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) );
+
+
+			defaultMaps = ips.getSetting( 'membermap_defaultMaps' );
 
 
 			/* Showing a single user or online user, get the markers from DOM */
@@ -100,26 +99,17 @@
 				setZoomLevel( initZoom );
 			}
 
-			/* Set default map from URL */
-			var defaultMap = ips.utils.url.getParam( 'map' );
-			if ( defaultMap )
-			{
-				setDefaultMap( defaultMap );
-			}
-
 			/* Are we embedding? */
 			setEmbed( ips.utils.url.getParam( 'do' ) == 'embed' ? 1 : 0 );
-
-			
+		
 			/* Set a height of the map that fits our browser height */
 			setMapHeight();
 			
+			/* Prep the map */
 			setupMap();
 			
-
 			/* Load all markers */
-			loadMarkers();
-		
+			loadMarkers();			
 			
 			/* Init events */
 			initEvents();	
@@ -130,11 +120,6 @@
 			isMobileDevice = bool;
 		},
 		
-		setDefaultMap = function( map )
-		{
-			defaultMapTypeId = map;
-		},
-		
 		setEmbed = function( bool )
 		{
 			isEmbedded = bool;
@@ -142,27 +127,61 @@
 		
 		clear =function()
 		{
-			mapMarkers.clearLayers();
-			oms.clearMarkers();
+			memberMarkers.clearLayers();
 		},
 		
 		reloadMap = function()
 		{
-			Debug.log( "Reloading map" );
 			clear();
 			showMarkers( true );
 		},
 
 		setupMap = function()
 		{
-			var southWest = new L.LatLng( 56.83, -7.14 );
-			var northEast = new L.LatLng( 74.449, 37.466 );
+			/* Bounding Box */
+			var bbox = ips.getSetting( 'membermap_bbox' );
+
+			if ( bbox !== null && bbox.minLat && bbox.minLng && bbox.maxLat && bbox.maxLng )
+			{
+				var southWest = new L.LatLng( bbox.minLat, bbox.minLng );
+				var northEast = new L.LatLng( bbox.maxLat, bbox.maxLng );
+
+				forceBounds = true;
+
+				if ( ips.getSetting( 'membermap_bbox_zoom' ) )
+				{
+					setZoomLevel( ips.getSetting( 'membermap_bbox_zoom' ) );
+				}
+			}
+			else
+			{
+				/* Default bounding box */
+				var southWest = new L.LatLng( 56.83, -7.14 );
+				var northEast = new L.LatLng( 74.449, 37.466 );
+			}
 			bounds = new L.LatLngBounds(southWest, northEast);
 
-			mapServices.esriworldstreetmap = L.tileLayer.provider( 'Esri.WorldStreetMap' );
-			mapServices.thunderforestlandscape = L.tileLayer.provider( 'Thunderforest.Landscape' );
-			mapServices.mapquest = L.tileLayer.provider('MapQuestOpen.OSM');			
-			mapServices.esriworldtopomap = L.tileLayer.provider( 'Esri.WorldTopoMap' );
+			var defaultMap = '';
+
+			$.each( defaultMaps.basemaps, function( id, name )
+			{
+				try 
+				{
+					var key = name.toLowerCase().replace( '.', '' );
+					var prettyName = name.replace( '.', ' ' );
+
+					baseMaps[ prettyName ] = mapServices[ key ] = L.tileLayer.provider( name );
+
+					if ( defaultMap == '' )
+					{
+						defaultMap = key;
+					}
+				}
+				catch(e)
+				{
+					Debug.log( e.message );
+				}
+			});
 
 			var contextMenu = [];
 
@@ -193,17 +212,11 @@
 			});
 			
 
-			var defaultMap = 'mapquest';
 			var newDefault = '';
 			
 			if ( typeof ips.utils.cookie.get( 'membermap_baseMap' ) == 'string' && ips.utils.cookie.get( 'membermap_baseMap' ).length > 0 )
 			{
 				newDefault = ips.utils.cookie.get( 'membermap_baseMap' ).toLowerCase();
-			}
-			
-			if ( defaultMapTypeId !== null )
-			{
-				newDefault = defaultMapTypeId;
 			}
 			
 			if ( newDefault !== '' )
@@ -227,71 +240,28 @@
 				crs: L.CRS.EPSG3857
 			});
 			
-			
 			if ( isMobileDevice === false ) 
 			{
 				L.control.scale().addTo(map);
 			}
 
-			map.fitBounds( bounds );
+			map.fitBounds( bounds, { maxZoom: ( zoomLevel || 7 ) } );
 			
-			oms = new OverlappingMarkerSpiderfier( map, { keepSpiderfied: true } );
-			
-			var popup = new L.Popup({
-				offset: new L.Point(0, -20),
-				keepInView: true,
-				maxWidth: ( isMobileDevice ? 250 : 300 )
-			});
-			
-			oms.addListener( 'click', function( marker ) 
+			if ( ips.getSetting( 'membermap_enable_clustering' ) == 1 )
 			{
-				popup.setContent( marker.markerData.popup );
-				popup.setLatLng( marker.getLatLng() );
-				map.openPopup( popup );
-			});
-			
-			oms.addListener('spiderfy', function( omsMarkers ) 
+				memberMarkers = new L.MarkerClusterGroup({ zoomToBoundsOnClick: true, disableClusteringAtZoom: ( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 ) });
+			}
+			else
 			{
-				omsMarkers.each( function( omsMarker )
-				{
-					omsMarker.setIcon( omsMarker.options.spiderifiedIcon );
-				});
-				map.closePopup();
-			});
+				memberMarkers = new L.FeatureGroup();
+			}
+
+			map.addLayer( memberMarkers );
 			
-			oms.addListener('unspiderfy', function(omsMarkers) 
-			{
-				omsMarkers.each( function( omsMarker )
-				{
-					omsMarker.setIcon( omsMarker.options.defaultIcon );
-				});
-			});
 
-			mapMarkers = new L.MarkerClusterGroup({ spiderfyOnMaxZoom: false, zoomToBoundsOnClick: false, disableClusteringAtZoom: ( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 ) });
-			
-			mapMarkers.on( 'clusterclick', function (a) 
-			{
-				map.fitBounds( a.layer._bounds );
-				if ( map.getZoom() > ( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 ) )
-				{
-					map.setZoom( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 );
-				}
-			});
+			overlayMaps[ ips.getString( 'membermap_overlay_members' ) ] = memberMarkers;
 
-			map.addLayer( mapMarkers );
-			
-			baseMaps = {
-				"MapQuest": mapServices.mapquest,
-				"Thunderforest Landscape": mapServices.thunderforestlandscape,
-				'Esri WorldTopoMap': mapServices.esriworldtopomap,
-				'Esri World Street Map': mapServices.esriworldstreetmap
-			};
-
-			overlayMaps = {
-				"Members": mapMarkers,
-			};
-
-			L.control.layers( baseMaps, overlayMaps, { collapsed: ( isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
+			overlayControl = L.control.layers( baseMaps, overlayMaps, { collapsed: ( isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
 
 			map.on( 'baselayerchange', function( baselayer )
 			{
@@ -325,6 +295,8 @@
 			if ( ips.utils.url.getParam( 'rebuildCache' ) == 1 || ips.utils.url.getParam( 'dropBrowserCache' ) == 1 )
 			{
 				forceReload = true;
+				removeURIParam( 'rebuildCache' );
+				removeURIParam( 'dropBrowserCache' );
 			}
 
 			/* Skip this if markers was loaded from DOM */
@@ -382,6 +354,8 @@
 						/* Store data in browser when all AJAX calls complete */
 						promise.done(function()
 						{
+							updateOverlays();
+
 							if ( ips.utils.db.isEnabled() )
 							{
 								var date = new Date();
@@ -389,7 +363,7 @@
 								ips.utils.db.set( 'membermap', 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
 
 
-								$( '#elToolsMenuBrowserCache a time' ).html( '(Last update: ' + ips.utils.time.readable( date.getTime() / 1000 ) + ')' );
+								$( '#elToolsMenuBrowserCache a time' ).html( '(' + ips.getString( 'membermap_browserCache_update' ) + ': ' + ips.utils.time.readable( date.getTime() / 1000 ) + ')' );
 							}
 						});
 					}
@@ -407,11 +381,11 @@
 					return;
 				}
 
-				if ( data.data.length > 0 && typeof data.data !== 'null' )
+				if ( data.data.length > 0 && typeof data.data !== null )
 				{
 					/* Reload cache if it's older than 24 hrs */
 					var date = new Date( data.time * 1000 ),
-					nowdate = new Date;
+					nowdate = new Date();
 					if ( ( ( nowdate.getTime() - date.getTime() ) / 1000 ) > 86400 )
 					{
 						reloadMarkers();
@@ -420,15 +394,16 @@
 
 					allMarkers = data.data;
 					showMarkers( false, data.data );
+					updateOverlays();
 					
 					/* Inform that we're showing markers from browser cache */
 					if ( oldMarkersIndicator === null && ! isEmbedded )
 					{
-						oldMarkersIndicator = new L.Control.MembermapOldMarkers({ callback: reloadMarkers, time: date });
+						oldMarkersIndicator = new L.Control.MembermapOldMarkers({ callback: function() { window.location.href = ips.getSetting('baseURL') + 'index.php?app=membermap&dropBrowserCache=1'; }, time: date });
 						ips.membermap.map.addControl( oldMarkersIndicator );
 					}
 
-					$( '#elToolsMenuBrowserCache a time' ).html( '(Last update: ' + ips.utils.time.readable( date / 1000 ) + ')' );
+					$( '#elToolsMenuBrowserCache a time' ).html( '(' + ips.getString( 'membermap_browserCache_update' ) + ': ' + ips.utils.time.readable( date / 1000 ) + ')' );
 				}
 				else
 				{
@@ -437,6 +412,67 @@
 				}
 			}
 
+		},
+
+		updateOverlays = function()
+		{
+			/* Count all markers in each overlay */
+			$.each( overlayControl._layers, function( id, layer )
+			{
+				if ( layer.overlay == true && layer.layer.getLayers() !== 'undefined' && layer.layer.getLayers().length > 0 )
+				{
+					var count = layer.layer.getLayers().length;
+					if ( count > 0 )
+					{
+						overlayControl._layers[ id ].name = overlayControl._layers[ id ].name + " (" + count + ")";
+					}
+				}
+			});
+
+			/* Insert 3rd-party overlay last */
+			if ( $.isArray( defaultMaps.overlays ) && defaultMaps.overlays.length > 0 )
+			{
+				$.each( defaultMaps.overlays, function( id, name )
+				{
+					try 
+					{
+						var prettyName = name.replace( '.', ' ' );
+
+						overlayControl.addOverlay( L.tileLayer.provider( name ), prettyName );
+					}
+					catch(e)
+					{
+						Debug.log( e.message );
+					}
+				});
+			}
+
+
+			/* Contextual menu */
+			/* Needs to run this after the markers, as we need to know if we're editing or adding the location */
+			if ( ips.getSetting( 'member_id' ) )
+			{
+				if ( hasLocation && ips.getSetting( 'membermap_canEdit' ) )
+				{
+					map.contextmenu.insertItem(
+					{
+						'text': ips.getString( 'membermap_context_editLocation' ),
+						callback: updateLocation
+					}, 0 );
+					map.contextmenu.insertItem( { separator: true }, 1 );
+				}
+				else if ( ! hasLocation && ips.getSetting( 'membermap_canAdd' ) )
+				{
+					map.contextmenu.insertItem(
+					{
+						'text': ips.getString( 'membermap_context_addLocation' ),
+						callback: updateLocation
+					}, 0 );
+					map.contextmenu.insertItem( { separator: true }, 1 );
+				}
+			}
+
+			overlayControl._update();
 		},
 		
 		initEvents = function()
@@ -467,7 +503,7 @@
 				reloadMap();
 			});
 
-			$( '#membermap_button_addLocation' ).click( function()
+			$( '#membermap_button_addLocation, #membermap_button_editLocation' ).click( function()
 			{
 				if ( typeof popups['addLocationPopup'] === 'object' )
 				{
@@ -495,11 +531,11 @@
 							{
 								ips.getAjax()({ 
 									//url: 'http://www.mapquestapi.com/geocoding/v1/address', 
-									url: 'http://open.mapquestapi.com/nominatim/v1/search.php',
+									url: '//open.mapquestapi.com/nominatim/v1/search.php',
 									type: 'get',
 									dataType: 'json',
 									data: {
-										key: "pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud",
+										key: ips.getSetting( 'membermap_mapquestAPI' ),
 
 										// MapQuest Geocode
 										/*location: request.term,
@@ -547,7 +583,7 @@
 										}));
 
 									}
-								})
+								});
 							},
 							minLength: 3,
 							select: function( event, ui ) {
@@ -558,7 +594,7 @@
 
 						$( '#membermap_form_location' ).on( 'submit', function(e)
 						{
-							if ( $( '#membermap_form_location input[name="lat"]' ).val().length == 0 || $( '#membermap_form_location input[name="lng"]' ).val().length == 0 )
+							if ( $( '#membermap_form_location input[name="lat"]' ).val().length === 0 || $( '#membermap_form_location input[name="lng"]' ).val().length === 0 )
 							{
 								e.preventDefault();
 								return false;
@@ -568,7 +604,7 @@
 				});
 
 				popups['addLocationPopup'].show();
-			})
+			});
 		},
 
 
@@ -589,11 +625,11 @@
 					/* Skip this for now, will have to see how many requests this app consumes per month */
 
 					ips.getAjax()({ 
-						url: 'http://www.mapquestapi.com/geocoding/v1/reverse', 
+						url: '//www.mapquestapi.com/geocoding/v1/reverse', 
 						type: 'get',
 						dataType: 'json',
 						data: {
-							key: "pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud",
+							key: ips.getSetting( 'membermap_mapquestAPI' ),
 							lat: position.coords.latitude,
 							lng: position.coords.longitude
 
@@ -680,13 +716,17 @@
 	
 		showMarkers = function( dontRepan, markers )
 		{
-			dontRepan = typeof dontRepan !== 'undefined' ? dontRepan : false;
-			markers = typeof markers !== 'undefined' ? markers : false;
+			dontRepan = typeof dontRepan !== undefined ? dontRepan : false;
+			markers = typeof markers !== undefined ? markers : false;
 
 			var getByUser 	= ips.utils.url.getParam( 'filter' ) == 'getByUser' ? true : false;
 			var memberId 	= parseInt( ips.utils.url.getParam( 'member_id' ) );
 			var flyToZoom 	= 8;
-			var hasLocation = false;
+
+			if ( forceBounds )
+			{
+				dontRepan = true;
+			}
 
 			if ( markers === false )
 			{
@@ -696,30 +736,18 @@
 			if ( markers.length > 0 )
 			{
 
-				var memberSearch = $( '#elInput_membermap_memberName_wrapper .cToken' ).eq(0).attr( 'data-value' );
-
-
 				$.each( markers, function() 
 				{		
 					/* Don't show these, as they all end up in the middle of the middle of the South Atlantic Ocean. */
-					if ( this.lat == 0 && this.lon == 0 )
+					if ( this.lat === 0 && this.lon === 0 )
 					{
 						return;
-					}
-
-					/* Report written by selected member? */
-					if ( typeof memberSearch !== 'undefined' )
-					{
-						/* Names of 'null' are deleted members */
-						if (this.name == null || memberSearch.toLowerCase() !== this.name.toLowerCase() )
-						{
-							return;
-						}
 					}
 					
 					var bgColour 	= 'darkblue';
 					var icon 		= 'user';
 					var iconColour 	= 'white';
+					var popupOptions = {};
 
 					if ( this.type == 'member' )
 					{
@@ -746,6 +774,8 @@
 								getByUser 	= true;
 								memberId 	= this.member_id;
 								flyToZoom 	= 10;
+
+								removeURIParam( 'goHome' );
 							}
 							
 						}
@@ -763,18 +793,14 @@
 						icon 		= this.icon || 'fa-map-marker';
 						bgColour 	= this.bgColour;
 
+						popupOptions = {
+							minWidth: 320
+						};
 					}
 
-					var icon = L.AwesomeMarkers.icon({
+					var _icon = L.AwesomeMarkers.icon({
 						prefix: 'fa',
 						icon: icon, 
-						markerColor: bgColour,
-						iconColor: iconColour
-					});
-
-					var spiderifiedIcon = L.AwesomeMarkers.icon({
-						prefix: 'fa',
-						icon: 'users', 
 						markerColor: bgColour,
 						iconColor: iconColour
 					});
@@ -783,7 +809,7 @@
 					var contextMenu = [];
 					var enableContextMenu = false;
 
-					if ( ips.getSetting( 'is_supmod' ) ||  ( ips.getSetting( 'member_id' ) == this.member_id && ips.getSetting( 'membermap_canDelete' ) ) )
+					if ( this.type == 'member' && ( ips.getSetting( 'is_supmod' ) ||  ( ips.getSetting( 'member_id' ) == this.member_id && ips.getSetting( 'membermap_canDelete' ) ) ) )
 					{
 						enableContextMenu = true;
 						contextMenu = getMarkerContextMenu( this );
@@ -793,52 +819,43 @@
 						[ this.lat, this.lon ], 
 						{ 
 							title: this.title,
-							icon: icon,
-							spiderifiedIcon: spiderifiedIcon,
-							defaultIcon: icon,
+							icon: _icon,
 							contextmenu: enableContextMenu,
 						    contextmenuItems: contextMenu
 						}
-					);
+					).bindPopup( this.popup, ( popupOptions || {} ) );
 					
 					mapMarker.markerData = this;
 
-					oms.addMarker( mapMarker );
-					mapMarkers.addLayer( mapMarker );
+					if ( this.type == 'member' )
+					{
+						memberMarkers.addLayer( mapMarker );
+					}
+					else
+					{
+						if( typeof overlayMaps[ this.parent_id ] === "undefined" )
+						{
+							overlayMaps[ this.parent_id ] = L.layerGroup().addTo( map );
+							overlayControl.addOverlay( overlayMaps[ this.parent_id ], this.parent_name );
+						}
+						
+						overlayMaps[ this.parent_id ].addLayer( mapMarker );
+					}
 
+					/* Count the number of markers we have on the map */
+					counter = counter + 1;
+
+					/* Pan directly to our home location, if that's what we wanted */
 					if ( getByUser && memberId > 0 && this.type == 'member' && this.member_id == memberId )
 					{
 						dontRepan = true;
 						map.flyTo( mapMarker.getLatLng(), flyToZoom );
 					}
 				});
+
+				/* Update the counter */
+				$( '#membermap_counter span' ).html( counter );
 			}
-
-
-			/* Contextual menu */
-			/* Needs to run this after the markers, as we need to know if we're editing or adding the location */
-			if ( ips.getSetting( 'member_id' ) )
-			{
-				if ( hasLocation && ips.getSetting( 'membermap_canEdit' ) )
-				{
-					map.contextmenu.insertItem(
-					{
-						'text': ips.getString( 'membermap_context_editLocation' ),
-						callback: updateLocation
-					}, 0 );
-					map.contextmenu.insertItem( { separator: true }, 1 );
-				}
-				else if ( ! hasLocation && ips.getSetting( 'membermap_canAdd' ) )
-				{
-					map.contextmenu.insertItem(
-					{
-						'text': ips.getString( 'membermap_context_addLocation' ),
-						callback: updateLocation
-					}, 0 );
-					map.contextmenu.insertItem( { separator: true }, 1 );
-				}
-			}
-
 
 			/* We don't want to move the map around if we're changing filters or reloading markers */
 			if ( dontRepan === false )
@@ -856,7 +873,7 @@
 				}
 				else
 				{
-					map.fitBounds( mapMarkers.getBounds(), { 
+					map.fitBounds( memberMarkers.getBounds(), { 
 						padding: [50, 50],
 						maxZoom: 11
 					});
@@ -866,7 +883,6 @@
 
 		updateLocation = function( e )
 		{
-			Debug.log( e );
 			ips.ui.alert.show({
 				type: 'confirm',
 				message: ips.getString( 'membermap_confirm_updateLocation' ),
@@ -944,48 +960,35 @@
 
 			return [];
 		},
-		
-		markerClickFunction = function( marker )
+
+		removeURIParam = function( param )
 		{
-			var hidingMarker = currentPlace;
-			
-	
-			var zoomIn = function( info ) 
+			var urlObject = ips.utils.url.getURIObject();
+			var queryKeys = urlObject.queryKey;
+
+			delete queryKeys[ param ];
+
+			if( Object.keys( queryKeys ).length > 0 )
 			{
-				previousZoomLevel = map.getZoom();
-				
-				//map.setCenter( marker.getLatLng() );
-				map.flyTo( marker.getLatLng() );
-				if ( map.getZoom() <= 11 )
+				var newQuery = Object.keys( queryKeys ).reduce( function(a,k)
 				{
-					map.setZoom( 11 );
-				}
-				
-			};
-			
-			if ( currentPlace ) 
-			{
-				if ( hidingMarker !== marker ) 
-				{
-					zoomIn( marker.markerData );
-				}
-				else
-				{
-					currentPlace = null;
-					map.setZoom( previousZoomLevel );
-				}
-			} 
-			else 
-			{
-				zoomIn( marker.markerData );
+					var v = ( queryKeys[k] !== "" ) ? k + '=' + encodeURIComponent( queryKeys[k] ) : k;
+					a.push( v );
+					return a;
+				}, [] ).join( '&' );
+
+				var newUrl = window.location.origin + window.location.pathname + '?' + newQuery;
 			}
-			
-			currentPlace = marker;
+			else
+			{
+				var newUrl = window.location.origin + window.location.pathname;
+			}
+
+			History.replaceState( null, document.title, newUrl );
 		};
 
 		return {
 			initMap: initMap,
-			setDefaultMap: setDefaultMap,
 			setMarkers: setMarkers,
 			setCenter: setCenter,
 			setZoomLevel: setZoomLevel,

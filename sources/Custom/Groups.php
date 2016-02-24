@@ -103,6 +103,34 @@ class _Groups extends \IPS\Node\Model
 	 */
 	public static $modalForms = TRUE;
 	
+
+	/**
+	 * @brief	[Node] ACP Restrictions
+	 * @code
+	 	array(
+	 		'app'		=> 'core',				// The application key which holds the restrictrions
+	 		'module'	=> 'foo',				// The module key which holds the restrictions
+	 		'map'		=> array(				// [Optional] The key for each restriction - can alternatively use "prefix"
+	 			'add'			=> 'foo_add',
+	 			'edit'			=> 'foo_edit',
+	 			'permissions'	=> 'foo_perms',
+	 			'delete'		=> 'foo_delete'
+	 		),
+	 		'all'		=> 'foo_manage',		// [Optional] The key to use for any restriction not provided in the map (only needed if not providing all 4)
+	 		'prefix'	=> 'foo_',				// [Optional] Rather than specifying each  key in the map, you can specify a prefix, and it will automatically look for restrictions with the key "[prefix]_add/edit/permissions/delete"
+	 * @endcode
+	 */
+	protected static $restrictions = array(
+		'app'		=> 'membermap',
+		'module'	=> 'membermap',
+		'prefix' 	=> 'markers',
+		'all'		=> 'markers_manage',
+		'map'		=> array(				
+	 			'add'			=> 'markers_add',
+	 			'edit'			=> 'markers_edit',
+	 			'delete'		=> 'markers_delete'
+	 		),
+	);
 	
 	/**
 	 * [Node] Get Title
@@ -222,7 +250,7 @@ class _Groups extends \IPS\Node\Model
 		$form->add( new \IPS\Helpers\Form\Radio( 'group_pin_bg_colour', $bgColour, TRUE, array(
 			'options' => $radioOpt,
 			'parse' => 'image',
-			'descriptions' => array( 'white' => 'White' ) /* Just because white is difficult to see on the page */
+			'descriptions' => array( 'white' => \IPS\Member::loggedIn()->language()->addToStack( 'group_pin_bg_colour_white' ) ) /* Just because white is difficult to see on the page */
 		)));
 
 		$form->addDummy( 'group_marker_example', "<span class='awesome-marker awesome-marker-icon-{$bgColour}' id='markerExample'><i class='fa fa-fw {$icon}' style='color: {$iconColour}'></i></span>" );

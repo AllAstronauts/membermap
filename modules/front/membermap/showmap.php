@@ -42,10 +42,11 @@ class _showmap extends \IPS\Dispatcher\Controller
 	 */
 	protected function manage()
 	{
-		$markers = array();
+		$markers 	= array();
+		$cacheTime 	= isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
 
 		/* Rebuild JSON cache if needed */
-		if ( ! is_file ( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-index.json' ) OR \IPS\Request::i()->rebuildCache === '1' )
+		if ( ! is_file ( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-index.json' ) OR \IPS\Request::i()->rebuildCache === '1' OR $cacheTime === 0 )
 		{
 			\IPS\membermap\Map::i()->recacheJsonFile();
 
@@ -68,6 +69,9 @@ class _showmap extends \IPS\Dispatcher\Controller
 			$markers = \IPS\membermap\Map::i()->getMarkersByOnlineMembers();
 		}
 
+		/* Get enabled maps */
+		$defaultMaps = \IPS\membermap\Application::getEnabledMaps();
+
 		/* Load JS and CSS */
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/leaflet-src.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/Control.FullScreen.js', 'membermap', 'interface' ) );
@@ -76,7 +80,6 @@ class _showmap extends \IPS\Dispatcher\Controller
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/leaflet.awesome-markers.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/leaflet.contextmenu-src.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/leaflet.markercluster-src.js', 'membermap', 'interface' ) );
-		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/oms.min.js', 'membermap', 'interface' ) );
 
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'front_main.js', 'membermap', 'front' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'jquery/jquery-ui.js', 'membermap', 'interface' ) );
@@ -94,22 +97,21 @@ class _showmap extends \IPS\Dispatcher\Controller
         \IPS\Session::i()->setLocation( \IPS\Http\Url::internal( 'app=membermap', 'front', 'membermap' ), array(), 'loc_membermap_viewing_membermap' );
 
         /* Things we need to know in the Javascript */
-        $is_supmod		= \IPS\Member::loggedIn()->modPermission() ?: 0;
-        $member_id		= \IPS\Member::loggedIn()->member_id ?: 0;
-        $canAdd			= \IPS\Member::loggedIn()->group['g_membermap_canAdd'] ?: 0;
-        $canEdit		= \IPS\Member::loggedIn()->group['g_membermap_canEdit'] ?: 0;
-        $canDelete		= \IPS\Member::loggedIn()->group['g_membermap_canDelete'] ?: 0;
-        $cacheTime 		= isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
+		\IPS\Output::i()->jsVars['is_supmod']			= \IPS\Member::loggedIn()->modPermission() ?: 0;
+		\IPS\Output::i()->jsVars['member_id']			= \IPS\Member::loggedIn()->member_id ?: 0;
+		\IPS\Output::i()->jsVars['membermap_canAdd']	= \IPS\Member::loggedIn()->group['g_membermap_canAdd'] ?: 0;
+        \IPS\Output::i()->jsVars['membermap_canEdit']	= \IPS\Member::loggedIn()->group['g_membermap_canEdit'] ?: 0;
+        \IPS\Output::i()->jsVars['membermap_canDelete']	= \IPS\Member::loggedIn()->group['g_membermap_canDelete'] ?: 0;
+        \IPS\Output::i()->jsVars['membermap_cacheTime'] = isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
+		\IPS\Output::i()->jsVars['membermap_bbox'] 		= json_decode( \IPS\Settings::i()->membermap_bbox );
+		\IPS\Output::i()->jsVars['membermap_bbox_zoom'] = intval( \IPS\Settings::i()->membermap_bbox_zoom );
+		\IPS\Output::i()->jsVars['membermap_defaultMaps'] = $defaultMaps;
+		\IPS\Output::i()->jsVars['membermap_mapquestAPI'] = \IPS\membermap\Application::getApiKeys( 'mapquest' ); 
+		\IPS\Output::i()->jsVars['membermap_enable_clustering'] = \IPS\Settings::i()->membermap_enable_clustering == 1 ? 1 : 0;
+
 
         \IPS\Output::i()->endBodyCode .= <<<EOF
 		<script type='text/javascript'>
-			ips.setSetting( 'is_supmod', {$is_supmod} );
-			ips.setSetting( 'member_id', {$member_id} );
-			ips.setSetting( 'membermap_canAdd', {$canAdd} );
-			ips.setSetting( 'membermap_canEdit', {$canEdit} );
-			ips.setSetting( 'membermap_canDelete', {$canDelete} );
-			ips.setSetting( 'membermap_cacheTime', {$cacheTime} );
-
 			ips.membermap.initMap();
 		</script>
 EOF;

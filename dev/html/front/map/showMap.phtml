@@ -15,7 +15,7 @@
 					</a>
 					<div id='elMyLocationMenu_menu' class='ipsMenu ipsMenu_auto ipsHide'>
 						<ul>
-							<li class="ipsMenu_item" id="membermap_button_addLocation">
+							<li class="ipsMenu_item" id="membermap_button_editLocation">
 								<a href="#">{lang="membermap_button_editLocation"}</a>
 							</li>
 
@@ -32,7 +32,7 @@
 				{{if \IPS\Member::loggedIn()->isAdmin()}}
 				<li class='ipsToolList_primaryAction ipsResponsive_hidePhone'>
 					<a href='#elToolsMenu' id='elToolsMenu' data-ipsmenu class='ipsButton ipsButton_normal ipsButton_medium'>
-						 &nbsp;Admin Tools <i class='fa fa-caret-down'></i>
+						 &nbsp;{lang="membermap_adminTools"} <i class='fa fa-caret-down'></i>
 					</a>
 					<div id='elToolsMenu_menu' class='ipsMenu ipsMenu_auto ipsHide'>
 						<ul>
@@ -41,7 +41,13 @@
 							</li>
 
 							<li class="ipsMenu_item" >
-								<a href="{url='app=membermap&rebuildCache=1' seoTemplate='membermap'}" data-action='ipsMenu_ping'>{lang="membermap_rebuildServerCache" htmlsprintf="\IPS\DateTime::ts( $cacheTime )->html( true, true )"}</a>
+								<a href="{url='app=membermap&rebuildCache=1' seoTemplate='membermap'}" data-action='ipsMenu_ping'>
+									{{if $cacheTime > 0}}
+										{lang="membermap_rebuildServerCache" htmlsprintf="\IPS\DateTime::ts( $cacheTime )->html( true, true )"}
+									{{else}}
+										{lang="membermap_rebuildServerCache_notSet"}
+									{{endif}}
+								</a>
 							</li>
 						</ul>
 					</div>
@@ -58,6 +64,9 @@
 		<div id="mapWrapper" class='ipsLayout_content clearfix'>
 			<div id='mapCanvas'></div>
 		</div>
+	</div>
+	<div class='ipsPad_top' id="membermap_counter">
+		<p>{lang="membermap_showing_markers"}</p>
 	</div>
 </section>
 

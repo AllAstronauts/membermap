@@ -15,4 +15,10 @@ $lang = array(
 	'membermap_cached_markers_refresh' => "Refresh",
 	'marker_addViaMap' => "Select location in map",
 	'membermap_cannot_edit_location' => "You do not have permission to edit your location.",
+	'membermap_overlay_members' => "Members",
+	'membermap_defaultProvider' => "Default",
+	'membermap_mapmanager_cant_save' => "We couldn't save your chosen maps",
+	'membermap_noHTTPS' => "HTTP Only",
+	'membermap_noHTTPS_desc' => "This provider only serves content over the HTTP protocol, this will not work if you&rsquo;re using HTTPS",
+	'membermap_browserCache_update'	=> "Last Update",
 );

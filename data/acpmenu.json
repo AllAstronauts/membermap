@@ -5,6 +5,18 @@
             "controller": "markers",
             "do": "",
             "restriction": null
+        },
+        "mapmanager": {
+            "tab": "community",
+            "controller": "mapmanager",
+            "do": "",
+            "restriction": "mapmanager_manage"
+        },
+        "settings": {
+            "tab": "community",
+            "controller": "settings",
+            "do": "",
+            "restriction": "settings_manage"
         }
     }
 }
