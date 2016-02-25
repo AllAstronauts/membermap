@@ -83,6 +83,34 @@ class _Markers extends \IPS\Node\Model
 	 */
 	public static $nodeTitle = 'membermap_marker';
 
+	/**
+	 * @brief	[Node] ACP Restrictions
+	 * @code
+	 	array(
+	 		'app'		=> 'core',				// The application key which holds the restrictrions
+	 		'module'	=> 'foo',				// The module key which holds the restrictions
+	 		'map'		=> array(				// [Optional] The key for each restriction - can alternatively use "prefix"
+	 			'add'			=> 'foo_add',
+	 			'edit'			=> 'foo_edit',
+	 			'permissions'	=> 'foo_perms',
+	 			'delete'		=> 'foo_delete'
+	 		),
+	 		'all'		=> 'foo_manage',		// [Optional] The key to use for any restriction not provided in the map (only needed if not providing all 4)
+	 		'prefix'	=> 'foo_',				// [Optional] Rather than specifying each  key in the map, you can specify a prefix, and it will automatically look for restrictions with the key "[prefix]_add/edit/permissions/delete"
+	 * @endcode
+	 */
+	protected static $restrictions = array(
+		'app'		=> 'membermap',
+		'module'	=> 'membermap',
+		'prefix' 	=> 'markers',
+		'all'		=> 'markers_manage',
+		'map'		=> array(				
+	 			'add'			=> 'markers_add',
+	 			'edit'			=> 'markers_edit',
+	 			'delete'		=> 'markers_delete'
+	 		),
+	);
+
 
 	/**
 	 * Get sortable name
@@ -137,6 +165,16 @@ class _Markers extends \IPS\Node\Model
 	}
 
 	/**
+	 * [Node] Get Node Description
+	 *
+	 * @return	string|null
+	 */
+	protected function get_description()
+	{
+		return isset( $this->_data['description'] ) ? $this->_data['description'] : NULL;
+	}
+
+	/**
 	 * [Node] Add/Edit Form
 	 *
 	 * @param	\IPS\Helpers\Form	$form	The form
@@ -144,6 +182,20 @@ class _Markers extends \IPS\Node\Model
 	 */
 	public function form( &$form )
 	{
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'admin_membermap.js', 'membermap', 'admin' ) );
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'membermap.css', 'membermap' ) );
+
+		
+		/* Get enabled maps */
+		$defaultMaps = \IPS\membermap\Application::getEnabledMaps();
+		\IPS\Output::i()->jsVars['membermap_defaultMaps'] = $defaultMaps;
+		\IPS\Output::i()->jsVars['membermap_mapquestAPI'] = \IPS\membermap\Application::getApiKeys( 'mapquest' ); 
+
+		if ( count( \IPS\membermap\Custom\Groups::roots() ) == 0 )
+		{
+			\IPS\Output::i()->error( 'membermap_error_noGroups', '', 403, '' );
+		}
+
 		if ( \IPS\Request::i()->id )
 		{
 			\IPS\Output::i()->title = \IPS\Member::loggedIn()->language()->addToStack( 'membermap_edit_marker' ) . ': ' . \IPS\Output::i()->title;
@@ -153,16 +205,26 @@ class _Markers extends \IPS\Node\Model
 			\IPS\Output::i()->title = \IPS\Member::loggedIn()->language()->addToStack('membermap_add_marker');
 		}
 
+
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.css', 'membermap', 'global' ) );
+
 		$form->attributes['data-controller'] = 'membermap.admin.membermap.markerform';
 		$form->attributes['id'] = 'membermap_add_marker';
+
 
 		/* Build form */
 		$form->add( new \IPS\Helpers\Form\Text( 'marker_name', $this->id ? $this->name : '', TRUE, array( 'maxLength' => 64 ) ) );
 
-		$form->add( new \IPS\Helpers\Form\Text( 'marker_description', $this->id ? $this->description : '', FALSE ) );
+		//$form->add( new \IPS\Helpers\Form\TextArea( 'marker_description', $this->id ? $this->description : '', FALSE, array( 'rows' => 3 ) ) );
+		$form->add( new \IPS\Helpers\Form\Editor( 'marker_description', $this->id ? $this->description : '', FALSE, array(
+				'app'         => 'membermap',
+				'key'         => 'markers',
+				'autoSaveKey' => 'custom-markers-' . ( $this->id ? $this->id : 'new' ),
+				'attachIds'	  => ( $this->id ) ? array( $this->id ) : NULL ) ) );
 
 		$form->add( new \IPS\Helpers\Form\Node( 'marker_parent_id', $this->parent_id ? $this->parent_id : 0, TRUE, array(
-			'class'    => '\IPS\membermap\Custom\Groups'
+			'class'		=> '\IPS\membermap\Custom\Groups',
+			'subnodes'	=> false,
 		) ) );
 
 		$form->add( new \IPS\Helpers\Form\Text( 'marker_location', $this->id ? $this->location : '', FALSE, array(), NULL, NULL, NULL, 'marker_location' ) );
@@ -170,6 +232,8 @@ class _Markers extends \IPS\Node\Model
 		$form->add( new \IPS\Helpers\Form\Number( 'marker_lat', $this->id ? $this->lat : 0, TRUE, array( 'min' => -90, 'max' => 90, 'decimals' => TRUE ), NULL, NULL, NULL, 'marker_lat' ) );
 
 		$form->add( new \IPS\Helpers\Form\Number( 'marker_lon', $this->id ? $this->lon : 0, TRUE, array( 'min' => -180, 'max' => 180, 'decimals' => TRUE ), NULL, NULL, NULL, 'marker_lon' ) );
+
+		$form->addDummy( 'marker_addViaMap', '<button type="button" id="marker_addViaMap" role="button">' . \IPS\Member::loggedIn()->language()->addToStack( 'marker_addViaMap_button' ) . '</button>' );
 	}
 
 	/**
@@ -185,7 +249,10 @@ class _Markers extends \IPS\Node\Model
 		if ( !$this->id )
 		{
 			$this->save();
+
+			\IPS\File::claimAttachments( 'custom-markers-new', $this->id );
 		}
+
 		
 		
 		if ( isset( $values['marker_parent_id'] ) AND ( ! empty( $values['marker_parent_id'] ) OR $values['marker_parent_id'] === 0 ) )

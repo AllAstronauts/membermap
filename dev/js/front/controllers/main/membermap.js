@@ -1,5 +1,5 @@
 /**
- * Trip Report, by Martin Aronsen
+ * Member Map, by Stuart Silvester & Martin Aronsen
  */
 ;( function($, _, undefined){
 	"use strict";
@@ -7,13 +7,9 @@
 	ips.createModule('ips.membermap', function() 
 	{
 		var map = null,
-			oms = null,
-			geocoder = null,
-			defaultMapTypeId = null,
-			activeLayers = null,
+			defaultMaps = {},
 			
 			zoomLevel = null,
-			previousZoomLevel = null,
 			
 			initialCenter = null,
 			
@@ -21,25 +17,26 @@
 			
 			baseMaps = {},
 			overlayMaps = {},
+			overlayControl = null,
 			
-			mapMarkers = null,
+			memberMarkers = null,
 			allMarkers = [],
 			
 			icons = [],
-			infoWindow = null,
-			info = null,
-			currentPlace = null,
 			isMobileDevice = false,
 			isEmbedded = false,
 			
 			bounds = null,
+			forceBounds = false,
 			
 			stuffSize = 0,
 			popups = [],
 
-			markerContext = {},
+			oldMarkersIndicator = null,
 
-			oldMarkersIndicator = null;
+			counter = 0,
+
+			hasLocation = false;
 	
 		var initMap = function()
 		{
@@ -58,6 +55,9 @@
 			});
 
 			setMobileDevice( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) );
+
+
+			defaultMaps = ips.getSetting( 'membermap_defaultMaps' );
 
 
 			/* Showing a single user or online user, get the markers from DOM */
@@ -99,26 +99,17 @@
 				setZoomLevel( initZoom );
 			}
 
-			/* Set default map from URL */
-			var defaultMap = ips.utils.url.getParam( 'map' );
-			if ( defaultMap )
-			{
-				setDefaultMap( defaultMap );
-			}
-
 			/* Are we embedding? */
 			setEmbed( ips.utils.url.getParam( 'do' ) == 'embed' ? 1 : 0 );
-
-			
+		
 			/* Set a height of the map that fits our browser height */
 			setMapHeight();
 			
+			/* Prep the map */
 			setupMap();
 			
-
 			/* Load all markers */
-			loadMarkers();
-		
+			loadMarkers();			
 			
 			/* Init events */
 			initEvents();	
@@ -129,11 +120,6 @@
 			isMobileDevice = bool;
 		},
 		
-		setDefaultMap = function( map )
-		{
-			defaultMapTypeId = map;
-		},
-		
 		setEmbed = function( bool )
 		{
 			isEmbedded = bool;
@@ -141,35 +127,67 @@
 		
 		clear =function()
 		{
-			mapMarkers.clearLayers();
-			oms.clearMarkers();
+			memberMarkers.clearLayers();
 		},
 		
 		reloadMap = function()
 		{
-			Debug.log( "Reloading map" );
 			clear();
 			showMarkers( true );
 		},
 
 		setupMap = function()
 		{
+			/* Bounding Box */
+			var bbox = ips.getSetting( 'membermap_bbox' );
 
-			
-			var southWest = new L.LatLng( 56.83, -7.14 );
-			var northEast = new L.LatLng( 74.449, 37.466 );
+			if ( bbox !== null && bbox.minLat && bbox.minLng && bbox.maxLat && bbox.maxLng )
+			{
+				var southWest = new L.LatLng( bbox.minLat, bbox.minLng );
+				var northEast = new L.LatLng( bbox.maxLat, bbox.maxLng );
+
+				forceBounds = true;
+
+				if ( ips.getSetting( 'membermap_bbox_zoom' ) )
+				{
+					setZoomLevel( ips.getSetting( 'membermap_bbox_zoom' ) );
+				}
+			}
+			else
+			{
+				/* Default bounding box */
+				var southWest = new L.LatLng( 56.83, -7.14 );
+				var northEast = new L.LatLng( 74.449, 37.466 );
+			}
 			bounds = new L.LatLngBounds(southWest, northEast);
 
-			mapServices.thunderforestlandscape = L.tileLayer.provider( 'Thunderforest.Landscape' );
-			mapServices.mapquest = L.tileLayer.provider('MapQuestOpen.OSM');			
-			mapServices.esriworldtopomap = L.tileLayer.provider( 'Esri.WorldTopoMap' );
-			mapServices.nokia = L.tileLayer.provider( 'Nokia.terrainDay' );
+			var defaultMap = '';
+
+			$.each( defaultMaps.basemaps, function( id, name )
+			{
+				try 
+				{
+					var key = name.toLowerCase().replace( '.', '' );
+					var prettyName = name.replace( '.', ' ' );
+
+					baseMaps[ prettyName ] = mapServices[ key ] = L.tileLayer.provider( name );
+
+					if ( defaultMap == '' )
+					{
+						defaultMap = key;
+					}
+				}
+				catch(e)
+				{
+					Debug.log( e.message );
+				}
+			});
 
 			var contextMenu = [];
-			
+
 			contextMenu.push(
 			{
-				text: 'Center map here',
+				text: ips.getString( 'membermap_centerMap' ),
 				callback: function(e) 
 				{
 					map.flyTo(e.latlng);
@@ -177,7 +195,7 @@
 			}, 
 			'-', 
 			{
-				text: 'Zoom in',
+				text: ips.getString( 'membermap_zoomIn' ),
 				icon: icons.zoomIn,
 				callback: function() 
 				{
@@ -185,7 +203,7 @@
 				}
 			}, 
 			{
-				text: 'Zoom out',
+				text: ips.getString( 'membermap_zoomOut' ),
 				icon: icons.zoomOut,
 				callback: function() 
 				{
@@ -194,17 +212,11 @@
 			});
 			
 
-			var defaultMap = 'mapquest';
 			var newDefault = '';
 			
 			if ( typeof ips.utils.cookie.get( 'membermap_baseMap' ) == 'string' && ips.utils.cookie.get( 'membermap_baseMap' ).length > 0 )
 			{
 				newDefault = ips.utils.cookie.get( 'membermap_baseMap' ).toLowerCase();
-			}
-			
-			if ( defaultMapTypeId !== null )
-			{
-				newDefault = defaultMapTypeId;
 			}
 			
 			if ( newDefault !== '' )
@@ -228,75 +240,32 @@
 				crs: L.CRS.EPSG3857
 			});
 			
-			
 			if ( isMobileDevice === false ) 
 			{
 				L.control.scale().addTo(map);
 			}
 
-			map.fitBounds( bounds );
+			map.fitBounds( bounds, { maxZoom: ( zoomLevel || 7 ) } );
 			
-			oms = new OverlappingMarkerSpiderfier( map, { keepSpiderfied: true } );
-			
-			var popup = new L.Popup({
-				offset: new L.Point(0, -20),
-				keepInView: true,
-				maxWidth: ( isMobileDevice ? 250 : 300 )
-			});
-			
-			oms.addListener( 'click', function( marker ) 
+			if ( ips.getSetting( 'membermap_enable_clustering' ) == 1 )
 			{
-				popup.setContent( marker.markerData.popup );
-				popup.setLatLng( marker.getLatLng() );
-				map.openPopup( popup );
-			});
-			
-			oms.addListener('spiderfy', function( omsMarkers ) 
+				memberMarkers = new L.MarkerClusterGroup({ zoomToBoundsOnClick: true, disableClusteringAtZoom: ( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 ) });
+			}
+			else
 			{
-				omsMarkers.each( function( omsMarker )
-				{
-					omsMarker.setIcon( omsMarker.options.spiderifiedIcon );
-				});
-				map.closePopup();
-			});
+				memberMarkers = new L.FeatureGroup();
+			}
+
+			map.addLayer( memberMarkers );
 			
-			oms.addListener('unspiderfy', function(omsMarkers) 
-			{
-				omsMarkers.each( function( omsMarker )
-				{
-					omsMarker.setIcon( omsMarker.options.defaultIcon );
-				});
-			});
 
-			mapMarkers = new L.MarkerClusterGroup({ spiderfyOnMaxZoom: false, zoomToBoundsOnClick: false, disableClusteringAtZoom: ( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 ) });
-			
-			mapMarkers.on( 'clusterclick', function (a) 
-			{
-				map.fitBounds( a.layer._bounds );
-				if ( map.getZoom() > ( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 ) )
-				{
-					map.setZoom( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 );
-				}
-			});
+			overlayMaps[ ips.getString( 'membermap_overlay_members' ) ] = memberMarkers;
 
-			map.addLayer( mapMarkers );
-			
-			baseMaps = {
-				"MapQuest": mapServices.mapquest,
-				"Thunderforest Landscape": mapServices.thunderforestlandscape,
-				'Esri WorldTopoMap': mapServices.esriworldtopomap,
-				'Nokia': mapServices.nokia
-			};
-
-			overlayMaps = {
-				"Members": mapMarkers,
-			};
-
-			activeLayers = new L.Control.ActiveLayers( baseMaps, overlayMaps, { collapsed: ( isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
+			overlayControl = L.control.layers( baseMaps, overlayMaps, { collapsed: ( isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
 
 			map.on( 'baselayerchange', function( baselayer )
 			{
-				ips.utils.cookie.set( 'membermap_baseMap', baselayer.name );
+				ips.utils.cookie.set( 'membermap_baseMap', baselayer.name.toLowerCase().replace( /\s/g, '' ) );
 			});
 			
 			ips.membermap.map = map;
@@ -326,6 +295,8 @@
 			if ( ips.utils.url.getParam( 'rebuildCache' ) == 1 || ips.utils.url.getParam( 'dropBrowserCache' ) == 1 )
 			{
 				forceReload = true;
+				removeURIParam( 'rebuildCache' );
+				removeURIParam( 'dropBrowserCache' );
 			}
 
 			/* Skip this if markers was loaded from DOM */
@@ -335,6 +306,12 @@
 				return;
 			}
 
+			if ( ! ips.utils.db.isEnabled() )
+			{
+				$( '#elToolsMenuBrowserCache' ).addClass( 'ipsMenu_itemDisabled' );
+				$( '#elToolsMenuBrowserCache a' ).append( '(Not supported)' );
+			}
+
 			if ( forceReload || ! ips.utils.db.isEnabled() )
 			{
 				allMarkers = [];
@@ -342,6 +319,7 @@
 				$.ajax( ipsSettings.baseURL.replace('&amp;','&') + 'datastore/membermap_cache/membermap-index.json',
 				{	
 					cache : false,
+					dataType: 'json',
 					success: function( res )
 					{
 						if ( typeof res.error !== 'undefined' )
@@ -362,6 +340,7 @@
 								$.ajax({
 									url: ipsSettings.baseURL.replace('&amp;','&') + '/datastore/' + file,
 									cache : false,
+									dataType: 'json',
 									success:function( res )
 									{
 										/* Show marker layer */
@@ -375,11 +354,16 @@
 						/* Store data in browser when all AJAX calls complete */
 						promise.done(function()
 						{
+							updateOverlays();
+
 							if ( ips.utils.db.isEnabled() )
 							{
 								var date = new Date();
 								ips.utils.db.set( 'membermap', 'markers', { time: ( date.getTime() / 1000 ), data: allMarkers } );
 								ips.utils.db.set( 'membermap', 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
+
+
+								$( '#elToolsMenuBrowserCache a time' ).html( '(' + ips.getString( 'membermap_browserCache_update' ) + ': ' + ips.utils.time.readable( date.getTime() / 1000 ) + ')' );
 							}
 						});
 					}
@@ -397,11 +381,11 @@
 					return;
 				}
 
-				if ( data.data.length > 0 && typeof data.data !== 'null' )
+				if ( data.data.length > 0 && typeof data.data !== null )
 				{
 					/* Reload cache if it's older than 24 hrs */
 					var date = new Date( data.time * 1000 ),
-					nowdate = new Date;
+					nowdate = new Date();
 					if ( ( ( nowdate.getTime() - date.getTime() ) / 1000 ) > 86400 )
 					{
 						reloadMarkers();
@@ -410,13 +394,16 @@
 
 					allMarkers = data.data;
 					showMarkers( false, data.data );
+					updateOverlays();
 					
 					/* Inform that we're showing markers from browser cache */
 					if ( oldMarkersIndicator === null && ! isEmbedded )
 					{
-						oldMarkersIndicator = new L.Control.MembermapOldMarkers({ callback: reloadMarkers, time: date });
+						oldMarkersIndicator = new L.Control.MembermapOldMarkers({ callback: function() { window.location.href = ips.getSetting('baseURL') + 'index.php?app=membermap&dropBrowserCache=1'; }, time: date });
 						ips.membermap.map.addControl( oldMarkersIndicator );
 					}
+
+					$( '#elToolsMenuBrowserCache a time' ).html( '(' + ips.getString( 'membermap_browserCache_update' ) + ': ' + ips.utils.time.readable( date / 1000 ) + ')' );
 				}
 				else
 				{
@@ -425,6 +412,67 @@
 				}
 			}
 
+		},
+
+		updateOverlays = function()
+		{
+			/* Count all markers in each overlay */
+			$.each( overlayControl._layers, function( id, layer )
+			{
+				if ( layer.overlay == true && layer.layer.getLayers() !== 'undefined' && layer.layer.getLayers().length > 0 )
+				{
+					var count = layer.layer.getLayers().length;
+					if ( count > 0 )
+					{
+						overlayControl._layers[ id ].name = overlayControl._layers[ id ].name + " (" + count + ")";
+					}
+				}
+			});
+
+			/* Insert 3rd-party overlay last */
+			if ( $.isArray( defaultMaps.overlays ) && defaultMaps.overlays.length > 0 )
+			{
+				$.each( defaultMaps.overlays, function( id, name )
+				{
+					try 
+					{
+						var prettyName = name.replace( '.', ' ' );
+
+						overlayControl.addOverlay( L.tileLayer.provider( name ), prettyName );
+					}
+					catch(e)
+					{
+						Debug.log( e.message );
+					}
+				});
+			}
+
+
+			/* Contextual menu */
+			/* Needs to run this after the markers, as we need to know if we're editing or adding the location */
+			if ( ips.getSetting( 'member_id' ) )
+			{
+				if ( hasLocation && ips.getSetting( 'membermap_canEdit' ) )
+				{
+					map.contextmenu.insertItem(
+					{
+						'text': ips.getString( 'membermap_context_editLocation' ),
+						callback: updateLocation
+					}, 0 );
+					map.contextmenu.insertItem( { separator: true }, 1 );
+				}
+				else if ( ! hasLocation && ips.getSetting( 'membermap_canAdd' ) )
+				{
+					map.contextmenu.insertItem(
+					{
+						'text': ips.getString( 'membermap_context_addLocation' ),
+						callback: updateLocation
+					}, 0 );
+					map.contextmenu.insertItem( { separator: true }, 1 );
+				}
+			}
+
+			overlayControl._update();
 		},
 		
 		initEvents = function()
@@ -455,7 +503,7 @@
 				reloadMap();
 			});
 
-			$( '#membermap_button_addLocation' ).click( function()
+			$( '#membermap_button_addLocation, #membermap_button_editLocation' ).click( function()
 			{
 				if ( typeof popups['addLocationPopup'] === 'object' )
 				{
@@ -478,45 +526,85 @@
 							$( '#membermap_currentLocation' ).click( processGeolocation );
 						}
 
-
-
-						ips.loader.get( ['https://maps.google.com/maps/api/js?sensor=false&libraries=places'] ).then( function () {
-							geocoder = new google.maps.Geocoder();
-				
-							$( '#elInput_membermap_location' ).keydown( function(event)
+						$( '#elInput_membermap_location' ).autocomplete({
+							source: function( request, response ) 
 							{
-								if( event.keyCode === 13 ) 
-								{
-									event.preventDefault();
-									return false;
-								}
-							});
+								ips.getAjax()({ 
+									//url: 'http://www.mapquestapi.com/geocoding/v1/address', 
+									url: '//open.mapquestapi.com/nominatim/v1/search.php',
+									type: 'get',
+									dataType: 'json',
+									data: {
+										key: ips.getSetting( 'membermap_mapquestAPI' ),
 
-							var autocomplete = new google.maps.places.Autocomplete( document.getElementById( 'elInput_membermap_location' ), { types: ['establishment', 'geocode'] } );
-							
-							google.maps.event.addListener( autocomplete, 'place_changed', function() 
-							{
-								var item = autocomplete.getPlace();
-								
-								$( '#membermap_form_location input[name="lat"]' ).val( item.geometry.location.lat() );
-								$( '#membermap_form_location input[name="lng"]' ).val( item.geometry.location.lng() );
-								$( '#elInput_membermap_location' ).val( item.formatted_address );
-							});
+										// MapQuest Geocode
+										/*location: request.term,
+										outFormat: 'json'*/
 
-							$( '#membermap_form_location' ).on( 'submit', function(e)
+										// MapQuest Nominatim
+										format: 'json',
+										q: request.term,
+										extratags: 0,
+
+									},
+									success: function( data ) 
+									{
+										// MapQuest
+										/* If adminArea5 is empty, it's likely we don't have a result */
+										/*if ( data.results[0].locations[0].adminArea5 )
+										{
+											response( $.map( data.results[0].locations, function( item )
+											{
+												return {
+													value: item.adminArea5 + 
+														( item.adminArea4 ? ', ' + item.adminArea4 : '' ) + 
+														( item.adminArea3 ? ', ' + item.adminArea3 : '' ) + 
+														( item.adminArea2 ? ', ' + item.adminArea2 : '' ) +
+														( item.adminArea1 ? ', ' + item.adminArea1 : '' ),
+													latLng: item.latLng
+												};
+											}));
+										}
+										else
+										{
+											response([]);
+										}*/
+
+										// MapQuest Nominatim
+										response( $.map( data, function( item )
+										{
+											return {
+												value: item.display_name,
+												latLng: {
+													lat: item.lat,
+													lng: item.lon
+												}
+											};
+										}));
+
+									}
+								});
+							},
+							minLength: 3,
+							select: function( event, ui ) {
+								$( '#membermap_form_location input[name="lat"]' ).val( parseFloat( ui.item.latLng.lat).toFixed(6) );
+								$( '#membermap_form_location input[name="lng"]' ).val( parseFloat( ui.item.latLng.lng).toFixed(6) );
+							}
+						});
+
+						$( '#membermap_form_location' ).on( 'submit', function(e)
+						{
+							if ( $( '#membermap_form_location input[name="lat"]' ).val().length === 0 || $( '#membermap_form_location input[name="lng"]' ).val().length === 0 )
 							{
-								if ( $( '#membermap_form_location input[name="lat"]' ).val().length == 0 || $( '#membermap_form_location input[name="lng"]' ).val().length == 0 )
-								{
-									e.preventDefault();
-									return false;
-								}
-							});
+								e.preventDefault();
+								return false;
+							}
 						});
 					}
 				});
 
 				popups['addLocationPopup'].show();
-			})
+			});
 		},
 
 
@@ -532,10 +620,52 @@
 					$( '#membermap_form_location input[name="lng"]' ).val( position.coords.longitude );
 
 					$( '#membermap_form_location' ).submit();
+					return;
+
+					/* Skip this for now, will have to see how many requests this app consumes per month */
+
+					ips.getAjax()({ 
+						url: '//www.mapquestapi.com/geocoding/v1/reverse', 
+						type: 'get',
+						dataType: 'json',
+						data: {
+							key: ips.getSetting( 'membermap_mapquestAPI' ),
+							lat: position.coords.latitude,
+							lng: position.coords.longitude
+
+						},
+						success: function( data ) 
+						{
+							// MapQuest
+							/* If adminArea5 is empty, it's likely we don't have a result */
+							if ( data.results[0].locations[0].adminArea5 )
+							{
+								var item = data.results[0].locations[0];
+								var location = item.adminArea5 + 
+											( item.adminArea4 ? ', ' + item.adminArea4 : '' ) + 
+											( item.adminArea3 ? ', ' + item.adminArea3 : '' ) + 
+											( item.adminArea2 ? ', ' + item.adminArea2 : '' ) +
+											( item.adminArea1 ? ', ' + item.adminArea1 : '' );
+
+								$( '#elInput_membermap_location' ).val( location );
+
+								$( '#membermap_form_location' ).submit();
+									
+							}
+							else
+							{
+								$( '#membermap_geolocation_wrapper' ).hide();
+								$( '#membermap_addLocation_error' ).html( ips.getString( 'memebermap_geolocation_error' ) ).show();
+							}
+
+						}
+					});
+
 				},
 				function( error )
 				{
-					$('#membermap_geolocation_wrapper').hide();
+					$( '#membermap_addLocation_error' ).append( 'ERROR(' + error.code + '): ' + error.message ).append( '<br />' + ips.getString( 'memebermap_geolocation_error' ) ).show();
+					$( '#membermap_geolocation_wrapper' ).hide();
 				},
 				{
 					maximumAge: (1000 * 60 * 15),
@@ -586,120 +716,148 @@
 	
 		showMarkers = function( dontRepan, markers )
 		{
-			dontRepan = typeof dontRepan !== 'undefined' ? dontRepan : false;
-			markers = typeof markers !== 'undefined' ? markers : false;
+			dontRepan = typeof dontRepan !== undefined ? dontRepan : false;
+			markers = typeof markers !== undefined ? markers : false;
 
 			var getByUser 	= ips.utils.url.getParam( 'filter' ) == 'getByUser' ? true : false;
 			var memberId 	= parseInt( ips.utils.url.getParam( 'member_id' ) );
+			var flyToZoom 	= 8;
+
+			if ( forceBounds )
+			{
+				dontRepan = true;
+			}
 
 			if ( markers === false )
 			{
 				markers = allMarkers;
 			}
 
-			if ( markers.length === 0 )
+			if ( markers.length > 0 )
 			{
-				return false;
-			}
 
-			var memberSearch = $( '#elInput_membermap_memberName_wrapper .cToken' ).eq(0).attr( 'data-value' );
-
-			$.each( markers, function() 
-			{		
-				/* Report written by selected member? */
-				if ( typeof memberSearch !== 'undefined' )
-				{
-					/* Names of 'null' are deleted members */
-					if (this.name == null || memberSearch.toLowerCase() !== this.name.toLowerCase() )
+				$.each( markers, function() 
+				{		
+					/* Don't show these, as they all end up in the middle of the middle of the South Atlantic Ocean. */
+					if ( this.lat === 0 && this.lon === 0 )
 					{
 						return;
 					}
-				}
-				
-				var bgColour 	= 'darkblue';
-				var icon 		= 'user';
-				var iconColour 	= 'white';
+					
+					var bgColour 	= 'darkblue';
+					var icon 		= 'user';
+					var iconColour 	= 'white';
+					var popupOptions = {};
 
-				if ( this.type == 'member' )
-				{
-					if ( this.member_id == ips.getSetting( 'member_id' ) )
+					if ( this.type == 'member' )
 					{
-						/* This is me! */
-						icon = 'home';
-						bgColour = 'green';
-
-						/* Update the button label while we're here */
-						if ( ips.getSetting( 'membermap_canEdit' ) )
+						if ( this.member_id == ips.getSetting( 'member_id' ) )
 						{
-							$( '#membermap_button_addLocation' ).html( ips.getString( 'membermap_button_editLocation' ) );
+							/* This is me! */
+							icon = 'home';
+							bgColour = 'green';
+
+							$( '#membermap_addLocation_wrapper' ).hide();
+							$( '#membermap_myLocation_wrapper' ).show();
+
+							/* Update the button label while we're here */
+							if ( ! ips.getSetting( 'membermap_canEdit' ) )
+							{
+								$( 'li#membermap_button_addLocation' ).addClass( 'ipsMenu_itemDisabled' );
+								$( 'li#membermap_button_addLocation' ).attr( 'data-ipsTooltip', '' ).attr( 'title', ips.getString( 'membermap_cannot_edit_location' ) );
+							}
+
+							hasLocation = true;
+
+							if ( ips.utils.url.getParam( 'goHome' ) == 1 )
+							{
+								getByUser 	= true;
+								memberId 	= this.member_id;
+								flyToZoom 	= 10;
+
+								removeURIParam( 'goHome' );
+							}
+							
 						}
 						else
 						{
-							/* You don't have permission to update your location. Might as well remove the button */
-							$( '#membermap_button_addLocation' ).remove();
+							if ( this.markerColour )
+							{
+								bgColour = this.markerColour;
+							}
 						}
 					}
-				}
-				else
-				{
-					iconColour 	= this.colour;
-					icon 		= this.icon || 'fa-map-marker';
-					bgColour 	= this.bgColour;
+					else
+					{
+						iconColour 	= this.colour;
+						icon 		= this.icon || 'fa-map-marker';
+						bgColour 	= this.bgColour;
 
-				}
-
-				var icon = L.AwesomeMarkers.icon({
-					prefix: 'fa',
-					icon: icon, 
-					markerColor: bgColour,
-					iconColor: iconColour
-				});
-
-				var spiderifiedIcon = L.AwesomeMarkers.icon({
-					prefix: 'fa',
-					icon: 'users', 
-					markerColor: bgColour,
-					iconColor: iconColour
-				});
-				
-
-				var contextMenu = [];
-				var enableContextMenu = false;
-
-				if ( ips.getSetting( 'is_supmod' ) ||  ( ips.getSetting( 'member_id' ) == this.member_id && ips.getSetting( 'membermap_canDelete' ) ) )
-				{
-					enableContextMenu = true;
-					contextMenu = getMarkerContextMenu( this );
-				}
-				
-				var mapMarker = new L.Marker( 
-					[ this.lat, this.lon ], 
-					{ 
-						title: this.title,
-						icon: icon,
-						spin: true,
-						spiderifiedIcon: spiderifiedIcon,
-						defaultIcon: icon,
-						contextmenu: enableContextMenu,
-					    contextmenuItems: contextMenu
+						popupOptions = {
+							minWidth: 320
+						};
 					}
-				);
-				
-				mapMarker.markerData = this;
 
-				oms.addMarker( mapMarker );
-				mapMarkers.addLayer( mapMarker );
+					var _icon = L.AwesomeMarkers.icon({
+						prefix: 'fa',
+						icon: icon, 
+						markerColor: bgColour,
+						iconColor: iconColour
+					});
+					
 
-				if ( getByUser && memberId > 0 && this.type == 'member' && this.member_id == memberId )
-				{
-					dontRepan = true;
-					Debug.log( mapMarker );
-					map.flyTo( mapMarker.getLatLng(), 8 );
-				}
-			});
-			
+					var contextMenu = [];
+					var enableContextMenu = false;
 
-			
+					if ( this.type == 'member' && ( ips.getSetting( 'is_supmod' ) ||  ( ips.getSetting( 'member_id' ) == this.member_id && ips.getSetting( 'membermap_canDelete' ) ) ) )
+					{
+						enableContextMenu = true;
+						contextMenu = getMarkerContextMenu( this );
+					}
+					
+					var mapMarker = new L.Marker( 
+						[ this.lat, this.lon ], 
+						{ 
+							title: this.title,
+							icon: _icon,
+							contextmenu: enableContextMenu,
+						    contextmenuItems: contextMenu
+						}
+					).bindPopup( this.popup, ( popupOptions || {} ) );
+					
+					mapMarker.markerData = this;
+
+					if ( this.type == 'member' )
+					{
+						memberMarkers.addLayer( mapMarker );
+					}
+					else
+					{
+						if( typeof overlayMaps[ this.parent_id ] === "undefined" )
+						{
+							overlayMaps[ this.parent_id ] = L.layerGroup().addTo( map );
+							overlayControl.addOverlay( overlayMaps[ this.parent_id ], this.parent_name );
+						}
+						
+						overlayMaps[ this.parent_id ].addLayer( mapMarker );
+					}
+
+					/* Count the number of markers we have on the map */
+					counter = counter + 1;
+
+					/* Pan directly to our home location, if that's what we wanted */
+					if ( getByUser && memberId > 0 && this.type == 'member' && this.member_id == memberId )
+					{
+						dontRepan = true;
+						map.flyTo( mapMarker.getLatLng(), flyToZoom );
+					}
+				});
+
+				/* Update the counter */
+				$( '#membermap_counter span' ).html( counter );
+			}
+
+			/* We don't want to move the map around if we're changing filters or reloading markers */
 			if ( dontRepan === false )
 			{
 				if ( initialCenter instanceof L.LatLng )
@@ -715,12 +873,46 @@
 				}
 				else
 				{
-					map.fitBounds( mapMarkers.getBounds(), { 
+					map.fitBounds( memberMarkers.getBounds(), { 
 						padding: [50, 50],
 						maxZoom: 11
 					});
 				}
 			}
+		},
+
+		updateLocation = function( e )
+		{
+			ips.ui.alert.show({
+				type: 'confirm',
+				message: ips.getString( 'membermap_confirm_updateLocation' ),
+				callbacks:
+				{
+					'ok': function() 
+					{ 
+						var url = ips.getSetting('baseURL') + "index.php?app=membermap&module=membermap&controller=showmap&do=add&csrfKey=" + ips.getSetting( 'csrfKey' );
+						ips.getAjax()({ 
+							url: url,
+							data: {
+								lat: e.latlng.lat,
+								lng: e.latlng.lng,
+								'membermap_form_location_submitted': 1
+							},
+							type: 'POST'
+						}).done( function( data )
+						{
+							if ( data['error'] )
+							{
+								ips.ui.alert.show({ type: 'alert', message: data['error'] });
+							}
+							else
+							{
+								window.location.replace( ips.getSetting('baseURL') + "index.php?app=membermap&dropBrowserCache=1&goHome=1" );
+							}
+						}); 
+					}
+				}
+			});
 		},
 
 
@@ -768,48 +960,35 @@
 
 			return [];
 		},
-		
-		markerClickFunction = function( marker )
+
+		removeURIParam = function( param )
 		{
-			var hidingMarker = currentPlace;
-			
-	
-			var zoomIn = function( info ) 
+			var urlObject = ips.utils.url.getURIObject();
+			var queryKeys = urlObject.queryKey;
+
+			delete queryKeys[ param ];
+
+			if( Object.keys( queryKeys ).length > 0 )
 			{
-				previousZoomLevel = map.getZoom();
-				
-				//map.setCenter( marker.getLatLng() );
-				map.flyTo( marker.getLatLng() );
-				if ( map.getZoom() <= 11 )
+				var newQuery = Object.keys( queryKeys ).reduce( function(a,k)
 				{
-					map.setZoom( 11 );
-				}
-				
-			};
-			
-			if ( currentPlace ) 
-			{
-				if ( hidingMarker !== marker ) 
-				{
-					zoomIn( marker.markerData );
-				}
-				else
-				{
-					currentPlace = null;
-					map.setZoom( previousZoomLevel );
-				}
-			} 
-			else 
-			{
-				zoomIn( marker.markerData );
+					var v = ( queryKeys[k] !== "" ) ? k + '=' + encodeURIComponent( queryKeys[k] ) : k;
+					a.push( v );
+					return a;
+				}, [] ).join( '&' );
+
+				var newUrl = window.location.origin + window.location.pathname + '?' + newQuery;
 			}
-			
-			currentPlace = marker;
+			else
+			{
+				var newUrl = window.location.origin + window.location.pathname;
+			}
+
+			History.replaceState( null, document.title, newUrl );
 		};
 
 		return {
 			initMap: initMap,
-			setDefaultMap: setDefaultMap,
 			setMarkers: setMarkers,
 			setCenter: setCenter,
 			setZoomLevel: setZoomLevel,
@@ -832,17 +1011,15 @@ L.Control.MembermapOldMarkers = L.Control.extend({
     }, 
     onAdd: function (map) {
         // create the control container with a particular class name
-        var container = L.DomUtil.create('div', 'leaflet-control-layers leaflet-control-layers-expanded leaflet-control-regobs-warning');
+        var container = L.DomUtil.create('div', 'leaflet-control-layers leaflet-control-layers-expanded leaflet-control-cached-warning');
 		//container.setOpacity( 1 );
         /* Date */
-        var date = this.options.time.toLocaleString();
 		var info = L.DomUtil.create('p', '', container);
-		info.innerHTML = 'Showing cached markers<br /> from ' + date;
+		info.innerHTML = ips.getString( 'membermap_cached_markers', {date: ips.utils.time.localeDateString( this.options.time, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric' } )} );
 		
         var link = L.DomUtil.create('a', 'test', container);
-		link.innerHTML = 'Refresh';
+		link.innerHTML = ips.getString( 'membermap_cached_markers_refresh' );
 		link.href = '#';
-		link.title = 'Tittel';
 		
 		L.DomEvent
 		    .on(link, 'click', L.DomEvent.preventDefault)

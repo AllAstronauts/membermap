@@ -1,3 +1,19 @@
+#mapWrapper {
+  position: relative;
+  overflow: hidden;
+  min-height: 300px;
+}
+
+  #mapWrapper img {
+    max-width: none;
+  }
+ 
+#mapCanvas {
+  width: 100%;
+  height: 100%;
+  min-height: 300px;  
+}
+
 span.marker:after
 {
     border-color: blue transparent;
@@ -170,3 +186,21 @@ Version: 1.0
 .awesome-marker-icon-black {
   background-position: -682px 0;
 }
+
+
+/* Map Manager */
+.defaultProvider {
+  visibility: hidden;
+}
+  #mapManager_activeMaps li:first-child .defaultProvider {
+    visibility: visible;
+  }
+
+.cMenuManager_root {
+    max-height: 500px;
+    overflow: auto;
+}
+  .cMenuManager_root ol {
+    border-left: none !important;
+    min-height: 100px;
+  }

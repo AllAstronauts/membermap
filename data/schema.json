@@ -43,6 +43,20 @@
                 "unsigned": false,
                 "values": [],
                 "zerofill": false
+            },
+            "marker_date": {
+                "name": "marker_date",
+                "type": "INT",
+                "length": 10,
+                "decimals": null,
+                "values": null,
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
             }
         },
         "indexes": {

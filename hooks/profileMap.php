@@ -12,7 +12,8 @@ public static function hookData() {
     array (
       'selector' => '#elProfileInfoColumn > div.ipsAreaBackground_light.ipsPad',
       'type' => 'add_inside_end',
-      'content' => '{{if $memberMarker = \IPS\\membermap\Map::i()->getMarkerByMember( $member->member_id ) AND $memberMarker !== false AND count( $memberMarker )}}
+      'content' => '{{ $memberMarker = FALSE; try { $memberMarker = \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id ); } catch( \Exception $ex ){ } }}
+      {{if $memberMarker AND $memberMarker !== false AND count( $memberMarker ) AND \IPS\Member::loggedIn()->canAccessModule( \IPS\Application\Module::get( "membermap", "membermap" ) )}}
 	{template="profileMap" group="map" app="membermap" params="$member"}
 {{endif}}',
     ),
