@@ -9,7 +9,7 @@
  * @version		3.0.0
  */
 
-namespace IPS\membermap\Custom;
+namespace IPS\membermap\Markers;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
 if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
@@ -21,7 +21,7 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 /**
  * @brief Block Model
  */
-class _Markers extends \IPS\Node\Model
+class _Markers extends \IPS\Content\Item implements \IPS\Content\Searchable
 {
 	/**
 	 * @brief	Multiton Store
@@ -29,9 +29,22 @@ class _Markers extends \IPS\Node\Model
 	protected static $multitons;
 
 	/**
+	 * @brief       Application
+	 */
+	public static $application = 'membermap';
+
+	/**
+	 * @brief       Module
+	 */
+	public static $module = 'membermap';
+
+
+	protected static $defaultValues = NULL;
+
+	/**
 	 * @brief	[ActiveRecord] Database Table
 	 */
-	public static $databaseTable = 'membermap_cmarkers';
+	public static $databaseTable = 'membermap_markers';
 
 	/**
 	 * @brief	[ActiveRecord] Database Prefix
@@ -39,49 +52,28 @@ class _Markers extends \IPS\Node\Model
 	public static $databasePrefix = 'marker_';
 
 	/**
-	 * @brief	[ActiveRecord] ID Database Column
+	 * @brief       Database Column Map
 	 */
-	public static $databaseColumnId = 'id';
+	public static $databaseColumnMap = array(
+		'container'		=> 'parent_id',
+		'author'		=> 'member_id',
+		'title'			=> 'name',
+		'content'		=> 'description',
+		'date'			=> 'date',
+	);
+
+
 
 	/**
-	 * @brief	[ActiveRecord] Database ID Fields
+	 * @brief       Node Class
 	 */
-	protected static $databaseIdFields = array('name', 'description');
+	public static $containerNodeClass = 'IPS\membermap\Markers\Groups';
 
-	/**
-	 * @brief	[Node] Parent ID Database Column
-	 */
-	public static $databaseColumnParent = null;
-
-	/**
-	 * @brief	[Node] Parent Node ID Database Column
-	 */
-	public static $parentNodeColumnId = 'parent_id';
-
-	/**
-	 * @brief	[Node] Parent Node Class
-	 */
-	public static $parentNodeClass = 'IPS\membermap\Custom\Groups';
-
-	/**
-	 * @brief	[Node] Parent ID Database Column
-	 */
-	public static $databaseColumnOrder = 'name';
-
-	/**
-	 * @brief	[Node] Show forms modally?
-	 */
-	public static $modalForms = TRUE;
-
-	/**
-	 * @brief	[Node] Sortable?
-	 */
-	public static $nodeSortable = TRUE;
 
 	/**
 	 * @brief	[Node] Node Title
 	 */
-	public static $nodeTitle = 'membermap_marker';
+	public static $title = 'membermap_marker';
 
 	/**
 	 * @brief	[Node] ACP Restrictions
@@ -142,9 +134,29 @@ class _Markers extends \IPS\Node\Model
 	 * @param	bool	$subnode	Is this a subnode?
 	 * @return	array
 	 */
-	public function getButtons( $url, $subnode=FALSE )
+	public function getButtons( $url )
 	{
-		$buttons = parent::getButtons( $url, $subnode );
+		if( $this->canEdit() )
+		{
+			$buttons['edit'] = array(
+				'icon'	=> 'pencil',
+				'title'	=> 'edit',
+				'link'	=> $url->setQueryString( array( 'do' => 'form', 'id' => $this->id ) ),
+				'data'	=> array(),
+				'hotkey'=> 'e return'
+				);
+		}
+		
+		if( $this->canDelete() )
+		{
+			$buttons['delete'] = array(
+				'icon'	=> 'times-circle',
+				'title'	=> 'delete',
+				'link'	=> $url->setQueryString( array( 'do' => 'delete', 'id' => $this->id, 'deleteNode' => 1 ) ),
+				'data' 	=> array( 'ipsDialog' => '', 'ipsDialog-title' => \IPS\Member::loggedIn()->language()->addToStack('delete') ),
+				'hotkey'=> 'd'
+			);
+		}
 
 		if ( isset( $buttons['add'] ) )
 		{
@@ -191,7 +203,7 @@ class _Markers extends \IPS\Node\Model
 		\IPS\Output::i()->jsVars['membermap_defaultMaps'] = $defaultMaps;
 		\IPS\Output::i()->jsVars['membermap_mapquestAPI'] = \IPS\membermap\Application::getApiKeys( 'mapquest' ); 
 
-		if ( count( \IPS\membermap\Custom\Groups::roots() ) == 0 )
+		if ( count( \IPS\membermap\Markers\Groups::roots() ) == 0 )
 		{
 			\IPS\Output::i()->error( 'membermap_error_noGroups', '', 403, '' );
 		}
@@ -223,7 +235,7 @@ class _Markers extends \IPS\Node\Model
 				'attachIds'	  => ( $this->id ) ? array( $this->id ) : NULL ) ) );
 
 		$form->add( new \IPS\Helpers\Form\Node( 'marker_parent_id', $this->parent_id ? $this->parent_id : 0, TRUE, array(
-			'class'		=> '\IPS\membermap\Custom\Groups',
+			'class'		=> '\IPS\membermap\Markers\Groups',
 			'subnodes'	=> false,
 		) ) );
 

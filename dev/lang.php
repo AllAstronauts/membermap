@@ -18,6 +18,7 @@ $lang = array(
 	'r__markers_add' => "Can add Custom Markers?",
 	'r__markers_edit' => "Can edit Custom Markers?",
 	'r__markers_delete' => "Can delete Custom Markers?",
+	'r__markers_permissions' => "Can manage permissions?",
 
 	'map_settings' => "Map Settings",
 	'api_settings' => "API Keys",

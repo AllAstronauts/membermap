@@ -1,15 +1,15 @@
 <?php
 /**
- * @brief		Custom Marker Groups
+ * @brief		Marker Groups
  * @author		<a href='http://ipb.silvesterwebdesigns.com'>Stuart Silvester & Martin Aronsen</a>
  * @copyright	(c) 2015 Stuart Silvester & Martin Aronsen
  * @package		IPS Social Suite
  * @subpackage	Member Map
  * @since		20 Oct 2015
- * @version		3.0.0
+ * @version		3.0.3
  */
 
-namespace IPS\membermap\Custom;
+namespace IPS\membermap\Markers;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
 if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
@@ -21,7 +21,7 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 /**
  * @brief	Folder Model
  */
-class _Groups extends \IPS\Node\Model
+class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 {
 	/**
 	 * Munge different record types
@@ -55,7 +55,7 @@ class _Groups extends \IPS\Node\Model
 	/**
 	 * @brief	[ActiveRecord] Database Table
 	 */
-	public static $databaseTable = 'membermap_cmarkers_groups';
+	public static $databaseTable = 'membermap_markers_groups';
 	
 	/**
 	 * @brief	[ActiveRecord] Database Prefix
@@ -93,10 +93,6 @@ class _Groups extends \IPS\Node\Model
 	 */
 	public static $nodeTitle = 'membermap_group';
 	
-	/**
-	 * @brief	[Node] Subnode class
-	 */
-	public static $subnodeClass = 'IPS\membermap\Custom\Markers';
 	
 	/**
 	 * @brief	[Node] Show forms modally?
@@ -128,9 +124,41 @@ class _Groups extends \IPS\Node\Model
 		'map'		=> array(				
 	 			'add'			=> 'markers_add',
 	 			'edit'			=> 'markers_edit',
-	 			'delete'		=> 'markers_delete'
+	 			'delete'		=> 'markers_delete',
+	 			'permissions'	=> 'markers_permissions'
 	 		),
 	);
+
+	/**
+	 * @brief	[Node] App for permission index
+	 */
+	public static $permApp = 'membermap';
+	
+	/**
+	 * @brief	[Node] Type for permission index
+	 */
+	public static $permType = 'membermap';
+	
+	/**
+	 * @brief	The map of permission columns
+	 */
+	public static $permissionMap = array(
+		'add'				=> 1,
+		'edit'				=> 2,
+		'delete'			=> 3
+	);
+	
+	/**
+	 * @brief	[Node] Prefix string that is automatically prepended to permission matrix language strings
+	 */
+	public static $permissionLangPrefix = 'perm_membermap_';
+	
+	/**
+	 * @brief	Content Item Class
+	 */
+	public static $contentItemClass = 'IPS\membermap\Markers\Markers';
+
+
 	
 	/**
 	 * [Node] Get Title
@@ -163,40 +191,24 @@ class _Groups extends \IPS\Node\Model
 	public function getButtons( $url, $subnode=FALSE )
 	{
 		$buttons = parent::getButtons( $url, $subnode );
-		$return  = array();
 		
 		if ( isset( $buttons['copy'] ) )
 		{
 			unset( $buttons['copy'] );
 		}
 		
-		if ( isset( $buttons['add'] ) )
+		if ( isset( $buttons['empty'] ) )
 		{
-			$buttons['add_page'] = array(
-					'icon'	=> 'plus-circle',
-					'title'	=> 'membermap_add_marker',
-					'link'	=> $url->setQueryString( array( 'subnode' => 1, 'do' => 'form', 'parent' => $this->_id ) ),
-					'data'  => array( 'ipsDialog' => '', 'ipsDialog-title' => \IPS\Member::loggedIn()->language()->addToStack('membermap_add_marker') )
-			);
+			unset( $buttons['empty'] );
 		}
 		
-		/* Re-arrange */
-		if ( isset( $buttons['edit'] ) )
+		/* The member marker group is protected, can't be deleted */
+		if ( isset( $buttons['delete'] ) AND $this->protected )
 		{
-			$return['edit'] = $buttons['edit'];
+			unset( $buttons['delete'] );
 		}
 		
-		if ( isset( $buttons['add_page'] ) )
-		{
-			$return['add_page'] = $buttons['add_page'];
-		}
-			
-		if ( isset( $buttons['delete'] ) )
-		{
-			$return['delete'] = $buttons['delete'];
-		}	
-		
-		return $return;
+		return $buttons;
 	}
 	
 	/**
@@ -214,7 +226,7 @@ class _Groups extends \IPS\Node\Model
 		{
 			try
 			{
-				$test = \IPS\membermap\Custom\Groups::load( $val, 'name' );
+				$test = \IPS\membermap\Markers\Groups::load( $val, 'name' );
 
 				if ( ! empty( \IPS\Request::i()->id ) and $test->id != \IPS\Request::i()->id )
 				{
@@ -227,33 +239,36 @@ class _Groups extends \IPS\Node\Model
 			}
 		}));
 
-		$radioOpt = array();
-		$colours = array( 
-			'red', 'darkred', 'lightred', 'orange', 'beige', 'green', 'darkgreen', 'lightgreen', 'blue', 'darkblue', 'lightblue',
-			'purple', 'darkpurple', 'pink', 'cadetblue', 'gray', 'lightgray', 'black', 'white'
-		);
-
-		$icon 		= $this->id ? $this->pin_icon : 'fa-globe';
-		$iconColour 	= $this->id ? $this->pin_colour : '#FFFFFF';
-		$bgColour 	= $this->id ? $this->pin_bg_colour : 'red';
-
-		/* Selected a valid colour? */
-		$bgColour = in_array( $bgColour, $colours ) ? $bgColour : 'red';
-
-		foreach( $colours as $c )
+		if( $this->type == 'custom' )
 		{
-			$radioOpt[ $c ] = \IPS\Theme::i()->resource( "awesome-marker-icon-{$c}.png", "membermap", 'admin' );
+			$radioOpt = array();
+			$colours = array( 
+				'red', 'darkred', 'lightred', 'orange', 'beige', 'green', 'darkgreen', 'lightgreen', 'blue', 'darkblue', 'lightblue',
+				'purple', 'darkpurple', 'pink', 'cadetblue', 'gray', 'lightgray', 'black', 'white'
+			);
+
+			$icon 		= $this->id ? $this->pin_icon : 'fa-globe';
+			$iconColour 	= $this->id ? $this->pin_colour : '#FFFFFF';
+			$bgColour 	= $this->id ? $this->pin_bg_colour : 'red';
+
+			/* Selected a valid colour? */
+			$bgColour = in_array( $bgColour, $colours ) ? $bgColour : 'red';
+
+			foreach( $colours as $c )
+			{
+				$radioOpt[ $c ] = \IPS\Theme::i()->resource( "awesome-marker-icon-{$c}.png", "membermap", 'admin' );
+			}
+
+			$form->add( new \IPS\Helpers\Form\Text( 'group_pin_icon', $icon, TRUE ) );
+			$form->add( new \IPS\Helpers\Form\Color( 'group_pin_colour', $iconColour, TRUE ) );
+			$form->add( new \IPS\Helpers\Form\Radio( 'group_pin_bg_colour', $bgColour, TRUE, array(
+				'options' => $radioOpt,
+				'parse' => 'image',
+				'descriptions' => array( 'white' => \IPS\Member::loggedIn()->language()->addToStack( 'group_pin_bg_colour_white' ) ) /* Just because white is difficult to see on the page */
+			)));
+
+			$form->addDummy( 'group_marker_example', "<span class='awesome-marker awesome-marker-icon-{$bgColour}' id='markerExample'><i class='fa fa-fw {$icon}' style='color: {$iconColour}'></i></span>" );
 		}
-
-		$form->add( new \IPS\Helpers\Form\Text( 'group_pin_icon', $icon, TRUE ) );
-		$form->add( new \IPS\Helpers\Form\Color( 'group_pin_colour', $iconColour, TRUE ) );
-		$form->add( new \IPS\Helpers\Form\Radio( 'group_pin_bg_colour', $bgColour, TRUE, array(
-			'options' => $radioOpt,
-			'parse' => 'image',
-			'descriptions' => array( 'white' => \IPS\Member::loggedIn()->language()->addToStack( 'group_pin_bg_colour_white' ) ) /* Just because white is difficult to see on the page */
-		)));
-
-		$form->addDummy( 'group_marker_example', "<span class='awesome-marker awesome-marker-icon-{$bgColour}' id='markerExample'><i class='fa fa-fw {$icon}' style='color: {$iconColour}'></i></span>" );
 	}
 
 	/**

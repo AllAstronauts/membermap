@@ -10,7 +10,8 @@
             "markers_manage": "markers_manage",
             "markers_add": "markers_add",
             "markers_edit": "markers_edit",
-            "markers_delete": "markers_delete"
+            "markers_delete": "markers_delete",
+            "markers_permissions": "markers_permissions"
         }
     }
 }
