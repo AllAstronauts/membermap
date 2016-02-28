@@ -12,6 +12,11 @@
 						{lang="in"} <a href="{$marker->container()->url()}">{$marker->container()->_title}</a>
 					{{endif}}
 				</p>
+			</div>	
+			<div class='ipsDataItem_generic ipsDataItem_size9'>
+				<div class='ipsType_medium ipsType_richText ipsType_break ipsSpacer_top' data-ipstruncate='' data-ipstruncate-size='2 lines' data-ipstruncate-type='remove' style='word-wrap: break-word;'>
+					{$marker->mapped( 'content' )|raw}
+				</div>
 			</div>
 			<div class='ipsDataItem_generic ipsDataItem_size9'>
 				<ul class='ipsList_reset'>
@@ -31,10 +36,12 @@
 				<ul class='ipsList_reset'>
 					<li>
 					<p class='ipsType_normal ipsType_reset ipsType_light'>
-						{{if $marker->updated > $marker->added}}
-							{lang="updated"} {datetime="$marker->updated"}
-						{{else}}
-							{lang="submitted"} {datetime="$marker->added"}
+						{{if $marker->updated > 0 AND $marker->added > 0}}
+							{{if $marker->updated > $marker->added}}
+								{lang="updated"} {datetime="$marker->updated"}
+							{{else}}
+								{lang="submitted"} {datetime="$marker->added"}
+							{{endif}}
 						{{endif}}
 					</p>
 					</li>

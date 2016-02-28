@@ -24,7 +24,14 @@ $lang = array(
 	'membermap_marker_groups' => "Marker Groups",
 	'membermap_groups' => "Groups",
 
+	'membermap_marker_info' => "Marker Information",
+	'membermap_marker_author' => "Added by",
+	'membermap_marker_date' => "Submitted",
+	'membermap_marker_updated' => "Updated",
+	'membermap_marker_location' => "Location",
+	'membermap_marker_coordinates' => "Coordinates",
 	'group_markers_number' => "{!# [1:marker][?:markers]}",
+
 
 	'map_settings' => "Map Settings",
 	'api_settings' => "API Keys",
@@ -76,7 +83,7 @@ $lang = array(
 
 	'membermap_view_fullsize' => "View fullsize map",
 
-	'marker_name' => "Marker Title",
+	'marker_title' => "Marker Title",
 	'marker_description' => "Marker Description",
 	'marker_lat' => "Latitude (N)",
 	'marker_location' => "Location",

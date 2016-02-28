@@ -1,0 +1,117 @@
+<ips:template parameters="$marker, $prevReport='', $nextReport=''" />
+<article class='ipsColumns ipsColumns_collapseTablet ipsClear ipsClearfix'>
+	<div class='ipsColumn ipsColumn_fluid'>
+			<div class="ipsClearfix" id='elReportComment'>
+				<h2 class="ipsType_sectionHead">
+					{$marker->_title}
+				</h2>
+				<br>
+				<span class='ipsType_normal ipsType_light'>
+					<i class='fa {$marker->container()->pin_icon}'></i> {$marker->container()->_title}
+				</span>
+				<br><br>
+				<div class='ipsPost' data-role='commentContent'>
+					<div data-ipsTruncate data-ipsTruncate-type="hide" data-ipsTruncate-size="#elReportPanel">
+						<div class='ipsType_richText ipsType_normal ipsContained' data-controller='core.front.core.lightboxedImages'>
+							{$marker->content()|raw}
+						</div>
+					</div>
+				</div>
+				<hr class='ipsHr'>
+				<ul class='ipsList_inline'>
+					{{if $marker->canEdit( \IPS\Member::loggedIn() )}}
+						<li><a href='{$marker->url('edit')}'>{lang="edit"}</a></li>
+					{{endif}}
+					{{if $marker->canDelete( \IPS\Member::loggedIn() )}}
+						<li><a href='{$marker->url('delete')->csrf()}'>{lang="delete"}</a></li>
+					{{endif}}
+				</ul>
+			</div>
+	</div>
+	<aside class='ipsColumn ipsColumn_veryWide'>
+		<h2>{lang="membermap_marker_info"}</h2>
+		<ul class='ipsDataList ipsDataList_reducedSpacing ipsSpacer_top'>
+			<li class='ipsDataItem'>
+				<span class='ipsDataItem_generic ipsDataItem_size3'>
+					<strong>{lang="membermap_marker_author"}</strong>
+				</span>
+				<span class='ipsDataItem_generic cMarkerData'>
+				{$marker->author()->link()|raw}
+				</span>
+			</li>
+
+			{{if $marker->added > 0}}
+				<li class='ipsDataItem'>
+					<span class='ipsDataItem_generic ipsDataItem_size3'>
+						<strong>{lang="membermap_marker_date"}</strong>
+					</span>
+					<span class='ipsDataItem_generic cMarkerData'>
+
+					</span>
+				</li>
+			{{endif}}
+
+			{{if $marker->updated > 0 AND $marker->updated > $marker->added}}
+				<li class='ipsDataItem'>
+					<span class='ipsDataItem_generic ipsDataItem_size3'>
+						<strong>{lang="membermap_marker_updated"}</strong>
+					</span>
+					<span class='ipsDataItem_generic cMarkerData'>
+
+					</span>
+				</li>
+			{{endif}}
+
+			{{if $marker->location}}
+				<li class='ipsDataItem'>
+					<span class='ipsDataItem_generic ipsDataItem_size3'>
+						<strong>{lang="membermap_marker_location"}</strong>
+					</span>
+					<span class='ipsDataItem_generic cMarkerData'>
+						{{$location = trim( $marker->location, ',' );}}
+						{$location}
+					</span>
+				</li>
+			{{endif}}
+
+			<li class='ipsDataItem'>
+				<span class='ipsDataItem_generic ipsDataItem_size3'>
+					<strong>{lang="membermap_marker_coordinates"}</strong>
+				</span>
+				<span data-ipsTooltip='' title="{$marker->lat}, {$marker->lon}" class='ipsDataItem_generic cMarkerData'>
+					{{$dms = $marker->_latLngToDMS;}}
+					{$dms}
+				</span>
+			</li>
+		</ul>
+	</aside>
+</article>
+<br>
+<!--
+<nav class='ipsPager ipsGrid ipsClearFix ipsList_inline'>
+	<div class='ipsGrid_span6 ipsPager_prev'>
+		{{if $prevReport}}
+			<a href="{url="app=core&module=modcp&controller=modcp&tab=reports&action=view&id={$prevReport['id']}" seoTemplate="modcp_report"}" title='{lang="previous_report"}' rel='prev'>
+				<span class='ipsPager_type'>{lang="previous_report"}</span>
+				{{if $prevItem}}
+					<span class='ipsPager_title ipsType_break'>{wordbreak="$prevItem->mapped('title')"}</span>
+				{{else}}
+					<span class='ipsPager_title'><em class="ipsType_light">{lang="content_deleted"}</em></span>
+				{{endif}}
+			</a>
+		{{endif}}
+	</div>
+	<div class='ipsGrid_span6 ipsType_right ipsPager_next'>
+		{{if $nextReport}}
+			<a href="{url="app=core&module=modcp&controller=modcp&tab=reports&action=view&id={$nextReport['id']}" seoTemplate="modcp_report"}" title='{lang="next_report"}' rel='next'>
+				<span class='ipsPager_type'>{lang="next_report"}</span>
+				{{if $nextItem}}
+					<span class='ipsPager_title ipsType_break'>{wordbreak="$nextItem->mapped('title')"}</span>
+				{{else}}
+					<span class='ipsPager_title'><em class="ipsType_light">{lang="content_deleted"}</em></span>
+				{{endif}}
+			</a>
+		{{endif}}
+	</div>
+</nav>
+-->

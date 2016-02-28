@@ -18,7 +18,7 @@ class _markers extends \IPS\Content\Controller
 	/**
 	 * [Content\Controller]	Class
 	 */
-	protected static $contentModel = 'IPS\membermap\Markers\Groups';
+	protected static $contentModel = 'IPS\membermap\Markers\Markers';
 
 	/**
 	 * Execute
@@ -27,6 +27,17 @@ class _markers extends \IPS\Content\Controller
 	 */
 	public function execute()
 	{
+		try
+		{
+			$this->marker = \IPS\membermap\Markers\Markers::load( \IPS\Request::i()->id );
+		}
+		catch ( \OutOfRangeException $e )
+		{
+			\IPS\Output::i()->error( 'node_error', '2D161/1', 404, '' );
+		}
+
+		\IPS\Output::i()->breadcrumb[] = array( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=membermap', 'front', 'membermap' ), \IPS\Member::loggedIn()->language()->addToStack( 'module__membermap_membermap' ) );
+		\IPS\Output::i()->breadcrumb = array_reverse( \IPS\Output::i()->breadcrumb );
 		
 		parent::execute();
 	}
@@ -38,35 +49,15 @@ class _markers extends \IPS\Content\Controller
 	 */
 	protected function manage()
 	{
-		if ( isset( \IPS\Request::i()->id ) )
-		{
-			try
-			{
-				$this->_group( \IPS\membermap\Markers\Markers::loadAndCheckPerms( \IPS\Request::i()->id, 'read' ) );
-			}
-			catch ( \OutOfRangeException $e )
-			{
-				\IPS\Output::i()->error( 'node_error', '2D175/1', 404, '' );
-			}
-		}
-		else
-		{
-			$this->_index();
-		}
-	}
+		\IPS\Output::i()->breadcrumb[] = array( $this->marker->container()->url(), $this->marker->container()->_title );
 
-	protected function _group( $group )
-	{
-		/* Build table */
-		$table = new \IPS\Helpers\Table\Content( static::$contentModel, $group->url(), NULL, $group );
-		$table->classes = array( 'ipsDataList_large' );
+		\IPS\Output::i()->breadcrumb[] = array( '', $this->marker->_title );
 
-		\IPS\Output::i()->output	= $table;
-	}
+		/* Display */
+		\IPS\Output::i()->title		= $this->marker->_title . ' - ' . $this->marker->container()->_title;
+		\IPS\Output::i()->sidebar['sticky'] = TRUE;
+		\IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'markers' )->viewMarker( $this->marker );
 
-	protected function _index()
-	{
-		
 	}
 	
 	// Create new methods with the same name as the 'do' parameter which should execute it

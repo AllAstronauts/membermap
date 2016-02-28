@@ -70,6 +70,11 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Searchable
 	 */
 	public static $containerNodeClass = 'IPS\membermap\Markers\Groups';
 
+	/**
+	 * @brief	Form Lang Prefix
+	 */
+	public static $formLangPrefix = 'marker_';
+
 
 	/**
 	 * @brief	[Node] Node Title
@@ -292,6 +297,7 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Searchable
 
 		$form->add( new \IPS\Helpers\Form\Node( 'marker_parent_id', $this->parent_id ? $this->parent_id : 0, TRUE, array(
 			'class'		=> '\IPS\membermap\Markers\Groups',
+			'permissionCheck' => 'view',
 			'subnodes'	=> false,
 		) ) );
 
@@ -304,14 +310,40 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Searchable
 		$form->addDummy( 'marker_addViaMap', '<button type="button" id="marker_addViaMap" role="button">' . \IPS\Member::loggedIn()->language()->addToStack( 'marker_addViaMap_button' ) . '</button>' );
 	}
 
+	public static function formElements( $item=NULL, \IPS\Node\Model $container=NULL )
+	{
+		$return = parent::formElements( $item, $container );
+
+		$return['content'] = new \IPS\Helpers\Form\Editor( 'marker_description', $item->id ? $item->description : '', FALSE, array(
+				'app'         => 'membermap',
+				'key'         => 'markers',
+				'autoSaveKey' => 'custom-markers-' . ( $item->id ? $item->id : 'new' ),
+				'attachIds'	  => ( $item->id ) ? array( $item->id ) : NULL ) );
+
+		$return['container'] = new \IPS\Helpers\Form\Node( 'marker_parent_id', $item->parent_id ? $item->parent_id : 0, TRUE, array(
+			'class'		=> '\IPS\membermap\Markers\Groups',
+			'permissionCheck' => 'view',
+			'subnodes'	=> false,
+		) );
+
+		$return['location'] = new \IPS\Helpers\Form\Text( 'marker_location', $item->id ? $item->location : '', FALSE, array(), NULL, NULL, NULL, 'marker_location' );
+
+		$return['lat'] = new \IPS\Helpers\Form\Number( 'marker_lat', $item->id ? $item->lat : 0, TRUE, array( 'min' => -90, 'max' => 90, 'decimals' => TRUE ), NULL, NULL, NULL, 'marker_lat' );
+		$return['lon'] = new \IPS\Helpers\Form\Number( 'marker_lon', $item->id ? $item->lon : 0, TRUE, array( 'min' => -180, 'max' => 180, 'decimals' => TRUE ), NULL, NULL, NULL, 'marker_lon' );
+
+		return $return;
+	}
+
 	/**
 	 * [Node] Format form values from add/edit form for save
 	 *
 	 * @param	array	$values	Values from the form
 	 * @return	array
 	 */
-	public function formatFormValues( $values )
+	public function processForm( $values )
 	{
+		parent::processForm( $values );
+
 		$isNew = $this->_new;
 
 		if ( !$this->id )
@@ -322,11 +354,9 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Searchable
 		}
 
 		
-		
 		if ( isset( $values['marker_parent_id'] ) AND ( ! empty( $values['marker_parent_id'] ) OR $values['marker_parent_id'] === 0 ) )
 		{
-			$values['parent_id'] = $values['marker_parent_id']->id;
-			unset( $values['marker_parent_id'] );
+			$this->parent_id = $values['marker_parent_id']->id;
 		}
 
 		foreach( array( 'marker_description', 'marker_name', 'marker_location', 'marker_lat', 'marker_lon' ) as $val )
@@ -335,8 +365,7 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Searchable
 			{
 				$key = str_replace( 'marker_', '', $val );
 
-				$values[ $key ] = $values[ $val ];
-				unset( $values[ $val ] );
+				$this->$key = $values[ $val ];
 			}
 		}
 
@@ -370,7 +399,7 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Searchable
 	{
 		parent::save();
 
-		\IPS\membermap\Map::i()->recacheJsonFile();
+		//\IPS\membermap\Map::i()->recacheJsonFile();
 	}
 
 	/**

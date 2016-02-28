@@ -39,7 +39,7 @@ class _MemberMarkers
 	{
 		if ( $member === NULL or $member->canAccessModule( \IPS\Application\Module::get( 'membermap', 'membermap', 'front' ) ) )
 		{
-			$this->classes[] = 'IPS\membermap\MemberMarkers';
+			$this->classes[] = 'IPS\membermap\Markers\Markers';
 		}
 	}
 }
