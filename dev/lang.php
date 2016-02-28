@@ -4,11 +4,12 @@ $lang = array(
 	'__app_membermap'	=> "Member Map",
 	'frontnavigation_membermap'	=> "Member Map",
 	'menu__membermap_membermap' => "Member Map",
-	'menu__membermap_membermap_markers' => 'Custom Markers',
+	'menu__membermap_membermap_markers' => 'Markers Groups',
 	'menu__membermap_membermap_mapmanager' => "Map Manager",
 	'menu__membermap_membermap_settings' => "Settings",
 
 	'module__membermap_membermap' => "Member Map",
+	'module__membermap_markers' => "Marker Groups",
 	'group__membermap_membermap' => "Member Map",
 
 	'r__mapmanager' => "Map Manager",
@@ -19,6 +20,11 @@ $lang = array(
 	'r__markers_edit' => "Can edit Custom Markers?",
 	'r__markers_delete' => "Can delete Custom Markers?",
 	'r__markers_permissions' => "Can manage permissions?",
+
+	'membermap_marker_groups' => "Marker Groups",
+	'membermap_groups' => "Groups",
+
+	'group_markers_number' => "{!# [1:marker][?:markers]}",
 
 	'map_settings' => "Map Settings",
 	'api_settings' => "API Keys",

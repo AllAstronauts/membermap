@@ -143,9 +143,9 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 * @brief	The map of permission columns
 	 */
 	public static $permissionMap = array(
-		'add'				=> 1,
-		'edit'				=> 2,
-		'delete'			=> 3
+		'view'				=> 'view', /* This is actually the 'add' permission, since 'view' is required, and everyone can view any markers */
+		'edit'				=> 3,
+		'delete'			=> 4
 	);
 	
 	/**
@@ -158,7 +158,25 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 */
 	public static $contentItemClass = 'IPS\membermap\Markers\Markers';
 
-
+	/**
+	 * @brief	Cached URL
+	 */
+	protected $_url	= NULL;
+	
+	/**
+	 * @brief	URL Base
+	 */
+	public static $urlBase = 'app=membermap&module=markers&controller=groups&id=';
+	
+	/**
+	 * @brief	URL Base
+	 */
+	public static $urlTemplate = 'markers_group';
+	
+	/**
+	 * @brief	SEO Title Column
+	 */
+	public static $seoTitleColumn = 'name_seo';
 	
 	/**
 	 * [Node] Get Title
@@ -178,6 +196,40 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 	public function getSortableName()
 	{
 		return $this->name;
+	}
+
+	/**
+	 * Get template for node tables
+	 *
+	 * @return	callable
+	 */
+	public static function nodeTableTemplate()
+	{
+		return array( \IPS\Theme::i()->getTemplate( 'markers', 'membermap' ), 'groupRow' );
+	}
+
+	/**
+	 * Get latest file information
+	 *
+	 * @return	\IPS\membermap\Markers\Markers|NULL
+	 */
+	public function lastMarker()
+	{
+		if( !$this->last_marker_id )
+		{
+			return NULL;
+		}
+
+		try
+		{
+			$latestMarker = \IPS\membermap\Markers\Markers::load( $this->last_marker_id );
+		}
+		catch ( \OutOfRangeException $e )
+		{
+			$latestMarker = NULL;
+		}
+
+		return $latestMarker;
 	}
 	
 	/**

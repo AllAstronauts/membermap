@@ -3,6 +3,10 @@
         "membermap": {
             "default_controller": "showmap",
             "protected": 0
+        },
+        "markers": {
+            "default_controller": "",
+            "protected": false
         }
     },
     "admin": {

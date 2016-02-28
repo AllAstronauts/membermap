@@ -59,7 +59,8 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Searchable
 		'author'		=> 'member_id',
 		'title'			=> 'name',
 		'content'		=> 'description',
-		'date'			=> 'date',
+		'date'			=> 'added',
+		'updated'		=> 'updated'
 	);
 
 
@@ -103,6 +104,36 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Searchable
 	 		),
 	);
 
+	/**
+	 * @brief	Cached URLs
+	 */
+	protected $_url	= array();
+	
+	/**
+	 * @brief	URL Base
+	 */
+	public static $urlBase = 'app=membermap&module=markers&controller=markers&id=';
+	
+	/**
+	 * @brief	URL Base
+	 */
+	public static $urlTemplate = 'markers_marker';
+	
+	/**
+	 * @brief	SEO Title Column
+	 */
+	public static $seoTitleColumn = 'name_seo';
+	
+	/**
+	 * Get template for content tables
+	 *
+	 * @return	callable
+	 */
+	public static function contentTableTemplate()
+	{
+		return array( \IPS\Theme::i()->getTemplate( 'markers', 'membermap' ), 'rows' );
+	}
+
 
 	/**
 	 * Get sortable name
@@ -123,6 +154,31 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Searchable
 	protected function get__title()
 	{
 		return $this->name;
+	}
+
+	/**
+	 * Convert latLng to DMS (degrees, minutes, seconds)
+	 * 
+	 * @return string
+	 */
+	protected function get__latLngToDMS()
+	{
+		$lat = $this->_data['lat'];
+		$lng = $this->_data['lon'];
+
+		$NS = ( $lat >= 0 ) ? 'N' : 'S';
+		$EW = ( $lng >= 0 ) ? 'E' : 'W';
+
+		$lat 	= abs( $lat );
+	    $lng 	= abs( $lng );
+	    $latDeg = floor( $lat );
+	    $latMin = floor( ( $lat - $latDeg ) * 60 );
+	    $latSec = round( ( $lat - $latDeg - $latMin / 60 ) * 1e3 * 3600 ) / 1e3;
+	    $lngDeg = floor( $lng );
+	    $lngMin = floor( ( $lng - $lngDeg ) * 60 );
+	    $lngSec = floor( ( $lng - $lngDeg - $lngMin / 60 ) * 1e3 * 3600 ) / 1e3;
+
+	    return "{$NS} {$latDeg}&deg; {$latMin}' {$latSec}'' &nbsp; {$EW} {$lngDeg}&deg; {$lngMin}' {$lngMin}''";
 	}
 
 
