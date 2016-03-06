@@ -21,7 +21,7 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 /**
  * @brief Block Model
  */
-class _Markers extends \IPS\Content\Item implements \IPS\Content\Searchable
+class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \IPS\Content\Searchable, \IPS\Content\ReportCenter, \IPS\Content\Hideable
 {
 	/**
 	 * @brief	Multiton Store
@@ -60,7 +60,10 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Searchable
 		'title'			=> 'name',
 		'content'		=> 'description',
 		'date'			=> 'added',
-		'updated'		=> 'updated'
+		'updated'		=> 'updated',
+		'approved'		=> 'open',
+		'approved_by'	=> 'approver',
+		'approved_date'	=> 'approvedon',
 	);
 
 
@@ -80,6 +83,18 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Searchable
 	 * @brief	[Node] Node Title
 	 */
 	public static $title = 'membermap_marker';
+
+
+	/**
+	 * @brief	Icon
+	 */
+	public static $icon = 'map-marker';
+
+
+	/**
+	 * @brief	[Content]	Key for hide reasons
+	 */
+	public static $hideLogKey = 'membermap-marker';
 
 	/**
 	 * @brief	[Node] ACP Restrictions
@@ -139,7 +154,6 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Searchable
 		return array( \IPS\Theme::i()->getTemplate( 'markers', 'membermap' ), 'rows' );
 	}
 
-
 	/**
 	 * Get sortable name
 	 *
@@ -149,7 +163,6 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Searchable
 	{
 		return $this->name;
 	}
-
 
 	/**
 	 * [Node] Get Title
@@ -185,7 +198,6 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Searchable
 
 	    return "{$NS} {$latDeg}&deg; {$latMin}' {$latSec}'' &nbsp; {$EW} {$lngDeg}&deg; {$lngMin}' {$lngMin}''";
 	}
-
 
 	/**
 	 * [Node] Get buttons to display in tree
@@ -246,90 +258,34 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Searchable
 	{
 		return isset( $this->_data['description'] ) ? $this->_data['description'] : NULL;
 	}
-
+	
 	/**
-	 * [Node] Add/Edit Form
+	 * Get elements for add/edit form
 	 *
-	 * @param	\IPS\Helpers\Form	$form	The form
-	 * @return	void
+	 * @param	\IPS\Content\Item|NULL	$item		The current item if editing or NULL if creating
+	 * @param	\IPS\Node\Model|NULL	$container	Container (e.g. forum), if appropriate
+	 * @return	array
 	 */
-	public function form( &$form )
-	{
-		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'admin_membermap.js', 'membermap', 'admin' ) );
-		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'membermap.css', 'membermap' ) );
-
-		
-		/* Get enabled maps */
-		$defaultMaps = \IPS\membermap\Application::getEnabledMaps();
-		\IPS\Output::i()->jsVars['membermap_defaultMaps'] = $defaultMaps;
-		\IPS\Output::i()->jsVars['membermap_mapquestAPI'] = \IPS\membermap\Application::getApiKeys( 'mapquest' ); 
-
-		if ( count( \IPS\membermap\Markers\Groups::roots() ) == 0 )
-		{
-			\IPS\Output::i()->error( 'membermap_error_noGroups', '', 403, '' );
-		}
-
-		if ( \IPS\Request::i()->id )
-		{
-			\IPS\Output::i()->title = \IPS\Member::loggedIn()->language()->addToStack( 'membermap_edit_marker' ) . ': ' . \IPS\Output::i()->title;
-		}
-		else
-		{
-			\IPS\Output::i()->title = \IPS\Member::loggedIn()->language()->addToStack('membermap_add_marker');
-		}
-
-
-		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.css', 'membermap', 'global' ) );
-
-		$form->attributes['data-controller'] = 'membermap.admin.membermap.markerform';
-		$form->attributes['id'] = 'membermap_add_marker';
-
-
-		/* Build form */
-		$form->add( new \IPS\Helpers\Form\Text( 'marker_name', $this->id ? $this->name : '', TRUE, array( 'maxLength' => 64 ) ) );
-
-		//$form->add( new \IPS\Helpers\Form\TextArea( 'marker_description', $this->id ? $this->description : '', FALSE, array( 'rows' => 3 ) ) );
-		$form->add( new \IPS\Helpers\Form\Editor( 'marker_description', $this->id ? $this->description : '', FALSE, array(
-				'app'         => 'membermap',
-				'key'         => 'markers',
-				'autoSaveKey' => 'custom-markers-' . ( $this->id ? $this->id : 'new' ),
-				'attachIds'	  => ( $this->id ) ? array( $this->id ) : NULL ) ) );
-
-		$form->add( new \IPS\Helpers\Form\Node( 'marker_parent_id', $this->parent_id ? $this->parent_id : 0, TRUE, array(
-			'class'		=> '\IPS\membermap\Markers\Groups',
-			'permissionCheck' => 'view',
-			'subnodes'	=> false,
-		) ) );
-
-		$form->add( new \IPS\Helpers\Form\Text( 'marker_location', $this->id ? $this->location : '', FALSE, array(), NULL, NULL, NULL, 'marker_location' ) );
-
-		$form->add( new \IPS\Helpers\Form\Number( 'marker_lat', $this->id ? $this->lat : 0, TRUE, array( 'min' => -90, 'max' => 90, 'decimals' => TRUE ), NULL, NULL, NULL, 'marker_lat' ) );
-
-		$form->add( new \IPS\Helpers\Form\Number( 'marker_lon', $this->id ? $this->lon : 0, TRUE, array( 'min' => -180, 'max' => 180, 'decimals' => TRUE ), NULL, NULL, NULL, 'marker_lon' ) );
-
-		$form->addDummy( 'marker_addViaMap', '<button type="button" id="marker_addViaMap" role="button">' . \IPS\Member::loggedIn()->language()->addToStack( 'marker_addViaMap_button' ) . '</button>' );
-	}
-
 	public static function formElements( $item=NULL, \IPS\Node\Model $container=NULL )
 	{
 		$return = parent::formElements( $item, $container );
 
-		$return['content'] = new \IPS\Helpers\Form\Editor( 'marker_description', $item->id ? $item->description : '', FALSE, array(
+		$return['content'] = new \IPS\Helpers\Form\Editor( 'marker_description', $item ? $item->description : '', FALSE, array(
 				'app'         => 'membermap',
 				'key'         => 'markers',
-				'autoSaveKey' => 'custom-markers-' . ( $item->id ? $item->id : 'new' ),
-				'attachIds'	  => ( $item->id ) ? array( $item->id ) : NULL ) );
+				'autoSaveKey' => 'custom-markers-' . ( $item ? $item->id : 'new' ),
+				'attachIds'	  => ( $item ) ? array( $item->id ) : NULL ) );
 
-		$return['container'] = new \IPS\Helpers\Form\Node( 'marker_parent_id', $item->parent_id ? $item->parent_id : 0, TRUE, array(
+		$return['container'] = new \IPS\Helpers\Form\Node( 'marker_parent_id', ( ( $item AND $item->parent_id ) ? $item->parent_id : ( $container ? $container->id : 0 ) ), TRUE, array(
 			'class'		=> '\IPS\membermap\Markers\Groups',
-			'permissionCheck' => 'view',
+			'permissionCheck' => 'add',
 			'subnodes'	=> false,
 		) );
 
-		$return['location'] = new \IPS\Helpers\Form\Text( 'marker_location', $item->id ? $item->location : '', FALSE, array(), NULL, NULL, NULL, 'marker_location' );
+		$return['location'] = new \IPS\Helpers\Form\Text( 'marker_location', $item ? $item->location : '', FALSE, array(), NULL, NULL, NULL, 'marker_location' );
 
-		$return['lat'] = new \IPS\Helpers\Form\Number( 'marker_lat', $item->id ? $item->lat : 0, TRUE, array( 'min' => -90, 'max' => 90, 'decimals' => TRUE ), NULL, NULL, NULL, 'marker_lat' );
-		$return['lon'] = new \IPS\Helpers\Form\Number( 'marker_lon', $item->id ? $item->lon : 0, TRUE, array( 'min' => -180, 'max' => 180, 'decimals' => TRUE ), NULL, NULL, NULL, 'marker_lon' );
+		$return['lat'] = new \IPS\Helpers\Form\Number( 'marker_lat', $item ? $item->lat : 0, TRUE, array( 'min' => -90, 'max' => 90, 'decimals' => TRUE ), NULL, NULL, NULL, 'marker_lat' );
+		$return['lon'] = new \IPS\Helpers\Form\Number( 'marker_lon', $item ? $item->lon : 0, TRUE, array( 'min' => -180, 'max' => 180, 'decimals' => TRUE ), NULL, NULL, NULL, 'marker_lon' );
 
 		return $return;
 	}
@@ -369,8 +325,26 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Searchable
 			}
 		}
 
+		/* Update Category */
+		$this->container()->setLastMarker( $this );
+		$this->container()->save();
+	}
 
-		return $values;
+	/**
+	 * Should new items be moderated?
+	 *
+	 * @param	\IPS\Member		$member		The member posting
+	 * @param	\IPS\Node\Model	$container	The container
+	 * @return	bool
+	 */
+	public static function moderateNewItems( \IPS\Member $member, \IPS\Node\Model $container = NULL )
+	{
+		if ( $container and $container->moderate and !$member->group['g_avoid_q'] )
+		{
+			return TRUE;
+		}
+		
+		return parent::moderateNewItems( $member, $container );
 	}
 
 	/**

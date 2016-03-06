@@ -1,0 +1,45 @@
+<ips:template parameters="$id, $action, $elements, $hiddenValues, $actionButtons, $uploadField, $class=''" />
+
+<form accept-charset='utf-8' class="ipsForm {$class}" action="{$action}" method="post" {{if $uploadField}}enctype="multipart/form-data"{{endif}} data-ipsForm>
+	<input type="hidden" name="{$id}_submitted" value="1">
+	{{foreach $hiddenValues as $k => $v}}
+		<input type="hidden" name="{$k}" value="{$v}">
+	{{endforeach}}
+	{{if $uploadField}}
+		<input type="hidden" name="MAX_FILE_SIZE" value="{$uploadField}">
+		<input type="hidden" name="plupload" value="{expression="md5( uniqid() )"}">
+	{{endif}}
+	
+	<ul class='ipsForm ipsForm_vertical'>
+		{{foreach $elements as $collection}}
+			{{foreach $collection as $inputName => $input}}
+				{{if in_array( $inputName, array( 'marker_title', 'marker_description' ) )}}
+					{$input|raw}
+				{{endif}}
+			{{endforeach}}
+		{{endforeach}}
+	</ul>
+	<br>
+
+	<div class='ipsBox'>
+		<div class='ipsColumns'>
+			<div class='ipsColumn ipsColumn_veryWide'>
+				<ul class='ipsForm ipsPad ipsForm_vertical'>
+					{{foreach $elements as $collection}}
+						{{foreach $collection as $inputName => $input}}
+							{{if ! in_array( $inputName, array( 'marker_title', 'marker_description' ) )}}
+								{$input|raw}
+							{{endif}}
+						{{endforeach}}
+					{{endforeach}}
+				</ul>
+			</div>
+			<div class='ipsColumn ipsColumn_fluid'>
+				MAP GOES HERE
+			</div>
+		</div>
+		<div class='ipsAreaBackground ipsPad ipsType_center'>
+			<button type='submit' class='ipsButton ipsButton_large ipsButton_primary'>{lang="submit_event"}</button>
+		</div>
+	</div>
+</form>

@@ -1,8 +1,0 @@
-<ips:template parameters="$categories" />
-<ul class='ipsMenu ipsMenu_auto ipsHide' id='elDownloadsCategories_menu'>
-	{{foreach $categories as $cat}}
-			<li class='ipsMenu_item'>
-				<a href='{$cat->url()}'><span class="ipsMenu_itemCount">{number="\IPS\membermap\Markers\Markers::contentCount( $cat )"}</span>{$cat->_title}</a>
-			</li>
-	{{endforeach}}
-</ul>

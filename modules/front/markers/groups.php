@@ -59,11 +59,29 @@ class _groups extends \IPS\Content\Controller
 
 	protected function _group( $group )
 	{
-		/* Build table */
-		$table = new \IPS\Helpers\Table\Content( '\IPS\membermap\Markers\Markers', $group->url(), NULL, $group );
-		$table->classes = array( 'ipsDataList_large' );
+		$_count = \IPS\membermap\Markers\Markers::getItemsWithPermission( array( array( \IPS\membermap\Markers\Markers::$databasePrefix . \IPS\membermap\Markers\Markers::$databaseColumnMap['container'] . '=?', $group->_id ) ), NULL, 1, 'read', NULL, 0, NULL, FALSE, FALSE, FALSE, TRUE );
 
-		\IPS\Output::i()->output	= $table;
+		if( !$_count )
+		{
+			/* Show a 'no files' template if there's nothing to display */
+			$table = \IPS\Theme::i()->getTemplate( 'markers' )->noMarkers( $group );
+		}
+		else
+		{
+			/* Build table */
+			$table = new \IPS\Helpers\Table\Content( '\IPS\membermap\Markers\Markers', $group->url(), NULL, $group );
+			$table->classes = array( 'ipsDataList_large' );
+			$table->title = \IPS\Member::loggedIn()->language()->pluralize(  \IPS\Member::loggedIn()->language()->get('download_file_count'), array( $_count ) );
+		}
+
+		/* Online User Location */
+		$permissions = $group->permissions();
+		\IPS\Session::i()->setLocation( $group->url(), explode( ",", $permissions['perm_view'] ), 'loc_membermap_viewing_group', array( "membermap_group_{$group->id}" => TRUE ) );
+
+		/* Output */
+		\IPS\Output::i()->title		= $group->_title;
+
+		\IPS\Output::i()->output	= \IPS\Theme::i()->getTemplate( 'markers' )->group( $group, (string) $table );
 	}
 
 	protected function _index()

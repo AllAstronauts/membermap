@@ -1,0 +1,9 @@
+<ips:template parameters="$group" />
+
+<div class='ipsType_center ipsPad'>
+	<p class='ipsType_large'>{lang="no_files_in_cat"}</p>
+
+	{{if $group->can('add')}}
+		<a href='{url="app=membermap&module=markers&controller=submit&_new=1&group={$group->id}" seoTemplate="downloads_submit"}' class='ipsButton ipsButton_primary ipsButton_medium' data-ipsDialog data-ipsDialog-title='{lang="submit_first_file"}' data-ipsDialog-size='narrow'>{lang="submit_first_file"}</a>
+	{{endif}}
+</div>

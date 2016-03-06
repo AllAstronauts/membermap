@@ -38,6 +38,10 @@
 		    "real": "app=membermap&module=markers&controller=markers",
 		    "verify": "\\IPS\\membermap\\Markers\\Markers"
 	    },
+	    "membermap_submit": {
+	        "friendly": "markers/submit",
+	        "real": "app=membermap&module=markers&controller=submit"
+	    },
 		"friends": {
 			"friendly": "showfriends",
 			"real": "app=membermap&module=membermap&controller=showmap&do=friends"

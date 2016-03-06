@@ -144,14 +144,21 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 */
 	public static $permissionMap = array(
 		'view'				=> 'view', /* This is actually the 'add' permission, since 'view' is required, and everyone can view any markers */
-		'edit'				=> 3,
-		'delete'			=> 4
+		'read'				=> 2,
+		'add'				=> 3,
+		'edit'				=> 4
 	);
 	
 	/**
 	 * @brief	[Node] Prefix string that is automatically prepended to permission matrix language strings
 	 */
 	public static $permissionLangPrefix = 'perm_membermap_';
+
+
+	/**
+	 * @brief	[Node] Moderator Permission
+	 */
+	public static $modPerm = 'membermap_markers_groups';
 	
 	/**
 	 * @brief	Content Item Class
@@ -209,6 +216,17 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 	}
 
 	/**
+	 * Get last comment time
+	 *
+	 * @note	This should return the last comment time for this node only, not for children nodes
+	 * @return	\IPS\DateTime|NULL
+	 */
+	public function getLastCommentTime()
+	{
+		return $this->last_marker_date ? \IPS\DateTime::ts( $this->last_marker_date ) : NULL;
+	}
+
+	/**
 	 * Get latest file information
 	 *
 	 * @return	\IPS\membermap\Markers\Markers|NULL
@@ -230,6 +248,44 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 		}
 
 		return $latestMarker;
+	}
+
+	/**
+	 * Set last file data
+	 *
+	 * @param	\IPS\downloads\File|NULL	$file	The latest file or NULL to work it out
+	 * @return	void
+	 */
+	public function setlastMarker( \IPS\membermap\Markers\Markers $marker=NULL )
+	{
+		if( $marker === NULL )
+		{
+			try
+			{
+				$marker	= \IPS\membermap\Markers\Markers::constructFromData( \IPS\Db::i()->select( '*', 'membermap_markers', array( 'marker_parent_id=? AND marker_open=1', $this->id ), 'group_added DESC', 1 )->first() );
+			}
+			catch ( \UnderflowException $e )
+			{
+				$this->last_marker_id	= 0;
+				$this->last_marker_date	= 0;
+				return;
+			}
+		}
+	
+		$this->last_marker_id	= $marker->id;
+		$this->last_marker_date	= $marker->added;
+	}
+	
+	/**
+	 * Set last comment
+	 *
+	 * @param	\IPS\Content\Comment|NULL	$comment	The latest comment or NULL to work it out
+	 * @return	int
+	 * @note	We actually want to set the last file info, not the last comment, so we ignore $comment
+	 */
+	public function setLastComment( \IPS\Content\Comment $comment=NULL )
+	{
+		$this->setlastMarker();
 	}
 	
 	/**
@@ -274,22 +330,11 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 		$form->attributes['data-controller'] = 'membermap.admin.membermap.groupform';
 		
 		/* Build form */
-		$form->add( new \IPS\Helpers\Form\Text( 'group_name', $this->id ? $this->name : '', TRUE, array( 'maxLength' => 64 ), function( $val )
-		{
-			try
-			{
-				$test = \IPS\membermap\Markers\Groups::load( $val, 'name' );
+		$form->add( new \IPS\Helpers\Form\Translatable( 'group_name', NULL, TRUE, array( 'app' => 'membermap', 'key' => ( $this->id ? "membermap_marker_group_{$this->id}" : NULL ) ) ) );
 
-				if ( ! empty( \IPS\Request::i()->id ) and $test->id != \IPS\Request::i()->id )
-				{
-					throw new \InvalidArgumentException('membermap_group_name_in_use');
-				}
-			}
-			catch ( \OutOfRangeException $e )
-			{
-				return true;
-			}
-		}));
+
+
+		$form->add( new \IPS\Helpers\Form\YesNo( 'group_moderate', $this->id ? $this->moderate : FALSE, FALSE ) );
 
 		if( $this->type == 'custom' )
 		{
@@ -335,8 +380,17 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 		{
 			$this->save();
 		}
+
+		if ( isset( $values['group_name'] ) )
+		{
+			\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$this->id}", $values['group_name'] );
+			
+			$this->name_seo = \IPS\Http\Url::seoTitle( $values[ $fieldKey ][ \IPS\Lang::defaultLanguage() ] );
+			
+			unset( $values['group_name'] );
+		}
 		
-		foreach( array( 'group_name', 'group_pin_icon', 'group_pin_colour', 'group_pin_bg_colour' ) as $val )
+		foreach( array( 'group_pin_icon', 'group_pin_colour', 'group_pin_bg_colour' ) as $val )
 		{
 			if( isset( $values[ $val ] ) )
 			{
@@ -357,7 +411,7 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 	{
 		parent::save();
 
-		\IPS\membermap\Map::i()->recacheJsonFile();
+		//\IPS\membermap\Map::i()->recacheJsonFile();
 	}
 
 	/**
