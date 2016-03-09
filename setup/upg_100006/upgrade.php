@@ -270,7 +270,7 @@ class _Upgrade
 		
 		foreach( \IPS\Db::i()->select( '*', 'membermap_markers_groups' ) as $group )
 		{
-			$group	= \IPS\membermap\Markers\Markers::constructFromData( $group );
+			$group	= \IPS\membermap\Markers\Groups::constructFromData( $group );
 
 			\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$group->id}", trim( $group->name ) );
 
@@ -310,6 +310,17 @@ class _Upgrade
 	 */
 	public function step4()
 	{
+		unset( $_SESSION['_membermapMemberGroupId'] );
 		\IPS\Db::i()->dropTable( 'membermap_members' );
+	}
+
+	/**
+	 * Custom title for this step
+	 *
+	 * @return string
+	 */
+	public function step4CustomTitle()
+	{
+		return "Cleaning up";
 	}
 }

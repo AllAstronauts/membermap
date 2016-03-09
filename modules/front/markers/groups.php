@@ -61,7 +61,7 @@ class _groups extends \IPS\Content\Controller
 	{
 		$_count = \IPS\membermap\Markers\Markers::getItemsWithPermission( array( array( \IPS\membermap\Markers\Markers::$databasePrefix . \IPS\membermap\Markers\Markers::$databaseColumnMap['container'] . '=?', $group->_id ) ), NULL, 1, 'read', NULL, 0, NULL, FALSE, FALSE, FALSE, TRUE );
 
-		if( !$_count )
+		if( ! $_count )
 		{
 			/* Show a 'no files' template if there's nothing to display */
 			$table = \IPS\Theme::i()->getTemplate( 'markers' )->noMarkers( $group );
@@ -71,7 +71,7 @@ class _groups extends \IPS\Content\Controller
 			/* Build table */
 			$table = new \IPS\Helpers\Table\Content( '\IPS\membermap\Markers\Markers', $group->url(), NULL, $group );
 			$table->classes = array( 'ipsDataList_large' );
-			$table->title = \IPS\Member::loggedIn()->language()->pluralize(  \IPS\Member::loggedIn()->language()->get('download_file_count'), array( $_count ) );
+			$table->title = \IPS\Member::loggedIn()->language()->pluralize(  \IPS\Member::loggedIn()->language()->get( 'group_markers_number' ), array( $_count ) );
 		}
 
 		/* Online User Location */
@@ -87,7 +87,7 @@ class _groups extends \IPS\Content\Controller
 	protected function _index()
 	{
 		/* Online User Location */
-		\IPS\Session::i()->setLocation( \IPS\Http\Url::internal( 'app=membermap&module=markers&controller=groups', 'front', 'markers' ), array(), 'loc_classifieds_browsing_categories' );
+		\IPS\Session::i()->setLocation( \IPS\Http\Url::internal( 'app=membermap&module=markers&controller=groups', 'front', 'markers' ), array(), 'loc_membermap_browsing_groups' );
 		
 		\IPS\Output::i()->title		= \IPS\Member::loggedIn()->language()->addToStack('membermap');
 		\IPS\Output::i()->output	= \IPS\Theme::i()->getTemplate( 'markers' )->index();

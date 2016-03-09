@@ -1,6 +1,6 @@
 <ips:template parameters="$id, $action, $elements, $hiddenValues, $actionButtons, $uploadField, $class=''" />
 
-<form accept-charset='utf-8' class="ipsForm {$class}" action="{$action}" method="post" {{if $uploadField}}enctype="multipart/form-data"{{endif}} data-ipsForm>
+<form accept-charset='utf-8' id='membermap_marker_form' class="ipsForm {$class}" action="{$action}" method="post" {{if $uploadField}}enctype="multipart/form-data"{{endif}} data-ipsForm data-controller="membermap.front.markers.markerform">
 	<input type="hidden" name="{$id}_submitted" value="1">
 	{{foreach $hiddenValues as $k => $v}}
 		<input type="hidden" name="{$k}" value="{$v}">
@@ -35,7 +35,10 @@
 				</ul>
 			</div>
 			<div class='ipsColumn ipsColumn_fluid'>
-				MAP GOES HERE
+				<div id='mapWrapper' class='ipsPad'>
+					<div id='mapCanvas' style='height:400px;'>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class='ipsAreaBackground ipsPad ipsType_center'>

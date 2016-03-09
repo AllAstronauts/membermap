@@ -32,7 +32,7 @@ $lang = array(
 	'membermap_marker_updated' 		=> "Updated",
 	'membermap_marker_location' 	=> "Location",
 	'membermap_marker_coordinates' 	=> "Coordinates",
-	'group_markers_number' 			=> "{!# [1:marker][?:markers]}",
+	'group_markers_number' 			=> "{# [1:marker][?:markers]}",
 	'marker_actions' 				=> "Marker Actions",
 	'report_marker' 				=> "Report this marker",
 
@@ -41,6 +41,7 @@ $lang = array(
 	'membermap_marker_pl_lc'	=> "markers",
 
 	'membermap_submit_a_marker' => "Add Marker",
+	'membermap_edit_a_marker' => "Edit Marker",
 
 	/* Session Location */
 	'loc_membermap_viewing_membermap' => "Viewing the Member Map",

@@ -32,9 +32,14 @@ class _submit extends \IPS\Dispatcher\Controller
 	{
 		\IPS\Output::i()->breadcrumb[] = array( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=membermap', 'front', 'membermap' ), \IPS\Member::loggedIn()->language()->addToStack( 'module__membermap_membermap' ) );
 		\IPS\Output::i()->breadcrumb = array_reverse( \IPS\Output::i()->breadcrumb );
+
+		/* Load JS */
+		\IPS\membermap\Application::getJsForMarkerForm();
+
+
 		parent::execute();
 	}
-	
+
 	/**
 	 * Submit Event
 	 *
@@ -42,17 +47,13 @@ class _submit extends \IPS\Dispatcher\Controller
 	 */
 	protected function manage()
 	{
-		/* Display */
-		\IPS\Output::i()->title		= \IPS\Member::loggedIn()->language()->addToStack( 'membermap_submit_a_marker' );
-		\IPS\Output::i()->sidebar['enabled'] = FALSE;
-		\IPS\Output::i()->breadcrumb[] = array( NULL, \IPS\Member::loggedIn()->language()->addToStack( 'membermap_submit_a_marker' ) );
-		
 		$group = NULL;
 		if ( isset( \IPS\Request::i()->group ) )
 		{
 			try
 			{
 				$group = \IPS\membermap\Markers\Groups::loadAndCheckPerms( \IPS\Request::i()->group );
+				\IPS\Output::i()->breadcrumb[] = array( \IPS\Http\Url::internal( 'app=membermap&module=groups&controller=groups&id=' . $group->_id, 'front', 'markers_group', $group->name_seo ), $group->_title );
 			}
 			catch ( \OutOfRangeException $e ) { }
 		}
@@ -63,6 +64,11 @@ class _submit extends \IPS\Dispatcher\Controller
 		{
 			$form = \IPS\Theme::i()->getTemplate( 'forms', 'core' )->modQueueMessage( \IPS\Member::loggedIn()->warnings( 5, NULL, 'mq' ), \IPS\Member::loggedIn()->mod_posts ) . $form;
 		}
+
+		/* Display */
+		\IPS\Output::i()->title		= \IPS\Member::loggedIn()->language()->addToStack( 'membermap_submit_a_marker' );
+		\IPS\Output::i()->sidebar['enabled'] = FALSE;
+		\IPS\Output::i()->breadcrumb[] = array( NULL, \IPS\Member::loggedIn()->language()->addToStack( 'membermap_submit_a_marker' ) );
 
 		\IPS\Output::i()->output	= \IPS\Theme::i()->getTemplate( 'submit' )->submitPage( $form->customTemplate( array( call_user_func_array( array( \IPS\Theme::i(), 'getTemplate' ), array( 'submit', 'membermap' ) ), 'submitForm' ) ) );
 	}

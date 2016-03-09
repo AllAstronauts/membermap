@@ -249,7 +249,7 @@
 			
 			if ( ips.getSetting( 'membermap_enable_clustering' ) == 1 )
 			{
-				memberMarkers = new L.MarkerClusterGroup({ zoomToBoundsOnClick: true, disableClusteringAtZoom: ( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 ) });
+				memberMarkers = new L.MarkerClusterGroup({ zoomToBoundsOnClick: true, disableClusteringAtZoom: ( $( '#mapWrapper' ).height() > 1000 ? 13 : 11 ) });
 			}
 			else
 			{

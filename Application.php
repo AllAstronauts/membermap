@@ -86,6 +86,37 @@ class _Application extends \IPS\Application
 	}
 
 	/**
+	 * [Node] Get Icon for tree
+	 *
+	 * @note	Return the class for the icon (e.g. 'globe')
+	 * @return	string|null
+	 */
+	protected function get__icon()
+	{
+		return 'map-marker';
+	}
+
+	public static function getJsForMarkerForm()
+	{
+		/* Get enabled maps */
+		$defaultMaps = self::getEnabledMaps();
+
+		/* Load JS and CSS */
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/leaflet-src.js', 'membermap', 'interface' ) );
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'jquery/jquery-ui.js', 'membermap', 'interface' ) );
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/leaflet-providers.js', 'membermap', 'interface' ) );
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/leaflet.awesome-markers.js', 'membermap', 'interface' ) );
+
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.css', 'membermap', 'global' ) );
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'jquery-ui.css', 'membermap', 'global' ) );
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'membermap.css', 'membermap' ) );
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'plugins.combined.css', 'membermap' ) );
+
+		\IPS\Output::i()->jsVars['membermap_defaultMaps'] = $defaultMaps;
+		\IPS\Output::i()->jsVars['membermap_mapquestAPI'] = self::getApiKeys( 'mapquest' ); 
+	}
+
+	/**
 	 * Default front navigation
 	 *
 	 * @code
