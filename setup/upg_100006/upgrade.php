@@ -15,160 +15,11 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
  */
 class _Upgrade
 {
-	/**
-	 * Renaming tables and adding new columns
-	 */
-	public function step1()
-	{
-		\IPS\Db::i()->renameTable( 'membermap_cmarkers_groups', 'membermap_markers_groups' );
-		\IPS\Db::i()->renameTable( 'membermap_cmarkers', 'membermap_markers' );
-
-		/*
-		 * membermap_markers columns
-		 */
-		\IPS\Db::i()->addColumn( 'membermap_markers', array(
-				"name"		=> "marker_name_seo",
-				"type"		=> "VARCHAR",
-				"length"	=> 255,
-				"null"		=> true,
-				"default"	=> null,
-				"comment"	=> "",
-				"unsigned"	=> false
-		)	 );
-		\IPS\Db::i()->addColumn( 'membermap_markers', array(
-				"name"		=> "marker_member_id",
-				"type"		=> "MEDIUMINT",
-				"length"	=> 8,
-				"null"		=> false,
-				"default"	=> 0,
-				"comment"	=> "",
-				"unsigned"	=> false
-		)	 );
-		\IPS\Db::i()->addColumn( 'membermap_markers', array(
-				"name"		=> "marker_added",
-				"type"		=> "INT",
-				"length"	=> 10,
-				"null"		=> false,
-				"default"	=> 0,
-				"comment"	=> "",
-				"unsigned"	=> false
-		)	 );
-		\IPS\Db::i()->addColumn( 'membermap_markers', array(
-				"name"		=> "marker_updated",
-				"type"		=> "INT",
-				"length"	=> 10,
-				"null"		=> false,
-				"default"	=> 0,
-				"comment"	=> "",
-				"unsigned"	=> false
-		)	 );
-		\IPS\Db::i()->addColumn( 'membermap_markers', array(
-				"name"		=> "marker_open",
-				"type"		=> "TINYINT",
-				"length"	=> 1,
-				"null"		=> false,
-				"default"	=> 0,
-				"comment"	=> "",
-				"unsigned"	=> false
-		)	 );
-		\IPS\Db::i()->addColumn( 'membermap_markers', array(
-				"name"		=> "marker_approver",
-				"type"		=> "MEDIUMINT",
-				"length"	=> 8,
-				"null"		=> false,
-				"default"	=> 0,
-				"comment"	=> "",
-				"unsigned"	=> false
-		)	 );
-		\IPS\Db::i()->addColumn( 'membermap_markers', array(
-				"name"		=> "marker_approvedon",
-				"type"		=> "INT",
-				"length"	=> 10,
-				"null"		=> false,
-				"default"	=> 0,
-				"comment"	=> "",
-				"unsigned"	=> false
-		)	 );
-
-		/*
-		 * membermap_markers_groups columns
-		 */
-		\IPS\Db::i()->addColumn( 'membermap_markers_groups', array(
-				"name"		=> "group_name_seo",
-				"type"		=> "VARCHAR",
-				"length"	=> 255,
-				"null"		=> true,
-				"default"	=> null,
-				"comment"	=> "",
-				"unsigned"	=> false
-		)	 );
-		\IPS\Db::i()->addColumn( 'membermap_markers_groups', array(
-				"name"		=> "group_protected",
-				"type"		=> "TINYINT",
-				"length"	=> 1,
-				"null"		=> false,
-				"default"	=> 0,
-				"comment"	=> "",
-				"unsigned"	=> false
-		)	 );
-		\IPS\Db::i()->addColumn( 'membermap_markers_groups', array(
-				"name"		=> "group_type",
-				"type"		=> "VARCHAR",
-				"length"	=> 10,
-				"null"		=> false,
-				"default"	=> 'custom',
-				"comment"	=> "",
-				"unsigned"	=> false
-		)	 );
-		\IPS\Db::i()->addColumn( 'membermap_markers_groups', array(
-				"name"		=> "group_last_marker_id",
-				"type"		=> "INT",
-				"length"	=> 10,
-				"null"		=> false,
-				"default"	=> 0,
-				"comment"	=> "",
-				"unsigned"	=> false
-		)	 );
-		\IPS\Db::i()->addColumn( 'membermap_markers_groups', array(
-				"name"		=> "group_last_marker_date",
-				"type"		=> "INT",
-				"length"	=> 10,
-				"null"		=> false,
-				"default"	=> 0,
-				"comment"	=> "",
-				"unsigned"	=> false
-		)	 );
-
-		$memberGroupId = \IPS\Db::i()->insert( 'membermap_markers_groups', array(
-			'group_name' 		=> "Members",
-			'group_name_seo'	=> 'members',
-			'group_protected' 	=> 1,
-			'group_type'		=> 'member',
-			'group_pin_colour'	=> '#FFFFFF',
-			'group_pin_bg_colour' 	=> 'darkblue',
-			'group_pin_icon'		=> 'fa-user',
-		) );
-
-		$_SESSION['_membermapMemberGroupId'] = $memberGroupId;
-
-		return TRUE;
-	}
-
-	/**
-	 * Custom title for this step
-	 *
-	 * @return string
-	 */
-	public function step1CustomTitle()
-	{
-		return "Adding new database tables and columns";
-	}
-
 
 	/**
 	 * Moving member markers to the new centralised location for all markers 
 	 */
-	public function step2()
+	public function step1()
 	{
 		if ( $_SESSION['_membermapMemberGroupId'] > 0 )
 		{
@@ -228,7 +79,6 @@ class _Upgrade
 				'marker_lon'		=> $member['lon'],
 				'marker_member_id'	=> $member['member_id'],
 				'marker_added'		=> $member['marker_date'],
-				'marker_open'		=> 1,
 			) );
 		}
 
@@ -238,7 +88,7 @@ class _Upgrade
 		}
 		else
 		{
-			unset( $_SESSION['_step2Count'] );
+			unset( $_SESSION['_step1Count'] );
 			return TRUE;
 		}
 	}
@@ -248,16 +98,16 @@ class _Upgrade
 	 *
 	 * @return string
 	 */
-	public function step2CustomTitle()
+	public function step1CustomTitle()
 	{
 		$limit = isset( \IPS\Request::i()->extra ) ? \IPS\Request::i()->extra : 0;
 
-		if( !isset( $_SESSION['_step2Count'] ) )
+		if( !isset( $_SESSION['_step1Count'] ) )
 		{
-			$_SESSION['_step2Count'] = \IPS\Db::i()->select( 'COUNT(*)', 'membermap_members' )->first();
+			$_SESSION['_step1Count'] = \IPS\Db::i()->select( 'COUNT(*)', 'membermap_members' )->first();
 		}
 		
-		return "Upgrading member markers (Upgraded so far: " . ( ( $limit > $_SESSION['_step2Count'] ) ? $_SESSION['_step2Count'] : $limit ) . ' out of ' . $_SESSION['_step2Count'] . ')';
+		return "Upgrading member markers (Upgraded so far: " . ( ( $limit > $_SESSION['_step1Count'] ) ? $_SESSION['_step1Count'] : $limit ) . ' out of ' . $_SESSION['_step1Count'] . ')';
 	}
 
 	/**
@@ -265,16 +115,22 @@ class _Upgrade
 	 *
 	 * @return	array	If returns TRUE, upgrader will proceed to next step. If it returns any other value, it will set this as the value of the 'extra' GET parameter and rerun this step (useful for loops)
 	 */
-	public function step3()
+	public function step2()
 	{
-		
+		$order = 1;
 		foreach( \IPS\Db::i()->select( '*', 'membermap_markers_groups' ) as $group )
 		{
 			$group	= \IPS\membermap\Markers\Groups::constructFromData( $group );
 
 			\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$group->id}", trim( $group->name ) );
 
-			$group->name_seo = \IPS\Http\Url::seoTitle( trim( $group->name ) );
+			$group->name_seo 	= \IPS\Http\Url::seoTitle( trim( $group->name ) );
+
+			if ( $group->type == 'custom' )
+			{
+				$group->position 	= $order;
+				$order++;
+			}
 
 			try
 			{
@@ -300,7 +156,7 @@ class _Upgrade
 	 *
 	 * @return string
 	 */
-	public function step3CustomTitle()
+	public function step2CustomTitle()
 	{
 		return "Upgrading marker groups";
 	}
@@ -308,10 +164,17 @@ class _Upgrade
 	/**
 	 * Clean up
 	 */
-	public function step4()
+	public function step3()
 	{
 		unset( $_SESSION['_membermapMemberGroupId'] );
-		\IPS\Db::i()->dropTable( 'membermap_members' );
+		try
+		{
+			\IPS\Db::i()->dropTable( 'membermap_members', TRUE );
+		}
+		catch( \UnderflowException $e )
+		{}
+
+		return TRUE;
 	}
 
 	/**
@@ -319,7 +182,7 @@ class _Upgrade
 	 *
 	 * @return string
 	 */
-	public function step4CustomTitle()
+	public function step3CustomTitle()
 	{
 		return "Cleaning up";
 	}

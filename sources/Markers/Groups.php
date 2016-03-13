@@ -22,31 +22,7 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
  * @brief	Folder Model
  */
 class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
-{
-	/**
-	 * Munge different record types
-	 *
-	 *
-	 * @return  array
-	 */
-	public static function munge()
-	{
-		$rows = array();
-		$args = func_get_args();
-	
-		foreach( $args as $arg )
-		{
-			foreach( $arg as $id => $obj )
-			{
-				$rows[ $obj->getSortableName() . '_' . $obj::$databaseTable . '_' . $obj->id  ] = $obj;
-			}
-		}
-	
-		ksort( $rows );
-	
-		return $rows;
-	}
-	
+{	
 	/**
 	 * @brief	[ActiveRecord] Multiton Store
 	 */
@@ -86,7 +62,7 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 	/**
 	 * @brief	[Node] Order Database Column
 	 */
-	public static $databaseColumnOrder = 'name';
+	public static $databaseColumnOrder = 'position';
 	
 	/**
 	 * @brief	[Node] Node Title
@@ -191,16 +167,6 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 * @return	string|null
 	 */
 	protected function get__title()
-	{
-		return $this->name;
-	}
-	
-	/**
-	 * Get sortable name
-	 *
-	 * @return	string
-	 */
-	public function getSortableName()
 	{
 		return $this->name;
 	}
@@ -421,6 +387,11 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 */
 	public function delete()
 	{
+		if ( $this->protected )
+		{
+			throw new \DomainException( 'No no no no no' );
+		}
+
 		parent::delete();
 		
 		\IPS\membermap\Map::i()->recacheJsonFile();
