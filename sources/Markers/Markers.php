@@ -373,7 +373,7 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	{
 		parent::save();
 
-		//\IPS\membermap\Map::i()->recacheJsonFile();
+		\IPS\membermap\Map::i()->recacheJsonFile();
 	}
 
 	/**

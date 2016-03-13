@@ -39,63 +39,6 @@ class _Map
 	}
 
 	/**
-	 * Save marker to database
-	 * 
-	 * @param 	array 	$data
-	 * @return	bool	
-	 */
-	public function saveMarker( $data )
-	{
-		if ( ! $data['member_id'] )
-		{
-			throw new \Exception( 'invalid_data' );
-		}
-
-		if ( $data['lat'] AND $data['lng'] )
-		{
-			$lat = $data['lat'];
-			$lng = $data['lng'];
-		}
-		else
-		{
-			throw new \Exception( 'invalid_data' );
-		}
-
-		if ( $lat == 0 AND $lng == 0 )
-		{
-			throw new \Exception( 'invalid_data' );
-		}
-		
-		$save = array(
-			'member_id'			=> $data['member_id'],
-			'lat'				=> $this->_floatVal( $lat ),
-			'lon'				=> $this->_floatVal( $lng ),
-			'marker_date'		=> time()
-		);
-
-		
-		\IPS\Db::i()->replace( 'membermap_members', $save, 'member_id=' . $data['member_id'] );
-
-		$this->recacheJsonFile();
-	}
-
-
-	/**
-	 * Delete a marker
-	 *
-	 * @param 		int 	Member ID
-	 * @return 		bool
-	 */
-	public function deleteMarker( $memberId )
-	{
-		$memberId = intval( $memberId );
-
-		\IPS\Db::i()->delete( 'membermap_members', 'member_id=' . $memberId );
-
-		$this->recacheJsonFile();
-	}
-
-	/**
 	 * Get a single member's location
 	 * 
 	 * @param 		int 	Member ID
@@ -184,21 +127,39 @@ class _Map
 	 */
 	public function recacheJsonFile()
 	{	
-		$markers = array();
-		
-		$dbMarkers = iterator_to_array( 
-						\IPS\Db::i()->select( 'membermap_members.*,  core_members.*, core_groups.g_membermap_markerColour', 'membermap_members' )
-							->join( 'core_members', 'membermap_members.member_id=core_members.member_id' )
-							->join( 'core_groups', 'core_members.member_group_id=core_groups.g_id' )
-		);
+		$memberMarkers = array();
+		$customMarkers = array();
 
-		$markers = $this->formatMarkers( $dbMarkers );
+		foreach( \IPS\membermap\Markers\Groups::roots( NULL ) as $group )
+		{
+			$_markers = iterator_to_array( \IPS\membermap\Markers\Markers::getItemsWithPermission( 
+				array( array( \IPS\membermap\Markers\Markers::$databasePrefix . \IPS\membermap\Markers\Markers::$databaseColumnMap['container'] . '=?', $group->_id ) ), /* $where */
+				NULL, /* $order */
+				NULL, /* $limit */
+				NULL, /* $permissionKey */
+				FALSE, /* $includeHiddenItems */
+				0, /* $queryFlags */
+				new \IPS\Member, /* \IPS\Member */
+				TRUE, /* $joinContainer */
+				FALSE, /* $joinComments */
+				FALSE, /* $joinReviews */
+				FALSE,  /* $countOnly */
+				NULL, /* $joins */
+				TRUE, /* $skipPermission */
+				FALSE /* $joinTags */
+			) );
 
+			if ( $group->type == 'member' )
+			{
+				$memberMarkers = array_merge( $memberMarkers, $_markers );
+			}
+			else
+			{
+				$customMarkers = array_merge( $customMarkers, $_markers );
+			}
+		}		
 
-		$customMarkers = iterator_to_array( 
-						\IPS\Db::i()->select( 'membermap_cmarkers.*,  membermap_cmarkers_groups.*', 'membermap_cmarkers' )
-							->join( 'membermap_cmarkers_groups', 'membermap_cmarkers.marker_parent_id=membermap_cmarkers_groups.group_id' )
-		);
+		$markers = $this->formatMemberMarkers( $memberMarkers );
 
 		$custMarkers = $this->formatCustomMarkers( $customMarkers );
 
@@ -259,7 +220,7 @@ class _Map
 	 * @param 		array 	Markers
 	 * @return		array	Markers
 	 */
-	public function formatMarkers( array $markers )
+	public function formatMemberMarkers( array $markers )
 	{
 		$markersToKeep = array();
 
@@ -267,21 +228,21 @@ class _Map
 		{
 			foreach( $markers as $marker )
 			{
-				if ( $marker['lat'] == 0 AND $marker['lon'] == 0 )
+				if ( $marker->lat == 0 AND $marker->lon == 0 )
 				{
-					\IPS\Db::i()->delete( 'membermap_members', array( 'member_id=?', $marker['member_id'] ) );
+					$marker->delete();
 					continue;
 				}
 
-				$photo = \IPS\Member::photoUrl( $marker, TRUE );
+				$photo = $marker->author()->photo;
 				
 				$markersToKeep[] = array(
 					'type'			=> "member",
-					'lat' 			=> round( (float)$marker['lat'], 5 ),
-					'lon' 			=> round( (float)$marker['lon'], 5 ),
-					'member_id'		=> $marker['member_id'],
+					'lat' 			=> round( (float)$marker->lat, 5 ),
+					'lon' 			=> round( (float)$marker->lon, 5 ),
+					'member_id'		=> $marker->member_id,
 					'popup' 		=> \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker, $photo ),
-					'markerColour' 	=> $marker['g_membermap_markerColour'] ?: 'darkblue',
+					'markerColour' 	=> $marker->author()->group['g_membermap_markerColour'] ?: 'darkblue',
 				);
 			}
 		}
@@ -312,14 +273,14 @@ class _Map
 				
 				$markersToKeep[] = array(
 					'type'			=> "custom",
-					'lat' 			=> round( (float)$marker['marker_lat'], 5 ),
-					'lon' 			=> round( (float)$marker['marker_lon'], 5 ),
+					'lat' 			=> round( (float)$marker->lat, 5 ),
+					'lon' 			=> round( (float)$marker->lon, 5 ),
 					'popup' 		=> $popup,
-					'icon'			=> $marker['group_pin_icon'],
-					'colour'		=> $marker['group_pin_colour'],
-					'bgColour'		=> in_array( $marker['group_pin_bg_colour'], $validColours ) ? $marker['group_pin_bg_colour'] : 'red',
-					'parent_id' 	=> $marker['marker_parent_id'],
-					'parent_name' 	=> $marker['group_name'],
+					'icon'			=> $marker->container()->pin_icon,
+					'colour'		=> $marker->container()->pin_colour,
+					'bgColour'		=> in_array( $marker->container()->pin_bg_colour, $validColours ) ? $marker->container()->pin_bg_colour : 'red',
+					'parent_id' 	=> $marker->parent_id,
+					'parent_name' 	=> $marker->name,
 				);
 			}
 		}
