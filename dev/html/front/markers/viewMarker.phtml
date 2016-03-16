@@ -11,142 +11,126 @@
 		</ul>
 	</div>
 {{endif}}
-<article class='ipsColumns ipsColumns_collapseTablet ipsClear ipsClearfix'>
-	<div class='ipsColumn ipsColumn_fluid'>
-			<div class="ipsClearfix" id='elReportComment'>
-				<h2 class="ipsType_sectionHead">
-					{$marker->_title}{{if $marker->hidden() === 1}}
-					<span class="ipsBadge ipsBadge_icon ipsBadge_warning" data-ipsTooltip title='{lang="pending_approval"}'><i class='fa fa-warning'></i></span>
-					{{elseif $marker->hidden() === -1}}
-						<span class="ipsBadge ipsBadge_icon ipsBadge_warning" data-ipsTooltip title='{$marker->hiddenBlurb()}'><i class='fa fa-eye-slash'></i></span>
-					{{endif}}
-				</h2>
-				<br>
-				<span class='ipsType_normal ipsType_light'>
-					<i class='fa {$marker->container()->pin_icon}'></i> {$marker->container()->_title}
-				</span>
-				<br><br>
-				<div class='ipsPost' data-role='commentContent'>
-					<div data-ipsTruncate data-ipsTruncate-type="hide" data-ipsTruncate-size="#elReportPanel">
-						<div class='ipsType_richText ipsType_normal ipsContained' data-controller='core.front.core.lightboxedImages'>
-							{$marker->content()|raw}
+<article data-controller="membermap.front.markers.markerview" data-lon="{$marker->lon}" data-lat="{$marker->lat}" data-name="{$marker->_title}">
+	<div class='ipsColumns ipsClear ipsClearfix'>
+		<div class='ipsColumn ipsColumn_fluid'>
+				<div class="ipsClearfix" id='elReportComment'>
+					<h2 class="ipsType_sectionHead">
+						{$marker->_title}{{if $marker->hidden() === 1}}
+						<span class="ipsBadge ipsBadge_icon ipsBadge_warning" data-ipsTooltip title='{lang="pending_approval"}'><i class='fa fa-warning'></i></span>
+						{{elseif $marker->hidden() === -1}}
+							<span class="ipsBadge ipsBadge_icon ipsBadge_warning" data-ipsTooltip title='{$marker->hiddenBlurb()}'><i class='fa fa-eye-slash'></i></span>
+						{{endif}}
+					</h2>
+					<br>
+					<span class='ipsType_normal ipsType_light'>
+						<i class='fa {$marker->container()->pin_icon}'></i> {$marker->container()->_title}
+					</span>
+					<br><br>
+					<div class='ipsPost' data-role='commentContent'>
+						<div data-ipsTruncate data-ipsTruncate-type="hide" data-ipsTruncate-size="#elReportPanel">
+							<div class='ipsType_richText ipsType_normal ipsContained' data-controller='core.front.core.lightboxedImages'>
+								{$marker->content()|raw}
+							</div>
 						</div>
 					</div>
+					<hr class='ipsHr'>
+					{{if $marker->canEdit() or $marker->canHide() or $marker->canUnhide() or $marker->canMove() or $marker->canDelete()}}
+						<a href='#elFileActions_menu' id='elFileActions' class='ipsButton ipsButton_light ipsButton_verySmall' data-ipsMenu>{lang="marker_actions"} <i class='fa fa-caret-down'></i></a>
+						<ul id='elFileActions_menu' class='ipsMenu ipsMenu_auto ipsHide'>
+							{{if $marker->canEdit()}}
+								<li class='ipsMenu_item'><a href='{$marker->url()->setQueryString( array( 'do' => 'edit' ) )}' title='{lang="edit"}'>{lang="edit"}</a></li>
+							{{endif}}
+							{{if $marker->canHide()}}				
+								<li class='ipsMenu_item'><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'hide' ) )}' title='{lang="hide_title_file"}' data-ipsDialog data-ipsDialog-title="{lang="hide"}">{lang="hide"}</a></li>
+							{{endif}}
+							{{if $marker->canUnhide()}}				
+								<li class='ipsMenu_item'><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'unhide' ) )}' title='{{if $marker->hidden() === 1}}{lang="approve"}{{else}}{lang="unhide"}{{endif}}'>{{if $marker->hidden() === 1}}{lang="approve"}{{else}}{lang="unhide"}{{endif}}</a></li>
+							{{endif}}
+							{{if $marker->canMove()}}				
+								<li class='ipsMenu_item'><a href='{$marker->url()->setQueryString( array( 'do' => 'move' ) )}' data-ipsDialog data-ipsDialog-size='narrow' data-ipsDialog-title="{lang="move"}"  title='{lang="move"}'>{lang="move"}</a></li>
+							{{endif}}
+							{{if $marker->canDelete()}}				
+								<li class='ipsMenu_item'><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'delete' ) )}' data-confirm  title='{lang="delete"}'>{lang="delete"}</a></li>
+							{{endif}}
+							{{if \IPS\Member::loggedIn()->modPermission('can_view_moderation_log')}}
+								<li class='ipsMenu_sep'><hr></li>
+								<li class="ipsMenu_item"><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'modLog' ) )}' data-ipsDialog data-ipsDialog-title='{lang="moderation_history"}'>{lang="moderation_history"}</a></li>
+							{{endif}}
+						</ul>
+					{{endif}}
+					{{if !\IPS\Member::loggedIn()->group['gbw_no_report'] }}
+						&nbsp;<a href='{$marker->url('report')}' data-ipsDialog data-ipsDialog-size='medium' data-ipsDialog-title="{lang="report_marker"}" data-ipsDialog-remoteSubmit data-ipsDialog-flashMessage="{lang="report_submit_success"}" title="{lang="report_marker"}" class='ipsType_medium'>{lang="report_marker"}</a>
+					{{endif}}
 				</div>
-				<hr class='ipsHr'>
-				{{if $marker->canEdit() or $marker->canHide() or $marker->canUnhide() or $marker->canMove() or $marker->canDelete()}}
-					<a href='#elFileActions_menu' id='elFileActions' class='ipsButton ipsButton_light ipsButton_verySmall' data-ipsMenu>{lang="marker_actions"} <i class='fa fa-caret-down'></i></a>
-					<ul id='elFileActions_menu' class='ipsMenu ipsMenu_auto ipsHide'>
-						{{if $marker->canEdit()}}
-							<li class='ipsMenu_item'><a href='{$marker->url()->setQueryString( array( 'do' => 'edit' ) )}' title='{lang="edit"}'>{lang="edit"}</a></li>
-						{{endif}}
-						{{if $marker->canHide()}}				
-							<li class='ipsMenu_item'><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'hide' ) )}' title='{lang="hide_title_file"}' data-ipsDialog data-ipsDialog-title="{lang="hide"}">{lang="hide"}</a></li>
-						{{endif}}
-						{{if $marker->canUnhide()}}				
-							<li class='ipsMenu_item'><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'unhide' ) )}' title='{{if $marker->hidden() === 1}}{lang="approve"}{{else}}{lang="unhide"}{{endif}}'>{{if $marker->hidden() === 1}}{lang="approve"}{{else}}{lang="unhide"}{{endif}}</a></li>
-						{{endif}}
-						{{if $marker->canMove()}}				
-							<li class='ipsMenu_item'><a href='{$marker->url()->setQueryString( array( 'do' => 'move' ) )}' data-ipsDialog data-ipsDialog-size='narrow' data-ipsDialog-title="{lang="move"}"  title='{lang="move"}'>{lang="move"}</a></li>
-						{{endif}}
-						{{if $marker->canDelete()}}				
-							<li class='ipsMenu_item'><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'delete' ) )}' data-confirm  title='{lang="delete"}'>{lang="delete"}</a></li>
-						{{endif}}
-						{{if \IPS\Member::loggedIn()->modPermission('can_view_moderation_log')}}
-							<li class='ipsMenu_sep'><hr></li>
-							<li class="ipsMenu_item"><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'modLog' ) )}' data-ipsDialog data-ipsDialog-title='{lang="moderation_history"}'>{lang="moderation_history"}</a></li>
-						{{endif}}
-					</ul>
+		</div>
+		<aside class='ipsColumn ipsColumn_veryWide'>
+			<h2>{lang="membermap_marker_info"}</h2>
+			<ul class='ipsDataList ipsDataList_reducedSpacing ipsSpacer_top'>
+				<li class='ipsDataItem'>
+					<span class='ipsDataItem_generic ipsDataItem_size3'>
+						<strong>{lang="membermap_marker_author"}</strong>
+					</span>
+					<span class='ipsDataItem_generic cMarkerData'>
+					{{if $marker->member_id > 0}}
+						{$marker->author()->link()|raw}
+					{{else}}
+						{lang="unknown"}
+					{{endif}}
+					
+				
+					</span>
+				</li>
+
+				{{if $marker->added > 0}}
+					<li class='ipsDataItem'>
+						<span class='ipsDataItem_generic ipsDataItem_size3'>
+							<strong>{lang="membermap_marker_date"}</strong>
+						</span>
+						<span class='ipsDataItem_generic cMarkerData'>
+							{datetime="$marker->added"}
+						</span>
+					</li>
 				{{endif}}
-				{{if !\IPS\Member::loggedIn()->group['gbw_no_report'] }}
-					&nbsp;<a href='{$marker->url('report')}' data-ipsDialog data-ipsDialog-size='medium' data-ipsDialog-title="{lang="report_marker"}" data-ipsDialog-remoteSubmit data-ipsDialog-flashMessage="{lang="report_submit_success"}" title="{lang="report_marker"}" class='ipsType_medium'>{lang="report_marker"}</a>
+
+				{{if $marker->updated > 0 AND $marker->updated > $marker->added}}
+					<li class='ipsDataItem'>
+						<span class='ipsDataItem_generic ipsDataItem_size3'>
+							<strong>{lang="membermap_marker_updated"}</strong>
+						</span>
+						<span class='ipsDataItem_generic cMarkerData'>
+							{datetime="$marker->updated"}
+						</span>
+					</li>
 				{{endif}}
-			</div>
+
+				{{if $marker->location}}
+					<li class='ipsDataItem'>
+						<span class='ipsDataItem_generic ipsDataItem_size3'>
+							<strong>{lang="membermap_marker_location"}</strong>
+						</span>
+						<span class='ipsDataItem_generic cMarkerData'>
+							{{$location = trim( $marker->location, ',' );}}
+							{$location}
+						</span>
+					</li>
+				{{endif}}
+
+				<li class='ipsDataItem'>
+					<span class='ipsDataItem_generic ipsDataItem_size3'>
+						<strong>{lang="membermap_marker_coordinates"}</strong>
+					</span>
+					<span data-ipsTooltip='' title="{$marker->lat}, {$marker->lon}" class='ipsDataItem_generic cMarkerData'>
+						{{$dms = $marker->_latLngToDMS;}}
+						{$dms}
+					</span>
+				</li>
+			</ul>
+		</aside>
 	</div>
-	<aside class='ipsColumn ipsColumn_veryWide'>
-		<h2>{lang="membermap_marker_info"}</h2>
-		<ul class='ipsDataList ipsDataList_reducedSpacing ipsSpacer_top'>
-			<li class='ipsDataItem'>
-				<span class='ipsDataItem_generic ipsDataItem_size3'>
-					<strong>{lang="membermap_marker_author"}</strong>
-				</span>
-				<span class='ipsDataItem_generic cMarkerData'>
-				{$marker->author()->link()|raw}
-				</span>
-			</li>
 
-			{{if $marker->added > 0}}
-				<li class='ipsDataItem'>
-					<span class='ipsDataItem_generic ipsDataItem_size3'>
-						<strong>{lang="membermap_marker_date"}</strong>
-					</span>
-					<span class='ipsDataItem_generic cMarkerData'>
-						{datetime="$marker->added"}
-					</span>
-				</li>
-			{{endif}}
-
-			{{if $marker->updated > 0 AND $marker->updated > $marker->added}}
-				<li class='ipsDataItem'>
-					<span class='ipsDataItem_generic ipsDataItem_size3'>
-						<strong>{lang="membermap_marker_updated"}</strong>
-					</span>
-					<span class='ipsDataItem_generic cMarkerData'>
-						{datetime="$marker->updated"}
-					</span>
-				</li>
-			{{endif}}
-
-			{{if $marker->location}}
-				<li class='ipsDataItem'>
-					<span class='ipsDataItem_generic ipsDataItem_size3'>
-						<strong>{lang="membermap_marker_location"}</strong>
-					</span>
-					<span class='ipsDataItem_generic cMarkerData'>
-						{{$location = trim( $marker->location, ',' );}}
-						{$location}
-					</span>
-				</li>
-			{{endif}}
-
-			<li class='ipsDataItem'>
-				<span class='ipsDataItem_generic ipsDataItem_size3'>
-					<strong>{lang="membermap_marker_coordinates"}</strong>
-				</span>
-				<span data-ipsTooltip='' title="{$marker->lat}, {$marker->lon}" class='ipsDataItem_generic cMarkerData'>
-					{{$dms = $marker->_latLngToDMS;}}
-					{$dms}
-				</span>
-			</li>
-		</ul>
-	</aside>
+	<div id='mapWrapper' class='ipsPad'>
+		<div id='mapCanvas' style='height:400px;'>
+		</div>
+	</div>
 </article>
-<br>
-<!--
-<nav class='ipsPager ipsGrid ipsClearFix ipsList_inline'>
-	<div class='ipsGrid_span6 ipsPager_prev'>
-		{{if $prevReport}}
-			<a href="{url="app=core&module=modcp&controller=modcp&tab=reports&action=view&id={$prevReport['id']}" seoTemplate="modcp_report"}" title='{lang="previous_report"}' rel='prev'>
-				<span class='ipsPager_type'>{lang="previous_report"}</span>
-				{{if $prevItem}}
-					<span class='ipsPager_title ipsType_break'>{wordbreak="$prevItem->mapped('title')"}</span>
-				{{else}}
-					<span class='ipsPager_title'><em class="ipsType_light">{lang="content_deleted"}</em></span>
-				{{endif}}
-			</a>
-		{{endif}}
-	</div>
-	<div class='ipsGrid_span6 ipsType_right ipsPager_next'>
-		{{if $nextReport}}
-			<a href="{url="app=core&module=modcp&controller=modcp&tab=reports&action=view&id={$nextReport['id']}" seoTemplate="modcp_report"}" title='{lang="next_report"}' rel='next'>
-				<span class='ipsPager_type'>{lang="next_report"}</span>
-				{{if $nextItem}}
-					<span class='ipsPager_title ipsType_break'>{wordbreak="$nextItem->mapped('title')"}</span>
-				{{else}}
-					<span class='ipsPager_title'><em class="ipsType_light">{lang="content_deleted"}</em></span>
-				{{endif}}
-			</a>
-		{{endif}}
-	</div>
-</nav>
--->
