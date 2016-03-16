@@ -42,6 +42,10 @@ class _markers extends \IPS\Content\Controller
 		\IPS\Output::i()->breadcrumb[] = array( $this->marker->container()->url(), $this->marker->container()->_title );
 
 		\IPS\Output::i()->breadcrumb[] = array( '', $this->marker->_title );
+
+
+		/* Load JS */
+		\IPS\membermap\Application::getJsForMarkerForm();
 		
 		parent::execute();
 	}
@@ -74,6 +78,14 @@ class _markers extends \IPS\Content\Controller
 			if ( $this->marker->canEdit() )
 			{				
 				$this->marker->processForm( $values );
+
+				/* Old custom markers did not store the author ID, update them now to the current member */
+				if( $this->marker->member_id == 0 )
+				{
+					$this->marker->member_id = \IPS\Member::loggedIn()->member_id;
+				}
+
+				$this->marker->updated = time();
 				$this->marker->save();
 				$this->marker->processAfterEdit( $values );
 	
@@ -84,9 +96,6 @@ class _markers extends \IPS\Content\Controller
 				$form->error = \IPS\Member::loggedIn()->language()->addToStack('edit_no_perm_err');
 			}
 		}
-
-		/* Load JS */
-		\IPS\membermap\Application::getJsForMarkerForm();
 
 		/* Display */
 		\IPS\Output::i()->title		= \IPS\Member::loggedIn()->language()->addToStack( 'membermap_edit_a_marker' );

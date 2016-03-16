@@ -165,6 +165,18 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	}
 
 	/**
+	 * Set name
+	 *
+	 * @param	string	$name	Name
+	 * @return	void
+	 */
+	public function set_name( $name )
+	{
+		$this->_data['name'] = $name;
+		$this->_data['name_seo'] = \IPS\Http\Url::seoTitle( $name );
+	}
+
+	/**
 	 * [Node] Get Title
 	 *
 	 * @return	string|null
@@ -331,6 +343,19 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	}
 
 	/**
+	 * Can edit?
+	 * Authors can always edit their own files
+	 *
+	 * @param	\IPS\Member|NULL	$member	The member to check for (NULL for currently logged in member)
+	 * @return	bool
+	 */
+	public function canEdit( $member=NULL )
+	{
+		$member = $member ?: \IPS\Member::loggedIn();
+		return ( $member->member_id == $this->author()->member_id ) or parent::canEdit( $member );
+	}
+
+	/**
 	 * Should new items be moderated?
 	 *
 	 * @param	\IPS\Member		$member		The member posting
@@ -372,6 +397,9 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	public function save()
 	{
 		parent::save();
+
+		$this->container()->setLastComment();
+		$this->container()->save();
 
 		\IPS\membermap\Map::i()->recacheJsonFile();
 	}

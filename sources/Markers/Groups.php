@@ -122,7 +122,6 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 		'view'				=> 'view', /* This is actually the 'add' permission, since 'view' is required, and everyone can view any markers */
 		'read'				=> 2,
 		'add'				=> 3,
-		'edit'				=> 4
 	);
 	
 	/**
@@ -228,7 +227,7 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 		{
 			try
 			{
-				$marker	= \IPS\membermap\Markers\Markers::constructFromData( \IPS\Db::i()->select( '*', 'membermap_markers', array( 'marker_parent_id=? AND marker_open=1', $this->id ), 'group_added DESC', 1 )->first() );
+				$marker	= \IPS\membermap\Markers\Markers::constructFromData( \IPS\Db::i()->select( '*', 'membermap_markers', array( 'marker_parent_id=? AND marker_open=1', $this->id ), 'marker_updated DESC, marker_added DESC', 1 )->first() );
 			}
 			catch ( \UnderflowException $e )
 			{
@@ -239,7 +238,7 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 		}
 	
 		$this->last_marker_id	= $marker->id;
-		$this->last_marker_date	= $marker->added;
+		$this->last_marker_date	= $marker->updated > $marker->added ? $marker->updated : $marker->added;
 	}
 	
 	/**
@@ -366,6 +365,24 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 			}
 		}
 		return $values;
+	}
+
+	/**
+	 * Check permissions
+	 *
+	 * @param	mixed								$permission		A key which has a value in static::$permissionMap['view'] matching a column ID in core_permission_index
+	 * @param	\IPS\Member|\IPS\Member\Group|NULL	$member			The member or group to check (NULL for currently logged in member)
+	 * @return	bool
+	 * @throws	\OutOfBoundsException	If $permission does not exist in static::$permissionMap
+	 */
+	public function can( $permission, $member=NULL )
+	{
+		if ( $this->type == 'member' )
+		{
+			//TODO: Check if this member already have a marker if adding or editing
+		}
+		
+		return parent::can( $permission, $member );
 	}
 
 	/**

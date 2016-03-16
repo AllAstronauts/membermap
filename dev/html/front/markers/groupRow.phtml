@@ -28,7 +28,7 @@
 					<li>{template="userPhoto" app="core" group="global" params="$lastPost->author(), 'tiny'"}</li>
 					<li><a href="{$lastPost->url()}" class='ipsType_break ipsContained'>{$lastPost->name}</a></li>
 					<li class='ipsType_blendLinks'>{lang="byline_nodate" htmlsprintf="$lastPost->author()->link()"}</li>
-					<li data-short="1 dy" class="ipsType_light">{datetime="$lastPost->date_added"}</li>
+					<li data-short="1 dy" class="ipsType_light">{datetime="$group->last_marker_date"}</li>
 				{{endif}}
 			</ul>
 		{{if method_exists( $table, 'canModerate' ) AND $table->canModerate()}}

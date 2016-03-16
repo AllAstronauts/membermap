@@ -38,32 +38,61 @@ class _Map
 		return static::$instance;
 	}
 
+	public function getMemberGroupId()
+	{
+		static $groupId = null;
+
+		if ( $groupId !== null )
+		{
+			return $groupId;
+		}
+
+		$groupId = \IPS\Db::i()->select( 'group_id', 'membermap_markers_groups', array( 'group_type=?', 'member' ) )->first();
+
+		return $groupId;
+	}
+
 	/**
 	 * Get a single member's location
 	 * 
 	 * @param 		int 	Member ID
 	 * @return		mixed 	Members location record, or false if non-existent
 	 */
-	public function getMarkerByMember( $memberId )
+	public function getMarkerByMember( $memberId, $format=TRUE )
 	{
+		static $marker = array();
+
 		if ( ! intval( $memberId ) )
 		{
 			return false;
 		}
 
-		try
+		if( isset( $marker[ $memberId ] ) )
 		{
-			$marker = \IPS\Db::i()->select( '*', 'membermap_members', array( 'membermap_members.member_id=?', intval( $memberId ) ) )
-					->join( 'core_members', 'membermap_members.member_id=core_members.member_id' )
-					->join( 'core_groups', 'core_members.member_group_id=core_groups.g_id' )
-					->first();
-					
-			return $this->formatMarkers( array( $marker ) );
+			$_marker = $marker[ $memberId ];
 		}
-		catch( \UnderflowException $e )
+		else
 		{
-			return false;
+
+			try
+			{
+				$groupId = $this->getMemberGroupId();
+
+				$_marker = \IPS\Db::i()->select( '*', array( 'membermap_markers', 'mm' ), array( 'mm.marker_member_id=? AND mm.marker_parent_id=?', intval( $memberId ), $groupId ) )
+						->join( array( 'core_members', 'm' ), 'mm.marker_member_id=m.member_id' )
+						->join( array( 'core_groups', 'g' ), 'm.member_group_id=g.g_id' )
+						->first();
+
+				$marker[ $memberId ] = $_marker = \IPS\membermap\Markers\Markers::constructFromData( $_marker );
+						
+			}
+			catch( \UnderflowException $e )
+			{
+				return false;
+			}
 		}
+		
+		return $format ? $this->formatMemberMarkers( array( $_marker ) ) : $_marker;
 	}
 
 	/**
@@ -230,7 +259,11 @@ class _Map
 			{
 				if ( $marker->lat == 0 AND $marker->lon == 0 )
 				{
-					$marker->delete();
+					if ( $marker instanceof \IPS\membermap\Markers\Markers )
+					{
+						$marker->delete();
+					}
+					
 					continue;
 				}
 
@@ -284,7 +317,7 @@ class _Map
 				);
 			}
 		}
-		
+
 		return $markersToKeep;
 	}
 

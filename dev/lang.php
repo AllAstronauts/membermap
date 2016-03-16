@@ -98,6 +98,7 @@ $lang = array(
 	'membermap_showing_markers'			=> "Showing <span>0</span> markers",
 	'membermap_view_fullsize' 			=> "View fullsize map",
 	'membermap_goHome' 					=> "Go to my location",
+	'membermap_browse_markers'			=> "Browse Markers",
 
 
 	/* Front-end errors */
@@ -113,6 +114,7 @@ $lang = array(
 	'marker_location_desc' 		=> "Enter a location above to search for one, enter the latitude and longitude manually below, or select the location in the map",
 	'marker_lon' 				=> "Longitude (E)",
 	'marker_parent_id' 			=> "Marker Group",
+	'marker_submit'				=> "Save Marker",
 
 	/* Front-end admin tools */
 	'membermap_rebuildBrowserCache' 		=> "Rebuild Browser Cache",

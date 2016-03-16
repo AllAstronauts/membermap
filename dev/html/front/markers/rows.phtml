@@ -7,7 +7,12 @@
 					<a href='{$marker->url()}' title='{lang="view_this_advert" sprintf="$marker->title"}' {{if $marker->canEdit()}}data-role="editableTitle"{{endif}}>{wordbreak="$marker->_title"}</a>
 				</h4>
 				<p class='ipsType_reset ipsType_light ipsType_blendLinks'>
-					{lang="byline_nodate" htmlsprintf="$marker->author()->link()"}
+					{{if $marker->member_id > 0}}
+						{lang="byline_nodate" htmlsprintf="$marker->author()->link()"}
+					{{else}}
+						{{$lang = \IPS\Member::loggedIn()->language()->addToStack( 'unknown' );}}
+						{lang="byline_nodate" sprintf="$lang"}
+					{{endif}}
 					{{if \IPS\Request::i()->app != 'membermap'}}
 						{lang="in"} <a href="{$marker->container()->url()}">{$marker->container()->_title}</a>
 					{{endif}}
@@ -36,7 +41,7 @@
 				<ul class='ipsList_reset'>
 					<li>
 					<p class='ipsType_normal ipsType_reset ipsType_light'>
-						{{if $marker->updated > 0 AND $marker->added > 0}}
+						{{if $marker->updated > 0 OR $marker->added > 0}}
 							{{if $marker->updated > $marker->added}}
 								{lang="updated"} {datetime="$marker->updated"}
 							{{else}}
