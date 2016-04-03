@@ -34,7 +34,7 @@ class _Upgrade
 			}
 			catch( \UnderflowException $e )
 			{
-				/* If this happens, we're in deep shit */
+				/* Create the group for members */
 				$memberGroupId = \IPS\Db::i()->insert( 'membermap_markers_groups', array(
 					'group_name' 		=> "Members",
 					'group_name_seo'	=> 'members',
@@ -107,7 +107,7 @@ class _Upgrade
 			$_SESSION['_step1Count'] = \IPS\Db::i()->select( 'COUNT(*)', 'membermap_members' )->first();
 		}
 		
-		return "Upgrading member markers (Upgraded so far: " . ( ( $limit > $_SESSION['_step1Count'] ) ? $_SESSION['_step1Count'] : $limit ) . ' out of ' . $_SESSION['_step1Count'] . ')';
+		return "Updating member markers (Upgraded so far: " . ( ( $limit > $_SESSION['_step1Count'] ) ? $_SESSION['_step1Count'] : $limit ) . ' out of ' . $_SESSION['_step1Count'] . ')';
 	}
 
 	/**
@@ -129,12 +129,13 @@ class _Upgrade
 			if ( $group->type == 'custom' )
 			{
 				$group->position 	= $order;
+				$group->moderate	= 1;
 				$order++;
 			}
 
 			try
 			{
-				$latestMarker	= \IPS\Db::i()->select( '*', 'membermap_markers', array( 'marker_open=? and marker_parent_id=?', 1, $cid ), 'marker_added DESC', array( 0, 1 ) )->first();
+				$latestMarker	= \IPS\Db::i()->select( '*', 'membermap_markers', array( 'marker_open=? and marker_parent_id=?', 1, $group->id ), 'marker_updated DESC, marker_added DESC', array( 0, 1 ) )->first();
 
 				$group->last_marker_id		= $latestMarker['file_id'];
 				$group->last_marker_date	= $latestMarker['file_submitted'];
@@ -162,14 +163,37 @@ class _Upgrade
 	}
 
 	/**
-	 * Clean up
+	 * Updating markers without a seo name
+	 *
+	 * @return	array	If returns TRUE, upgrader will proceed to next step. If it returns any other value, it will set this as the value of the 'extra' GET parameter and rerun this step (useful for loops)
 	 */
 	public function step3()
 	{
+		foreach( \IPS\Db::i()->select( '*', 'membermap_markers', 'marker_name_seo = ""' ) as $marker )
+		{
+			$seoName = \IPS\Http\Url::seoTitle( trim( $marker->marker_name ) );
+			\IPS\Db::i()->update( 'membermap_markers', array( 'marker_name_seo' => $seoName ), 'marker_id=' . $marker->marker_id );
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Clean up
+	 */
+	public function step4()
+	{
 		unset( $_SESSION['_membermapMemberGroupId'] );
+
+		/* Restore content in the search index */
+		\IPS\Task::queue( 'core', 'RebuildSearchIndex', array( 'class' => 'IPS\membermap\Markers\Markers' ) );
+		
 		try
 		{
 			\IPS\Db::i()->dropTable( 'membermap_members', TRUE );
+			\IPS\Db::i()->dropColumn( 'core_groups', 'g_membermap_canAdd' );
+			\IPS\Db::i()->dropColumn( 'core_groups', 'g_membermap_canEdit' );
+			\IPS\Db::i()->dropColumn( 'core_groups', 'g_membermap_canDelete' );
 		}
 		catch( \UnderflowException $e )
 		{}
@@ -182,7 +206,7 @@ class _Upgrade
 	 *
 	 * @return string
 	 */
-	public function step3CustomTitle()
+	public function step4CustomTitle()
 	{
 		return "Cleaning up";
 	}

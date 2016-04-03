@@ -155,6 +155,20 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	}
 
 	/**
+	 * Columns needed to query for search result / stream view
+	 *
+	 * @return	array
+	 */
+	public static function basicDataColumns()
+	{
+		$return = parent::basicDataColumns();
+		$return[] = 'marker_name';
+		$return[] = 'marker_description';
+		$return[] = 'marker_location';
+		return $return;
+	}
+
+	/**
 	 * Get sortable name
 	 *
 	 * @return	string
@@ -310,7 +324,6 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	 */
 	public function processForm( $values )
 	{
-		parent::processForm( $values );
 
 		$isNew = $this->_new;
 
@@ -333,13 +346,15 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 			{
 				$key = str_replace( 'marker_', '', $val );
 
-				$this->$key = $values[ $val ];
+				$this->{$key} = $values[ $val ];
 			}
 		}
 
+		parent::processForm( $values );
+
 		/* Update Category */
-		$this->container()->setLastMarker( $this );
-		$this->container()->save();
+		/*$this->container()->setLastMarker( $this );
+		$this->container()->save();*/
 	}
 
 	/**

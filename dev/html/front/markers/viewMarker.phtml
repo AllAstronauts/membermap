@@ -14,21 +14,20 @@
 <article data-controller="membermap.front.markers.markerview" data-lon="{$marker->lon}" data-lat="{$marker->lat}" data-name="{$marker->_title}">
 	<div class='ipsColumns ipsClear ipsClearfix'>
 		<div class='ipsColumn ipsColumn_fluid'>
-				<div class="ipsClearfix" id='elReportComment'>
-					<h2 class="ipsType_sectionHead">
+				<div class="ipsClearfix">
+					<h2 class="ipsType_pageTitle">
 						{$marker->_title}{{if $marker->hidden() === 1}}
 						<span class="ipsBadge ipsBadge_icon ipsBadge_warning" data-ipsTooltip title='{lang="pending_approval"}'><i class='fa fa-warning'></i></span>
 						{{elseif $marker->hidden() === -1}}
 							<span class="ipsBadge ipsBadge_icon ipsBadge_warning" data-ipsTooltip title='{$marker->hiddenBlurb()}'><i class='fa fa-eye-slash'></i></span>
 						{{endif}}
 					</h2>
-					<br>
 					<span class='ipsType_normal ipsType_light'>
 						<i class='fa {$marker->container()->pin_icon}'></i> {$marker->container()->_title}
 					</span>
 					<br><br>
 					<div class='ipsPost' data-role='commentContent'>
-						<div data-ipsTruncate data-ipsTruncate-type="hide" data-ipsTruncate-size="#elReportPanel">
+						<div data-ipsTruncate data-ipsTruncate-type="hide" data-ipsTruncate-size="#elMarkerInfo">
 							<div class='ipsType_richText ipsType_normal ipsContained' data-controller='core.front.core.lightboxedImages'>
 								{$marker->content()|raw}
 							</div>
@@ -64,7 +63,7 @@
 					{{endif}}
 				</div>
 		</div>
-		<aside class='ipsColumn ipsColumn_veryWide'>
+		<aside id="elMarkerInfo" class='ipsColumn ipsColumn_veryWide'>
 			<h2>{lang="membermap_marker_info"}</h2>
 			<ul class='ipsDataList ipsDataList_reducedSpacing ipsSpacer_top'>
 				<li class='ipsDataItem'>

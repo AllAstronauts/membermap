@@ -47,7 +47,15 @@ class _Map
 			return $groupId;
 		}
 
-		$groupId = \IPS\Db::i()->select( 'group_id', 'membermap_markers_groups', array( 'group_type=?', 'member' ) )->first();
+		if ( isset( \IPS\Data\Store::i()->membermap_memberGroupId ) )
+		{
+			$groupId = \IPS\Data\Store::i()->membermap_memberGroupId;
+		}
+		else
+		{
+			$groupId = \IPS\Db::i()->select( 'group_id', 'membermap_markers_groups', array( 'group_type=?', 'member' ) )->first();
+			\IPS\Data\Store::i()->membermap_memberGroupId = $groupId;
+		}
 
 		return $groupId;
 	}

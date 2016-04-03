@@ -3,6 +3,9 @@
 $lang = array(
 	'__app_membermap'			=> "Member Map",
 	'frontnavigation_membermap'	=> "Member Map",
+	'__indefart_membermap_marker'	=> "a Member Map Marker",
+
+	/* ACP Module/Menu titles */
 	'menu__membermap_membermap' => "Member Map",
 	'menu__membermap_membermap_markers' 	=> 'Markers Groups',
 	'menu__membermap_membermap_mapmanager' 	=> "Map Manager",
@@ -11,6 +14,8 @@ $lang = array(
 	'module__membermap_membermap' 	=> "Member Map",
 	'module__membermap_markers' 	=> "Marker Groups",
 	'group__membermap_membermap' 	=> "Member Map",
+
+	'membermap_group'				=> "Marker Groups",
 
 	/* ACP Restrictions */
 	'r__mapmanager' 			=> "Map Manager",
@@ -82,6 +87,12 @@ $lang = array(
 	'membermap_mapmanager_availOverlays' 	=> "Available Overlays",
 	'membermap_mapmanager_preview' 			=> "A preview of (almost) all maps and overlays can be seen here",
 
+	/* Permissions */
+	'perm_membermap_perm__label'		=> '',
+	'perm_membermap_perm__view'			=> 'See Group',
+	'perm_membermap_perm__read'			=> "View Markers",
+	'perm_membermap_perm__add'			=> "Add Markers",
+
 
 	/* Front-end showmap */
 	'membermap_adminTools' 				=> "Admin Tools",
@@ -105,6 +116,7 @@ $lang = array(
 	'membermap_error_cantEdit' 	=> "You are not allowed to edit your location.",
 	'membermap_error_cantAdd' 	=> "You are not allowed to add a location.",
 	'membermap_error_noGroups' 	=> "You need to create a Custom Marker Group first.",
+	'membermap_only_one_marker' => "You can only have one member marker. <a href='%s'>Edit your existing one.</a>",
 
 	/* Front-end marker form */
 	'marker_title' 				=> "Marker Title",

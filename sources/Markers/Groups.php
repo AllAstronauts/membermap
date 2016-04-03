@@ -68,7 +68,11 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 * @brief	[Node] Node Title
 	 */
 	public static $nodeTitle = 'membermap_group';
-	
+
+	/**
+	 * @brief	[Node] Title prefix.  If specified, will look for a language key with "{$key}_title" as the key
+	 */
+	public static $titleLangPrefix = 'membermap_marker_group_';
 	
 	/**
 	 * @brief	[Node] Show forms modally?
@@ -350,7 +354,7 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 		{
 			\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$this->id}", $values['group_name'] );
 			
-			$this->name_seo = \IPS\Http\Url::seoTitle( $values[ $fieldKey ][ \IPS\Lang::defaultLanguage() ] );
+			$this->name_seo = \IPS\Http\Url::seoTitle( $values['group_name'][ \IPS\Lang::defaultLanguage() ] );
 			
 			unset( $values['group_name'] );
 		}
@@ -377,12 +381,21 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 */
 	public function can( $permission, $member=NULL )
 	{
-		if ( $this->type == 'member' )
+		$parent = parent::can( $permission, $member );
+
+		if( $parent === TRUE )
 		{
-			//TODO: Check if this member already have a marker if adding or editing
+			$_member = $member ?: \IPS\Member::loggedIn();
+
+			if ( $this->type == 'member' AND $permission == 'add' )
+			{
+				$existing = \IPS\membermap\Map::i()->getMarkerByMember( $_member->member_id, FALSE );
+				//var_dump( isset( $existing ) ? FALSE : TRUE ); exit;
+				return isset( $existing ) ? FALSE : TRUE;
+			}
 		}
-		
-		return parent::can( $permission, $member );
+
+		return $parent;
 	}
 
 	/**
