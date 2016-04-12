@@ -73,7 +73,80 @@ class _markers extends \IPS\Node\Controller
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'membermap.css', 'membermap' ) );
 		
 		return parent::manage();
+	}
 
+	public function import()
+	{
+		/* Build form */
+		$form = new \IPS\Helpers\Form( NULL, 'import' );
+		if ( isset( \IPS\Request::i()->id ) )
+		{
+			$group = \IPS\membermap\Markers\Groups::load( intval( \IPS\Request::i()->id ) );
+
+			if ( $group->type == 'member' )
+			{
+				\IPS\Output::i()->error( 'generic_error', '1', 403, '' );
+			}
+
+			$form->hiddenValues['id'] = \IPS\Request::i()->id;
+		}
+		else
+		{
+			\IPS\Output::i()->error( 'generic_error', '2', 403, '' );
+		}
+
+		$form->add( new \IPS\Helpers\Form\Upload( 'import_upload', NULL, TRUE, array( 'allowedFileTypes' => array( 'kml' ), 'temporary' => TRUE ) ) );
+		$activeTabContents = $form;
 		
+		/* Handle submissions */
+		if ( $values = $form->values() )
+		{
+			/* Already installed? */
+			try
+			{
+				$xml = \IPS\Xml\SimpleXML::loadFile( $values['import_upload'] );
+			}
+			catch ( \InvalidArgumentException $e ) 
+			{
+				\IPS\Output::i()->error( 'xml_upload_invalid', '3', 403, '' );
+			}
+
+				$markers = array();
+			foreach( $xml->Document->Folder as $folder )
+			{
+				if( ! isset( $folder->Placemark ) )
+				{
+					continue;
+				}
+
+				$folderName = $folder->Name;
+
+				foreach( $folder->Placemark as $placemark )
+				{
+					if ( ! isset( $placemark->Point ) )
+					{
+						continue;
+					}
+
+					list( $lon, $lat, $elev ) = explode( ',', $placemark->Point->coordinates );
+
+					$markers[] = array(
+						'marker_name'			=> (string) $placemark->name,
+						'marker_name_seo'		=> \IPS\Http\Url::seoTitle( (string) $placemark->name ),
+						'marker_description'	=> (string) $placemark->description,
+						'marker_lat'			=> $lat,
+						'marker_lon'			=> $lon,
+						'marker_member_id'		=> \IPS\Member::loggedIn()->member_id,
+						'marker_added'			=> time(),
+						'marker_open'			=> 1,
+					);
+				}
+			}
+
+			debug( count( $markers ), $markers );
+		}
+		
+		/* Display */
+		\IPS\Output::i()->output = $form;
 	}
 }
