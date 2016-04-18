@@ -37,7 +37,7 @@ $lang = array(
 	'membermap_marker_updated' 		=> "Updated",
 	'membermap_marker_location' 	=> "Location",
 	'membermap_marker_coordinates' 	=> "Coordinates",
-	'group_markers_number' 			=> "{# [1:marker][?:markers]}",
+	'group_markers_number' 			=> "{!# [1:marker][?:markers]}",
 	'marker_actions' 				=> "Marker Actions",
 	'report_marker' 				=> "Report this marker",
 
@@ -78,6 +78,13 @@ $lang = array(
 	'group_pin_bg_colour' 			=> "Marker Background Colour",
 	'group_pin_bg_colour_white' 	=> "White",
 	'group_moderate' 				=> "Markers must be approved?",
+	'membermap_import'				=> "Import Markers",
+	'membermap_add_group' 			=> "Add Custom Marker Group",
+	'import_upload'					=> "Marker .kml file",
+	'import_creategroups'			=> "Create a new group",
+	'import_creategroups_desc'		=> "Import markers to an existing group, or create a new group for each \"Folder\" in the .kml file",
+
+	'membermap_error_no_id_no_create'	=> "You have to either chose to create a new group, or select an existing group to import markers to",
 
 
 	/* ACP Map Manager */
@@ -101,7 +108,6 @@ $lang = array(
 	'membermap_current_location' 		=> "Use Current Location",
 	'membermap_geolocation_desc' 		=> "This will use a feature in your browser to detect your current location using GPS, Cellphone triangulation, Wifi, Router, or IP address",
 	'membermap_add_marker' 				=> "Add Custom Marker",
-	'membermap_add_group' 				=> "Add Custom Marker Group",
 	'membermap_edit_marker' 			=> "Edit Custom Marker",
 	'membermap_form_location' 			=> "Search for your location",
 	'membermap_form_placeholder' 		=> "Enter your address / city / county / country, you can be as specific as you like",

@@ -284,6 +284,17 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 		{
 			unset( $buttons['delete'] );
 		}
+
+		if ( $this->type == 'custom' )
+		{
+			$buttons['import'] = array(
+				'icon'	=> 'upload',
+				'title'	=> 'import',
+				'link'	=> $url->setQueryString( array( 'do' => 'import', 'id' => $this->_id ) ),
+				'data'	=> array( 'ipsDialog' => '', 'ipsDialog-title' => \IPS\Member::loggedIn()->language()->addToStack('import') )
+			);
+		}
+
 		
 		return $buttons;
 	}
@@ -390,8 +401,8 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 			if ( $this->type == 'member' AND $permission == 'add' )
 			{
 				$existing = \IPS\membermap\Map::i()->getMarkerByMember( $_member->member_id, FALSE );
-				//var_dump( isset( $existing ) ? FALSE : TRUE ); exit;
-				return isset( $existing ) ? FALSE : TRUE;
+				
+				return isset( $existing ) AND $existing !== FALSE ? FALSE : TRUE;
 			}
 		}
 

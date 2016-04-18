@@ -227,15 +227,15 @@ EOF;
 		}
 
 		/* Get the marker */
-		$existing = \IPS\membermap\Map::i()->getMarkerByMember( intval( \IPS\Request::i()->member_id ) )[0];
+		$existing = \IPS\membermap\Map::i()->getMarkerByMember( intval( \IPS\Request::i()->member_id ), FALSE );
 
-		if ( isset( $existing['member_id'] ) )
+		if ( isset( $existing ) )
 		{
 			$is_supmod		= \IPS\Member::loggedIn()->modPermission() ?: 0;
 
-			if ( $is_supmod OR ( $existing['member_id'] == \IPS\Member::loggedIn()->member_id AND \IPS\Member::loggedIn()->group['g_membermap_canDelete'] ) )
+			if ( $is_supmod OR ( $existing->mapped( 'author' ) == \IPS\Member::loggedIn()->member_id AND $existing->canDelete() ) )
 			{
-				\IPS\membermap\Map::i()->deleteMarker( $existing['member_id'] );
+				$existing->delete();
 				\IPS\Output::i()->json( 'OK' );
 			}
 		}

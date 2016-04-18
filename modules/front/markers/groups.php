@@ -89,7 +89,7 @@ class _groups extends \IPS\Content\Controller
 		/* Online User Location */
 		\IPS\Session::i()->setLocation( \IPS\Http\Url::internal( 'app=membermap&module=markers&controller=groups', 'front', 'markers' ), array(), 'loc_membermap_browsing_groups' );
 		
-		\IPS\Output::i()->title		= \IPS\Member::loggedIn()->language()->addToStack('membermap');
+		\IPS\Output::i()->title		= \IPS\Member::loggedIn()->language()->addToStack('membermap_marker_groups');
 		\IPS\Output::i()->output	= \IPS\Theme::i()->getTemplate( 'markers' )->index();
 	}
 	

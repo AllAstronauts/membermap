@@ -428,6 +428,9 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	{
 		parent::delete();
 
+		$this->container()->setLastComment();
+		$this->container()->save();
+
 		\IPS\membermap\Map::i()->recacheJsonFile();
 	}
 }
