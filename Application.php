@@ -45,12 +45,6 @@ class _Application extends \IPS\Application
 	 */
 	public function installOther()
 	{
-		/* Set non guests to be able to access */
-		foreach( \IPS\Member\Group::groups( TRUE, FALSE ) as $group )
-		{
-			$group->g_membermap_canAdd = TRUE;
-			$group->save();
-		}
 	}
 
 	public static function getApiKeys( $service )
