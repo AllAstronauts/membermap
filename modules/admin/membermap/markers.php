@@ -1,6 +1,6 @@
 <?php
 /**
- * @brief		Custom Markers Controller
+ * @brief		Marker Groups Controller
  * @author		<a href='http://ipb.silvesterwebdesigns.com'>Stuart Silvester & Martin Aronsen</a>
  * @copyright	(c) 2015 Stuart Silvester & Martin Aronsen
  * @package		IPS Social Suite
@@ -36,7 +36,7 @@ class _markers extends \IPS\Node\Controller
 	public function execute()
 	{
 		\IPS\Dispatcher::i()->checkAcpPermission( 'markers_manage' );
-		
+
 		parent::execute();
 	}
 
@@ -50,6 +50,12 @@ class _markers extends \IPS\Node\Controller
 		$nodeClass = $this->nodeClass;
 		$buttons   = array();
 
+		$buttons['import'] = array(
+			'icon'	=> 'upload',
+			'title'	=> 'membermap_import',
+			'link'	=> \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=markers&do=import' ),
+			'data'  => array( 'ipsDialog' => '', 'ipsDialog-title' => \IPS\Member::loggedIn()->language()->addToStack('membermap_import') )
+		);
 
 		$buttons['add_group'] = array(
 			'icon'	=> 'group',
@@ -77,6 +83,8 @@ class _markers extends \IPS\Node\Controller
 
 	public function import()
 	{
+		$id = isset( \IPS\Request::i()->id ) ? intval( \IPS\Request::i()->id ) : 0;
+
 		/* Build form */
 		$form = new \IPS\Helpers\Form( NULL, 'import' );
 		if ( isset( \IPS\Request::i()->id ) )
@@ -87,31 +95,42 @@ class _markers extends \IPS\Node\Controller
 			{
 				\IPS\Output::i()->error( 'generic_error', '1', 403, '' );
 			}
-
-			$form->hiddenValues['id'] = \IPS\Request::i()->id;
-		}
-		else
-		{
-			\IPS\Output::i()->error( 'generic_error', '2', 403, '' );
 		}
 
 		$form->add( new \IPS\Helpers\Form\Upload( 'import_upload', NULL, TRUE, array( 'allowedFileTypes' => array( 'kml' ), 'temporary' => TRUE ) ) );
-		$activeTabContents = $form;
-		
-		/* Handle submissions */
+		$form->add( new \IPS\Helpers\Form\YesNo( 'import_creategroups', FALSE, FALSE, array( 'togglesOff' => array( 'import_group' ) ) ) );
+		$form->add( new \IPS\Helpers\Form\Node( 'import_group', $id ?: 0, FALSE, array(
+			'class'				=> '\IPS\membermap\Markers\Groups',
+			'permissionCheck' 	=> 'add',
+			'subnodes'			=> false,
+			'where'				=> array( 'group_type != ?', 'member' ),
+		), NULL, NULL, NULL, 'import_group' ) );
+
+
 		if ( $values = $form->values() )
 		{
-			/* Already installed? */
 			try
 			{
 				$xml = \IPS\Xml\SimpleXML::loadFile( $values['import_upload'] );
 			}
 			catch ( \InvalidArgumentException $e ) 
 			{
-				\IPS\Output::i()->error( 'xml_upload_invalid', '3', 403, '' );
+				$form->error 				= \IPS\Member::loggedIn()->language()->addToStack( 'xml_upload_invalid' );
+				\IPS\Output::i()->output 	= $form;
+				return;
 			}
 
-				$markers = array();
+			/* No group selected, and don't create groups?! */
+			if ( $values['import_creategroups'] == FALSE AND ! $id )
+			{
+				$form->error 				= \IPS\Member::loggedIn()->language()->addToStack( 'membermap_error_no_id_no_create' );
+				\IPS\Output::i()->output 	= $form;
+				return;
+			}
+
+			$markers = array();
+			$groupOrder = NULL;
+
 			foreach( $xml->Document->Folder as $folder )
 			{
 				if( ! isset( $folder->Placemark ) )
@@ -119,11 +138,11 @@ class _markers extends \IPS\Node\Controller
 					continue;
 				}
 
-				$folderName = $folder->Name;
+				$folderName = (string) $folder->name;
 
 				foreach( $folder->Placemark as $placemark )
 				{
-					if ( ! isset( $placemark->Point ) )
+					if ( ! isset( $placemark->Point->coordinates ) )
 					{
 						continue;
 					}
@@ -139,11 +158,70 @@ class _markers extends \IPS\Node\Controller
 						'marker_member_id'		=> \IPS\Member::loggedIn()->member_id,
 						'marker_added'			=> time(),
 						'marker_open'			=> 1,
+						'marker_parent_id'		=> $id,
 					);
+				}
+
+				/* Create a new group per "folder" */
+				if ( $values['import_creategroups'] == TRUE AND count( $markers ) > 0 )
+				{
+					if ( $groupOrder === NULL )
+					{
+						$groupOrder = \IPS\Db::i()->select( array( "MAX( `group_position` ) as position" ), 'membermap_markers_groups' )->first();
+					}
+
+					$groupOrder = $groupOrder + 1;
+
+					$group 						= new \IPS\membermap\Markers\Groups;
+					$group->name 				= $folderName;
+					$group->name_seo 			= \IPS\Http\Url::seoTitle( $folderName );
+					$group->type 				= 'custom';
+					$group->pin_colour 			= '#FFFFFF';
+					$group->pin_bg_colour 		= 'red';
+					$group->pin_icon 			= 'fa-globe';
+					$group->position 			= $groupOrder;
+
+					$group->save();
+
+					\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$group->id}", trim( $folderName ) );
+
+					// Add group id to all elements of the array
+					array_walk( $markers, function( &$v, $k ) use ( $group )
+					{
+						$v['marker_parent_id'] = $group->id;
+					} );
+
+					// Insert
+					\IPS\Db::i()->insert( 'membermap_markers', $markers );
+
+					$group->setLastComment();
+					$group->save();
+
+					// Set default permissions
+					$perms = $group->permissions();
+					\IPS\Db::i()->update( 'core_permission_index', array(
+						'perm_view'	 => '*',
+						'perm_2'	 => '*',  #read
+						'perm_3'     => \IPS\Settings::i()->admin_group,  #add
+					    'perm_4'     => \IPS\Settings::i()->admin_group,  #edit
+					), array( 'perm_id=?', $perms['perm_id'] ) );
+
+					// Reset
+					$markers = array();
 				}
 			}
 
-			debug( count( $markers ), $markers );
+			/* If we still got markers here, it's all pushed to one group, probably */
+			if ( is_array( $markers ) AND count( $markers ) > 0 )
+			{
+				\IPS\Db::i()->insert( 'membermap_markers', $markers );
+
+				$group = \IPS\membermap\Markers\Groups::load( $id );
+				$group->setLastComment();
+				$group->save();
+			}
+			
+			\IPS\membermap\Map::i()->recacheJsonFile();
 		}
 		
 		/* Display */
