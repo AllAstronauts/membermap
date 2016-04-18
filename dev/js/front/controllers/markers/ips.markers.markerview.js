@@ -22,9 +22,9 @@
 				icon: 'map-marker', 
 				color: 'darkblue'
 			});
-
+			
 			this.marker = new L.Marker(
-				new L.LatLng( parseFloat( $(this.scope).attr('data-lat') ), parseFloat( $(this.scope).attr('data-lon') ) ),
+				new L.LatLng( parseFloat( $(this.scope).attr('data-lat').replace( ',', '.' ) ), parseFloat( $(this.scope).attr('data-lon').replace( ',', '.' ) ) ),
 				{
 					icon: icon
 				} 
