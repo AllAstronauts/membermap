@@ -88,6 +88,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/leaflet.awesome-markers.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/leaflet.contextmenu-src.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/leaflet.markercluster-src.js', 'membermap', 'interface' ) );
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/subgroup.js', 'membermap', 'interface' ) );
 
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'front_main.js', 'membermap', 'front' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'jquery/jquery-ui.js', 'membermap', 'interface' ) );
@@ -116,6 +117,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 		\IPS\Output::i()->jsVars['membermap_defaultMaps'] = $defaultMaps;
 		\IPS\Output::i()->jsVars['membermap_mapquestAPI'] = \IPS\membermap\Application::getApiKeys( 'mapquest' ); 
 		\IPS\Output::i()->jsVars['membermap_enable_clustering'] = \IPS\Settings::i()->membermap_enable_clustering == 1 ? 1 : 0;
+		\IPS\Output::i()->jsVars['membermap_groupByMemberGroup'] = \IPS\Settings::i()->membermap_groupByMemberGroup == 1 ? 1 : 0;
 
 
         \IPS\Output::i()->endBodyCode .= <<<EOF

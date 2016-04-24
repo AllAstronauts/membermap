@@ -45,6 +45,8 @@ $lang = array(
 	'membermap_marker_pl'		=> "Markers",
 	'membermap_marker_pl_lc'	=> "markers",
 
+	'membermap_view_this_marker' 	=> "View this marker: %s",
+
 	'membermap_submit_a_marker' => "Add Marker",
 	'membermap_edit_a_marker' => "Edit Marker",
 
@@ -62,6 +64,7 @@ $lang = array(
 	'membermap_mapQuestAPI_desc' 	=> "Sign up for your own API Key at <a href='https://developer.mapquest.com/' target='_blank'>MapQuest</a>. Some features in the future will require you to do this.",
 	'membermap_bbox_zoom' 			=> "Default Zoom Level",
 	'membermap_bbox_zoom_desc' 		=> "Only affective when a bounding box is defined.",
+	'membermap_groupByMemberGroup'	=> "Group member markers by member group?",
 
 
 	/* ACP Marker Group Settings */

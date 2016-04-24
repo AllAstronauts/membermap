@@ -276,12 +276,14 @@ class _Map
 				}
 
 				$photo = $marker->author()->photo;
-				
+
 				$markersToKeep[] = array(
 					'type'			=> "member",
 					'lat' 			=> round( (float)$marker->lat, 5 ),
 					'lon' 			=> round( (float)$marker->lon, 5 ),
 					'member_id'		=> $marker->member_id,
+					'parent_id'		=> $marker->author()->member_group_id,
+					'parent_name'	=> \IPS\Lang::load( \IPS\Lang::defaultLanguage() )->get( 'core_group_' . $marker->author()->member_group_id ),
 					'popup' 		=> \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker, $photo ),
 					'markerColour' 	=> $marker->author()->group['g_membermap_markerColour'] ?: 'darkblue',
 				);
