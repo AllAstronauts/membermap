@@ -27,7 +27,7 @@ class _Application extends \IPS\Application
 	);
 
 	public static $apiKeys = array(
-		'mapquest' => "pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud",
+		/*'mapquest' => "pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud",*/
 	);
 
 	public function init()
@@ -49,6 +49,17 @@ class _Application extends \IPS\Application
 
 	public static function getApiKeys( $service )
 	{
+		if ( \IPS\Dispatcher::i()->controllerLocation == 'front' AND ( ! isset( self::$apiKeys['mapquest'] ) OR empty( self::$apiKeys['mapquest'] ) ) )
+		{
+			if ( \IPS\Member::loggedIn()->isAdmin() )
+			{
+				\IPS\Output::i()->error( 'membermap_noAPI_admin', 401 );
+			}
+			else
+			{
+				\IPS\Output::i()->error( '401_error_title', 401 );
+			}
+		}
 		try
 		{
 			if ( $service )
@@ -56,9 +67,8 @@ class _Application extends \IPS\Application
 				return self::$apiKeys[ $service ];
 			}
 		}
-		catch( \Exception $e )
-		{
-		}
+		catch( \Exception $e ) {}
+	
 
 		return self::$apiKeys;
 	}

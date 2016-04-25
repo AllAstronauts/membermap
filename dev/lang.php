@@ -61,7 +61,7 @@ $lang = array(
 	'membermap_bbox_location' 		=> "Define Forced Bounding Box",
 	'membermap_bbox_location_desc' 	=> "Use the field above to search for a location that will always be in center of your map. The map will only focus on this area, regardless of markers outside of it. Try a few of the results from the search untill you find one that suits your needs.",
 	'membermap_mapQuestAPI' 		=> "MapQuest API Key",
-	'membermap_mapQuestAPI_desc' 	=> "Sign up for your own API Key at <a href='https://developer.mapquest.com/' target='_blank'>MapQuest</a>. Some features in the future will require you to do this.",
+	'membermap_mapQuestAPI_desc' 	=> "Sign up for your own personal API Key at <a href='https://developer.mapquest.com/' target='_blank'>MapQuest</a>. This is required for the map to work.",
 	'membermap_bbox_zoom' 			=> "Default Zoom Level",
 	'membermap_bbox_zoom_desc' 		=> "Only affective when a bounding box is defined.",
 	'membermap_groupByMemberGroup'	=> "Group member markers by member group?",
@@ -126,6 +126,7 @@ $lang = array(
 	'membermap_error_cantAdd' 	=> "You are not allowed to add a location.",
 	'membermap_error_noGroups' 	=> "You need to create a Custom Marker Group first.",
 	'membermap_only_one_marker' => "You can only have one member marker. <a href='%s'>Edit your existing one.</a>",
+	'membermap_noAPI_admin'		=> "As of Member Map v3.1 a personal <a href='https://developer.mapquest.com/' target='_blank'>MapQuest API key</a> is required. Go to ACP > Community > Member Map > Settings to add yours. (This message is only visible to administrators)",
 
 	/* Front-end marker form */
 	'marker_title' 				=> "Marker Title",

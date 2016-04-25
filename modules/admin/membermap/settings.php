@@ -51,24 +51,22 @@ class _settings extends \IPS\Dispatcher\Controller
 		\IPS\Output::i()->jsVars['membermap_mapquestAPI'] = \IPS\membermap\Application::getApiKeys( 'mapquest' ); 
 
 		$form = new \IPS\Helpers\Form;
-		$form->attributes['data-controller'] 	= 'membermap.admin.membermap.settings';
-		$form->attributes['id'] 				= 'membermap_form_settings';
 
-		$form->addHeader('map_settings');
+		if ( ! empty( \IPS\Settings::i()->membermap_mapQuestAPI ) )
+		{
+			$form->attributes['data-controller'] 	= 'membermap.admin.membermap.settings';
+			$form->attributes['id'] 				= 'membermap_form_settings';
 
-		$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_groupByMemberGroup', \IPS\Settings::i()->membermap_groupByMemberGroup ) );
-		$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_enable_clustering', \IPS\Settings::i()->membermap_enable_clustering ) );
-		$form->add( new \IPS\Helpers\Form\Text( 'membermap_bbox_location', \IPS\Settings::i()->membermap_bbox_location, FALSE, array(), NULL, NULL, NULL, 'membermap_bbox_location' ) );
-		$form->add( new \IPS\Helpers\Form\Number( 'membermap_bbox_zoom', intval( \IPS\Settings::i()->membermap_bbox_zoom ), FALSE, array( 'min' => 1, 'max' => 18 ) ) );
-		$form->hiddenValues['membermap_bbox'] = \IPS\Settings::i()->membermap_bbox;
-
+			$form->addHeader('map_settings');
+			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_groupByMemberGroup', \IPS\Settings::i()->membermap_groupByMemberGroup ) );
+			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_enable_clustering', \IPS\Settings::i()->membermap_enable_clustering ) );
+			$form->add( new \IPS\Helpers\Form\Text( 'membermap_bbox_location', \IPS\Settings::i()->membermap_bbox_location, FALSE, array(), NULL, NULL, NULL, 'membermap_bbox_location' ) );
+			$form->add( new \IPS\Helpers\Form\Number( 'membermap_bbox_zoom', intval( \IPS\Settings::i()->membermap_bbox_zoom ), FALSE, array( 'min' => 1, 'max' => 18 ) ) );
+			$form->hiddenValues['membermap_bbox'] = \IPS\Settings::i()->membermap_bbox;
+		}
 
 		$form->addHeader('api_settings');
-		$form->add( new \IPS\Helpers\Form\Text( 'membermap_mapQuestAPI', \IPS\Settings::i()->membermap_mapQuestAPI, FALSE, array(), NULL, NULL, NULL, 'membermap_mapQuestAPI' ) );
-
-		
-
-
+		$form->add( new \IPS\Helpers\Form\Text( 'membermap_mapQuestAPI', \IPS\Settings::i()->membermap_mapQuestAPI, TRUE, array(), NULL, NULL, NULL, 'membermap_mapQuestAPI' ) );
 
 		if ( $values = $form->values() )
 		{
@@ -80,12 +78,11 @@ class _settings extends \IPS\Dispatcher\Controller
 			}
 
 			$form->saveAsSettings( $values );
-			\IPS\Session::i()->log( 'acplogs__tripreport_settings' );
+			\IPS\Session::i()->log( 'acplogs__membermap_settings' );
+
+			\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=membermap&module=membermap&controller=settings" ), 'saved' );
 		}
 		
-
 		\IPS\Output::i()->output = $form;
 	}
-	
-	// Create new methods with the same name as the 'do' parameter which should execute it
 }
