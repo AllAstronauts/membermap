@@ -1,7 +1,7 @@
 <?php
 
 
-namespace IPS\membermap\setup\upg_100006;
+namespace IPS\membermap\setup\upg_110000;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
 if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
@@ -11,7 +11,7 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 }
 
 /**
- * 3.0.3 Upgrade Code
+ * 3.1.0 Upgrade Code
  */
 class _Upgrade
 {
