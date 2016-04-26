@@ -1050,3 +1050,14 @@ L.Control.MembermapOldMarkers = L.Control.extend({
         return container;
     }
 });
+
+/* Translation of a few string in LeafletJS */
+L.Control.Zoom.mergeOptions({
+	zoomInTitle: ips.getString( 'leaflet_zoomIn' ) || 'Zoom in',
+	zoomOutTitle: ips.getString( 'leaflet_zoomOut' ) || 'Zoom out'
+});
+
+L.Control.FullScreen.mergeOptions({
+	title: ips.getString( 'leaflet_fullScreen' ) || 'Full Screen',
+	titleCancel: ips.getString( 'leaflet_exitFullScreen' ) || 'Exit Full Screen',
+})
