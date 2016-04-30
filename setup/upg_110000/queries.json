@@ -7,6 +7,13 @@
         ]
     },
     "2": {
+        "method": "renameTable",
+        "params": [
+            "membermap_cmarkers",
+            "membermap_markers"
+        ]
+    },
+    "3": {
         "method": "addColumn",
         "params": [
             "membermap_markers_groups",
@@ -26,7 +33,7 @@
             }
         ]
     },
-    "3": {
+    "4": {
         "method": "addColumn",
         "params": [
             "membermap_markers_groups",
@@ -46,7 +53,7 @@
             }
         ]
     },
-    "4": {
+    "5": {
         "method": "addColumn",
         "params": [
             "membermap_markers_groups",
@@ -66,7 +73,7 @@
             }
         ]
     },
-    "5": {
+    "6": {
         "method": "addColumn",
         "params": [
             "membermap_markers_groups",
@@ -86,7 +93,7 @@
             }
         ]
     },
-    "6": {
+    "7": {
         "method": "addColumn",
         "params": [
             "membermap_markers_groups",
@@ -106,7 +113,7 @@
             }
         ]
     },
-    "7": {
+    "8": {
         "method": "addColumn",
         "params": [
             "membermap_markers_groups",
@@ -126,14 +133,27 @@
             }
         ]
     },
-    "8": {
-        "method": "renameTable",
+    "9": {
+        "method": "addColumn",
         "params": [
-            "membermap_cmarkers",
-            "membermap_markers"
+            "membermap_markers_groups",
+            {
+                "name": "group_moderate",
+                "type": "TINYINT",
+                "length": 1,
+                "decimals": null,
+                "values": null,
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
         ]
     },
-    "9": {
+    "10": {
         "method": "addColumn",
         "params": [
             "membermap_markers",
@@ -153,7 +173,7 @@
             }
         ]
     },
-    "10": {
+    "11": {
         "method": "addColumn",
         "params": [
             "membermap_markers",
@@ -173,7 +193,7 @@
             }
         ]
     },
-    "11": {
+    "12": {
         "method": "addColumn",
         "params": [
             "membermap_markers",
@@ -193,7 +213,7 @@
             }
         ]
     },
-    "12": {
+    "13": {
         "method": "addColumn",
         "params": [
             "membermap_markers",
@@ -213,7 +233,7 @@
             }
         ]
     },
-    "13": {
+    "14": {
         "method": "addColumn",
         "params": [
             "membermap_markers",
@@ -233,7 +253,7 @@
             }
         ]
     },
-    "14": {
+    "15": {
         "method": "addColumn",
         "params": [
             "membermap_markers",
@@ -253,7 +273,7 @@
             }
         ]
     },
-    "15": {
+    "16": {
         "method": "addColumn",
         "params": [
             "membermap_markers",

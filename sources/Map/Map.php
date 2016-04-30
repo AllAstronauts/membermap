@@ -53,7 +53,25 @@ class _Map
 		}
 		else
 		{
-			$groupId = \IPS\Db::i()->select( 'group_id', 'membermap_markers_groups', array( 'group_type=?', 'member' ) )->first();
+			try
+			{
+				$groupId = \IPS\Db::i()->select( 'group_id', 'membermap_markers_groups', array( 'group_type=?', 'member' ) )->first();
+			}
+			catch ( \UnderflowException $e )
+			{
+				/* This shouldn't really happen, but you'll never know. */
+				$groupId = \IPS\Db::i()->insert( 'membermap_markers_groups', array(
+					'group_name' 		=> "Members",
+					'group_name_seo'	=> 'members',
+					'group_protected' 	=> 1,
+					'group_type'		=> 'member',
+					'group_pin_colour'	=> '#FFFFFF',
+					'group_pin_bg_colour' 	=> 'darkblue',
+					'group_pin_icon'		=> 'fa-user',
+					'group_position'		=> 1,
+				) );
+			}
+
 			\IPS\Data\Store::i()->membermap_memberGroupId = $groupId;
 		}
 
@@ -164,6 +182,12 @@ class _Map
 	 */
 	public function recacheJsonFile()
 	{	
+		/* The upgrader kept firing this off whenever a group/marker was saved. */
+		if ( isset( \IPS\Request::i()->controller ) AND \IPS\Request::i()->controller == 'applications' )
+		{
+			return;
+		}
+
 		$memberMarkers = array();
 		$customMarkers = array();
 
