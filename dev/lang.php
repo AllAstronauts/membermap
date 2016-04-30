@@ -40,15 +40,15 @@ $lang = array(
 	'group_markers_number' 			=> "{!# [1:marker][?:markers]}",
 	'marker_actions' 				=> "Marker Actions",
 	'report_marker' 				=> "Report this marker",
-
-	'membermap_marker' 			=> "Member Map Marker",
-	'membermap_marker_pl'		=> "Markers",
-	'membermap_marker_pl_lc'	=> "markers",
-
+	'membermap_marker' 				=> "Member Map Marker",
+	'membermap_marker_pl'			=> "Markers",
+	'membermap_marker_pl_lc'		=> "markers",
 	'membermap_view_this_marker' 	=> "View this marker: %s",
+	'membermap_submit_a_marker' 	=> "Add Marker",
+	'membermap_edit_a_marker' 		=> "Edit Marker",
+	'membermap_no_markers_in_cat'	=> "There are no markers in this group",
+	'membermap_submit_first_marker' => "Why don't you submit the first one?",
 
-	'membermap_submit_a_marker' => "Add Marker",
-	'membermap_edit_a_marker' => "Edit Marker",
 
 	/* Session Location */
 	'loc_membermap_viewing_membermap' => "Viewing the Member Map",

@@ -1060,4 +1060,4 @@ L.Control.Zoom.mergeOptions({
 L.Control.FullScreen.mergeOptions({
 	title: ips.getString( 'leaflet_fullScreen' ) || 'Full Screen',
 	titleCancel: ips.getString( 'leaflet_exitFullScreen' ) || 'Exit Full Screen',
-})
+});
