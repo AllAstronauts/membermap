@@ -193,6 +193,20 @@
                 ]
             }
         },
+        "inserts": [
+            {
+                "group_id": "1",
+                "group_name": "Members",
+                "group_moderate": "0",
+                "group_position": "1",
+                "group_name_seo": "members",
+                "group_protected": "1",
+                "group_type": "member",
+                "group_pin_colour": "#FFFFFF",
+                "group_pin_bg_colour": "darkblue",
+                "group_pin_icon": "fa-user",
+            }
+        ],
         "comment": "Custom Marker Groups",
         "collation": "utf8mb4_unicode_ci",
         "engine": "InnoDB"
