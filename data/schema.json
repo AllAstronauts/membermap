@@ -204,7 +204,7 @@
                 "group_type": "member",
                 "group_pin_colour": "#FFFFFF",
                 "group_pin_bg_colour": "darkblue",
-                "group_pin_icon": "fa-user",
+                "group_pin_icon": "fa-user"
             }
         ],
         "comment": "Custom Marker Groups",
