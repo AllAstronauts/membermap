@@ -34,7 +34,7 @@ class _Application extends \IPS\Application
 	{
 		if ( \IPS\Settings::i()->membermap_mapQuestAPI )
 		{
-			self::$apiKeys['mapquest'] = \IPS\Settings::i()->membermap_mapQuestAPI;
+			static::$apiKeys['mapquest'] = \IPS\Settings::i()->membermap_mapQuestAPI;
 		}
 	}
 
@@ -49,7 +49,7 @@ class _Application extends \IPS\Application
 
 	public static function getApiKeys( $service )
 	{
-		if ( \IPS\Dispatcher::i()->controllerLocation == 'front' AND ( ! isset( self::$apiKeys['mapquest'] ) OR empty( self::$apiKeys['mapquest'] ) ) )
+		if ( \IPS\Dispatcher::i()->controllerLocation == 'front' AND ( ! isset( static::$apiKeys['mapquest'] ) OR empty( static::$apiKeys['mapquest'] ) ) )
 		{
 			if ( \IPS\Member::loggedIn()->isAdmin() )
 			{
@@ -64,18 +64,18 @@ class _Application extends \IPS\Application
 		{
 			if ( $service )
 			{
-				return self::$apiKeys[ $service ];
+				return static::$apiKeys[ $service ];
 			}
 		}
 		catch( \Exception $e ) {}
 	
 
-		return self::$apiKeys;
+		return static::$apiKeys;
 	}
 
 	public static function getEnabledMaps()
 	{
-		$defaultMaps = self::$defaultMaps;
+		$defaultMaps = static::$defaultMaps;
 
 		if ( \IPS\Settings::i()->membermap_activemaps )
 		{
@@ -103,7 +103,7 @@ class _Application extends \IPS\Application
 	public static function getJsForMarkerForm()
 	{
 		/* Get enabled maps */
-		$defaultMaps = self::getEnabledMaps();
+		$defaultMaps = static::getEnabledMaps();
 
 		/* Load JS and CSS */
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/leaflet-src.js', 'membermap', 'interface' ) );
@@ -116,8 +116,11 @@ class _Application extends \IPS\Application
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'membermap.css', 'membermap' ) );
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'plugins.combined.css', 'membermap' ) );
 
+
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'front_markers.js', 'membermap', 'front' ) );
+
 		\IPS\Output::i()->jsVars['membermap_defaultMaps'] = $defaultMaps;
-		\IPS\Output::i()->jsVars['membermap_mapquestAPI'] = self::getApiKeys( 'mapquest' ); 
+		\IPS\Output::i()->jsVars['membermap_mapquestAPI'] = static::getApiKeys( 'mapquest' ); 
 	}
 
 	/**
