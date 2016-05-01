@@ -171,7 +171,7 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 */
 	protected function get__title()
 	{
-		return $this->name;
+		return \IPS\Member::loggedIn()->language()->addToStack( "membermap_marker_group_{$this->id}" );
 	}
 
 	/**
@@ -364,6 +364,7 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 		if ( isset( $values['group_name'] ) )
 		{
 			\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$this->id}", $values['group_name'] );
+			\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$this->id}_JS", $values['group_name'], 1 );
 			
 			$this->name_seo = \IPS\Http\Url::seoTitle( $values['group_name'][ \IPS\Lang::defaultLanguage() ] );
 			

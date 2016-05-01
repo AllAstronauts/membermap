@@ -857,7 +857,7 @@
 						if ( typeof overlayMaps[ 'custom-' + this.parent_id ] === "undefined" )
 						{
 							overlayMaps[ 'custom-' + this.parent_id ] = L.featureGroup.subGroup( mastergroup ).addTo( map );
-							overlayControl.addOverlay( overlayMaps[ 'custom-' + this.parent_id  ], this.parent_name );
+							overlayControl.addOverlay( overlayMaps[ 'custom-' + this.parent_id  ], ips.getString( 'membermap_marker_group_' + this.parent_id + '_JS' ) || this.parent_name );
 						}
 						
 						overlayMaps[ 'custom-' + this.parent_id ].addLayer( mapMarker );

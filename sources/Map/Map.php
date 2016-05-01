@@ -347,7 +347,7 @@ class _Map
 					'colour'		=> $marker->container()->pin_colour,
 					'bgColour'		=> in_array( $marker->container()->pin_bg_colour, $validColours ) ? $marker->container()->pin_bg_colour : 'red',
 					'parent_id' 	=> $marker->parent_id,
-					'parent_name' 	=> $marker->container()->name,
+					'parent_name' 	=> \IPS\Lang::load( \IPS\Lang::defaultLanguage() )->get( 'membermap_marker_group_' . $marker->parent_id ),
 				);
 			}
 		}

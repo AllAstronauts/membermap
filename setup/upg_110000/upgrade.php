@@ -124,6 +124,7 @@ class _Upgrade
 			$group	= \IPS\membermap\Markers\Groups::constructFromData( $group );
 
 			\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$group->id}", trim( $group->name ) );
+			\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$group->id}_JS", trim( $group->name ), 1 );
 
 			$group->name_seo 	= \IPS\Http\Url::seoTitle( trim( $group->name ) );
 

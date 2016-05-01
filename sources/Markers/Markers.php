@@ -191,6 +191,22 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	}
 
 	/**
+	 * Get SEO name
+	 *
+	 * @return	string
+	 */
+	public function get_name_seo()
+	{
+		if( !$this->_data['name_seo'] )
+		{
+			$this->name_seo	= \IPS\Http\Url::seoTitle( $this->name );
+			$this->save();
+		}
+
+		return $this->_data['name_seo'] ?: \IPS\Http\Url::seoTitle( $this->name );
+	}
+
+	/**
 	 * [Node] Get Title
 	 *
 	 * @return	string|null
@@ -223,6 +239,16 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	    $lngSec = floor( ( $lng - $lngDeg - $lngMin / 60 ) * 1e3 * 3600 ) / 1e3;
 
 	    return "{$NS} {$latDeg}&deg; {$latMin}' {$latSec}'' &nbsp; {$EW} {$lngDeg}&deg; {$lngMin}' {$lngMin}''";
+	}
+
+	/**
+	 * [Node] Get Node Description
+	 *
+	 * @return	string|null
+	 */
+	protected function get_description()
+	{
+		return isset( $this->_data['description'] ) ? $this->_data['description'] : NULL;
 	}
 
 	/**
@@ -275,15 +301,6 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 		return $buttons;
 	}
 
-	/**
-	 * [Node] Get Node Description
-	 *
-	 * @return	string|null
-	 */
-	protected function get_description()
-	{
-		return isset( $this->_data['description'] ) ? $this->_data['description'] : NULL;
-	}
 	
 	/**
 	 * Get elements for add/edit form
