@@ -27,14 +27,14 @@ class _Application extends \IPS\Application
 	);
 
 	public static $apiKeys = array(
-		'mapquest' => "pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud",
+		/*'mapquest' => "pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud",*/
 	);
 
 	public function init()
 	{
 		if ( \IPS\Settings::i()->membermap_mapQuestAPI )
 		{
-			self::$apiKeys['mapquest'] = \IPS\Settings::i()->membermap_mapQuestAPI;
+			static::$apiKeys['mapquest'] = \IPS\Settings::i()->membermap_mapQuestAPI;
 		}
 	}
 
@@ -45,33 +45,37 @@ class _Application extends \IPS\Application
 	 */
 	public function installOther()
 	{
-		/* Set non guests to be able to access */
-		foreach( \IPS\Member\Group::groups( TRUE, FALSE ) as $group )
-		{
-			$group->g_membermap_canAdd = TRUE;
-			$group->save();
-		}
 	}
 
 	public static function getApiKeys( $service )
 	{
+		if ( \IPS\Dispatcher::i()->controllerLocation == 'front' AND ( ! isset( static::$apiKeys['mapquest'] ) OR empty( static::$apiKeys['mapquest'] ) ) )
+		{
+			if ( \IPS\Member::loggedIn()->isAdmin() )
+			{
+				\IPS\Output::i()->error( 'membermap_noAPI_admin', 401 );
+			}
+			else
+			{
+				\IPS\Output::i()->error( '401_error_title', 401 );
+			}
+		}
 		try
 		{
 			if ( $service )
 			{
-				return self::$apiKeys[ $service ];
+				return static::$apiKeys[ $service ];
 			}
 		}
-		catch( \Exception $e )
-		{
-		}
+		catch( \Exception $e ) {}
+	
 
-		return self::$apiKeys;
+		return static::$apiKeys;
 	}
 
 	public static function getEnabledMaps()
 	{
-		$defaultMaps = self::$defaultMaps;
+		$defaultMaps = static::$defaultMaps;
 
 		if ( \IPS\Settings::i()->membermap_activemaps )
 		{
@@ -83,6 +87,40 @@ class _Application extends \IPS\Application
 		}
 
 		return $defaultMaps;
+	}
+
+	/**
+	 * [Node] Get Icon for tree
+	 *
+	 * @note	Return the class for the icon (e.g. 'globe')
+	 * @return	string|null
+	 */
+	protected function get__icon()
+	{
+		return 'map-marker';
+	}
+
+	public static function getJsForMarkerForm()
+	{
+		/* Get enabled maps */
+		$defaultMaps = static::getEnabledMaps();
+
+		/* Load JS and CSS */
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/leaflet-src.js', 'membermap', 'interface' ) );
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'jquery/jquery-ui.js', 'membermap', 'interface' ) );
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/leaflet-providers.js', 'membermap', 'interface' ) );
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/leaflet.awesome-markers.js', 'membermap', 'interface' ) );
+
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.css', 'membermap', 'global' ) );
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'jquery-ui.css', 'membermap', 'global' ) );
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'membermap.css', 'membermap' ) );
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'plugins.combined.css', 'membermap' ) );
+
+
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'front_markers.js', 'membermap', 'front' ) );
+
+		\IPS\Output::i()->jsVars['membermap_defaultMaps'] = $defaultMaps;
+		\IPS\Output::i()->jsVars['membermap_mapquestAPI'] = static::getApiKeys( 'mapquest' ); 
 	}
 
 	/**

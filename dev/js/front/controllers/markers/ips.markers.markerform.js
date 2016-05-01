@@ -1,7 +1,7 @@
 ;( function($, _, undefined){
 	"use strict";
 
-	ips.controller.register('membermap.admin.membermap.markerform', {
+	ips.controller.register('membermap.front.markers.markerform', {
 		map: null,
 		popup: null,
 		marker: null,
@@ -77,95 +77,68 @@
 				minLength: 3,
 				select: function( event, ui ) 
 				{
-					$( '#membermap_add_marker input[name="marker_lat"]').val( parseFloat( ui.item.latLng.lat ).toFixed(6) );
-					$( '#membermap_add_marker input[name="marker_lon"]' ).val( parseFloat( ui.item.latLng.lng ).toFixed(6) );
+					$( '#membermap_marker_form input[name="marker_lat"]').val( parseFloat( ui.item.latLng.lat ).toFixed(6) );
+					$( '#membermap_marker_form input[name="marker_lon"]' ).val( parseFloat( ui.item.latLng.lng ).toFixed(6) );
 				}
 			});
 
-			var that = this;
+			this.setupMap();
+					
+			var icon = L.AwesomeMarkers.icon({
+				prefix: 'fa',
+				icon: 'map-marker', 
+				color: 'darkblue'
+			});
 
-			/* Setup map popup */
-			$( '#marker_addViaMap' ).click( function()
-			{
-				ips.loader.get( [ 'membermap/interface/leaflet/leaflet-src.js', 'membermap/interface/leaflet/plugins/leaflet-providers.js', 'membermap/interface/leaflet/plugins/leaflet.awesome-markers.js' ] ).then( function () 
+			this.infowindow = new L.Popup();
+			this.marker = new L.Marker(
+				this.bounds.getCenter(),
 				{
-					if(  _.isObject( that.popup ) )
-					{
-						that.popup.remove( false );
-					}
-
-					that.popup = ips.ui.dialog.create({
-						content: 	"<div><div id='mapWrapper' class='ipsPad'><div id='mapCanvas' style='height:400px;'></div></div><div id='geocodingError' style='display:none' class='message error'></div>"
-								+ "<div class='ipsAreaBackground ipsPad ipsType_right'><span class='ipsButton ipsButton_primary' data-action='dialogClose'>Select</span></div>"
-								+ "</div>",
-						size: 'wide',
-						title: ips.getString( 'marker_addViaMap' )
-					});
-					that.popup.show();
-
-					that.setupMap();
-							
-					var icon = L.AwesomeMarkers.icon({
-						prefix: 'fa',
-						icon: 'map-marker', 
-						color: 'darkblue'
-					});
-
-					that.infowindow = new L.Popup();
-					that.marker = new L.Marker(
-						that.bounds.getCenter(),
-						{
-							draggable: true,
-							opacity: 0.0,
-							icon: icon
-						} 
-					).bindPopup( that.infowindow ).addTo( that.map );
-					
-					/* Show initial marker */
-					if ( $( '#membermap_add_marker input[name="marker_lat"]' ).val() != 0 )
-					{
-						Debug.log( 'Setting initial marker' );
-						Debug.log( 'Lat: ' + $( '#membermap_add_marker input[name="marker_lat"]' ).val() );
-						Debug.log( 'Lng: ' + $( '#membermap_add_marker input[name="marker_lon"]' ).val() );
-						
-						that.marker.setLatLng( new L.LatLng( parseFloat( $( '#membermap_add_marker input[name="marker_lat"]' ).val() ), parseFloat( $( '#membermap_add_marker input[name="marker_lon"]' ).val() ) ) );
-						that.marker.setOpacity( 1 );
-
-						that.infowindow.setContent( $( '#elInput_marker_name' ).val() + '<br />' + $( '#elInput_marker_location' ).val() );
-
-						that.marker.openPopup();
-					
-						that.map.flyTo( that.marker.getLatLng(), 8 );
-
-					}
-					else
-					{
-						that.map.panTo( that.bounds.getCenter() );
-						that.map.setZoom( that.map.getZoom() + 1 );
-					}
-					
-					that.marker.on( 'dragend', function( e ) 
-					{
-						var coords = e.target.getLatLng();
-						that.findMarkerPosition( coords.lat, coords.lng );
-					});
-					
-					that.map.on( 'click', function( e )
-					{
-						that.findMarkerPosition( e.latlng.lat, e.latlng.lng );
-					});
-				});
+					draggable: true,
+					opacity: 0.0,
+					icon: icon
+				} 
+			).bindPopup( this.infowindow ).addTo( this.map );
+			
+			/* Show initial marker */
+			if ( $( '#membermap_marker_form input[name="marker_lat"]' ).val() != 0 )
+			{
+				Debug.log( 'Setting initial marker' );
+				Debug.log( 'Lat: ' + $( '#membermap_marker_form input[name="marker_lat"]' ).val() );
+				Debug.log( 'Lng: ' + $( '#membermap_marker_form input[name="marker_lon"]' ).val() );
 				
+				this.marker.setLatLng( new L.LatLng( parseFloat( $( '#membermap_marker_form input[name="marker_lat"]' ).val() ), parseFloat( $( '#membermap_marker_form input[name="marker_lon"]' ).val() ) ) );
+				this.marker.setOpacity( 1 );
+
+				this.infowindow.setContent( '<h4>' + $( '#elInput_marker_title' ).val() + '</h4>' + $( '#elInput_marker_location' ).val() );
+
+				this.marker.openPopup();
+			
+				this.map.flyTo( this.marker.getLatLng(), 8 );
+
+			}
+			else
+			{
+				this.map.panTo( this.bounds.getCenter() );
+				this.map.setZoom( this.map.getZoom() + 1 );
+			}
+
+			var that = this;
+			
+			this.marker.on( 'dragend', function( e ) 
+			{
+				var coords = e.target.getLatLng();
+				that.findMarkerPosition( coords.lat, coords.lng );
+			});
+			
+			this.map.on( 'click', function( e )
+			{
+				that.findMarkerPosition( e.latlng.lat, e.latlng.lng );
 			});
 		},
 
 		setupMap: function()
 		{
-			if (_.isObject( this.map ) )
-			{
-				this.map.remove();
-			}
-
 			var southWest = new L.LatLng( 56.83, -7.14 );
 			var northEast = new L.LatLng( 74.449, 37.466 );
 			this.bounds = new L.LatLngBounds(southWest, northEast);
@@ -213,6 +186,13 @@
 		{
 			var that = this;
 
+			
+			$( '#membermap_marker_form input[name="marker_lat"]' ).val( parseFloat( lat ).toFixed( 6 ) );
+			$( '#membermap_marker_form input[name="marker_lon"]' ).val( parseFloat( lng ).toFixed( 6 ) );
+
+			that.marker.setLatLng( [ lat, lng ] );
+			that.marker.setOpacity( 1 );
+						
 			ips.getAjax()({ 
 				url: '//www.mapquestapi.com/geocoding/v1/reverse', 
 				type: 'get',
@@ -236,24 +216,22 @@
 									( item.adminArea2 ? ', ' + item.adminArea2 : '' ) +
 									( item.adminArea1 ? ', ' + item.adminArea1 : '' );
 
-						that.marker.setLatLng( [ lat, lng ] );
-						that.marker.setOpacity( 1 );
-						that.infowindow.setContent( location );
+						location = location.replace( /(^\s*,)|(,\s*$)/g, '' );
 
-						that.marker.openPopup();
-						
 						$( '#elInput_marker_location' ).val( location );
-						$( '#membermap_add_marker input[name="marker_lat"]' ).val( lat );
-						$( '#membermap_add_marker input[name="marker_lon"]' ).val( lng );
-						$( '#geocodingError' ).hide();
+						that.infowindow.setContent( '<h4>' + $( '#elInput_marker_title' ).val() + '</h4>' + location );
 					}
 					else
 					{
-						$( '#geocodingError' ).text( 'No results found' ).show();
+						$( '#elInput_marker_location' ).val( '' );
+						that.infowindow.setContent( '<h4>' + $( '#elInput_marker_title' ).val() + '</h4>' );
 					}
+					
+					that.marker.openPopup();
 
 				}
 			});
+
 		}
 	});
 }(jQuery, _));

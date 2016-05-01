@@ -20,6 +20,10 @@
         "default": "1"
     },
     {
+        "key": "membermap_groupByMemberGroup",
+        "default": "0"
+    },
+    {
         "key": "membermap_mapQuestAPI",
         "default": ""
     }

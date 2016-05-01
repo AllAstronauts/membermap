@@ -19,6 +19,7 @@
 			overlayMaps = {},
 			overlayControl = null,
 			
+			mastergroup = null,
 			memberMarkers = null,
 			allMarkers = [],
 			
@@ -127,7 +128,7 @@
 		
 		clear =function()
 		{
-			memberMarkers.clearLayers();
+			mastergroup.clearLayers();
 		},
 		
 		reloadMap = function()
@@ -249,17 +250,16 @@
 			
 			if ( ips.getSetting( 'membermap_enable_clustering' ) == 1 )
 			{
-				memberMarkers = new L.MarkerClusterGroup({ zoomToBoundsOnClick: true, disableClusteringAtZoom: ( $( '#mapWrapper' ).height() > 1000 ? 12 : 9 ) });
+				mastergroup = L.markerClusterGroup({ zoomToBoundsOnClick: true, disableClusteringAtZoom: ( $( '#mapWrapper' ).height() > 1000 ? 13 : 11 ) });
 			}
 			else
 			{
-				memberMarkers = new L.FeatureGroup();
+				mastergroup = L.featureGroup();
 			}
 
-			map.addLayer( memberMarkers );
+			map.addLayer( mastergroup );
 			
 
-			overlayMaps[ ips.getString( 'membermap_overlay_members' ) ] = memberMarkers;
 
 			overlayControl = L.control.layers( baseMaps, overlayMaps, { collapsed: ( isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
 
@@ -829,17 +829,38 @@
 
 					if ( this.type == 'member' )
 					{
-						memberMarkers.addLayer( mapMarker );
+						/* Group by member group */
+						if ( ips.getSetting( 'membermap_groupByMemberGroup' ) && this.parent_id > 0 )
+						{
+							if ( typeof overlayMaps[ 'member-' + this.parent_id ] === "undefined" )
+							{
+								overlayMaps[ 'member-' + this.parent_id ] = L.featureGroup.subGroup( mastergroup ).addTo( map );
+								overlayControl.addOverlay( overlayMaps[ 'member-' + this.parent_id  ], this.parent_name );
+							}
+
+							overlayMaps[ 'member-' + this.parent_id ].addLayer( mapMarker );
+						}
+						/* Show all in one group/layer */
+						else
+						{
+							if ( typeof overlayMaps['members'] === "undefined" )
+							{
+								overlayMaps['members'] = L.featureGroup.subGroup( mastergroup ).addTo( map );
+								overlayControl.addOverlay( overlayMaps['members'], ips.getString( 'membermap_overlay_members' ) );
+							}
+							
+							overlayMaps['members'].addLayer( mapMarker );
+						}
 					}
 					else
 					{
-						if( typeof overlayMaps[ this.parent_id ] === "undefined" )
+						if ( typeof overlayMaps[ 'custom-' + this.parent_id ] === "undefined" )
 						{
-							overlayMaps[ this.parent_id ] = L.layerGroup().addTo( map );
-							overlayControl.addOverlay( overlayMaps[ this.parent_id ], this.parent_name );
+							overlayMaps[ 'custom-' + this.parent_id ] = L.featureGroup.subGroup( mastergroup ).addTo( map );
+							overlayControl.addOverlay( overlayMaps[ 'custom-' + this.parent_id  ], this.parent_name );
 						}
 						
-						overlayMaps[ this.parent_id ].addLayer( mapMarker );
+						overlayMaps[ 'custom-' + this.parent_id ].addLayer( mapMarker );
 					}
 
 					/* Count the number of markers we have on the map */
@@ -873,7 +894,7 @@
 				}
 				else
 				{
-					map.fitBounds( memberMarkers.getBounds(), { 
+					map.fitBounds( mastergroup.getBounds(), { 
 						padding: [50, 50],
 						maxZoom: 11
 					});
@@ -1028,4 +1049,15 @@ L.Control.MembermapOldMarkers = L.Control.extend({
 
         return container;
     }
+});
+
+/* Translation of a few string in LeafletJS */
+L.Control.Zoom.mergeOptions({
+	zoomInTitle: ips.getString( 'leaflet_zoomIn' ) || 'Zoom in',
+	zoomOutTitle: ips.getString( 'leaflet_zoomOut' ) || 'Zoom out'
+});
+
+L.Control.FullScreen.mergeOptions({
+	title: ips.getString( 'leaflet_fullScreen' ) || 'Full Screen',
+	titleCancel: ips.getString( 'leaflet_exitFullScreen' ) || 'Exit Full Screen',
 });

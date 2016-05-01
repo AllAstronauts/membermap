@@ -72,6 +72,14 @@ class _showmap extends \IPS\Dispatcher\Controller
 		/* Get enabled maps */
 		$defaultMaps = \IPS\membermap\Application::getEnabledMaps();
 
+		/* Add/edit marker permissions */
+		$groupId 	= \IPS\membermap\Map::i()->getMemberGroupId();
+		$existing	= \IPS\membermap\Map::i()->getMarkerByMember( \IPS\Member::loggedIn()->member_id, FALSE );
+
+		$canAdd 	= \IPS\membermap\Markers\Groups::load( $groupId )->can( 'add' );
+		$canEdit 	= $existing ? $existing->canEdit() : false;
+		$canDelete 	= $existing ? $existing->canDelete() : false;
+
 		/* Load JS and CSS */
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/leaflet-src.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/Control.FullScreen.js', 'membermap', 'interface' ) );
@@ -80,6 +88,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/leaflet.awesome-markers.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/leaflet.contextmenu-src.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/leaflet.markercluster-src.js', 'membermap', 'interface' ) );
+		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/subgroup.js', 'membermap', 'interface' ) );
 
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'front_main.js', 'membermap', 'front' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'jquery/jquery-ui.js', 'membermap', 'interface' ) );
@@ -99,15 +108,16 @@ class _showmap extends \IPS\Dispatcher\Controller
         /* Things we need to know in the Javascript */
 		\IPS\Output::i()->jsVars['is_supmod']			= \IPS\Member::loggedIn()->modPermission() ?: 0;
 		\IPS\Output::i()->jsVars['member_id']			= \IPS\Member::loggedIn()->member_id ?: 0;
-		\IPS\Output::i()->jsVars['membermap_canAdd']	= \IPS\Member::loggedIn()->group['g_membermap_canAdd'] ?: 0;
-        \IPS\Output::i()->jsVars['membermap_canEdit']	= \IPS\Member::loggedIn()->group['g_membermap_canEdit'] ?: 0;
-        \IPS\Output::i()->jsVars['membermap_canDelete']	= \IPS\Member::loggedIn()->group['g_membermap_canDelete'] ?: 0;
+		\IPS\Output::i()->jsVars['membermap_canAdd']	= $canAdd ?: 0;
+        \IPS\Output::i()->jsVars['membermap_canEdit']	= $canEdit ?: 0;
+        \IPS\Output::i()->jsVars['membermap_canDelete']	= $canDelete ?: 0;
         \IPS\Output::i()->jsVars['membermap_cacheTime'] = isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
 		\IPS\Output::i()->jsVars['membermap_bbox'] 		= json_decode( \IPS\Settings::i()->membermap_bbox );
 		\IPS\Output::i()->jsVars['membermap_bbox_zoom'] = intval( \IPS\Settings::i()->membermap_bbox_zoom );
 		\IPS\Output::i()->jsVars['membermap_defaultMaps'] = $defaultMaps;
 		\IPS\Output::i()->jsVars['membermap_mapquestAPI'] = \IPS\membermap\Application::getApiKeys( 'mapquest' ); 
 		\IPS\Output::i()->jsVars['membermap_enable_clustering'] = \IPS\Settings::i()->membermap_enable_clustering == 1 ? 1 : 0;
+		\IPS\Output::i()->jsVars['membermap_groupByMemberGroup'] = \IPS\Settings::i()->membermap_groupByMemberGroup == 1 ? 1 : 0;
 
 
         \IPS\Output::i()->endBodyCode .= <<<EOF
@@ -116,7 +126,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 		</script>
 EOF;
 
-        \IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'map' )->showMap( json_encode( $markers ), $cacheTime );
+        \IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'map' )->showMap( json_encode( $markers ), $cacheTime, $canAdd, $canEdit );
 	}
 
 	/**
@@ -132,20 +142,23 @@ EOF;
 		}
 
 		/* Get the members location, if it exists */
-		$existing = \IPS\membermap\Map::i()->getMarkerByMember( \IPS\Member::loggedIn()->member_id );
-
-		\IPS\Output::i()->title	= \IPS\Member::loggedIn()->language()->addToStack( ( ! $existing ? 'membermap_button_addLocation' : 'membermap_button_editLocation' ) );
+		$existing = \IPS\membermap\Map::i()->getMarkerByMember( \IPS\Member::loggedIn()->member_id, FALSE );
+		$groupId = \IPS\membermap\Map::i()->getMemberGroupId();
 
 		/* Check permissions */
-		if ( $existing AND ! \IPS\Member::loggedIn()->group['g_membermap_canEdit'] )
+		if ( $existing )
 		{
-			\IPS\Output::i()->error( 'membermap_error_cantEdit', '', 403, '' );
+			if ( ! $existing->canEdit() )
+			{
+				\IPS\Output::i()->error( 'membermap_error_cantEdit', '', 403, '' );
+			}
 		}
-		else if ( ! \IPS\Member::loggedIn()->group['g_membermap_canAdd'] )
+		else if ( ! \IPS\membermap\Markers\Groups::load( $groupId )->can( 'add' ) )
 		{
 			\IPS\Output::i()->error( 'membermap_error_cantAdd', '123', 403, '' );
 		}
 
+		/* HTML5 GeoLocation form */
 		$geoLocForm =  new \IPS\Helpers\Form( 'membermap_form_geoLocation', NULL, NULL, array( 'id' => 'membermap_form_geoLocation' ) );
 		$geoLocForm->class = 'ipsForm_vertical ipsType_center';
 
@@ -169,10 +182,25 @@ EOF;
 		{
 			try
 			{
-				$values['member_id'] = \IPS\Member::loggedIn()->member_id;
+				/* Create marker */
+				if ( $existing instanceof \IPS\membermap\Markers\Markers )
+				{
+					$marker = $existing;
+					$marker->updated = time();
+				}
+				else
+				{
 
-				\IPS\membermap\Map::i()->saveMarker( $values );
-				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap&dropBrowserCache=1&goHome=1' ) );
+					$marker = \IPS\membermap\Markers\Markers::createItem( \IPS\Member::loggedIn(), \IPS\Request::i()->ipAddress(), new \IPS\DateTime, \IPS\membermap\Markers\Groups::load( $groupId ), FALSE );
+					$marker->member_id = \IPS\Member::loggedIn()->member_id;
+				}
+				
+				$marker->name = \IPS\Member::loggedIn()->name;
+				$marker->lat = $values['lat'];
+				$marker->lon = $values['lng'];
+				$marker->save();
+
+				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap&dropBrowserCache=1&goHome=1', 'front', 'membermap' ) );
 				return;
 			}
 			catch( \Exception $e )
@@ -184,6 +212,7 @@ EOF;
 			}
 		}
 
+		\IPS\Output::i()->title	= \IPS\Member::loggedIn()->language()->addToStack( ( ! $existing ? 'membermap_button_addLocation' : 'membermap_button_editLocation' ) );
 		\IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'map' )->addLocation( $geoLocForm, $form );
 	}
 
@@ -200,15 +229,15 @@ EOF;
 		}
 
 		/* Get the marker */
-		$existing = \IPS\membermap\Map::i()->getMarkerByMember( intval( \IPS\Request::i()->member_id ) )[0];
+		$existing = \IPS\membermap\Map::i()->getMarkerByMember( intval( \IPS\Request::i()->member_id ), FALSE );
 
-		if ( isset( $existing['member_id'] ) )
+		if ( isset( $existing ) )
 		{
 			$is_supmod		= \IPS\Member::loggedIn()->modPermission() ?: 0;
 
-			if ( $is_supmod OR ( $existing['member_id'] == \IPS\Member::loggedIn()->member_id AND \IPS\Member::loggedIn()->group['g_membermap_canDelete'] ) )
+			if ( $is_supmod OR ( $existing->mapped( 'author' ) == \IPS\Member::loggedIn()->member_id AND $existing->canDelete() ) )
 			{
-				\IPS\membermap\Map::i()->deleteMarker( $existing['member_id'] );
+				$existing->delete();
 				\IPS\Output::i()->json( 'OK' );
 			}
 		}

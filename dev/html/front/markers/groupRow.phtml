@@ -1,0 +1,45 @@
+<ips:template parameters="$table, $headers, $groups" />
+{{foreach $groups as $group}}
+		<li class="ipsDataItem ipsDataItem_responsivePhoto ipsClearfix">
+			<div class='ipsDataItem_icon'>
+				<span class='ipsItemStatus ipsItemStatus_large'>
+					{{if $group->pin_icon}}
+						<i class="fa {$group->pin_icon}"></i>
+					{{else}}
+						<i class="fa fa-group"></i>
+					{{endif}}
+				</span>
+			</div>
+			<div class="ipsDataItem_main ipsPos_middle">
+				<h4 class="ipsDataItem_title ipsType_large">
+					<a href="{$group->url()}">{$group->_title}</a>
+				</h4>
+				{{if $group->description}}
+					<div class="ipsDataItem_meta ipsType_richText">{$group->description|raw}</div>
+				{{endif}}
+			</div>
+			<dl class="ipsDataItem_stats ipsDataItem_statsLarge">
+				{{$count = \IPS\membermap\Markers\Markers::contentCount( $group );}}
+				<dt class="ipsDataItem_stats_number">{number="$count"}</dt>
+				<dd class="ipsDataItem_stats_type ipsType_light">{lang="group_markers_number" pluralize="$count"}</dd>
+			</dl>
+			<ul class="ipsDataItem_lastPoster ipsDataItem_withPhoto">
+				{{if $lastPost = $group->lastMarker()}}
+					<li>{template="userPhoto" app="core" group="global" params="$lastPost->author(), 'tiny'"}</li>
+					<li><a href="{$lastPost->url()}" class='ipsType_break ipsContained'>{$lastPost->name}</a></li>
+					<li class='ipsType_blendLinks'>{lang="byline_nodate" htmlsprintf="$lastPost->author()->link()"}</li>
+					{{if $group->last_marker_date > 0}}
+						<li data-short="1 dy" class="ipsType_light">{datetime="$group->last_marker_date"}</li>
+					{{endif}}
+				{{endif}}
+			</ul>
+		{{if method_exists( $table, 'canModerate' ) AND $table->canModerate()}}
+			<div class='ipsDataItem_modCheck'>
+				<span class='ipsCustomInput'>
+					<input type='checkbox' data-role='moderation' name="moderate[{$group->_id}]" data-actions="{expression="implode( ' ', $table->multimodActions( $group ) )"}" data-state=''>
+					<span></span>
+				</span>
+			</div>
+		{{endif}}
+		</li>
+{{endforeach}}

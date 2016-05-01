@@ -4,51 +4,6 @@
         "params": [
             "core_groups",
             {
-                "name": "g_membermap_canAdd",
-                "type": "TINYINT",
-                "length": 1,
-                "null": false,
-                "default": 0,
-                "comment": "Can add membermap location?",
-                "unsigned": true
-            }
-        ]
-    },
-    "2": {
-        "method": "addColumn",
-        "params": [
-            "core_groups",
-            {
-                "name": "g_membermap_canEdit",
-                "type": "TINYINT",
-                "length": 1,
-                "null": false,
-                "default": 0,
-                "comment": "Can edit membermap location?",
-                "unsigned": true
-            }
-        ]
-    },
-    "3": {
-        "method": "addColumn",
-        "params": [
-            "core_groups",
-            {
-                "name": "g_membermap_canDelete",
-                "type": "TINYINT",
-                "length": 1,
-                "null": false,
-                "default": 0,
-                "comment": "Can delete membermap location?",
-                "unsigned": true
-            }
-        ]
-    },
-    "4": {
-        "method": "addColumn",
-        "params": [
-            "core_groups",
-            {
                 "name": "g_membermap_markerColour",
                 "type": "VARCHAR",
                 "length": 15,

@@ -1,0 +1,296 @@
+{
+    "1": {
+        "method": "renameTable",
+        "params": [
+            "membermap_cmarkers_groups",
+            "membermap_markers_groups"
+        ]
+    },
+    "2": {
+        "method": "renameTable",
+        "params": [
+            "membermap_cmarkers",
+            "membermap_markers"
+        ]
+    },
+    "3": {
+        "method": "addColumn",
+        "params": [
+            "membermap_markers_groups",
+            {
+                "name": "group_name_seo",
+                "type": "VARCHAR",
+                "length": 255,
+                "decimals": null,
+                "values": null,
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "4": {
+        "method": "addColumn",
+        "params": [
+            "membermap_markers_groups",
+            {
+                "name": "group_protected",
+                "type": "TINYINT",
+                "length": 1,
+                "decimals": null,
+                "values": null,
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "5": {
+        "method": "addColumn",
+        "params": [
+            "membermap_markers_groups",
+            {
+                "name": "group_type",
+                "type": "VARCHAR",
+                "length": 10,
+                "decimals": null,
+                "values": null,
+                "allow_null": false,
+                "default": "custom",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "6": {
+        "method": "addColumn",
+        "params": [
+            "membermap_markers_groups",
+            {
+                "name": "group_last_marker_id",
+                "type": "INT",
+                "length": 10,
+                "decimals": null,
+                "values": null,
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "7": {
+        "method": "addColumn",
+        "params": [
+            "membermap_markers_groups",
+            {
+                "name": "group_last_marker_date",
+                "type": "INT",
+                "length": 10,
+                "decimals": null,
+                "values": null,
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "8": {
+        "method": "addColumn",
+        "params": [
+            "membermap_markers_groups",
+            {
+                "name": "group_position",
+                "type": "INT",
+                "length": 5,
+                "decimals": null,
+                "values": null,
+                "allow_null": false,
+                "default": "1",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "9": {
+        "method": "addColumn",
+        "params": [
+            "membermap_markers_groups",
+            {
+                "name": "group_moderate",
+                "type": "TINYINT",
+                "length": 1,
+                "decimals": null,
+                "values": null,
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "10": {
+        "method": "addColumn",
+        "params": [
+            "membermap_markers",
+            {
+                "name": "marker_name_seo",
+                "type": "VARCHAR",
+                "length": 255,
+                "decimals": null,
+                "values": null,
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "11": {
+        "method": "addColumn",
+        "params": [
+            "membermap_markers",
+            {
+                "name": "marker_member_id",
+                "type": "MEDIUMINT",
+                "length": 8,
+                "decimals": null,
+                "values": null,
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "12": {
+        "method": "addColumn",
+        "params": [
+            "membermap_markers",
+            {
+                "name": "marker_added",
+                "type": "INT",
+                "length": 10,
+                "decimals": null,
+                "values": null,
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "13": {
+        "method": "addColumn",
+        "params": [
+            "membermap_markers",
+            {
+                "name": "marker_updated",
+                "type": "INT",
+                "length": 10,
+                "decimals": null,
+                "values": null,
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "14": {
+        "method": "addColumn",
+        "params": [
+            "membermap_markers",
+            {
+                "name": "marker_open",
+                "type": "TINYINT",
+                "length": 1,
+                "decimals": null,
+                "values": null,
+                "allow_null": false,
+                "default": "1",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "15": {
+        "method": "addColumn",
+        "params": [
+            "membermap_markers",
+            {
+                "name": "marker_approver",
+                "type": "MEDIUMINT",
+                "length": 8,
+                "decimals": null,
+                "values": null,
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    "16": {
+        "method": "addColumn",
+        "params": [
+            "membermap_markers",
+            {
+                "name": "marker_approvedon",
+                "type": "INT",
+                "length": 10,
+                "decimals": null,
+                "values": null,
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    }
+}

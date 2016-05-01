@@ -22,15 +22,33 @@
  * They must be provided in that order, otherwise the former will redirec to /myfolder/?do=myaction rather than /myfolder/myaction
  */
 {
-	"topLevel": "",
+	"topLevel": "membermap",
 	"pages": {
+		"markers": {
+			"friendly": "markers",
+			"real": "app=membermap&module=markers&controller=groups"
+		},
+		"markers_group": {
+		    "friendly": "markers/group/{#id}-{?}",
+		    "real": "app=membermap&module=markers&controller=groups",
+		    "verify": "\\IPS\\membermap\\Markers\\Groups"
+	    },
+		"markers_marker": {
+		    "friendly": "markers/marker/{#id}-{?}",
+		    "real": "app=membermap&module=markers&controller=markers",
+		    "verify": "\\IPS\\membermap\\Markers\\Markers"
+	    },
+	    "membermap_submit": {
+	        "friendly": "markers/submit",
+	        "real": "app=membermap&module=markers&controller=submit"
+	    },
 		"friends": {
-			"friendly": "membermap/showfriends",
+			"friendly": "showfriends",
 			"real": "app=membermap&module=membermap&controller=showmap&do=friends"
 		},
 	    "membermap": {
-	        "friendly": "membermap",
-	        "real": "app=membermap"
+	        "friendly": "",
+	        "real": "app=membermap&module=membermap&controller=showmap"
 	    }
 	}
 }
