@@ -32,10 +32,6 @@ class _Application extends \IPS\Application
 
 	public function init()
 	{
-		if ( \IPS\Settings::i()->membermap_mapQuestAPI )
-		{
-			static::$apiKeys['mapquest'] = \IPS\Settings::i()->membermap_mapQuestAPI;
-		}
 	}
 
 	/**
@@ -49,6 +45,14 @@ class _Application extends \IPS\Application
 
 	public static function getApiKeys( $service )
 	{
+		if ( ! isset( static::$apiKeys['mapquest'] ) )
+		{
+			if ( \IPS\Settings::i()->membermap_mapQuestAPI )
+			{
+				static::$apiKeys['mapquest'] = \IPS\Settings::i()->membermap_mapQuestAPI;
+			}
+		}
+
 		if ( \IPS\Dispatcher::i()->controllerLocation == 'front' AND ( ! isset( static::$apiKeys['mapquest'] ) OR empty( static::$apiKeys['mapquest'] ) ) )
 		{
 			if ( \IPS\Member::loggedIn()->isAdmin() )

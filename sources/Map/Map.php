@@ -176,6 +176,34 @@ class _Map
 	}
 
 	/**
+	 * Geocode, get lat/lng by location
+	 *
+	 * @param 	string 	Location
+	 * @return 	array 	Lat/lng/formatted address
+	*/
+	public static function getLatLng( $location )
+	{
+		$apiKey = \IPS\membermap\Application::getApiKeys( 'mapquest' );
+
+		if ( $apiKey )
+		{
+			try
+			{
+				$data = \IPS\Http\Url::external( 
+					( \IPS\Request::i()->isSecure()  ? 'https://' : 'http://' ) . "www.mapquestapi.com/geocoding/v1/address?key={$apiKey}&location=" . urlencode( $location . ", Norge" ) )->request( 5 )->get()->decodeJson();
+			}
+			catch( \RuntimeException $e )
+			{
+				debug( $e );
+				return;
+			}
+			debug( $data );
+		}		
+
+		return;
+	}
+
+	/**
 	 * Rewrite cache file
 	 * 
 	 * @return	array	Parsed list of markers

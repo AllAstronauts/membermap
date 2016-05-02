@@ -52,6 +52,9 @@ class _settings extends \IPS\Dispatcher\Controller
 
 		$form = new \IPS\Helpers\Form;
 
+		$form->addHeader('api_settings');
+		$form->add( new \IPS\Helpers\Form\Text( 'membermap_mapQuestAPI', \IPS\Settings::i()->membermap_mapQuestAPI, TRUE, array(), NULL, NULL, NULL, 'membermap_mapQuestAPI' ) );
+
 		if ( ! empty( \IPS\Settings::i()->membermap_mapQuestAPI ) )
 		{
 			$form->attributes['data-controller'] 	= 'membermap.admin.membermap.settings';
@@ -63,10 +66,23 @@ class _settings extends \IPS\Dispatcher\Controller
 			$form->add( new \IPS\Helpers\Form\Text( 'membermap_bbox_location', \IPS\Settings::i()->membermap_bbox_location, FALSE, array(), NULL, NULL, NULL, 'membermap_bbox_location' ) );
 			$form->add( new \IPS\Helpers\Form\Number( 'membermap_bbox_zoom', intval( \IPS\Settings::i()->membermap_bbox_zoom ), FALSE, array( 'min' => 1, 'max' => 18 ) ) );
 			$form->hiddenValues['membermap_bbox'] = \IPS\Settings::i()->membermap_bbox;
+
+			$form->addHeader( 'membermap_autoUpdate' );
+
+			$profileFields = array();
+			foreach ( \IPS\core\ProfileFields\Field::fields( array(), \IPS\core\ProfileFields\Field::PROFILE ) as $group => $fields )
+			{
+				foreach ( $fields as $id => $field )
+				{
+					$profileFields[ 'core_pfieldgroups_' . $group ][ $id ] = $field->name;
+				}
+			}
+
+
+			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_monitorLocationField', \IPS\Settings::i()->membermap_monitorLocationField, FALSE, array( 'togglesOn' => array( 'membermap_profileLocationField' ) ) ) );
+			$form->add( new \IPS\Helpers\Form\Select( 'membermap_profileLocationField', \IPS\Settings::i()->membermap_profileLocationField ? intval( \IPS\Settings::i()->membermap_profileLocationField ) : NULL, FALSE, array( 'options' => $profileFields ), NULL, NULL, NULL, 'membermap_profileLocationField' ) );
 		}
 
-		$form->addHeader('api_settings');
-		$form->add( new \IPS\Helpers\Form\Text( 'membermap_mapQuestAPI', \IPS\Settings::i()->membermap_mapQuestAPI, TRUE, array(), NULL, NULL, NULL, 'membermap_mapQuestAPI' ) );
 
 		if ( $values = $form->values() )
 		{

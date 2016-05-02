@@ -26,5 +26,13 @@
     {
         "key": "membermap_mapQuestAPI",
         "default": ""
+    },
+    {
+        "key": "membermap_monitorLocationField",
+        "default": "0"
+    },
+    {
+        "key": "membermap_profileLocationField",
+        "default": ""
     }
 ]

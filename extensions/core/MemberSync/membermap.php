@@ -61,4 +61,44 @@ class _membermap
 	{
 		\IPS\membermap\Map::i()->deleteMarker( $member->member_id );
 	}
+
+	/**
+	 * Member account has been updated
+	 *
+	 * @param	$member		\IPS\Member	Member updating profile
+	 * @param	$changes	array		The changes
+	 * @return	void
+	 */
+	public function onProfileUpdate( $member, $changes )
+	{
+		if( count( $changes ) AND \IPS\Settings::i()->membermap_monitorLocationField )
+		{
+			if ( isset( $changes['field_' . \IPS\Settings::i()->membermap_profileLocationField ] ) AND ! empty( $changes['field_' . \IPS\Settings::i()->membermap_profileLocationField ] ) )
+			{
+				$lat = $lng = NULL;
+				$fieldValue = $changes['field_' . \IPS\Settings::i()->membermap_profileLocationField ];
+
+				/* If it's an array, it might be from an address field, which already have the lat/lng data */
+				if( is_array( json_decode( $fieldValue, TRUE ) ) )
+				{
+					$addressData = json_decode( $fieldValue, TRUE );
+
+					if ( is_float( $addressData['lat'] ) AND is_float( $addressData['long'] ) )
+					{
+						$lat = floatval( $addressData['lat'] );
+						$lng = floatval( $addressData['long'] );
+					}
+				}
+				/* It's a text field, or \IPS\Geolocation failed to get coordinates (in which case we won't bother either */
+				else
+				{
+					/* To my understanding we're not allowed to use \IPS\Geolocation, as that uses Google API, and we're not showing the info on a Google Map. */
+					debug( \IPS\membermap\Map::getLatLng( $fieldValue ) );
+				}
+
+
+				//$existingMarker = \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE );
+			}
+		}
+	}
 }
