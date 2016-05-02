@@ -57,11 +57,11 @@ class _Application extends \IPS\Application
 		{
 			if ( \IPS\Member::loggedIn()->isAdmin() )
 			{
-				\IPS\Output::i()->error( 'membermap_noAPI_admin', 401 );
+				\IPS\Output::i()->error( 'membermap_noAPI_admin', '2MM001', 401 );
 			}
 			else
 			{
-				\IPS\Output::i()->error( '401_error_title', 401 );
+				\IPS\Output::i()->error( '401_error_title', '2MM002', 401 );
 			}
 		}
 		try
