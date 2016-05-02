@@ -221,7 +221,7 @@ class _markers extends \IPS\Node\Controller
 				$group->save();
 			}
 			
-			\IPS\membermap\Map::i()->recacheJsonFile();
+			\IPS\membermap\Map::i()->invalidateJsonCache();
 		}
 		
 		/* Display */

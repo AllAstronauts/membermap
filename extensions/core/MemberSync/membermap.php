@@ -47,7 +47,7 @@ class _membermap
 		else if ( is_array( $member2Loc ) )
 		{
 			\IPS\Db::i()->update( 'membermap_members', array( 'member_id' => $member->member_id ), 'member_id=' . $member2->member_id );
-			\IPS\membermap\Map::i()->recacheJsonFile();
+			\IPS\membermap\Map::i()->invalidateJsonCache();
 		}
 	}
 	

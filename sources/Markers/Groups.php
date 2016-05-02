@@ -419,7 +419,7 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 	{
 		parent::save();
 
-		\IPS\membermap\Map::i()->recacheJsonFile();
+		\IPS\membermap\Map::i()->invalidateJsonCache();
 	}
 
 	/**
@@ -436,6 +436,6 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 
 		parent::delete();
 		
-		\IPS\membermap\Map::i()->recacheJsonFile();
+		\IPS\membermap\Map::i()->invalidateJsonCache();
 	}
 }

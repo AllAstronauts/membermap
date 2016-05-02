@@ -203,6 +203,49 @@ class _Map
 		return;
 	}
 
+	/** 
+	 * Check if cache is up to date, and Ok
+	 *
+	 * @return 	bool 	TRUE when OK, FALSE when rewrite was needed
+	 */
+	public function checkForCache()
+	{
+		$cacheTime 	= isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
+
+		/* Rebuild JSON cache if needed */
+		if ( ! is_file ( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-index.json' ) OR \IPS\Request::i()->rebuildCache === '1' OR $cacheTime === 0 )
+		{
+			$this->recacheJsonFile();
+
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Invalidate (delete) JSON cache
+	 * There are situations like mass-move or mass-delete where the cache is rewritten for every single node that's created.
+	 * This will force the cache to rewrite itself on the next pageload
+	 *
+	 * @return void
+	 */
+	public function invalidateJsonCache()
+	{
+		\IPS\Data\Store::i()->membermap_cacheTime = 0;
+
+		/* Remove all files from cache dir. 
+		 * We need to do this in case of situations were a file won't be overwritten (when deleting markers), 
+		 * and old markers will be left in place, or markers are shown multiple times.*/
+		foreach( glob( \IPS\ROOT_PATH . '/datastore/membermap_cache/*' ) as $file )
+		{
+			if ( is_file( $file ) )
+			{
+				unlink( $file );
+			}
+		}
+	}
+
 	/**
 	 * Rewrite cache file
 	 * 
