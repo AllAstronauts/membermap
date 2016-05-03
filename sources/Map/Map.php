@@ -176,6 +176,83 @@ class _Map
 	}
 
 	/**
+	 * Geocode, get lat/lng by location
+	 *
+	 * @param 	string 	Location
+	 * @return 	array 	Lat/lng/formatted address
+	*/
+	public static function getLatLng( $location )
+	{
+		$apiKey = \IPS\membermap\Application::getApiKeys( 'mapquest' );
+
+		if ( $apiKey )
+		{
+			try
+			{
+				$data = \IPS\Http\Url::external( 
+					( \IPS\Request::i()->isSecure()  ? 'https://' : 'http://' ) . "open.mapquestapi.com/nominatim/v1/search.php?key={$apiKey}&format=json&limit=1&q=" . urlencode( $location ) )->request( 5 )->get()->decodeJson();
+
+				if ( is_array( $data ) AND count( $data ) )
+				{
+					return array(
+						'lat'		=> $data[0]['lat'],
+						'lng'		=> $data[0]['lon'],
+						'location'	=> $data[0]['display_name'],
+					);
+				}
+			}
+			catch( \RuntimeException $e )
+			{
+			}
+		}		
+
+		return false;
+	}
+
+	/** 
+	 * Check if cache is up to date, and Ok
+	 *
+	 * @return 	bool 	TRUE when OK, FALSE when rewrite was needed
+	 */
+	public function checkForCache()
+	{
+		$cacheTime 	= isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
+
+		/* Rebuild JSON cache if needed */
+		if ( ! is_file ( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-index.json' ) OR \IPS\Request::i()->rebuildCache === '1' OR $cacheTime === 0 )
+		{
+			$this->recacheJsonFile();
+
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Invalidate (delete) JSON cache
+	 * There are situations like mass-move or mass-delete where the cache is rewritten for every single node that's created.
+	 * This will force the cache to rewrite itself on the next pageload
+	 *
+	 * @return void
+	 */
+	public function invalidateJsonCache()
+	{
+		\IPS\Data\Store::i()->membermap_cacheTime = 0;
+
+		/* Remove all files from cache dir. 
+		 * We need to do this in case of situations were a file won't be overwritten (when deleting markers), 
+		 * and old markers will be left in place, or markers are shown multiple times.*/
+		foreach( glob( \IPS\ROOT_PATH . '/datastore/membermap_cache/*' ) as $file )
+		{
+			if ( is_file( $file ) )
+			{
+				unlink( $file );
+			}
+		}
+	}
+
+	/**
 	 * Rewrite cache file
 	 * 
 	 * @return	array	Parsed list of markers

@@ -433,7 +433,7 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 		$this->container()->setLastComment();
 		$this->container()->save();
 
-		\IPS\membermap\Map::i()->recacheJsonFile();
+		\IPS\membermap\Map::i()->invalidateJsonCache();
 	}
 
 	/**
@@ -448,6 +448,6 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 		$this->container()->setLastComment();
 		$this->container()->save();
 
-		\IPS\membermap\Map::i()->recacheJsonFile();
+		\IPS\membermap\Map::i()->invalidateJsonCache();
 	}
 }

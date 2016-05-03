@@ -43,13 +43,10 @@ class _showmap extends \IPS\Dispatcher\Controller
 	protected function manage()
 	{
 		$markers 	= array();
-		$cacheTime 	= isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
 
 		/* Rebuild JSON cache if needed */
-		if ( ! is_file ( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-index.json' ) OR \IPS\Request::i()->rebuildCache === '1' OR $cacheTime === 0 )
+		if ( ! \IPS\membermap\Map::i()->checkForCache() )
 		{
-			\IPS\membermap\Map::i()->recacheJsonFile();
-
 			/* We clicked the tools menu item to force a rebuild */
 			if ( \IPS\Request::i()->isAjax() )
 			{
@@ -57,6 +54,8 @@ class _showmap extends \IPS\Dispatcher\Controller
 			}
 		}
 
+
+		$cacheTime 	= isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
 
 		$getByUser = intval( \IPS\Request::i()->member_id );
 
@@ -98,8 +97,8 @@ class _showmap extends \IPS\Dispatcher\Controller
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'jquery-ui.css', 'membermap', 'global' ) );
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'plugins.combined.css', 'membermap' ) );
 
+
 		\IPS\Output::i()->title = \IPS\Member::loggedIn()->language()->addToStack( '__app_membermap' );
-		
 		\IPS\Output::i()->sidebar['enabled'] = FALSE;
 
         /* Update session location */
@@ -111,7 +110,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 		\IPS\Output::i()->jsVars['membermap_canAdd']	= $canAdd ?: 0;
         \IPS\Output::i()->jsVars['membermap_canEdit']	= $canEdit ?: 0;
         \IPS\Output::i()->jsVars['membermap_canDelete']	= $canDelete ?: 0;
-        \IPS\Output::i()->jsVars['membermap_cacheTime'] = isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
+        \IPS\Output::i()->jsVars['membermap_cacheTime'] = $cacheTime;
 		\IPS\Output::i()->jsVars['membermap_bbox'] 		= json_decode( \IPS\Settings::i()->membermap_bbox );
 		\IPS\Output::i()->jsVars['membermap_bbox_zoom'] = intval( \IPS\Settings::i()->membermap_bbox_zoom );
 		\IPS\Output::i()->jsVars['membermap_defaultMaps'] = $defaultMaps;

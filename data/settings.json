@@ -26,5 +26,17 @@
     {
         "key": "membermap_mapQuestAPI",
         "default": ""
+    },
+    {
+        "key": "membermap_monitorLocationField",
+        "default": "0"
+    },
+    {
+        "key": "membermap_monitorLocationField_groupPerm",
+        "default": "*"
+    },
+    {
+        "key": "membermap_profileLocationField",
+        "default": ""
     }
 ]
