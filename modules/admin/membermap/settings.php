@@ -80,7 +80,17 @@ class _settings extends \IPS\Dispatcher\Controller
 
 
 			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_monitorLocationField', \IPS\Settings::i()->membermap_monitorLocationField, FALSE, array( 'togglesOn' => array( 'membermap_profileLocationField' ) ) ) );
-			$form->add( new \IPS\Helpers\Form\Select( 'membermap_profileLocationField', \IPS\Settings::i()->membermap_profileLocationField ? intval( \IPS\Settings::i()->membermap_profileLocationField ) : NULL, FALSE, array( 'options' => $profileFields ), NULL, NULL, NULL, 'membermap_profileLocationField' ) );
+			$form->add( new \IPS\Helpers\Form\Select( 
+				'membermap_profileLocationField', 
+				\IPS\Settings::i()->membermap_profileLocationField ? intval( \IPS\Settings::i()->membermap_profileLocationField ) : NULL, 
+				FALSE, array( 'options' => $profileFields ), NULL, NULL, NULL, 'membermap_profileLocationField' 
+			) );
+
+			$form->add( new \IPS\Helpers\Form\Select(
+	            'membermap_monitorLocationField_groupPerm',
+	            \IPS\Settings::i()->membermap_monitorLocationField_groupPerm != '' ? ( \IPS\Settings::i()->membermap_monitorLocationField_groupPerm === '*' ? '*' : explode( ",", \IPS\Settings::i()->membermap_monitorLocationField_groupPerm ) ) : '*',
+	            FALSE,array( 'options' => \IPS\Member\Group::groups(), 'multiple' => TRUE, 'parse' => 'normal', 'unlimited' => '*', 'unlimitedLang' => 'all' ), NULL, NULL, NULL, 'membermap_monitorLocationField_groupPerm'
+	        ) );
 		}
 
 

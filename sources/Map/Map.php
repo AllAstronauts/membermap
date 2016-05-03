@@ -190,17 +190,23 @@ class _Map
 			try
 			{
 				$data = \IPS\Http\Url::external( 
-					( \IPS\Request::i()->isSecure()  ? 'https://' : 'http://' ) . "www.mapquestapi.com/geocoding/v1/address?key={$apiKey}&location=" . urlencode( $location . ", Norge" ) )->request( 5 )->get()->decodeJson();
+					( \IPS\Request::i()->isSecure()  ? 'https://' : 'http://' ) . "open.mapquestapi.com/nominatim/v1/search.php?key={$apiKey}&format=json&limit=1&q=" . urlencode( $location ) )->request( 5 )->get()->decodeJson();
+
+				if ( is_array( $data ) AND count( $data ) )
+				{
+					return array(
+						'lat'		=> $data[0]['lat'],
+						'lng'		=> $data[0]['lon'],
+						'location'	=> $data[0]['display_name'],
+					);
+				}
 			}
 			catch( \RuntimeException $e )
 			{
-				debug( $e );
-				return;
 			}
-			debug( $data );
 		}		
 
-		return;
+		return false;
 	}
 
 	/** 

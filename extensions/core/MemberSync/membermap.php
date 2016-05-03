@@ -35,19 +35,22 @@ class _membermap
 	{
 		/* A member can't have multiple locations, so we'll have to delete one of them */
 
-		$memderLoc 	= \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id );
-		$memder2Loc = \IPS\membermap\Map::i()->getMarkerByMember( $member2->member_id );
+		$memderLoc 	= \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE );
+		$memder2Loc = \IPS\membermap\Map::i()->getMarkerByMember( $member2->member_id, FALSE );
 
 		// Delete $member2's location if $member have one 
-		if ( is_array( $memberLoc ) )
+		if ( $memberLoc instanceof \IPS\membermap\Markers\Markers )
 		{
-			\IPS\membermap\Map::i()->deleteMarker( $member2->member_id );
+			if ( $member2Loc instanceof \IPS\membermap\Markers\Markers )
+			{
+				$member2Loc->delete();
+			}
 		}
 		// Or move $member2's location over to $member.
-		else if ( is_array( $member2Loc ) )
+		else if ( $member2Loc instanceof \IPS\membermap\Markers\Markers )
 		{
-			\IPS\Db::i()->update( 'membermap_members', array( 'member_id' => $member->member_id ), 'member_id=' . $member2->member_id );
-			\IPS\membermap\Map::i()->invalidateJsonCache();
+			$member2Loc->author = $member->member_id;
+			$member2Loc->save();
 		}
 	}
 	
@@ -59,7 +62,12 @@ class _membermap
 	 */
 	public function onDelete( $member )
 	{
-		\IPS\membermap\Map::i()->deleteMarker( $member->member_id );
+		$memderLoc 	= \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE );
+
+		if ( $memberLoc instanceof \IPS\membermap\Markers\Markers )
+		{
+			$memberLoc->delete();
+		}
 	}
 
 	/**
@@ -73,31 +81,76 @@ class _membermap
 	{
 		if( count( $changes ) AND \IPS\Settings::i()->membermap_monitorLocationField )
 		{
-			if ( isset( $changes['field_' . \IPS\Settings::i()->membermap_profileLocationField ] ) AND ! empty( $changes['field_' . \IPS\Settings::i()->membermap_profileLocationField ] ) )
+			if( \IPS\Settings::i()->membermap_monitorLocationField_groupPerm === '*' or \IPS\Member::loggedIn()->inGroup( explode( ',', \IPS\Settings::i()->membermap_monitorLocationField_groupPerm ) ) )
 			{
-				$lat = $lng = NULL;
-				$fieldValue = $changes['field_' . \IPS\Settings::i()->membermap_profileLocationField ];
-
-				/* If it's an array, it might be from an address field, which already have the lat/lng data */
-				if( is_array( json_decode( $fieldValue, TRUE ) ) )
+				if ( isset( $changes['field_' . \IPS\Settings::i()->membermap_profileLocationField ] ) AND ! empty( $changes['field_' . \IPS\Settings::i()->membermap_profileLocationField ] ) )
 				{
-					$addressData = json_decode( $fieldValue, TRUE );
+					$lat = $lng = $location = NULL;
+					$fieldValue = $changes['field_' . \IPS\Settings::i()->membermap_profileLocationField ];
 
-					if ( is_float( $addressData['lat'] ) AND is_float( $addressData['long'] ) )
+					/* If it's an array, it might be from an address field, which already have the lat/lng data */
+					if( is_array( json_decode( $fieldValue, TRUE ) ) )
 					{
-						$lat = floatval( $addressData['lat'] );
-						$lng = floatval( $addressData['long'] );
+						$addressData = json_decode( $fieldValue, TRUE );
+
+						if ( is_float( $addressData['lat'] ) AND is_float( $addressData['long'] ) )
+						{
+							$lat = floatval( $addressData['lat'] );
+							$lng = floatval( $addressData['long'] );
+						}
+
+						$addressData['addressLines'][] = $addressData['city'];
+
+						if ( count( $addressData['addressLines'] ) )
+						{
+							$location = implode( ', ', $addressData['addressLines'] );
+						}
+					}
+					/* It's a text field, or \IPS\Geolocation failed to get coordinates (in which case we won't bother either */
+					else
+					{
+						/* To my understanding we're not allowed to use \IPS\Geolocation, as that uses Google API, and we're not showing the info on a Google Map. */
+						$nominatim = \IPS\membermap\Map::getLatLng( $fieldValue );
+
+						if( is_array( $nominatim ) )
+						{
+							$lat 		= $nominatim['lat'];
+							$lng 		= $nominatim['lng'];
+							$location 	= $nominatim['location'];
+						}
+					}
+
+					if( $lat AND $lng )
+					{
+						$existingMarker = \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE );
+
+						if( $existingMarker instanceof \IPS\membermap\Markers\Markers )
+						{
+							$marker 			= $existingMarker;
+							$marker->updated 	= time();
+						}
+						else
+						{
+							$groupId = \IPS\membermap\Map::i()->getMemberGroupId();
+
+							$marker = \IPS\membermap\Markers\Markers::createItem( $member, \IPS\Request::i()->ipAddress(), new \IPS\DateTime, \IPS\membermap\Markers\Groups::load( $groupId ), FALSE );
+							$marker->author = \IPS\Member::loggedIn()->member_id;
+						}
+
+						$marker->lat = $lat;
+						$marker->lon = $lng;
+
+						if( $location )
+						{
+							$marker->location = $location;
+						}
+
+						$marker->name = $member->name;
+
+						$marker->save();
+
 					}
 				}
-				/* It's a text field, or \IPS\Geolocation failed to get coordinates (in which case we won't bother either */
-				else
-				{
-					/* To my understanding we're not allowed to use \IPS\Geolocation, as that uses Google API, and we're not showing the info on a Google Map. */
-					debug( \IPS\membermap\Map::getLatLng( $fieldValue ) );
-				}
-
-
-				//$existingMarker = \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE );
 			}
 		}
 	}

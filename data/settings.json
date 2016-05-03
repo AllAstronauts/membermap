@@ -32,6 +32,10 @@
         "default": "0"
     },
     {
+        "key": "membermap_monitorLocationField_groupPerm",
+        "default": "*"
+    },
+    {
         "key": "membermap_profileLocationField",
         "default": ""
     }

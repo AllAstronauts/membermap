@@ -65,6 +65,11 @@ $lang = array(
 	'membermap_bbox_zoom' 			=> "Default Zoom Level",
 	'membermap_bbox_zoom_desc' 		=> "Only affective when a bounding box is defined.",
 	'membermap_groupByMemberGroup'	=> "Group member markers by member group?",
+	'membermap_autoUpdate'			=> "Profile location synchronisation",
+	'membermap_monitorLocationField' => "Enable profile sync?",
+	'membermap_profileLocationField' => "Select profile field",
+	'membermap_profileLocationField_desc' => "Select the custom profile field where members enter their location",
+	'membermap_monitorLocationField_groupPerm' => "Enable for",
 
 
 	/* ACP Marker Group Settings */
