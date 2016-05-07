@@ -70,6 +70,8 @@ $lang = array(
 	'membermap_profileLocationField' => "Select profile field",
 	'membermap_profileLocationField_desc' => "Select the custom profile field where members enter their location",
 	'membermap_monitorLocationField_groupPerm' => "Enable for",
+	'membermap_syncLocationField'	=> "Import members without a map marker?",
+	'membermap_syncLocationField_desc'	=> "This will import members that have a location set in the profile, but not one in the map. This will turn itself off once all members are processed.",
 
 
 	/* ACP Marker Group Settings */

@@ -134,7 +134,6 @@ class _membermap
 							$groupId = \IPS\membermap\Map::i()->getMemberGroupId();
 
 							$marker = \IPS\membermap\Markers\Markers::createItem( $member, \IPS\Request::i()->ipAddress(), new \IPS\DateTime, \IPS\membermap\Markers\Groups::load( $groupId ), FALSE );
-							$marker->author = \IPS\Member::loggedIn()->member_id;
 						}
 
 						$marker->lat = $lat;

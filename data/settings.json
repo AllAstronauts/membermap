@@ -38,5 +38,9 @@
     {
         "key": "membermap_profileLocationField",
         "default": ""
+    },
+    {
+        "key": "membermap_syncLocationField",
+        "default": "0"
     }
 ]

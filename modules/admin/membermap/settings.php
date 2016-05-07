@@ -79,7 +79,10 @@ class _settings extends \IPS\Dispatcher\Controller
 			}
 
 
-			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_monitorLocationField', \IPS\Settings::i()->membermap_monitorLocationField, FALSE, array( 'togglesOn' => array( 'membermap_profileLocationField' ) ) ) );
+			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_monitorLocationField', \IPS\Settings::i()->membermap_monitorLocationField, FALSE, 
+				array( 'togglesOn' => array( 'membermap_profileLocationField', 'membermap_monitorLocationField_groupPerm', 'membermap_syncLocationField' ) ) 
+			) );
+
 			$form->add( new \IPS\Helpers\Form\Select( 
 				'membermap_profileLocationField', 
 				\IPS\Settings::i()->membermap_profileLocationField ? intval( \IPS\Settings::i()->membermap_profileLocationField ) : NULL, 
@@ -91,10 +94,13 @@ class _settings extends \IPS\Dispatcher\Controller
 	            \IPS\Settings::i()->membermap_monitorLocationField_groupPerm != '' ? ( \IPS\Settings::i()->membermap_monitorLocationField_groupPerm === '*' ? '*' : explode( ",", \IPS\Settings::i()->membermap_monitorLocationField_groupPerm ) ) : '*',
 	            FALSE,array( 'options' => \IPS\Member\Group::groups(), 'multiple' => TRUE, 'parse' => 'normal', 'unlimited' => '*', 'unlimitedLang' => 'all' ), NULL, NULL, NULL, 'membermap_monitorLocationField_groupPerm'
 	        ) );
+
+	        $form->add( new \IPS\Helpers\Form\YesNo( 'membermap_syncLocationField', \IPS\Settings::i()->membermap_syncLocationField, FALSE, array(), NULL, NULL, NULL, 'membermap_syncLocationField' ) );
+			
 		}
 
 
-		if ( $values = $form->values() )
+		if ( $values = $form->values( TRUE ) )
 		{
 			$values['membermap_bbox'] = \IPS\Request::i()->membermap_bbox;
 
@@ -102,6 +108,9 @@ class _settings extends \IPS\Dispatcher\Controller
 			{
 				$values['membermap_bbox'] = "";
 			}
+
+			\IPS\DB::i()->update( 'core_tasks', array( 'enabled' => $values['membermap_syncLocationField'] ? 1 : 0 ), array( '`key`=?', 'locationSync' ) );
+
 
 			$form->saveAsSettings( $values );
 			\IPS\Session::i()->log( 'acplogs__membermap_settings' );

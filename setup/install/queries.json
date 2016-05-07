@@ -13,5 +13,19 @@
                 "unsigned": false
             }
         ]
+    },
+    "2": {
+        "method": "addColumn",
+        "params": [
+            "core_members",
+            {
+                "name": "membermap_location_synced",
+                "type": "tinyint",
+                "length": 1,
+                "null": false,
+                "default": 0,
+                "comment": ""
+            }
+        ]
     }
 }
