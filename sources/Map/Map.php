@@ -181,8 +181,17 @@ class _Map
 	 * @param 	string 	Location
 	 * @return 	array 	Lat/lng/formatted address
 	*/
-	public static function getLatLng( $location )
+	public function getLatLng( $location )
 	{
+		static $locCache = array();
+		$locKey = md5( $location );
+
+		if( isset( $locCache[ 'cache-' . $locKey ] ) )
+		{
+			return $locCache[ 'cache-' . $locKey ];
+		}
+
+
 		$apiKey = \IPS\membermap\Application::getApiKeys( 'mapquest' );
 
 		if ( $apiKey )
@@ -194,11 +203,18 @@ class _Map
 
 				if ( is_array( $data ) AND count( $data ) )
 				{
-					return array(
+					$locCache[ 'cache-' . $locKey ] = array(
 						'lat'		=> $data[0]['lat'],
 						'lng'		=> $data[0]['lon'],
 						'location'	=> $data[0]['display_name'],
 					);
+
+					return $locCache[ 'cache-' . $locKey ];
+				}
+				else
+				{
+					/* No result for this */
+					$locCache[ 'cache-' . $locKey ] = false;
 				}
 			}
 			catch( \RuntimeException $e )

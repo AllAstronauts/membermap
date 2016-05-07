@@ -110,7 +110,7 @@ class _membermap
 					else
 					{
 						/* To my understanding we're not allowed to use \IPS\Geolocation, as that uses Google API, and we're not showing the info on a Google Map. */
-						$nominatim = \IPS\membermap\Map::getLatLng( $fieldValue );
+						$nominatim = \IPS\membermap\Map::i()->getLatLng( $fieldValue );
 
 						if( is_array( $nominatim ) )
 						{
