@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="110000">
+ <app key="membermap" version="110002">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
   <word key="__indefart_membermap_marker" js="0">a Member Map Marker</word>
@@ -14,7 +14,7 @@
   <word key="membermap_group" js="0">Marker Groups</word>
   <word key="r__mapmanager" js="0">Map Manager</word>
   <word key="r__mapmanager_manage" js="0">Can manage Map Manager?</word>
-  <word key="r__markers" js="0">Custom Markers</word>
+  <word key="r__markers" js="0">Marker Groups</word>
   <word key="r__markers_manage" js="0">Can view Custom Markers?</word>
   <word key="r__markers_add" js="0">Can add Custom Markers?</word>
   <word key="r__markers_edit" js="0">Can edit Custom Markers?</word>
@@ -37,6 +37,8 @@
   <word key="membermap_view_this_marker" js="0">View this marker: %s</word>
   <word key="membermap_submit_a_marker" js="0">Add Marker</word>
   <word key="membermap_edit_a_marker" js="0">Edit Marker</word>
+  <word key="membermap_no_markers_in_cat" js="0">There are no markers in this group</word>
+  <word key="membermap_submit_first_marker" js="0">Why don't you submit the first one?</word>
   <word key="loc_membermap_viewing_membermap" js="0">Viewing the Member Map</word>
   <word key="map_settings" js="0">Map Settings</word>
   <word key="api_settings" js="0">API Keys</word>
@@ -48,6 +50,13 @@
   <word key="membermap_bbox_zoom" js="0">Default Zoom Level</word>
   <word key="membermap_bbox_zoom_desc" js="0">Only affective when a bounding box is defined.</word>
   <word key="membermap_groupByMemberGroup" js="0">Group member markers by member group?</word>
+  <word key="membermap_autoUpdate" js="0">Profile location synchronisation</word>
+  <word key="membermap_monitorLocationField" js="0">Enable profile sync?</word>
+  <word key="membermap_profileLocationField" js="0">Select profile field</word>
+  <word key="membermap_profileLocationField_desc" js="0">Select the custom profile field where members enter their location</word>
+  <word key="membermap_monitorLocationField_groupPerm" js="0">Enable for</word>
+  <word key="membermap_syncLocationField" js="0">Import members without a map marker?</word>
+  <word key="membermap_syncLocationField_desc" js="0">This will import members that have a location set in the profile, but not one in the map. This will turn itself off once all members are processed.</word>
   <word key="g_membermap_canAdd" js="0">Can add location to map</word>
   <word key="g_membermap_canEdit" js="0">Can edit their location</word>
   <word key="g_membermap_canDelete" js="0">Can delete their location</word>
