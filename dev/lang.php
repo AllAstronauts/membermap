@@ -20,7 +20,7 @@ $lang = array(
 	/* ACP Restrictions */
 	'r__mapmanager' 			=> "Map Manager",
 	'r__mapmanager_manage' 		=> "Can manage Map Manager?",
-	'r__markers' 				=> "Custom Markers",
+	'r__markers' 				=> "Marker Groups",
 	'r__markers_manage' 		=> "Can view Custom Markers?",
 	'r__markers_add' 			=> "Can add Custom Markers?",
 	'r__markers_edit' 			=> "Can edit Custom Markers?",
