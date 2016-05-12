@@ -1,0 +1,14 @@
+<ips:template parameters="" />
+{{if !\IPS\Request::i()->isAjax()}}
+	<div class="ipsPageHeader ipsPad_half ipsClearfix ipsSpacer_bottom" data-ipsSticky data-ipsSticky-disableIn='phone'>
+		<h1 class="ipsType_pageTitle">{lang="membermap_marker_groups"}</h1>
+	</div>
+	<div class='ipsBox'>
+		<h2 class='ipsType_sectionTitle ipsType_reset'>{lang="membermap_groups"}</h2>
+{{endif}}
+		<ol class="ipsDataList">
+			{template="groupRow" group="markers" params="NULL, NULL, \IPS\membermap\Markers\Groups::roots( 'view' )"}
+		</ol>
+{{if !\IPS\Request::i()->isAjax()}}	
+	</div>
+{{endif}}

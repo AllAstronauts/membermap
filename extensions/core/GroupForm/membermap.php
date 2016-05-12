@@ -48,13 +48,10 @@ class _membermap
 			$radioOpt[ $c ] = \IPS\Theme::i()->resource( "awesome-marker-icon-{$c}.png", "membermap", 'admin' );
 		}
 
-		$form->add( new \IPS\Helpers\Form\YesNo( 'g_membermap_canAdd', $group->g_membermap_canAdd ) );
-		$form->add( new \IPS\Helpers\Form\YesNo( 'g_membermap_canEdit', $group->g_membermap_canEdit ) );
-		$form->add( new \IPS\Helpers\Form\YesNo( 'g_membermap_canDelete', $group->g_membermap_canDelete ) );
 		$form->add( new \IPS\Helpers\Form\Radio( 'g_membermap_markerColour', $bgColour, TRUE, array(
 			'options' => $radioOpt,
 			'parse' => 'image',
-			'descriptions' => array( 'white' => 'White' ) /* Just because white is difficult to see on the page */
+			'descriptions' => array( 'white' => \IPS\Member::loggedIn()->language()->addToStack( 'group_pin_bg_colour_white' ) ) /* Just because white is difficult to see on the page */
 		)));
 	}
 	
@@ -72,9 +69,6 @@ class _membermap
 		/* Selected a valid colour? */
 		$bgColour = in_array( $bgColour, $this->colours ) ? $bgColour : 'darkblue';
 
-		$group->g_membermap_canAdd 	= $values['g_membermap_canAdd'];
-		$group->g_membermap_canEdit 	= $values['g_membermap_canEdit'];
-		$group->g_membermap_canDelete = $values['g_membermap_canDelete'];
 		$group->g_membermap_markerColour = $bgColour;
 	}
 }

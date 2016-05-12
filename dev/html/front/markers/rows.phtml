@@ -1,0 +1,65 @@
+<ips:template parameters="$table, $headers, $markers" />
+{{if count( $markers )}}
+	{{foreach $markers as $marker}}
+		<li class='ipsDataItem {{if method_exists( $marker, 'tableClass' ) && $marker->tableClass()}}ipsDataItem_{$marker->tableClass()}{{endif}} {{if $marker->hidden()}}ipsModerated{{endif}}'>
+			<div class='ipsDataItem_main'>
+				<h4 class='ipsDataItem_title ipsType_sectionHead'>
+					<a href='{$marker->url()}' title='{lang="membermap_view_this_marker" sprintf="$marker->_title"}' {{if $marker->canEdit()}}data-role="editableTitle"{{endif}}>{wordbreak="$marker->_title"}</a>
+				</h4>
+				<p class='ipsType_reset ipsType_light ipsType_blendLinks'>
+					{{if $marker->member_id > 0}}
+						{lang="byline_nodate" htmlsprintf="$marker->author()->link()"}
+					{{else}}
+						{{$lang = \IPS\Member::loggedIn()->language()->addToStack( 'unknown' );}}
+						{lang="byline_nodate" sprintf="$lang"}
+					{{endif}}
+					{{if \IPS\Request::i()->app != 'membermap'}}
+						{lang="in"} <a href="{$marker->container()->url()}">{$marker->container()->_title}</a>
+					{{endif}}
+				</p>
+			</div>	
+			<div class='ipsDataItem_generic ipsDataItem_size9'>
+				<div class='ipsType_medium ipsType_richText ipsType_break ipsSpacer_top' data-ipstruncate='' data-ipstruncate-size='2 lines' data-ipstruncate-type='remove' style='word-wrap: break-word;'>
+					{$marker->mapped( 'content' )|raw}
+				</div>
+			</div>
+			<div class='ipsDataItem_generic ipsDataItem_size9'>
+				<ul class='ipsList_reset'>
+					{{if $marker->location}}
+					<li>
+						{{$location = trim( $marker->location, ',' );}}
+						{$location}
+					</li>
+					<li>
+						{{$dms = $marker->_latLngToDMS;}}
+						<span data-ipsTooltip='' title="{$marker->lat}, {$marker->lon}">{$dms}</span>
+					</li>
+					{{endif}}
+				</ul>
+			</div>
+			<div class='ipsDataItem_generic ipsDataItem_size9'>
+				<ul class='ipsList_reset'>
+					<li>
+					<p class='ipsType_normal ipsType_reset ipsType_light'>
+						{{if $marker->updated > 0 OR $marker->added > 0}}
+							{{if $marker->updated > $marker->added}}
+								{lang="updated"} {datetime="$marker->updated"}
+							{{else}}
+								{lang="submitted"} {datetime="$marker->added"}
+							{{endif}}
+						{{endif}}
+					</p>
+					</li>
+				</ul>
+			</div>
+			{{if method_exists( $table, 'canModerate' ) AND $table->canModerate()}}
+				<div class='ipsDataItem_modCheck'>
+					<span class='ipsCustomInput'>
+						<input type='checkbox' data-role='moderation' name="moderate[{$marker->id}]" data-actions="{expression="implode( ' ', $table->multimodActions( $marker ) )"}" data-state='{{if $marker->tableStates()}}{$marker->tableStates()}{{endif}}'>
+						<span></span>
+					</span>
+				</div>
+			{{endif}}
+		</li>
+	{{endforeach}}
+{{endif}}

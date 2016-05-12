@@ -20,7 +20,27 @@
         "default": "1"
     },
     {
+        "key": "membermap_groupByMemberGroup",
+        "default": "0"
+    },
+    {
         "key": "membermap_mapQuestAPI",
         "default": ""
+    },
+    {
+        "key": "membermap_monitorLocationField",
+        "default": "0"
+    },
+    {
+        "key": "membermap_monitorLocationField_groupPerm",
+        "default": "*"
+    },
+    {
+        "key": "membermap_profileLocationField",
+        "default": ""
+    },
+    {
+        "key": "membermap_syncLocationField",
+        "default": "0"
     }
 ]

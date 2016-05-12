@@ -38,61 +38,44 @@ class _Map
 		return static::$instance;
 	}
 
-	/**
-	 * Save marker to database
-	 * 
-	 * @param 	array 	$data
-	 * @return	bool	
-	 */
-	public function saveMarker( $data )
+	public function getMemberGroupId()
 	{
-		if ( ! $data['member_id'] )
+		static $groupId = null;
+
+		if ( $groupId !== null )
 		{
-			throw new \Exception( 'invalid_data' );
+			return $groupId;
 		}
 
-		if ( $data['lat'] AND $data['lng'] )
+		if ( isset( \IPS\Data\Store::i()->membermap_memberGroupId ) )
 		{
-			$lat = $data['lat'];
-			$lng = $data['lng'];
+			$groupId = \IPS\Data\Store::i()->membermap_memberGroupId;
 		}
 		else
 		{
-			throw new \Exception( 'invalid_data' );
+			try
+			{
+				$groupId = \IPS\Db::i()->select( 'group_id', 'membermap_markers_groups', array( 'group_type=?', 'member' ) )->first();
+			}
+			catch ( \UnderflowException $e )
+			{
+				/* This shouldn't really happen, but you'll never know. */
+				$groupId = \IPS\Db::i()->insert( 'membermap_markers_groups', array(
+					'group_name' 		=> "Members",
+					'group_name_seo'	=> 'members',
+					'group_protected' 	=> 1,
+					'group_type'		=> 'member',
+					'group_pin_colour'	=> '#FFFFFF',
+					'group_pin_bg_colour' 	=> 'darkblue',
+					'group_pin_icon'		=> 'fa-user',
+					'group_position'		=> 1,
+				) );
+			}
+
+			\IPS\Data\Store::i()->membermap_memberGroupId = $groupId;
 		}
 
-		if ( $lat == 0 AND $lng == 0 )
-		{
-			throw new \Exception( 'invalid_data' );
-		}
-		
-		$save = array(
-			'member_id'			=> $data['member_id'],
-			'lat'				=> $this->_floatVal( $lat ),
-			'lon'				=> $this->_floatVal( $lng ),
-			'marker_date'		=> time()
-		);
-
-		
-		\IPS\Db::i()->replace( 'membermap_members', $save, 'member_id=' . $data['member_id'] );
-
-		$this->recacheJsonFile();
-	}
-
-
-	/**
-	 * Delete a marker
-	 *
-	 * @param 		int 	Member ID
-	 * @return 		bool
-	 */
-	public function deleteMarker( $memberId )
-	{
-		$memberId = intval( $memberId );
-
-		\IPS\Db::i()->delete( 'membermap_members', 'member_id=' . $memberId );
-
-		$this->recacheJsonFile();
+		return $groupId;
 	}
 
 	/**
@@ -101,26 +84,41 @@ class _Map
 	 * @param 		int 	Member ID
 	 * @return		mixed 	Members location record, or false if non-existent
 	 */
-	public function getMarkerByMember( $memberId )
+	public function getMarkerByMember( $memberId, $format=TRUE )
 	{
+		static $marker = array();
+
 		if ( ! intval( $memberId ) )
 		{
 			return false;
 		}
 
-		try
+		if( isset( $marker[ $memberId ] ) )
 		{
-			$marker = \IPS\Db::i()->select( '*', 'membermap_members', array( 'membermap_members.member_id=?', intval( $memberId ) ) )
-					->join( 'core_members', 'membermap_members.member_id=core_members.member_id' )
-					->join( 'core_groups', 'core_members.member_group_id=core_groups.g_id' )
-					->first();
-					
-			return $this->formatMarkers( array( $marker ) );
+			$_marker = $marker[ $memberId ];
 		}
-		catch( \UnderflowException $e )
+		else
 		{
-			return false;
+
+			try
+			{
+				$groupId = $this->getMemberGroupId();
+
+				$_marker = \IPS\Db::i()->select( '*', array( 'membermap_markers', 'mm' ), array( 'mm.marker_member_id=? AND mm.marker_parent_id=?', intval( $memberId ), $groupId ) )
+						->join( array( 'core_members', 'm' ), 'mm.marker_member_id=m.member_id' )
+						->join( array( 'core_groups', 'g' ), 'm.member_group_id=g.g_id' )
+						->first();
+
+				$marker[ $memberId ] = $_marker = \IPS\membermap\Markers\Markers::constructFromData( $_marker );
+						
+			}
+			catch( \UnderflowException $e )
+			{
+				return false;
+			}
 		}
+		
+		return $format ? $this->formatMemberMarkers( array( $_marker ) ) : $_marker;
 	}
 
 	/**
@@ -178,27 +176,144 @@ class _Map
 	}
 
 	/**
+	 * Geocode, get lat/lng by location
+	 *
+	 * @param 	string 	Location
+	 * @return 	array 	Lat/lng/formatted address
+	*/
+	public function getLatLng( $location )
+	{
+		static $locCache = array();
+		$locKey = md5( $location );
+
+		if( isset( $locCache[ 'cache-' . $locKey ] ) )
+		{
+			return $locCache[ 'cache-' . $locKey ];
+		}
+
+
+		$apiKey = \IPS\membermap\Application::getApiKeys( 'mapquest' );
+
+		if ( $apiKey )
+		{
+			try
+			{
+				$data = \IPS\Http\Url::external( 
+					( \IPS\Request::i()->isSecure()  ? 'https://' : 'http://' ) . "open.mapquestapi.com/nominatim/v1/search.php?key={$apiKey}&format=json&limit=1&q=" . urlencode( $location ) )->request( 5 )->get()->decodeJson();
+
+				if ( is_array( $data ) AND count( $data ) )
+				{
+					$locCache[ 'cache-' . $locKey ] = array(
+						'lat'		=> $data[0]['lat'],
+						'lng'		=> $data[0]['lon'],
+						'location'	=> $data[0]['display_name'],
+					);
+
+					return $locCache[ 'cache-' . $locKey ];
+				}
+				else
+				{
+					/* No result for this */
+					$locCache[ 'cache-' . $locKey ] = false;
+				}
+			}
+			catch( \RuntimeException $e )
+			{
+			}
+		}		
+
+		return false;
+	}
+
+	/** 
+	 * Check if cache is up to date, and Ok
+	 *
+	 * @return 	bool 	TRUE when OK, FALSE when rewrite was needed
+	 */
+	public function checkForCache()
+	{
+		$cacheTime 	= isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
+
+		/* Rebuild JSON cache if needed */
+		if ( ! is_file ( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-index.json' ) OR \IPS\Request::i()->rebuildCache === '1' OR $cacheTime === 0 )
+		{
+			$this->recacheJsonFile();
+
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Invalidate (delete) JSON cache
+	 * There are situations like mass-move or mass-delete where the cache is rewritten for every single node that's created.
+	 * This will force the cache to rewrite itself on the next pageload
+	 *
+	 * @return void
+	 */
+	public function invalidateJsonCache()
+	{
+		\IPS\Data\Store::i()->membermap_cacheTime = 0;
+
+		/* Remove all files from cache dir. 
+		 * We need to do this in case of situations were a file won't be overwritten (when deleting markers), 
+		 * and old markers will be left in place, or markers are shown multiple times.*/
+		foreach( glob( \IPS\ROOT_PATH . '/datastore/membermap_cache/*' ) as $file )
+		{
+			if ( is_file( $file ) )
+			{
+				unlink( $file );
+			}
+		}
+	}
+
+	/**
 	 * Rewrite cache file
 	 * 
 	 * @return	array	Parsed list of markers
 	 */
 	public function recacheJsonFile()
 	{	
-		$markers = array();
-		
-		$dbMarkers = iterator_to_array( 
-						\IPS\Db::i()->select( 'membermap_members.*,  core_members.*, core_groups.g_membermap_markerColour', 'membermap_members' )
-							->join( 'core_members', 'membermap_members.member_id=core_members.member_id' )
-							->join( 'core_groups', 'core_members.member_group_id=core_groups.g_id' )
-		);
+		/* The upgrader kept firing this off whenever a group/marker was saved. */
+		if ( isset( \IPS\Request::i()->controller ) AND \IPS\Request::i()->controller == 'applications' )
+		{
+			return;
+		}
 
-		$markers = $this->formatMarkers( $dbMarkers );
+		$memberMarkers = array();
+		$customMarkers = array();
 
+		foreach( \IPS\membermap\Markers\Groups::roots( NULL ) as $group )
+		{
+			$_markers = iterator_to_array( \IPS\membermap\Markers\Markers::getItemsWithPermission( 
+				array( array( \IPS\membermap\Markers\Markers::$databasePrefix . \IPS\membermap\Markers\Markers::$databaseColumnMap['container'] . '=?', $group->_id ) ), /* $where */
+				NULL, /* $order */
+				NULL, /* $limit */
+				NULL, /* $permissionKey */
+				FALSE, /* $includeHiddenItems */
+				0, /* $queryFlags */
+				new \IPS\Member, /* \IPS\Member */
+				TRUE, /* $joinContainer */
+				FALSE, /* $joinComments */
+				FALSE, /* $joinReviews */
+				FALSE,  /* $countOnly */
+				NULL, /* $joins */
+				TRUE, /* $skipPermission */
+				FALSE /* $joinTags */
+			) );
 
-		$customMarkers = iterator_to_array( 
-						\IPS\Db::i()->select( 'membermap_cmarkers.*,  membermap_cmarkers_groups.*', 'membermap_cmarkers' )
-							->join( 'membermap_cmarkers_groups', 'membermap_cmarkers.marker_parent_id=membermap_cmarkers_groups.group_id' )
-		);
+			if ( $group->type == 'member' )
+			{
+				$memberMarkers = array_merge( $memberMarkers, $_markers );
+			}
+			else
+			{
+				$customMarkers = array_merge( $customMarkers, $_markers );
+			}
+		}		
+
+		$markers = $this->formatMemberMarkers( $memberMarkers );
 
 		$custMarkers = $this->formatCustomMarkers( $customMarkers );
 
@@ -259,7 +374,7 @@ class _Map
 	 * @param 		array 	Markers
 	 * @return		array	Markers
 	 */
-	public function formatMarkers( array $markers )
+	public function formatMemberMarkers( array $markers )
 	{
 		$markersToKeep = array();
 
@@ -267,21 +382,27 @@ class _Map
 		{
 			foreach( $markers as $marker )
 			{
-				if ( $marker['lat'] == 0 AND $marker['lon'] == 0 )
+				if ( $marker->lat == 0 AND $marker->lon == 0 )
 				{
-					\IPS\Db::i()->delete( 'membermap_members', array( 'member_id=?', $marker['member_id'] ) );
+					if ( $marker instanceof \IPS\membermap\Markers\Markers )
+					{
+						$marker->delete();
+					}
+					
 					continue;
 				}
 
-				$photo = \IPS\Member::photoUrl( $marker, TRUE );
-				
+				$photo = $marker->author()->photo;
+
 				$markersToKeep[] = array(
 					'type'			=> "member",
-					'lat' 			=> round( (float)$marker['lat'], 5 ),
-					'lon' 			=> round( (float)$marker['lon'], 5 ),
-					'member_id'		=> $marker['member_id'],
+					'lat' 			=> round( (float)$marker->lat, 5 ),
+					'lon' 			=> round( (float)$marker->lon, 5 ),
+					'member_id'		=> $marker->member_id,
+					'parent_id'		=> $marker->author()->member_group_id,
+					'parent_name'	=> \IPS\Lang::load( \IPS\Lang::defaultLanguage() )->get( 'core_group_' . $marker->author()->member_group_id ),
 					'popup' 		=> \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker, $photo ),
-					'markerColour' 	=> $marker['g_membermap_markerColour'] ?: 'darkblue',
+					'markerColour' 	=> $marker->author()->group['g_membermap_markerColour'] ?: 'darkblue',
 				);
 			}
 		}
@@ -312,18 +433,18 @@ class _Map
 				
 				$markersToKeep[] = array(
 					'type'			=> "custom",
-					'lat' 			=> round( (float)$marker['marker_lat'], 5 ),
-					'lon' 			=> round( (float)$marker['marker_lon'], 5 ),
+					'lat' 			=> round( (float)$marker->lat, 5 ),
+					'lon' 			=> round( (float)$marker->lon, 5 ),
 					'popup' 		=> $popup,
-					'icon'			=> $marker['group_pin_icon'],
-					'colour'		=> $marker['group_pin_colour'],
-					'bgColour'		=> in_array( $marker['group_pin_bg_colour'], $validColours ) ? $marker['group_pin_bg_colour'] : 'red',
-					'parent_id' 	=> $marker['marker_parent_id'],
-					'parent_name' 	=> $marker['group_name'],
+					'icon'			=> $marker->container()->pin_icon,
+					'colour'		=> $marker->container()->pin_colour,
+					'bgColour'		=> in_array( $marker->container()->pin_bg_colour, $validColours ) ? $marker->container()->pin_bg_colour : 'red',
+					'parent_id' 	=> $marker->parent_id,
+					'parent_name' 	=> \IPS\Lang::load( \IPS\Lang::defaultLanguage() )->get( 'membermap_marker_group_' . $marker->parent_id ),
 				);
 			}
 		}
-		
+
 		return $markersToKeep;
 	}
 

@@ -5,10 +5,10 @@
 	<div id='membermap_geolocation_wrapper' class='ipsColumn ipsColumn_medium'>{$form1|raw}</div>
 	<div class='ipsColumn ipsColumn_medium'>{$form2|raw}</div>
 </div>]]></template>
- <template template_group="map" template_name="customMarkerPopup" template_data="$marker" template_location="front" template_app="membermap"><![CDATA[<h3>{$marker['marker_name']}</h3>
-{$marker['marker_description']|raw}]]></template>
+ <template template_group="map" template_name="customMarkerPopup" template_data="$marker" template_location="front" template_app="membermap"><![CDATA[<h3>{$marker->name}</h3>
+{$marker->content()|raw}]]></template>
  <template template_group="map" template_name="popupContent" template_data="$marker, $photo" template_location="front" template_app="membermap"><![CDATA[<h3>
-	<a href='{url="app=core&module=members&controller=profile&id={$marker['member_id']}" seoTemplate="profile" base="front" seoTitle="$marker['members_seo_name']"}' target='_blank'>{$marker['name']}</a>
+	<a href='{$marker->author()->url()}' target='_blank'>{$marker->_title}</a>
 </h3>
 <p class="desc">
 	<img src='{$photo}' itemprop='image' alt='' class='ipsUserPhoto ipsUserPhoto_mini'>
@@ -20,34 +20,34 @@
 		<span><a href='{url="app=tripreport&filter=getByUser&member_id={$member->member_id}" seoTemplate="membermap"}'>{lang="membermap_view_fullsize"}</a></small>
 	</div>
 </div>]]></template>
- <template template_group="map" template_name="showMap" template_data="$markers='', $cacheTime=0" template_location="front" template_app="membermap"><![CDATA[{{if request.do != 'embed'}}
+ <template template_group="map" template_name="showMap" template_data="$markers='', $cacheTime=0, $canAdd=false, $canEdit=false" template_location="front" template_app="membermap"><![CDATA[{{if request.do != 'embed'}}
 <div class="ipsPageHeader ipsClearfix">
 	<header class='ipsSpacer_bottom'>
 		<h1 class="ipsType_pageTitle">{lang="frontnavigation_membermap"}</h1>
 		<div class='ipsPos_right ipsResponsive_noFloat'>
 			<ul class="ipsToolList ipsToolList_horizontal ipsClearfix">
-				{{if \IPS\Member::loggedIn()->group['g_membermap_canAdd'] OR \IPS\Member::loggedIn()->group['g_membermap_canEdit']}}
-				<li id='membermap_addLocation_wrapper' class='ipsToolList_primaryAction'>
-					<a class="ipsButton ipsButton_medium ipsButton_important ipsButton_fullWidth" href="#" title='' id="membermap_button_addLocation">{lang="membermap_button_addLocation"}</a>
-				</li>
-				<li id='membermap_myLocation_wrapper' class='ipsToolList_primaryAction' style='display:none;'>
-					<a class="ipsButton ipsButton_medium ipsButton_important ipsButton_fullWidth" data-ipsmenu href='#elMyLocationMenu' id='elMyLocationMenu' title=''>
-						{lang="membermap_button_myLocation"} <i class='fa fa-caret-down'></i>
-					</a>
-					<div id='elMyLocationMenu_menu' class='ipsMenu ipsMenu_auto ipsHide'>
-						<ul>
-							<li class="ipsMenu_item" id="membermap_button_editLocation">
-								<a href="#">{lang="membermap_button_editLocation"}</a>
-							</li>
+				{{if $canAdd OR $canEdit}}
+					<li id='membermap_addLocation_wrapper' class='ipsToolList_primaryAction'>
+						<a class="ipsButton ipsButton_medium ipsButton_important ipsButton_fullWidth" href="#" title='' id="membermap_button_addLocation">{lang="membermap_button_addLocation"}</a>
+					</li>
+					<li id='membermap_myLocation_wrapper' class='ipsToolList_primaryAction' style='display:none;'>
+						<a class="ipsButton ipsButton_medium ipsButton_important ipsButton_fullWidth" data-ipsmenu href='#elMyLocationMenu' id='elMyLocationMenu' title=''>
+							{lang="membermap_button_myLocation"} <i class='fa fa-caret-down'></i>
+						</a>
+						<div id='elMyLocationMenu_menu' class='ipsMenu ipsMenu_auto ipsHide'>
+							<ul>
+								<li class="ipsMenu_item" id="membermap_button_editLocation">
+									<a href="#">{lang="membermap_button_editLocation"}</a>
+								</li>
 
-							<li class='ipsMenu_sep'><hr></li>
+								<li class='ipsMenu_sep'><hr></li>
 
-							<li class="ipsMenu_item" id="elMyLocationMenuGoHome">
-								<a href="{url='app=membermap&goHome=1' seoTemplate='membermap'}">{lang="membermap_goHome"}</a>
-							</li>
-						</ul>
-					</div>
-				</li>
+								<li class="ipsMenu_item" id="elMyLocationMenuGoHome">
+									<a href="{url='app=membermap&goHome=1' seoTemplate='membermap'}">{lang="membermap_goHome"}</a>
+								</li>
+							</ul>
+						</div>
+					</li>
 				{{endif}}
 
 				{{if \IPS\Member::loggedIn()->isAdmin()}}
@@ -74,6 +74,10 @@
 					</div>
 				</li>
 				{{endif}}
+
+				<li>
+					<a href="{url='app=membermap&controller=markers&module=groups' seoTemplate='markers'}" title='{lang="membermap_browse_markers"}' class='ipsButton ipsButton_medium ipsButton_fullWidth ipsButton_link'><i class="icon-newspaper"></i> {lang="membermap_browse_markers"}</a>
+				</li>
 			</ul>
 		</div>
 	</header>
@@ -160,6 +164,361 @@
 		</div>
 	</div>
 </div>]]></template>
+ <template template_group="markers" template_name="group" template_data="$group, $table" template_location="front" template_app="membermap"><![CDATA[<div class="ipsPageHeader ipsClearfix ipsSpacer_bottom">
+	<h1 class="ipsType_pageTitle">{$group->_title}</h1>
+	{{if $group->description}}
+		<div class='ipsPageHeader_info ipsType_normal'>
+			{$group->description|raw}
+		</div>
+	{{endif}}
+</div>
+{{if \IPS\membermap\Markers\Groups::canOnAny('add') AND ( !$group OR $group->can('add') ) }}
+<ul class="ipsToolList ipsToolList_horizontal ipsResponsive_hidePhone ipsClearfix ipsSpacer_both">
+	{template="groupButtons" group="markers" params="\IPS\membermap\Markers\Groups::canOnAny('add'), $group"}
+</ul>
+{{elseif $group AND $group->type == 'member' AND ! $group->can( 'add' ) AND $existing = \IPS\membermap\Map::i()->getMarkerByMember( \IPS\Member::loggedIn()->member_id, FALSE ) }}
+	<ul class="ipsToolList ipsToolList_horizontal ipsResponsive_hidePhone ipsClearfix ipsSpacer_both">
+		<li class='ipsToolList_primaryAction'>{lang="membermap_only_one_marker" sprintf="$existing->url()"}</li>
+	</ul>
+{{endif}}
+
+<div class='ipsBox'>
+	{$table|raw}
+</div>
+
+{{if \IPS\membermap\Markers\Groups::canOnAny('add') AND ( !$group OR $group->can('add') ) }}
+<ul class="ipsToolList ipsToolList_horizontal ipsResponsive_hidePhone ipsClearfix ipsSpacer_both">
+	{template="groupButtons" group="markers" params="\IPS\membermap\Markers\Groups::canOnAny('add'), $group"}
+</ul>
+{{endif}}]]></template>
+ <template template_group="markers" template_name="groupButtons" template_data="$canSubmitMarkers, $currentGroup=NULL" template_location="front" template_app="membermap"><![CDATA[
+{{if $canSubmitMarkers AND ( !$currentGroup OR $currentGroup->can('add') ) }}
+<li class='ipsToolList_primaryAction'>
+	<a class="ipsButton ipsButton_medium ipsButton_important ipsButton_fullWidth" 
+		href="
+			{{if $currentGroup}}
+				{url="app=membermap&module=markers&controller=submit&group={$currentGroup->id}&_new=1" seoTemplate="membermap_submit"}
+			{{else}}
+				{url="app=membermap&module=markers&controller=submit&_new=1" seoTemplate="membermap_submit"}
+			{{endif}}
+		">
+			{lang="membermap_submit_a_marker"}
+	</a>
+</li>
+{{endif}}]]></template>
+ <template template_group="markers" template_name="groupRow" template_data="$table, $headers, $groups" template_location="front" template_app="membermap"><![CDATA[{{foreach $groups as $group}}
+		<li class="ipsDataItem ipsDataItem_responsivePhoto ipsClearfix">
+			<div class='ipsDataItem_icon'>
+				<span class='ipsItemStatus ipsItemStatus_large'>
+					{{if $group->pin_icon}}
+						<i class="fa {$group->pin_icon}"></i>
+					{{else}}
+						<i class="fa fa-group"></i>
+					{{endif}}
+				</span>
+			</div>
+			<div class="ipsDataItem_main ipsPos_middle">
+				<h4 class="ipsDataItem_title ipsType_large">
+					<a href="{$group->url()}">{$group->_title}</a>
+				</h4>
+				{{if $group->description}}
+					<div class="ipsDataItem_meta ipsType_richText">{$group->description|raw}</div>
+				{{endif}}
+			</div>
+			<dl class="ipsDataItem_stats ipsDataItem_statsLarge">
+				{{$count = \IPS\membermap\Markers\Markers::contentCount( $group );}}
+				<dt class="ipsDataItem_stats_number">{number="$count"}</dt>
+				<dd class="ipsDataItem_stats_type ipsType_light">{lang="group_markers_number" pluralize="$count"}</dd>
+			</dl>
+			<ul class="ipsDataItem_lastPoster ipsDataItem_withPhoto">
+				{{if $lastPost = $group->lastMarker()}}
+					<li>{template="userPhoto" app="core" group="global" params="$lastPost->author(), 'tiny'"}</li>
+					<li><a href="{$lastPost->url()}" class='ipsType_break ipsContained'>{$lastPost->name}</a></li>
+					<li class='ipsType_blendLinks'>{lang="byline_nodate" htmlsprintf="$lastPost->author()->link()"}</li>
+					{{if $group->last_marker_date > 0}}
+						<li data-short="1 dy" class="ipsType_light">{datetime="$group->last_marker_date"}</li>
+					{{endif}}
+				{{endif}}
+			</ul>
+		{{if method_exists( $table, 'canModerate' ) AND $table->canModerate()}}
+			<div class='ipsDataItem_modCheck'>
+				<span class='ipsCustomInput'>
+					<input type='checkbox' data-role='moderation' name="moderate[{$group->_id}]" data-actions="{expression="implode( ' ', $table->multimodActions( $group ) )"}" data-state=''>
+					<span></span>
+				</span>
+			</div>
+		{{endif}}
+		</li>
+{{endforeach}}]]></template>
+ <template template_group="markers" template_name="index" template_data="" template_location="front" template_app="membermap"><![CDATA[{{if !\IPS\Request::i()->isAjax()}}
+	<div class="ipsPageHeader ipsPad_half ipsClearfix ipsSpacer_bottom" data-ipsSticky data-ipsSticky-disableIn='phone'>
+		<h1 class="ipsType_pageTitle">{lang="membermap_marker_groups"}</h1>
+	</div>
+	<div class='ipsBox'>
+		<h2 class='ipsType_sectionTitle ipsType_reset'>{lang="membermap_groups"}</h2>
+{{endif}}
+		<ol class="ipsDataList">
+			{template="groupRow" group="markers" params="NULL, NULL, \IPS\membermap\Markers\Groups::roots( 'view' )"}
+		</ol>
+{{if !\IPS\Request::i()->isAjax()}}	
+	</div>
+{{endif}}]]></template>
+ <template template_group="markers" template_name="noMarkers" template_data="$group" template_location="front" template_app="membermap"><![CDATA[
+<div class='ipsType_center ipsPad'>
+	<p class='ipsType_large'>{lang="membermap_no_markers_in_cat"}</p>
+
+	{{if $group->can('add')}}
+		<a href='{url="app=membermap&module=markers&controller=submit&_new=1&group={$group->id}" seoTemplate="downloads_submit"}' class='ipsButton ipsButton_primary ipsButton_medium' data-ipsDialog data-ipsDialog-title='{lang="submit_first_file"}' data-ipsDialog-size='narrow'>{lang="membermap_submit_first_marker"}</a>
+	{{endif}}
+</div>]]></template>
+ <template template_group="markers" template_name="rows" template_data="$table, $headers, $markers" template_location="front" template_app="membermap"><![CDATA[{{if count( $markers )}}
+	{{foreach $markers as $marker}}
+		<li class='ipsDataItem {{if method_exists( $marker, 'tableClass' ) && $marker->tableClass()}}ipsDataItem_{$marker->tableClass()}{{endif}} {{if $marker->hidden()}}ipsModerated{{endif}}'>
+			<div class='ipsDataItem_main'>
+				<h4 class='ipsDataItem_title ipsType_sectionHead'>
+					<a href='{$marker->url()}' title='{lang="membermap_view_this_marker" sprintf="$marker->_title"}' {{if $marker->canEdit()}}data-role="editableTitle"{{endif}}>{wordbreak="$marker->_title"}</a>
+				</h4>
+				<p class='ipsType_reset ipsType_light ipsType_blendLinks'>
+					{{if $marker->member_id > 0}}
+						{lang="byline_nodate" htmlsprintf="$marker->author()->link()"}
+					{{else}}
+						{{$lang = \IPS\Member::loggedIn()->language()->addToStack( 'unknown' );}}
+						{lang="byline_nodate" sprintf="$lang"}
+					{{endif}}
+					{{if \IPS\Request::i()->app != 'membermap'}}
+						{lang="in"} <a href="{$marker->container()->url()}">{$marker->container()->_title}</a>
+					{{endif}}
+				</p>
+			</div>	
+			<div class='ipsDataItem_generic ipsDataItem_size9'>
+				<div class='ipsType_medium ipsType_richText ipsType_break ipsSpacer_top' data-ipstruncate='' data-ipstruncate-size='2 lines' data-ipstruncate-type='remove' style='word-wrap: break-word;'>
+					{$marker->mapped( 'content' )|raw}
+				</div>
+			</div>
+			<div class='ipsDataItem_generic ipsDataItem_size9'>
+				<ul class='ipsList_reset'>
+					{{if $marker->location}}
+					<li>
+						{{$location = trim( $marker->location, ',' );}}
+						{$location}
+					</li>
+					<li>
+						{{$dms = $marker->_latLngToDMS;}}
+						<span data-ipsTooltip='' title="{$marker->lat}, {$marker->lon}">{$dms}</span>
+					</li>
+					{{endif}}
+				</ul>
+			</div>
+			<div class='ipsDataItem_generic ipsDataItem_size9'>
+				<ul class='ipsList_reset'>
+					<li>
+					<p class='ipsType_normal ipsType_reset ipsType_light'>
+						{{if $marker->updated > 0 OR $marker->added > 0}}
+							{{if $marker->updated > $marker->added}}
+								{lang="updated"} {datetime="$marker->updated"}
+							{{else}}
+								{lang="submitted"} {datetime="$marker->added"}
+							{{endif}}
+						{{endif}}
+					</p>
+					</li>
+				</ul>
+			</div>
+			{{if method_exists( $table, 'canModerate' ) AND $table->canModerate()}}
+				<div class='ipsDataItem_modCheck'>
+					<span class='ipsCustomInput'>
+						<input type='checkbox' data-role='moderation' name="moderate[{$marker->id}]" data-actions="{expression="implode( ' ', $table->multimodActions( $marker ) )"}" data-state='{{if $marker->tableStates()}}{$marker->tableStates()}{{endif}}'>
+						<span></span>
+					</span>
+				</div>
+			{{endif}}
+		</li>
+	{{endforeach}}
+{{endif}}]]></template>
+ <template template_group="markers" template_name="viewMarker" template_data="$marker, $prevReport='', $nextReport=''" template_location="front" template_app="membermap"><![CDATA[{{if $marker->hidden() === 1 and $marker->canUnhide()}}
+	<div class="ipsMessage ipsMessage_warning ipsSpacer_both">
+		<p class="ipsType_reset">{lang="file_pending_approval"}</p>
+		<br>
+		<ul class='ipsList_inline'>
+			<li><a href="{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'unhide' ) )}" class="ipsButton ipsButton_positive ipsButton_verySmall" title='{lang="approve_title_file"}'><i class="fa fa-check"></i> {lang="approve"}</a></li>
+			{{if $marker->canDelete()}}
+				<li><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'delete' ) )}' data-confirm  title='{lang="downloads_delete_title"}' class='ipsButton ipsButton_negative ipsButton_verySmall'><i class='fa fa-times'></i> {lang="delete"}</a></li>
+			{{endif}}
+		</ul>
+	</div>
+{{endif}}
+<article data-controller="membermap.front.markers.markerview" data-lon="{$marker->lon}" data-lat="{$marker->lat}" data-name="{$marker->_title}">
+	<div class='ipsColumns ipsClear ipsClearfix'>
+		<div class='ipsColumn ipsColumn_fluid'>
+				<div class="ipsClearfix">
+					<h2 class="ipsType_pageTitle">
+						{$marker->_title}{{if $marker->hidden() === 1}}
+						<span class="ipsBadge ipsBadge_icon ipsBadge_warning" data-ipsTooltip title='{lang="pending_approval"}'><i class='fa fa-warning'></i></span>
+						{{elseif $marker->hidden() === -1}}
+							<span class="ipsBadge ipsBadge_icon ipsBadge_warning" data-ipsTooltip title='{$marker->hiddenBlurb()}'><i class='fa fa-eye-slash'></i></span>
+						{{endif}}
+					</h2>
+					<span class='ipsType_normal ipsType_light'>
+						<i class='fa {$marker->container()->pin_icon}'></i> {$marker->container()->_title}
+					</span>
+					<br><br>
+					<div class='ipsPost' data-role='commentContent'>
+						<div data-ipsTruncate data-ipsTruncate-type="hide" data-ipsTruncate-size="#elMarkerInfo">
+							<div class='ipsType_richText ipsType_normal ipsContained' data-controller='core.front.core.lightboxedImages'>
+								{$marker->content()|raw}
+							</div>
+						</div>
+					</div>
+					<hr class='ipsHr'>
+					{{if $marker->canEdit() or $marker->canHide() or $marker->canUnhide() or $marker->canMove() or $marker->canDelete()}}
+						<a href='#elFileActions_menu' id='elFileActions' class='ipsButton ipsButton_light ipsButton_verySmall' data-ipsMenu>{lang="marker_actions"} <i class='fa fa-caret-down'></i></a>
+						<ul id='elFileActions_menu' class='ipsMenu ipsMenu_auto ipsHide'>
+							{{if $marker->canEdit()}}
+								<li class='ipsMenu_item'><a href='{$marker->url()->setQueryString( array( 'do' => 'edit' ) )}' title='{lang="edit"}'>{lang="edit"}</a></li>
+							{{endif}}
+							{{if $marker->canHide()}}				
+								<li class='ipsMenu_item'><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'hide' ) )}' title='{lang="hide_title_file"}' data-ipsDialog data-ipsDialog-title="{lang="hide"}">{lang="hide"}</a></li>
+							{{endif}}
+							{{if $marker->canUnhide()}}				
+								<li class='ipsMenu_item'><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'unhide' ) )}' title='{{if $marker->hidden() === 1}}{lang="approve"}{{else}}{lang="unhide"}{{endif}}'>{{if $marker->hidden() === 1}}{lang="approve"}{{else}}{lang="unhide"}{{endif}}</a></li>
+							{{endif}}
+							{{if $marker->canMove()}}				
+								<li class='ipsMenu_item'><a href='{$marker->url()->setQueryString( array( 'do' => 'move' ) )}' data-ipsDialog data-ipsDialog-size='narrow' data-ipsDialog-title="{lang="move"}"  title='{lang="move"}'>{lang="move"}</a></li>
+							{{endif}}
+							{{if $marker->canDelete()}}				
+								<li class='ipsMenu_item'><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'delete' ) )}' data-confirm  title='{lang="delete"}'>{lang="delete"}</a></li>
+							{{endif}}
+							{{if \IPS\Member::loggedIn()->modPermission('can_view_moderation_log')}}
+								<li class='ipsMenu_sep'><hr></li>
+								<li class="ipsMenu_item"><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'modLog' ) )}' data-ipsDialog data-ipsDialog-title='{lang="moderation_history"}'>{lang="moderation_history"}</a></li>
+							{{endif}}
+						</ul>
+					{{endif}}
+					{{if !\IPS\Member::loggedIn()->group['gbw_no_report'] }}
+						&nbsp;<a href='{$marker->url('report')}' data-ipsDialog data-ipsDialog-size='medium' data-ipsDialog-title="{lang="report_marker"}" data-ipsDialog-remoteSubmit data-ipsDialog-flashMessage="{lang="report_submit_success"}" title="{lang="report_marker"}" class='ipsType_medium'>{lang="report_marker"}</a>
+					{{endif}}
+				</div>
+		</div>
+		<aside id="elMarkerInfo" class='ipsColumn ipsColumn_veryWide'>
+			<h2>{lang="membermap_marker_info"}</h2>
+			<ul class='ipsDataList ipsDataList_reducedSpacing ipsSpacer_top'>
+				<li class='ipsDataItem'>
+					<span class='ipsDataItem_generic ipsDataItem_size3'>
+						<strong>{lang="membermap_marker_author"}</strong>
+					</span>
+					<span class='ipsDataItem_generic cMarkerData'>
+					{{if $marker->member_id > 0}}
+						{$marker->author()->link()|raw}
+					{{else}}
+						{lang="unknown"}
+					{{endif}}
+					
+				
+					</span>
+				</li>
+
+				{{if $marker->added > 0}}
+					<li class='ipsDataItem'>
+						<span class='ipsDataItem_generic ipsDataItem_size3'>
+							<strong>{lang="membermap_marker_date"}</strong>
+						</span>
+						<span class='ipsDataItem_generic cMarkerData'>
+							{datetime="$marker->added"}
+						</span>
+					</li>
+				{{endif}}
+
+				{{if $marker->updated > 0 AND $marker->updated > $marker->added}}
+					<li class='ipsDataItem'>
+						<span class='ipsDataItem_generic ipsDataItem_size3'>
+							<strong>{lang="membermap_marker_updated"}</strong>
+						</span>
+						<span class='ipsDataItem_generic cMarkerData'>
+							{datetime="$marker->updated"}
+						</span>
+					</li>
+				{{endif}}
+
+				{{if $marker->location}}
+					<li class='ipsDataItem'>
+						<span class='ipsDataItem_generic ipsDataItem_size3'>
+							<strong>{lang="membermap_marker_location"}</strong>
+						</span>
+						<span class='ipsDataItem_generic cMarkerData'>
+							{{$location = trim( $marker->location, ',' );}}
+							{$location}
+						</span>
+					</li>
+				{{endif}}
+
+				<li class='ipsDataItem'>
+					<span class='ipsDataItem_generic ipsDataItem_size3'>
+						<strong>{lang="membermap_marker_coordinates"}</strong>
+					</span>
+					<span data-ipsTooltip='' title="{$marker->lat}, {$marker->lon}" class='ipsDataItem_generic cMarkerData'>
+						{{$dms = $marker->_latLngToDMS;}}
+						{$dms}
+					</span>
+				</li>
+			</ul>
+		</aside>
+	</div>
+
+	<div id='mapWrapper' class='ipsPad'>
+		<div id='mapCanvas' style='height:400px;'>
+		</div>
+	</div>
+</article>]]></template>
+ <template template_group="submit" template_name="submitForm" template_data="$id, $action, $elements, $hiddenValues, $actionButtons, $uploadField, $class=''" template_location="front" template_app="membermap"><![CDATA[
+<form accept-charset='utf-8' id='membermap_marker_form' class="ipsForm {$class}" action="{$action}" method="post" {{if $uploadField}}enctype="multipart/form-data"{{endif}} data-ipsForm data-controller="membermap.front.markers.markerform">
+	<input type="hidden" name="{$id}_submitted" value="1">
+	{{foreach $hiddenValues as $k => $v}}
+		<input type="hidden" name="{$k}" value="{$v}">
+	{{endforeach}}
+	{{if $uploadField}}
+		<input type="hidden" name="MAX_FILE_SIZE" value="{$uploadField}">
+		<input type="hidden" name="plupload" value="{expression="md5( uniqid() )"}">
+	{{endif}}
+	
+	<ul class='ipsForm ipsForm_vertical'>
+		{{foreach $elements as $collection}}
+			{{foreach $collection as $inputName => $input}}
+				{{if in_array( $inputName, array( 'marker_title', 'marker_description' ) )}}
+					{$input|raw}
+				{{endif}}
+			{{endforeach}}
+		{{endforeach}}
+	</ul>
+	<br>
+
+	<div class='ipsBox'>
+		<div class='ipsColumns'>
+			<div class='ipsColumn ipsColumn_veryWide'>
+				<ul class='ipsForm ipsPad ipsForm_vertical'>
+					{{foreach $elements as $collection}}
+						{{foreach $collection as $inputName => $input}}
+							{{if ! in_array( $inputName, array( 'marker_title', 'marker_description' ) )}}
+								{$input|raw}
+							{{endif}}
+						{{endforeach}}
+					{{endforeach}}
+				</ul>
+			</div>
+			<div class='ipsColumn ipsColumn_fluid'>
+				<div id='mapWrapper' class='ipsPad'>
+					<div id='mapCanvas' style='height:400px;'>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class='ipsAreaBackground ipsPad ipsType_center'>
+			<button type='submit' class='ipsButton ipsButton_large ipsButton_primary'>{lang="marker_submit"}</button>
+		</div>
+	</div>
+</form>]]></template>
+ <template template_group="submit" template_name="submitPage" template_data="$output" template_location="front" template_app="membermap"><![CDATA[{template="pageHeader" group="global" app="core" params="\IPS\Output::i()->title"}
+
+{$output|raw}]]></template>
  <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="Control.FullScreen.css">.leaflet-control-zoom-fullscreen { background-image: url( {resource=&quot;icon-fullscreen.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;} ); }&#13;
 .leaflet-container:-webkit-full-screen { width: 100% !important; height: 100% !important; z-index: 99999; }&#13;
 .leaflet-pseudo-fullscreen { position: fixed !important; width: 100% !important; height: 100% !important; top: 0px !important; left: 0px !important; z-index: 99999; }</css>
@@ -1061,516 +1420,530 @@ Version: 1.0&#13;
     border-bottom: 1px solid #ccc;&#13;
     margin: 5px 0;&#13;
 }</css>
- <css css_location="global" css_app="membermap" css_attributes="" css_path="." css_name="leaflet.css">/* required styles */&#13;
-&#13;
-.leaflet-pane,&#13;
-.leaflet-tile,&#13;
-.leaflet-marker-icon,&#13;
-.leaflet-marker-shadow,&#13;
-.leaflet-tile-container,&#13;
-.leaflet-map-pane svg,&#13;
-.leaflet-map-pane canvas,&#13;
-.leaflet-zoom-box,&#13;
-.leaflet-image-layer,&#13;
-.leaflet-layer {&#13;
-	position: absolute;&#13;
-	left: 0;&#13;
-	top: 0;&#13;
-	}&#13;
-.leaflet-container {&#13;
-	overflow: hidden;&#13;
-	-ms-touch-action: none;&#13;
-	touch-action: none;&#13;
-	}&#13;
-.leaflet-tile,&#13;
-.leaflet-marker-icon,&#13;
-.leaflet-marker-shadow {&#13;
-	-webkit-user-select: none;&#13;
-	   -moz-user-select: none;&#13;
-	        user-select: none;&#13;
-	  -webkit-user-drag: none;&#13;
-	}&#13;
-/* Safari renders non-retina tile on retina better with this, but Chrome is worse */&#13;
-.leaflet-safari .leaflet-tile {&#13;
-	image-rendering: -webkit-optimize-contrast;&#13;
-	}&#13;
-/* hack that prevents hw layers &quot;stretching&quot; when loading new tiles */&#13;
-.leaflet-safari .leaflet-tile-container {&#13;
-	width: 1600px;&#13;
-	height: 1600px;&#13;
-	-webkit-transform-origin: 0 0;&#13;
-	}&#13;
-.leaflet-marker-icon,&#13;
-.leaflet-marker-shadow {&#13;
-	display: block;&#13;
-	}&#13;
-/* .leaflet-container svg: reset svg max-width decleration shipped in Joomla! (joomla.org) 3.x */&#13;
-/* .leaflet-container img: map is broken in FF if you have max-width: 100% on tiles */&#13;
-.leaflet-container .leaflet-overlay-pane svg,&#13;
-.leaflet-container .leaflet-marker-pane img,&#13;
-.leaflet-container .leaflet-tile-pane img,&#13;
-.leaflet-container img.leaflet-image-layer {&#13;
-	max-width: none !important;&#13;
-	}&#13;
-.leaflet-tile {&#13;
-	filter: inherit;&#13;
-	visibility: hidden;&#13;
-	}&#13;
-.leaflet-tile-loaded {&#13;
-	visibility: inherit;&#13;
-	}&#13;
-.leaflet-zoom-box {&#13;
-	width: 0;&#13;
-	height: 0;&#13;
-	-moz-box-sizing: border-box;&#13;
-	     box-sizing: border-box;&#13;
-	z-index: 800;&#13;
-	}&#13;
-/* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=888319 */&#13;
-.leaflet-overlay-pane svg {&#13;
-	-moz-user-select: none;&#13;
-	}&#13;
-&#13;
-.leaflet-pane         { z-index: 400; }&#13;
-&#13;
-.leaflet-tile-pane    { z-index: 200; }&#13;
-.leaflet-overlay-pane { z-index: 400; }&#13;
-.leaflet-shadow-pane  { z-index: 500; }&#13;
-.leaflet-marker-pane  { z-index: 600; }&#13;
-.leaflet-popup-pane   { z-index: 700; }&#13;
-&#13;
-.leaflet-map-pane canvas { z-index: 100; }&#13;
-.leaflet-map-pane svg    { z-index: 200; }&#13;
-&#13;
-.leaflet-vml-shape {&#13;
-	width: 1px;&#13;
-	height: 1px;&#13;
-	}&#13;
-.lvml {&#13;
-	behavior: url(#default#VML);&#13;
-	display: inline-block;&#13;
-	position: absolute;&#13;
-	}&#13;
-&#13;
-&#13;
-/* control positioning */&#13;
-&#13;
-.leaflet-control {&#13;
-	position: relative;&#13;
-	z-index: 800;&#13;
-	pointer-events: auto;&#13;
-	}&#13;
-.leaflet-top,&#13;
-.leaflet-bottom {&#13;
-	position: absolute;&#13;
-	z-index: 1000;&#13;
-	pointer-events: none;&#13;
-	}&#13;
-.leaflet-top {&#13;
-	top: 0;&#13;
-	}&#13;
-.leaflet-right {&#13;
-	right: 0;&#13;
-	}&#13;
-.leaflet-bottom {&#13;
-	bottom: 0;&#13;
-	}&#13;
-.leaflet-left {&#13;
-	left: 0;&#13;
-	}&#13;
-.leaflet-control {&#13;
-	float: left;&#13;
-	clear: both;&#13;
-	}&#13;
-.leaflet-right .leaflet-control {&#13;
-	float: right;&#13;
-	}&#13;
-.leaflet-top .leaflet-control {&#13;
-	margin-top: 10px;&#13;
-	}&#13;
-.leaflet-bottom .leaflet-control {&#13;
-	margin-bottom: 10px;&#13;
-	}&#13;
-.leaflet-left .leaflet-control {&#13;
-	margin-left: 10px;&#13;
-	}&#13;
-.leaflet-right .leaflet-control {&#13;
-	margin-right: 10px;&#13;
-	}&#13;
-&#13;
-&#13;
-/* zoom and fade animations */&#13;
-&#13;
-.leaflet-fade-anim .leaflet-tile {&#13;
-	will-change: opacity;&#13;
-	}&#13;
-.leaflet-fade-anim .leaflet-popup {&#13;
-	opacity: 0;&#13;
-	-webkit-transition: opacity 0.2s linear;&#13;
-	   -moz-transition: opacity 0.2s linear;&#13;
-	     -o-transition: opacity 0.2s linear;&#13;
-	        transition: opacity 0.2s linear;&#13;
-	}&#13;
-.leaflet-fade-anim .leaflet-map-pane .leaflet-popup {&#13;
-	opacity: 1;&#13;
-	}&#13;
-.leaflet-zoom-animated {&#13;
-	-webkit-transform-origin: 0 0;&#13;
-	    -ms-transform-origin: 0 0;&#13;
-	        transform-origin: 0 0;&#13;
-	}&#13;
-.leaflet-zoom-anim .leaflet-zoom-animated {&#13;
-	will-change: transform;&#13;
-	}&#13;
-.leaflet-zoom-anim .leaflet-zoom-animated {&#13;
-	-webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);&#13;
-	   -moz-transition:    -moz-transform 0.25s cubic-bezier(0,0,0.25,1);&#13;
-	     -o-transition:      -o-transform 0.25s cubic-bezier(0,0,0.25,1);&#13;
-	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);&#13;
-	}&#13;
-.leaflet-zoom-anim .leaflet-tile,&#13;
-.leaflet-pan-anim .leaflet-tile {&#13;
-	-webkit-transition: none;&#13;
-	   -moz-transition: none;&#13;
-	     -o-transition: none;&#13;
-	        transition: none;&#13;
-	}&#13;
-&#13;
-.leaflet-zoom-anim .leaflet-zoom-hide {&#13;
-	visibility: hidden;&#13;
-	}&#13;
-&#13;
-&#13;
-/* cursors */&#13;
-&#13;
-.leaflet-interactive {&#13;
-	cursor: pointer;&#13;
-	}&#13;
-.leaflet-grab {&#13;
-	cursor: -webkit-grab;&#13;
-	cursor:    -moz-grab;&#13;
-	}&#13;
-.leaflet-crosshair,&#13;
-.leaflet-crosshair .leaflet-interactive {&#13;
-	cursor: crosshair;&#13;
-	}&#13;
-.leaflet-popup-pane,&#13;
-.leaflet-control {&#13;
-	cursor: auto;&#13;
-	}&#13;
-.leaflet-dragging .leaflet-grab,&#13;
-.leaflet-dragging .leaflet-grab .leaflet-interactive,&#13;
-.leaflet-dragging .leaflet-marker-draggable {&#13;
-	cursor: move;&#13;
-	cursor: -webkit-grabbing;&#13;
-	cursor:    -moz-grabbing;&#13;
-	}&#13;
-&#13;
-&#13;
-/* visual tweaks */&#13;
-&#13;
-.leaflet-container {&#13;
-	background: #ddd;&#13;
-	outline: 0;&#13;
-	}&#13;
-.leaflet-container a {&#13;
-	color: #0078A8;&#13;
-	}&#13;
-.leaflet-container a.leaflet-active {&#13;
-	outline: 2px solid orange;&#13;
-	}&#13;
-.leaflet-zoom-box {&#13;
-	border: 2px dotted #38f;&#13;
-	background: rgba(255,255,255,0.5);&#13;
-	}&#13;
-&#13;
-&#13;
-/* general typography */&#13;
-.leaflet-container {&#13;
-	font: 12px/1.5 &quot;Helvetica Neue&quot;, Arial, Helvetica, sans-serif;&#13;
-	}&#13;
-&#13;
-&#13;
-/* general toolbar styles */&#13;
-&#13;
-.leaflet-bar {&#13;
-	box-shadow: 0 1px 5px rgba(0,0,0,0.65);&#13;
-	border-radius: 4px;&#13;
-	}&#13;
-.leaflet-bar a,&#13;
-.leaflet-bar a:hover {&#13;
-	background-color: #fff;&#13;
-	border-bottom: 1px solid #ccc;&#13;
-	width: 26px;&#13;
-	height: 26px;&#13;
-	line-height: 26px;&#13;
-	display: block;&#13;
-	text-align: center;&#13;
-	text-decoration: none;&#13;
-	color: black;&#13;
-	}&#13;
-.leaflet-bar a,&#13;
-.leaflet-control-layers-toggle {&#13;
-	background-position: 50% 50%;&#13;
-	background-repeat: no-repeat;&#13;
-	display: block;&#13;
-	}&#13;
-.leaflet-bar a:hover {&#13;
-	background-color: #f4f4f4;&#13;
-	}&#13;
-.leaflet-bar a:first-child {&#13;
-	border-top-left-radius: 4px;&#13;
-	border-top-right-radius: 4px;&#13;
-	}&#13;
-.leaflet-bar a:last-child {&#13;
-	border-bottom-left-radius: 4px;&#13;
-	border-bottom-right-radius: 4px;&#13;
-	border-bottom: none;&#13;
-	}&#13;
-.leaflet-bar a.leaflet-disabled {&#13;
-	cursor: default;&#13;
-	background-color: #f4f4f4;&#13;
-	color: #bbb;&#13;
-	}&#13;
-&#13;
-.leaflet-touch .leaflet-bar a {&#13;
-	width: 30px;&#13;
-	height: 30px;&#13;
-	line-height: 30px;&#13;
-	}&#13;
-&#13;
-&#13;
-/* zoom control */&#13;
-&#13;
-.leaflet-control-zoom-in,&#13;
-.leaflet-control-zoom-out {&#13;
-	font: bold 18px 'Lucida Console', Monaco, monospace;&#13;
-	text-indent: 1px;&#13;
-	}&#13;
-.leaflet-control-zoom-out {&#13;
-	font-size: 20px;&#13;
-	}&#13;
-&#13;
-.leaflet-touch .leaflet-control-zoom-in {&#13;
-	font-size: 22px;&#13;
-	}&#13;
-.leaflet-touch .leaflet-control-zoom-out {&#13;
-	font-size: 24px;&#13;
-	}&#13;
-&#13;
-&#13;
-/* layers control */&#13;
-&#13;
-.leaflet-control-layers {&#13;
-	box-shadow: 0 1px 5px rgba(0,0,0,0.4);&#13;
-	background: #fff;&#13;
-	border-radius: 5px;&#13;
-	}&#13;
-.leaflet-control-layers-toggle {&#13;
-	background-image: url({resource=&quot;layers.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;});&#13;
-	width: 36px;&#13;
-	height: 36px;&#13;
-	}&#13;
-.leaflet-retina .leaflet-control-layers-toggle {&#13;
-	background-image: url({resource=&quot;layers-2x.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;});&#13;
-	background-size: 26px 26px;&#13;
-	}&#13;
-.leaflet-touch .leaflet-control-layers-toggle {&#13;
-	width: 44px;&#13;
-	height: 44px;&#13;
-	}&#13;
-.leaflet-control-layers .leaflet-control-layers-list,&#13;
-.leaflet-control-layers-expanded .leaflet-control-layers-toggle {&#13;
-	display: none;&#13;
-	}&#13;
-.leaflet-control-layers-expanded .leaflet-control-layers-list {&#13;
-	display: block;&#13;
-	position: relative;&#13;
-	}&#13;
-.leaflet-control-layers-expanded {&#13;
-	padding: 6px 10px 6px 6px;&#13;
-	color: #333;&#13;
-	background: #fff;&#13;
-	}&#13;
-.leaflet-control-layers-scrollbar {&#13;
-	overflow-y: scroll;&#13;
-	padding-right: 5px;&#13;
-	}&#13;
-.leaflet-control-layers-selector {&#13;
-	margin-top: 2px;&#13;
-	position: relative;&#13;
-	top: 1px;&#13;
-	}&#13;
-.leaflet-control-layers label {&#13;
-	display: block;&#13;
-	}&#13;
-.leaflet-control-layers-separator {&#13;
-	height: 0;&#13;
-	border-top: 1px solid #ddd;&#13;
-	margin: 5px -10px 5px -6px;&#13;
-	}&#13;
-&#13;
-&#13;
-/* attribution and scale controls */&#13;
-&#13;
-.leaflet-container .leaflet-control-attribution {&#13;
-	background: #fff;&#13;
-	background: rgba(255, 255, 255, 0.7);&#13;
-	margin: 0;&#13;
-	}&#13;
-.leaflet-control-attribution,&#13;
-.leaflet-control-scale-line {&#13;
-	padding: 0 5px;&#13;
-	color: #333;&#13;
-	}&#13;
-.leaflet-control-attribution a {&#13;
-	text-decoration: none;&#13;
-	}&#13;
-.leaflet-control-attribution a:hover {&#13;
-	text-decoration: underline;&#13;
-	}&#13;
-.leaflet-container .leaflet-control-attribution,&#13;
-.leaflet-container .leaflet-control-scale {&#13;
-	font-size: 11px;&#13;
-	}&#13;
-.leaflet-left .leaflet-control-scale {&#13;
-	margin-left: 5px;&#13;
-	}&#13;
-.leaflet-bottom .leaflet-control-scale {&#13;
-	margin-bottom: 5px;&#13;
-	}&#13;
-.leaflet-control-scale-line {&#13;
-	border: 2px solid #777;&#13;
-	border-top: none;&#13;
-	line-height: 1.1;&#13;
-	padding: 2px 5px 1px;&#13;
-	font-size: 11px;&#13;
-	white-space: nowrap;&#13;
-	overflow: hidden;&#13;
-	-moz-box-sizing: border-box;&#13;
-	     box-sizing: border-box;&#13;
-&#13;
-	background: #fff;&#13;
-	background: rgba(255, 255, 255, 0.5);&#13;
-	}&#13;
-.leaflet-control-scale-line:not(:first-child) {&#13;
-	border-top: 2px solid #777;&#13;
-	border-bottom: none;&#13;
-	margin-top: -2px;&#13;
-	}&#13;
-.leaflet-control-scale-line:not(:first-child):not(:last-child) {&#13;
-	border-bottom: 2px solid #777;&#13;
-	}&#13;
-&#13;
-.leaflet-touch .leaflet-control-attribution,&#13;
-.leaflet-touch .leaflet-control-layers,&#13;
-.leaflet-touch .leaflet-bar {&#13;
-	box-shadow: none;&#13;
-	}&#13;
-.leaflet-touch .leaflet-control-layers,&#13;
-.leaflet-touch .leaflet-bar {&#13;
-	border: 2px solid rgba(0,0,0,0.2);&#13;
-	background-clip: padding-box;&#13;
-	}&#13;
-&#13;
-&#13;
-/* popup */&#13;
-&#13;
-.leaflet-popup {&#13;
-	position: absolute;&#13;
-	text-align: center;&#13;
-	}&#13;
-.leaflet-popup-content-wrapper {&#13;
-	padding: 1px;&#13;
-	text-align: left;&#13;
-	border-radius: 12px;&#13;
-	}&#13;
-.leaflet-popup-content {&#13;
-	margin: 13px 19px;&#13;
-	line-height: 1.4;&#13;
-	}&#13;
-.leaflet-popup-content p {&#13;
-	margin: 18px 0;&#13;
-	}&#13;
-.leaflet-popup-tip-container {&#13;
-	margin: 0 auto;&#13;
-	width: 40px;&#13;
-	height: 20px;&#13;
-	position: relative;&#13;
-	overflow: hidden;&#13;
-	}&#13;
-.leaflet-popup-tip {&#13;
-	width: 17px;&#13;
-	height: 17px;&#13;
-	padding: 1px;&#13;
-&#13;
-	margin: -10px auto 0;&#13;
-&#13;
-	-webkit-transform: rotate(45deg);&#13;
-	   -moz-transform: rotate(45deg);&#13;
-	    -ms-transform: rotate(45deg);&#13;
-	     -o-transform: rotate(45deg);&#13;
-	        transform: rotate(45deg);&#13;
-	}&#13;
-.leaflet-popup-content-wrapper,&#13;
-.leaflet-popup-tip {&#13;
-	background: white;&#13;
-	color: #333;&#13;
-	box-shadow: 0 3px 14px rgba(0,0,0,0.4);&#13;
-	}&#13;
-.leaflet-container a.leaflet-popup-close-button {&#13;
-	position: absolute;&#13;
-	top: 0;&#13;
-	right: 0;&#13;
-	padding: 4px 4px 0 0;&#13;
-	border: none;&#13;
-	text-align: center;&#13;
-	width: 18px;&#13;
-	height: 14px;&#13;
-	font: 16px/14px Tahoma, Verdana, sans-serif;&#13;
-	color: #c3c3c3;&#13;
-	text-decoration: none;&#13;
-	font-weight: bold;&#13;
-	background: transparent;&#13;
-	}&#13;
-.leaflet-container a.leaflet-popup-close-button:hover {&#13;
-	color: #999;&#13;
-	}&#13;
-.leaflet-popup-scrolled {&#13;
-	overflow: auto;&#13;
-	border-bottom: 1px solid #ddd;&#13;
-	border-top: 1px solid #ddd;&#13;
-	}&#13;
-&#13;
-.leaflet-oldie .leaflet-popup-content-wrapper {&#13;
-	zoom: 1;&#13;
-	}&#13;
-.leaflet-oldie .leaflet-popup-tip {&#13;
-	width: 24px;&#13;
-	margin: 0 auto;&#13;
-&#13;
-	-ms-filter: &quot;progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)&quot;;&#13;
-	filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);&#13;
-	}&#13;
-.leaflet-oldie .leaflet-popup-tip-container {&#13;
-	margin-top: -1px;&#13;
-	}&#13;
-&#13;
-.leaflet-oldie .leaflet-control-zoom,&#13;
-.leaflet-oldie .leaflet-control-layers,&#13;
-.leaflet-oldie .leaflet-popup-content-wrapper,&#13;
-.leaflet-oldie .leaflet-popup-tip {&#13;
-	border: 1px solid #999;&#13;
-	}&#13;
-&#13;
-&#13;
-/* div icon */&#13;
-&#13;
-.leaflet-div-icon {&#13;
-	background: #fff;&#13;
-	border: 1px solid #666;&#13;
-	}&#13;
-</css>
+ <css css_location="global" css_app="membermap" css_attributes="" css_path="." css_name="leaflet.css"><![CDATA[/* required styles */
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-map-pane svg,
+.leaflet-map-pane canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+	position: absolute;
+	left: 0;
+	top: 0;
+	}
+.leaflet-container {
+	overflow: hidden;
+	-ms-touch-action: none;
+	touch-action: none;
+	}
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	        user-select: none;
+	  -webkit-user-drag: none;
+	}
+/* Safari renders non-retina tile on retina better with this, but Chrome is worse */
+.leaflet-safari .leaflet-tile {
+	image-rendering: -webkit-optimize-contrast;
+	}
+/* hack that prevents hw layers "stretching" when loading new tiles */
+.leaflet-safari .leaflet-tile-container {
+	width: 1600px;
+	height: 1600px;
+	-webkit-transform-origin: 0 0;
+	}
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	display: block;
+	}
+/* .leaflet-container svg: reset svg max-width decleration shipped in Joomla! (joomla.org) 3.x */
+/* .leaflet-container img: map is broken in FF if you have max-width: 100% on tiles */
+.leaflet-container .leaflet-overlay-pane svg,
+.leaflet-container .leaflet-marker-pane img,
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container img.leaflet-image-layer {
+	max-width: none !important;
+	}
+.leaflet-tile {
+	filter: inherit;
+	visibility: hidden;
+	}
+.leaflet-tile-loaded {
+	visibility: inherit;
+	}
+.leaflet-zoom-box {
+	width: 0;
+	height: 0;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	z-index: 800;
+	}
+/* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=888319 */
+.leaflet-overlay-pane svg {
+	-moz-user-select: none;
+	}
+
+.leaflet-pane         { z-index: 400; }
+
+.leaflet-tile-pane    { z-index: 200; }
+.leaflet-overlay-pane { z-index: 400; }
+.leaflet-shadow-pane  { z-index: 500; }
+.leaflet-marker-pane  { z-index: 600; }
+.leaflet-popup-pane   { z-index: 700; }
+
+.leaflet-map-pane canvas { z-index: 100; }
+.leaflet-map-pane svg    { z-index: 200; }
+
+.leaflet-vml-shape {
+	width: 1px;
+	height: 1px;
+	}
+.lvml {
+	behavior: url(#default#VML);
+	display: inline-block;
+	position: absolute;
+	}
+
+
+/* control positioning */
+
+.leaflet-control {
+	position: relative;
+	z-index: 800;
+	pointer-events: auto;
+	}
+.leaflet-top,
+.leaflet-bottom {
+	position: absolute;
+	z-index: 1000;
+	pointer-events: none;
+	}
+.leaflet-top {
+	top: 0;
+	}
+.leaflet-right {
+	right: 0;
+	}
+.leaflet-bottom {
+	bottom: 0;
+	}
+.leaflet-left {
+	left: 0;
+	}
+.leaflet-control {
+	float: left;
+	clear: both;
+	}
+.leaflet-right .leaflet-control {
+	float: right;
+	}
+.leaflet-top .leaflet-control {
+	margin-top: 10px;
+	}
+.leaflet-bottom .leaflet-control {
+	margin-bottom: 10px;
+	}
+.leaflet-left .leaflet-control {
+	margin-left: 10px;
+	}
+.leaflet-right .leaflet-control {
+	margin-right: 10px;
+	}
+
+
+/* zoom and fade animations */
+
+.leaflet-fade-anim .leaflet-tile {
+	will-change: opacity;
+	}
+.leaflet-fade-anim .leaflet-popup {
+	opacity: 0;
+	-webkit-transition: opacity 0.2s linear;
+	   -moz-transition: opacity 0.2s linear;
+	     -o-transition: opacity 0.2s linear;
+	        transition: opacity 0.2s linear;
+	}
+.leaflet-fade-anim .leaflet-map-pane .leaflet-popup {
+	opacity: 1;
+	}
+.leaflet-zoom-animated {
+	-webkit-transform-origin: 0 0;
+	    -ms-transform-origin: 0 0;
+	        transform-origin: 0 0;
+	}
+.leaflet-zoom-anim .leaflet-zoom-animated {
+	will-change: transform;
+	}
+.leaflet-zoom-anim .leaflet-zoom-animated {
+	-webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
+	   -moz-transition:    -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
+	     -o-transition:      -o-transform 0.25s cubic-bezier(0,0,0.25,1);
+	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);
+	}
+.leaflet-zoom-anim .leaflet-tile,
+.leaflet-pan-anim .leaflet-tile {
+	-webkit-transition: none;
+	   -moz-transition: none;
+	     -o-transition: none;
+	        transition: none;
+	}
+
+.leaflet-zoom-anim .leaflet-zoom-hide {
+	visibility: hidden;
+	}
+
+
+/* cursors */
+
+.leaflet-interactive {
+	cursor: pointer;
+	}
+.leaflet-grab {
+	cursor: -webkit-grab;
+	cursor:    -moz-grab;
+	}
+.leaflet-crosshair,
+.leaflet-crosshair .leaflet-interactive {
+	cursor: crosshair;
+	}
+.leaflet-popup-pane,
+.leaflet-control {
+	cursor: auto;
+	}
+.leaflet-dragging .leaflet-grab,
+.leaflet-dragging .leaflet-grab .leaflet-interactive,
+.leaflet-dragging .leaflet-marker-draggable {
+	cursor: move;
+	cursor: -webkit-grabbing;
+	cursor:    -moz-grabbing;
+	}
+
+/* marker & overlays interactivity */
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-image-layer,
+.leaflet-pane > svg path,
+.leaflet-tile-container {
+	pointer-events: none;
+	}
+
+.leaflet-marker-icon.leaflet-interactive,
+.leaflet-image-layer.leaflet-interactive,
+.leaflet-pane > svg path.leaflet-interactive {
+	pointer-events: auto;
+	}
+
+/* visual tweaks */
+
+.leaflet-container {
+	background: #ddd;
+	outline: 0;
+	}
+.leaflet-container a {
+	color: #0078A8;
+	}
+.leaflet-container a.leaflet-active {
+	outline: 2px solid orange;
+	}
+.leaflet-zoom-box {
+	border: 2px dotted #38f;
+	background: rgba(255,255,255,0.5);
+	}
+
+
+/* general typography */
+.leaflet-container {
+	font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+	}
+
+
+/* general toolbar styles */
+
+.leaflet-bar {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+	border-radius: 4px;
+	}
+.leaflet-bar a,
+.leaflet-bar a:hover {
+	background-color: #fff;
+	border-bottom: 1px solid #ccc;
+	width: 26px;
+	height: 26px;
+	line-height: 26px;
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	color: black;
+	}
+.leaflet-bar a,
+.leaflet-control-layers-toggle {
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	display: block;
+	}
+.leaflet-bar a:hover {
+	background-color: #f4f4f4;
+	}
+.leaflet-bar a:first-child {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	}
+.leaflet-bar a:last-child {
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom: none;
+	}
+.leaflet-bar a.leaflet-disabled {
+	cursor: default;
+	background-color: #f4f4f4;
+	color: #bbb;
+	}
+
+.leaflet-touch .leaflet-bar a {
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	}
+
+
+/* zoom control */
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+	font: bold 18px 'Lucida Console', Monaco, monospace;
+	text-indent: 1px;
+	}
+.leaflet-control-zoom-out {
+	font-size: 20px;
+	}
+
+.leaflet-touch .leaflet-control-zoom-in {
+	font-size: 22px;
+	}
+.leaflet-touch .leaflet-control-zoom-out {
+	font-size: 24px;
+	}
+
+
+/* layers control */
+
+.leaflet-control-layers {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+	background: #fff;
+	border-radius: 5px;
+	}
+.leaflet-control-layers-toggle {
+	background-image: url({resource="layers.png" app="membermap" location="front"});
+	width: 36px;
+	height: 36px;
+	}
+.leaflet-retina .leaflet-control-layers-toggle {
+	background-image: url({resource="layers-2x.png" app="membermap" location="front"});
+	background-size: 26px 26px;
+	}
+.leaflet-touch .leaflet-control-layers-toggle {
+	width: 44px;
+	height: 44px;
+	}
+.leaflet-control-layers .leaflet-control-layers-list,
+.leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+	display: none;
+	}
+.leaflet-control-layers-expanded .leaflet-control-layers-list {
+	display: block;
+	position: relative;
+	}
+.leaflet-control-layers-expanded {
+	padding: 6px 10px 6px 6px;
+	color: #333;
+	background: #fff;
+	}
+.leaflet-control-layers-scrollbar {
+	overflow-y: scroll;
+	padding-right: 5px;
+	}
+.leaflet-control-layers-selector {
+	margin-top: 2px;
+	position: relative;
+	top: 1px;
+	}
+.leaflet-control-layers label {
+	display: block;
+	}
+.leaflet-control-layers-separator {
+	height: 0;
+	border-top: 1px solid #ddd;
+	margin: 5px -10px 5px -6px;
+	}
+
+
+/* attribution and scale controls */
+
+.leaflet-container .leaflet-control-attribution {
+	background: #fff;
+	background: rgba(255, 255, 255, 0.7);
+	margin: 0;
+	}
+.leaflet-control-attribution,
+.leaflet-control-scale-line {
+	padding: 0 5px;
+	color: #333;
+	}
+.leaflet-control-attribution a {
+	text-decoration: none;
+	}
+.leaflet-control-attribution a:hover {
+	text-decoration: underline;
+	}
+.leaflet-container .leaflet-control-attribution,
+.leaflet-container .leaflet-control-scale {
+	font-size: 11px;
+	}
+.leaflet-left .leaflet-control-scale {
+	margin-left: 5px;
+	}
+.leaflet-bottom .leaflet-control-scale {
+	margin-bottom: 5px;
+	}
+.leaflet-control-scale-line {
+	border: 2px solid #777;
+	border-top: none;
+	line-height: 1.1;
+	padding: 2px 5px 1px;
+	font-size: 11px;
+	white-space: nowrap;
+	overflow: hidden;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+
+	background: #fff;
+	background: rgba(255, 255, 255, 0.5);
+	}
+.leaflet-control-scale-line:not(:first-child) {
+	border-top: 2px solid #777;
+	border-bottom: none;
+	margin-top: -2px;
+	}
+.leaflet-control-scale-line:not(:first-child):not(:last-child) {
+	border-bottom: 2px solid #777;
+	}
+
+.leaflet-touch .leaflet-control-attribution,
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	box-shadow: none;
+	}
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
+	}
+
+
+/* popup */
+
+.leaflet-popup {
+	position: absolute;
+	text-align: center;
+	}
+.leaflet-popup-content-wrapper {
+	padding: 1px;
+	text-align: left;
+	border-radius: 12px;
+	}
+.leaflet-popup-content {
+	margin: 13px 19px;
+	line-height: 1.4;
+	}
+.leaflet-popup-content p {
+	margin: 18px 0;
+	}
+.leaflet-popup-tip-container {
+	margin: 0 auto;
+	width: 40px;
+	height: 20px;
+	position: relative;
+	overflow: hidden;
+	}
+.leaflet-popup-tip {
+	width: 17px;
+	height: 17px;
+	padding: 1px;
+
+	margin: -10px auto 0;
+
+	-webkit-transform: rotate(45deg);
+	   -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	     -o-transform: rotate(45deg);
+	        transform: rotate(45deg);
+	}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+	background: white;
+	color: #333;
+	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+	}
+.leaflet-container a.leaflet-popup-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 4px 4px 0 0;
+	border: none;
+	text-align: center;
+	width: 18px;
+	height: 14px;
+	font: 16px/14px Tahoma, Verdana, sans-serif;
+	color: #c3c3c3;
+	text-decoration: none;
+	font-weight: bold;
+	background: transparent;
+	}
+.leaflet-container a.leaflet-popup-close-button:hover {
+	color: #999;
+	}
+.leaflet-popup-scrolled {
+	overflow: auto;
+	border-bottom: 1px solid #ddd;
+	border-top: 1px solid #ddd;
+	}
+
+.leaflet-oldie .leaflet-popup-content-wrapper {
+	zoom: 1;
+	}
+.leaflet-oldie .leaflet-popup-tip {
+	width: 24px;
+	margin: 0 auto;
+
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
+	filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
+	}
+.leaflet-oldie .leaflet-popup-tip-container {
+	margin-top: -1px;
+	}
+
+.leaflet-oldie .leaflet-control-zoom,
+.leaflet-oldie .leaflet-control-layers,
+.leaflet-oldie .leaflet-popup-content-wrapper,
+.leaflet-oldie .leaflet-popup-tip {
+	border: 1px solid #999;
+	}
+
+
+/* div icon */
+
+.leaflet-div-icon {
+	background: #fff;
+	border: 1px solid #666;
+	}
+]]></css>
  <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="MarkerCluster.css">.leaflet-cluster-anim .leaflet-marker-icon, .leaflet-cluster-anim .leaflet-marker-shadow {&#13;
 	-webkit-transition: -webkit-transform 0.2s ease-out, opacity 0.2s ease-in;&#13;
 	-moz-transition: -moz-transform 0.2s ease-out, opacity 0.2s ease-in;&#13;

@@ -1,32 +1,32 @@
-<ips:template parameters="$markers='', $cacheTime=0" />
+<ips:template parameters="$markers='', $cacheTime=0, $canAdd=false, $canEdit=false" />
 {{if request.do != 'embed'}}
 <div class="ipsPageHeader ipsClearfix">
 	<header class='ipsSpacer_bottom'>
 		<h1 class="ipsType_pageTitle">{lang="frontnavigation_membermap"}</h1>
 		<div class='ipsPos_right ipsResponsive_noFloat'>
 			<ul class="ipsToolList ipsToolList_horizontal ipsClearfix">
-				{{if \IPS\Member::loggedIn()->group['g_membermap_canAdd'] OR \IPS\Member::loggedIn()->group['g_membermap_canEdit']}}
-				<li id='membermap_addLocation_wrapper' class='ipsToolList_primaryAction'>
-					<a class="ipsButton ipsButton_medium ipsButton_important ipsButton_fullWidth" href="#" title='' id="membermap_button_addLocation">{lang="membermap_button_addLocation"}</a>
-				</li>
-				<li id='membermap_myLocation_wrapper' class='ipsToolList_primaryAction' style='display:none;'>
-					<a class="ipsButton ipsButton_medium ipsButton_important ipsButton_fullWidth" data-ipsmenu href='#elMyLocationMenu' id='elMyLocationMenu' title=''>
-						{lang="membermap_button_myLocation"} <i class='fa fa-caret-down'></i>
-					</a>
-					<div id='elMyLocationMenu_menu' class='ipsMenu ipsMenu_auto ipsHide'>
-						<ul>
-							<li class="ipsMenu_item" id="membermap_button_editLocation">
-								<a href="#">{lang="membermap_button_editLocation"}</a>
-							</li>
+				{{if $canAdd OR $canEdit}}
+					<li id='membermap_addLocation_wrapper' class='ipsToolList_primaryAction'>
+						<a class="ipsButton ipsButton_medium ipsButton_important ipsButton_fullWidth" href="#" title='' id="membermap_button_addLocation">{lang="membermap_button_addLocation"}</a>
+					</li>
+					<li id='membermap_myLocation_wrapper' class='ipsToolList_primaryAction' style='display:none;'>
+						<a class="ipsButton ipsButton_medium ipsButton_important ipsButton_fullWidth" data-ipsmenu href='#elMyLocationMenu' id='elMyLocationMenu' title=''>
+							{lang="membermap_button_myLocation"} <i class='fa fa-caret-down'></i>
+						</a>
+						<div id='elMyLocationMenu_menu' class='ipsMenu ipsMenu_auto ipsHide'>
+							<ul>
+								<li class="ipsMenu_item" id="membermap_button_editLocation">
+									<a href="#">{lang="membermap_button_editLocation"}</a>
+								</li>
 
-							<li class='ipsMenu_sep'><hr></li>
+								<li class='ipsMenu_sep'><hr></li>
 
-							<li class="ipsMenu_item" id="elMyLocationMenuGoHome">
-								<a href="{url='app=membermap&goHome=1' seoTemplate='membermap'}">{lang="membermap_goHome"}</a>
-							</li>
-						</ul>
-					</div>
-				</li>
+								<li class="ipsMenu_item" id="elMyLocationMenuGoHome">
+									<a href="{url='app=membermap&goHome=1' seoTemplate='membermap'}">{lang="membermap_goHome"}</a>
+								</li>
+							</ul>
+						</div>
+					</li>
 				{{endif}}
 
 				{{if \IPS\Member::loggedIn()->isAdmin()}}
@@ -53,6 +53,10 @@
 					</div>
 				</li>
 				{{endif}}
+
+				<li>
+					<a href="{url='app=membermap&controller=markers&module=groups' seoTemplate='markers'}" title='{lang="membermap_browse_markers"}' class='ipsButton ipsButton_medium ipsButton_fullWidth ipsButton_link'><i class="icon-newspaper"></i> {lang="membermap_browse_markers"}</a>
+				</li>
 			</ul>
 		</div>
 	</header>
