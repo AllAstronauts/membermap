@@ -4,6 +4,6 @@
 	<p class='ipsType_large'>{lang="membermap_no_markers_in_cat"}</p>
 
 	{{if $group->can('add')}}
-		<a href='{url="app=membermap&module=markers&controller=submit&_new=1&group={$group->id}" seoTemplate="downloads_submit"}' class='ipsButton ipsButton_primary ipsButton_medium' data-ipsDialog data-ipsDialog-title='{lang="submit_first_file"}' data-ipsDialog-size='narrow'>{lang="membermap_submit_first_marker"}</a>
+		<a href='{url="app=membermap&module=markers&controller=submit&_new=1&group={$group->id}" seoTemplate="membermap_submit"}' class='ipsButton ipsButton_primary ipsButton_medium'>{lang="membermap_submit_first_marker"}</a>
 	{{endif}}
 </div>
