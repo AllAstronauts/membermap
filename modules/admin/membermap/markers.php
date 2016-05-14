@@ -93,7 +93,7 @@ class _markers extends \IPS\Node\Controller
 
 			if ( $group->type == 'member' )
 			{
-				\IPS\Output::i()->error( 'generic_error', '1', 403, '' );
+				\IPS\Output::i()->error( 'generic_error', '1MM4/1', 403, '' );
 			}
 		}
 

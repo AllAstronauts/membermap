@@ -33,7 +33,7 @@ class _markers extends \IPS\Content\Controller
 		}
 		catch ( \OutOfRangeException $e )
 		{
-			\IPS\Output::i()->error( 'node_error', '2D161/1', 404, '' );
+			\IPS\Output::i()->error( 'node_error', '2MM1/1', 404, '' );
 		}
 
 		\IPS\Output::i()->breadcrumb[] = array( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=membermap', 'front', 'membermap' ), \IPS\Member::loggedIn()->language()->addToStack( 'module__membermap_membermap' ) );
@@ -68,7 +68,7 @@ class _markers extends \IPS\Content\Controller
 	{
 		if ( !$this->marker->canEdit() and !\IPS\Request::i()->form_submitted ) // We check if the form has been submitted to prevent the user loosing their content
 		{
-			\IPS\Output::i()->error( 'edit_no_perm_err', '2MM1/E', 403, '' );
+			\IPS\Output::i()->error( 'edit_no_perm_err', '2MM1/2', 403, '' );
 		}
 
 		$form = $this->marker->buildEditForm();

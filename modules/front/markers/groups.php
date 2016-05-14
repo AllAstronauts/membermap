@@ -48,7 +48,7 @@ class _groups extends \IPS\Content\Controller
 			}
 			catch ( \OutOfRangeException $e )
 			{
-				\IPS\Output::i()->error( 'node_error', '2D175/1', 404, '' );
+				\IPS\Output::i()->error( 'node_error', '2MM2/1', 404, '' );
 			}
 		}
 		else

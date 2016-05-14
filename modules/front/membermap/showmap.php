@@ -137,7 +137,7 @@ EOF;
 	{
 		if ( ! \IPS\Member::loggedIn()->member_id )
 		{
-			\IPS\Output::i()->error( 'no_permission', '', 403, '' );
+			\IPS\Output::i()->error( 'no_permission', '2MM3/1', 403, '' );
 		}
 
 		/* Get the members location, if it exists */
@@ -149,12 +149,12 @@ EOF;
 		{
 			if ( ! $existing->canEdit() )
 			{
-				\IPS\Output::i()->error( 'membermap_error_cantEdit', '', 403, '' );
+				\IPS\Output::i()->error( 'membermap_error_cantEdit', '2MM3/2', 403, '' );
 			}
 		}
 		else if ( ! \IPS\membermap\Markers\Groups::load( $groupId )->can( 'add' ) )
 		{
-			\IPS\Output::i()->error( 'membermap_error_cantAdd', '123', 403, '' );
+			\IPS\Output::i()->error( 'membermap_error_cantAdd', '2MM3/3', 403, '' );
 		}
 
 		/* HTML5 GeoLocation form */
@@ -224,7 +224,7 @@ EOF;
 	{
 		if ( ! \IPS\Member::loggedIn()->member_id OR ! intval( \IPS\Request::i()->member_id ) )
 		{
-			\IPS\Output::i()->error( 'no_permission', '1', 403, '' );
+			\IPS\Output::i()->error( 'no_permission', '2MM3/4', 403, '' );
 		}
 
 		/* Get the marker */
@@ -242,7 +242,7 @@ EOF;
 		}
 
 		/* Fall back to a generic error */
-		\IPS\Output::i()->error( 'no_permission', '2', 403, '' );
+		\IPS\Output::i()->error( 'no_permission', '2MM3/5', 403, '' );
 	}
 
 	protected function embed()
