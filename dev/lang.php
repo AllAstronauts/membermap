@@ -94,8 +94,8 @@ $lang = array(
 	'import_upload'					=> "Marker .kml file",
 	'import_creategroups'			=> "Create a new group",
 	'import_creategroups_desc'		=> "Import markers to an existing group, or create a new group for each \"Folder\" in the .kml file",
-
 	'membermap_error_no_id_no_create'	=> "You have to either chose to create a new group, or select an existing group to import markers to",
+	'membermap_import_thumbup'			=> "Successfully imported %d markers",
 
 
 	/* ACP Map Manager */

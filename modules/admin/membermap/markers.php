@@ -128,8 +128,9 @@ class _markers extends \IPS\Node\Controller
 				return;
 			}
 
-			$markers = array();
+			$markers 	= array();
 			$groupOrder = NULL;
+			$imported	= 0;
 
 			foreach( $xml->Document->Folder as $folder )
 			{
@@ -207,7 +208,8 @@ class _markers extends \IPS\Node\Controller
 					), array( 'perm_id=?', $perms['perm_id'] ) );
 
 					// Reset
-					$markers = array();
+					$imported	+= count( $markers );
+					$markers 	= array();
 				}
 			}
 
@@ -219,9 +221,14 @@ class _markers extends \IPS\Node\Controller
 				$group = \IPS\membermap\Markers\Groups::load( $id );
 				$group->setLastComment();
 				$group->save();
+				
+				$imported	+= count( $markers );
 			}
 			
 			\IPS\membermap\Map::i()->invalidateJsonCache();
+
+			$message = \IPS\Member::loggedIn()->language()->addToStack( 'membermap_import_thumbup', FALSE, array( 'sprintf' => array( $imported ) ) );
+			\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=membermap&module=membermap&controller=markers" ), $message );
 		}
 		
 		/* Display */
