@@ -43,6 +43,7 @@ $lang = array(
 	'membermap_marker' 				=> "Member Map Marker",
 	'membermap_marker_pl'			=> "Markers",
 	'membermap_marker_pl_lc'		=> "markers",
+	'membermap_markers_markers_pl' 	=> "Member Map",
 	'membermap_view_this_marker' 	=> "View this marker: %s",
 	'membermap_submit_a_marker' 	=> "Add Marker",
 	'membermap_edit_a_marker' 		=> "Edit Marker",
