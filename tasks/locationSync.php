@@ -99,6 +99,9 @@ class _locationSync extends \IPS\Task
 					
 					$marker->save();
 
+					/* Add to index */
+					\IPS\Content\Search\Index::i()->index( $marker );
+
 					$counter++;
 				}
 			}
