@@ -316,58 +316,50 @@
 			{
 				allMarkers = [];
 
-				$.ajax( ipsSettings.baseURL.replace('&amp;','&') + 'datastore/membermap_cache/membermap-index.json',
-				{	
-					cache : false,
-					dataType: 'json',
-					success: function( res )
-					{
-						if ( typeof res.error !== 'undefined' )
+				var startId = 0;
+				
+				function loadNextFile( id )
+				{
+					$.ajax({
+						url: ipsSettings.baseURL.replace('&amp;','&') + '/datastore/membermap_cache/membermap-' + id + '.json',
+						cache : false,
+						async: true,
+						dataType: 'json',
+						success:function( res )
 						{
-							alert(res.error);
-						}
+							/* Show marker layer */
+							showMarkers( false, res );
+							allMarkers = allMarkers.concat( res );
 
-						if ( res.fileList.length === 0 )
+							loadNextFile( ++id );
+						},
+						error:function (xhr, ajaxOptions, thrownError)
 						{
-							return false;
-						}
-
-						var promise;
-
-						$.each( res.fileList, function( id, file )
-						{
-							promise = $.when( promise, 
-								$.ajax({
-									url: ipsSettings.baseURL.replace('&amp;','&') + '/datastore/' + file,
-									cache : false,
-									dataType: 'json',
-									success:function( res )
-									{
-										/* Show marker layer */
-										showMarkers( false, res );
-										allMarkers = allMarkers.concat( res );
-									}
-								})
-							);
-						});
-
-						/* Store data in browser when all AJAX calls complete */
-						promise.done(function()
-						{
-							updateOverlays();
-
-							if ( ips.utils.db.isEnabled() )
+							if(xhr.status == 404) 
 							{
-								var date = new Date();
-								ips.utils.db.set( 'membermap', 'markers', { time: ( date.getTime() / 1000 ), data: allMarkers } );
-								ips.utils.db.set( 'membermap', 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
-
-
-								$( '#elToolsMenuBrowserCache a time' ).html( '(' + ips.getString( 'membermap_browserCache_update' ) + ': ' + ips.utils.time.readable( date.getTime() / 1000 ) + ')' );
+								finished();
 							}
-						});
+						}
+					});
+				};
+
+				loadNextFile( startId );
+
+				/* Store data in browser when all AJAX calls complete */
+				function finished()
+				{
+					updateOverlays();
+
+					if ( ips.utils.db.isEnabled() )
+					{
+						var date = new Date();
+						ips.utils.db.set( 'membermap', 'markers', { time: ( date.getTime() / 1000 ), data: allMarkers } );
+						ips.utils.db.set( 'membermap', 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
+
+
+						$( '#elToolsMenuBrowserCache a time' ).html( '(' + ips.getString( 'membermap_browserCache_update' ) + ': ' + ips.utils.time.readable( date.getTime() / 1000 ) + ')' );
 					}
-				});
+				};
 			}
 			else
 			{

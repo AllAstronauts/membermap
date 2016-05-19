@@ -1,3 +1,6 @@
 <ips:template parameters="$marker" />
-<h3>{$marker->name}</h3>
-{$marker->content()|raw}
+<h3>{$marker['marker_name']}</h3>
+<p>{$marker['marker_description']|raw}</p>
+{{if $marker['marker_location']}}
+	<p>{$marker['marker_location']}</p>
+{{endif}}

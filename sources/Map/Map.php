@@ -235,7 +235,7 @@ class _Map
 		$cacheTime 	= isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
 
 		/* Rebuild JSON cache if needed */
-		if ( ! is_file ( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-index.json' ) OR \IPS\Request::i()->rebuildCache === '1' OR $cacheTime === 0 )
+		if ( ! is_file ( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-0.json' ) OR \IPS\Request::i()->rebuildCache === '1' OR $cacheTime === 0 )
 		{
 			$this->recacheJsonFile();
 
@@ -256,6 +256,16 @@ class _Map
 	{
 		\IPS\Data\Store::i()->membermap_cacheTime = 0;
 
+		/* Just reset cachetime to 0. checkForCache() will deal with the actual recaching on the next load */
+	}
+
+	/**
+	 * Delete cache files 
+	 *
+	 * @return void
+	 */
+	public function deleteCacheFiles()
+	{
 		/* Remove all files from cache dir. 
 		 * We need to do this in case of situations were a file won't be overwritten (when deleting markers), 
 		 * and old markers will be left in place, or markers are shown multiple times.*/
@@ -265,6 +275,12 @@ class _Map
 			{
 				unlink( $file );
 			}
+		}
+
+		if ( ! is_dir( \IPS\ROOT_PATH . '/datastore/membermap_cache' ) )
+		{
+			mkdir( \IPS\ROOT_PATH . '/datastore/membermap_cache' );
+			chmod( \IPS\ROOT_PATH . '/datastore/membermap_cache', \IPS\IPS_FOLDER_PERMISSION );
 		}
 	}
 
@@ -281,35 +297,52 @@ class _Map
 			return;
 		}
 
+		$totalMarkers = 0;
 		$memberMarkers = array();
 		$customMarkers = array();
 
-		foreach( \IPS\membermap\Markers\Groups::roots( NULL ) as $group )
+		try
+		{			
+			$totalMarkers = \IPS\Db::i()->select( 'COUNT(*)', 'membermap_markers' )->first();
+		}
+		catch( \Exception $ex )
 		{
-			$_markers = iterator_to_array( \IPS\membermap\Markers\Markers::getItemsWithPermission( 
-				array( array( \IPS\membermap\Markers\Markers::$databasePrefix . \IPS\membermap\Markers\Markers::$databaseColumnMap['container'] . '=?', $group->_id ) ), /* $where */
-				NULL, /* $order */
-				NULL, /* $limit */
-				NULL, /* $permissionKey */
-				FALSE, /* $includeHiddenItems */
-				0, /* $queryFlags */
-				new \IPS\Member, /* \IPS\Member */
-				TRUE, /* $joinContainer */
-				FALSE, /* $joinComments */
-				FALSE, /* $joinReviews */
-				FALSE,  /* $countOnly */
-				NULL, /* $joins */
-				TRUE, /* $skipPermission */
-				FALSE /* $joinTags */
-			) );
+		}
 
-			if ( $group->type == 'member' )
+		/* Trigger the queue if the marker count is too large to do in one go. */
+		/* We'll hardcode the cap at 4000 now, that consumes roughly 50MB */
+		if( $totalMarkers > 4000 )
+		{
+			\IPS\Task::queue( 'membermap', 'RebuildCache', array( 'class' => '\IPS\membermap\Map' ), 5, array( 'class' ) );
+			return;
+		}
+
+
+
+		$selectColumns = array( 'mm.*', 'mg.*', 'm.member_id', 'm.name', 'm.members_seo_name', 'm.member_group_id', 'm.pp_photo_type', 'm.pp_main_photo', 'm.pp_thumb_photo' );
+		
+		if ( \IPS\Settings::i()->allow_gravatars )
+		{
+			$selectColumns[] = 'm.pp_gravatar';
+			$selectColumns[] = 'm.email';
+			$selectColumns[] = 'm.members_bitoptions';
+		}
+
+		/* Remember to update the queue too */
+		$_markers = \IPS\Db::i()->select( implode( ',', $selectColumns ), array( 'membermap_markers', 'mm' ), array(), 'mg.group_position ASC, mm.marker_id DESC' )
+					->join( array( 'membermap_markers_groups', 'mg' ), 'mm.marker_parent_id=mg.group_id' )
+					->join( array( 'core_members', 'm' ), 'mm.marker_member_id=m.member_id' );
+
+		foreach( $_markers as $marker )
+		{
+
+			if ( $marker['group_type'] == 'member' )
 			{
-				$memberMarkers = array_merge( $memberMarkers, $_markers );
+				$memberMarkers[] = $marker;
 			}
 			else
 			{
-				$customMarkers = array_merge( $customMarkers, $_markers );
+				$customMarkers[] = $marker;
 			}
 		}		
 
@@ -320,25 +353,10 @@ class _Map
 		$markers = array_merge( $markers, $custMarkers );
 
 		$markers = array_chunk( $markers, 500 );
-
-		if ( ! is_dir( \IPS\ROOT_PATH . '/datastore/membermap_cache' ) )
-		{
-			mkdir( \IPS\ROOT_PATH . '/datastore/membermap_cache' );
-			chmod( \IPS\ROOT_PATH . '/datastore/membermap_cache', \IPS\IPS_FOLDER_PERMISSION );
-		}
-
-		/* Remove all files from cache dir. 
-		 * We need to do this in case of situations were a file won't be overwritten (when deleting markers), 
-		 * and old markers will be left in place, or markers are shown multiple times.*/
-		foreach( glob( \IPS\ROOT_PATH . '/datastore/membermap_cache/*' ) as $file )
-		{
-			if ( is_file( $file ) )
-			{
-				unlink( $file );
-			}
-		}
 		
-		$fileCount = 1;
+		$this->deleteCacheFiles();
+		
+		$fileCount = 0;
 		$fileList = array();
 		foreach( $markers as $chunk )
 		{
@@ -349,23 +367,9 @@ class _Map
 			
 			$fileCount++;
 		}
-		
-		/* Build index file */
-		$index = array(
-			'fileList'		=> $fileList
-		);
-
-		if ( ! is_file( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-index.json' ) )
-		{
-			touch( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-index.json' );
-			chmod( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-index.json', \IPS\IPS_FILE_PERMISSION );
-		}
-		
-		\file_put_contents( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-index.json', json_encode( $index ) );
 
 		/* Store the timestamp of the cache to force the browser to purge its local storage */
 		\IPS\Data\Store::i()->membermap_cacheTime = time();
-		
 	}
 	
 	/**
@@ -377,32 +381,30 @@ class _Map
 	public function formatMemberMarkers( array $markers )
 	{
 		$markersToKeep = array();
+		$groupCache = \IPS\Data\Store::i()->groups;
 
 		if ( is_array( $markers ) AND count( $markers ) )
 		{
 			foreach( $markers as $marker )
 			{
-				if ( $marker->lat == 0 AND $marker->lon == 0 )
+				if ( $marker['marker_lat'] == 0 AND $marker['marker_lon'] == 0 )
 				{
-					if ( $marker instanceof \IPS\membermap\Markers\Markers )
-					{
-						$marker->delete();
-					}
+					\IPS\Db::i()->delete( 'membermap_markers', array( 'marker_id=?', $marker['marker_id'] ) );
 					
 					continue;
 				}
 
-				$photo = $marker->author()->photo;
+				$photo = \IPS\Member::photoUrl( $marker );
 
 				$markersToKeep[] = array(
 					'type'			=> "member",
-					'lat' 			=> round( (float)$marker->lat, 5 ),
-					'lon' 			=> round( (float)$marker->lon, 5 ),
-					'member_id'		=> $marker->member_id,
-					'parent_id'		=> $marker->author()->member_group_id,
-					'parent_name'	=> \IPS\Lang::load( \IPS\Lang::defaultLanguage() )->get( 'core_group_' . $marker->author()->member_group_id ),
+					'lat' 			=> round( (float)$marker['marker_lat'], 5 ),
+					'lon' 			=> round( (float)$marker['marker_lon'], 5 ),
+					'member_id'		=> $marker['marker_member_id'],
+					'parent_id'		=> $marker['member_group_id'],
+					'parent_name'	=> \IPS\Lang::load( \IPS\Lang::defaultLanguage() )->get( 'core_group_' . $marker['member_group_id'] ),
 					'popup' 		=> \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker, $photo ),
-					'markerColour' 	=> $marker->author()->group['g_membermap_markerColour'] ?: 'darkblue',
+					'markerColour' 	=> $groupCache[ $marker['member_group_id'] ]['g_membermap_markerColour'] ?: 'darkblue',
 				);
 			}
 		}
@@ -433,14 +435,13 @@ class _Map
 				
 				$markersToKeep[] = array(
 					'type'			=> "custom",
-					'lat' 			=> round( (float)$marker->lat, 5 ),
-					'lon' 			=> round( (float)$marker->lon, 5 ),
+					'lat' 			=> round( (float)$marker['marker_lat'], 5 ),
+					'lon' 			=> round( (float)$marker['marker_lon'], 5 ),
 					'popup' 		=> $popup,
-					'icon'			=> $marker->container()->pin_icon,
-					'colour'		=> $marker->container()->pin_colour,
-					'bgColour'		=> in_array( $marker->container()->pin_bg_colour, $validColours ) ? $marker->container()->pin_bg_colour : 'red',
-					'parent_id' 	=> $marker->parent_id,
-					'parent_name' 	=> \IPS\Lang::load( \IPS\Lang::defaultLanguage() )->get( 'membermap_marker_group_' . $marker->parent_id ),
+					'icon'			=> $marker['group_pin_icon'],
+					'colour'		=> $marker['group_pin_colour'],
+					'bgColour'		=> in_array( $marker['group_pin_bg_colour'], $validColours ) ? $marker['group_pin_bg_colour'] : 'red',
+					'parent_id' 	=> $marker['marker_parent_id'],
 				);
 			}
 		}

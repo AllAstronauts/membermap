@@ -1,9 +1,11 @@
 <?php
 
 $lang = array(
+	/* Various strings */
 	'__app_membermap'			=> "Member Map",
 	'frontnavigation_membermap'	=> "Member Map",
 	'__indefart_membermap_marker'	=> "a Member Map Marker",
+	'membermap_rebuilding_cache'	=> "Rebuilding Member Map Cache",
 
 	/* ACP Module/Menu titles */
 	'menu__membermap_membermap' => "Member Map",
