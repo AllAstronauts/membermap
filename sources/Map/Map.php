@@ -277,6 +277,13 @@ class _Map
 			}
 		}
 
+		/* Check if we even have a 'datastore' folder. */
+		if ( ! is_dir( \IPS\ROOT_PATH . '/datastore' ) )
+		{
+			mkdir( \IPS\ROOT_PATH . '/datastore' );
+			chmod( \IPS\ROOT_PATH . '/datastore', \IPS\IPS_FOLDER_PERMISSION );
+		}
+
 		if ( ! is_dir( \IPS\ROOT_PATH . '/datastore/membermap_cache' ) )
 		{
 			mkdir( \IPS\ROOT_PATH . '/datastore/membermap_cache' );
@@ -337,7 +344,7 @@ class _Map
 
 		if ( $useQueue OR ( defined( 'MEMBERMAP_FORCE_QUEUE' ) and MEMBERMAP_FORCE_QUEUE ) )
 		{
-			\IPS\Task::queue( 'membermap', 'RebuildCache', array( 'class' => '\IPS\membermap\Map' ), 5, array( 'class' ) );
+			\IPS\Task::queue( 'membermap', 'RebuildCache', array( 'class' => '\IPS\membermap\Map' ), 1, array( 'class' ) );
 			return;
 		}
 

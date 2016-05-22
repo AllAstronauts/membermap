@@ -63,10 +63,10 @@ class _showmap extends \IPS\Dispatcher\Controller
 		{
 			$markers = \IPS\membermap\Map::i()->getMarkerByMember( $getByUser );
 		}
-		else if ( \IPS\Request::i()->filter == 'getOnlineUsers' )
+		/*else if ( \IPS\Request::i()->filter == 'getOnlineUsers' )
 		{
 			$markers = \IPS\membermap\Map::i()->getMarkersByOnlineMembers();
-		}
+		}*/
 
 		/* Get enabled maps */
 		$defaultMaps = \IPS\membermap\Application::getEnabledMaps();
