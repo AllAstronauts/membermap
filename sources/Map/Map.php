@@ -311,12 +311,35 @@ class _Map
 
 		/* Trigger the queue if the marker count is too large to do in one go. */
 		/* We'll hardcode the cap at 4000 now, that consumes roughly 50MB */
-		if( $totalMarkers > 4000 )
+		/* We'll also see if we have enough memory available to do it */
+
+		$currentMemUsage 	= memory_get_usage( TRUE );
+		$memoryLimit 		= intval( ini_get( 'memory_limit' ) );
+		
+		$useQueue 			= false;
+		if ( $memoryLimit > 0 )
+		{
+			$howMuchAreWeGoingToUse = $totalMarkers * 0.02; /* ~0.02MB pr marker */
+			$howMuchAreWeGoingToUse += 10; /* Plus a bit to be safe */
+
+			$howMuchDoWeHaveLeft = $memoryLimit - ceil( ( $currentMemUsage / 1024 / 1024 ) );
+
+			if ( $howMuchDoWeHaveLeft < $howMuchAreWeGoingToUse )
+			{
+				$useQueue = true;
+			}
+		}
+
+		if ( $totalMarkers > 4000 )
+		{
+			$useQueue = true;
+		}
+
+		if ( $useQueue OR ( defined( 'MEMBERMAP_FORCE_QUEUE' ) and MEMBERMAP_FORCE_QUEUE ) )
 		{
 			\IPS\Task::queue( 'membermap', 'RebuildCache', array( 'class' => '\IPS\membermap\Map' ), 5, array( 'class' ) );
 			return;
 		}
-
 
 
 		$selectColumns = array( 'mm.*', 'mg.*', 'm.member_id', 'm.name', 'm.members_seo_name', 'm.member_group_id', 'm.pp_photo_type', 'm.pp_main_photo', 'm.pp_thumb_photo' );
@@ -335,7 +358,6 @@ class _Map
 
 		foreach( $_markers as $marker )
 		{
-
 			if ( $marker['group_type'] == 'member' )
 			{
 				$memberMarkers[] = $marker;
@@ -357,13 +379,19 @@ class _Map
 		$this->deleteCacheFiles();
 		
 		$fileCount = 0;
-		$fileList = array();
 		foreach( $markers as $chunk )
 		{
+
 			touch( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-' . $fileCount . '.json' );
 			chmod( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-' . $fileCount . '.json', \IPS\IPS_FILE_PERMISSION );
-			\file_put_contents( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-' . $fileCount . '.json', json_encode( $chunk ) );
-			$fileList[] = 'membermap_cache/membermap-' . $fileCount . '.json';
+			\file_put_contents( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-' . $fileCount . '.json', 
+				json_encode( 
+					array( 
+						'markers' => $chunk,
+						'memUsage' => ( (memory_get_usage( TRUE ) - $currentMemUsage ) / 1024 ) . 'kB',
+					) 
+				)
+			);
 			
 			$fileCount++;
 		}

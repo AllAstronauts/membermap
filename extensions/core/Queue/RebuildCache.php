@@ -64,6 +64,8 @@ class _RebuildCache
 	 */
 	public function run( $data, $offset )
 	{
+		$currentMemUsage = memory_get_usage( TRUE );
+
 		/* Wipe out the old files on the first run */
 		if ( $offset === 0 )
 		{
@@ -113,7 +115,15 @@ class _RebuildCache
 
 			touch( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-' . $fileNumber . '.json' );
 			chmod( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-' . $fileNumber . '.json', \IPS\IPS_FILE_PERMISSION );
-			\file_put_contents( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-' . $fileNumber . '.json', json_encode( $markers ) );
+			\file_put_contents( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-' . $fileNumber . '.json', 
+				json_encode( 
+					array(
+						'markers' 	=> $markers,
+						'memUsage' 	=> ( ( memory_get_usage( TRUE ) - $currentMemUsage ) / 1024 ) . 'kB',
+						'fromQueue'	=> 1
+					) 
+				)
+			);
 
 			/* Store the timestamp of the cache to force the browser to purge its local storage */
 			\IPS\Data\Store::i()->membermap_cacheTime = time();

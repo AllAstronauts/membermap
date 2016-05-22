@@ -334,8 +334,8 @@
 							}
 
 							/* Show marker layer */
-							showMarkers( false, res );
-							allMarkers = allMarkers.concat( res );
+							showMarkers( false, res.markers );
+							allMarkers = allMarkers.concat( res.markers );
 
 							loadNextFile( ++id );
 						},
