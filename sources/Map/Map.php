@@ -93,9 +93,9 @@ class _Map
 			return false;
 		}
 
-		if( isset( $marker[ $memberId ] ) )
+		if( isset( $marker[ $memberId . '-' . $format ] ) )
 		{
-			$_marker = $marker[ $memberId ];
+			$_marker = $marker[ $memberId . '-' . $format ];
 		}
 		else
 		{
@@ -109,7 +109,12 @@ class _Map
 						->join( array( 'core_groups', 'g' ), 'm.member_group_id=g.g_id' )
 						->first();
 
-				$marker[ $memberId ] = $_marker = \IPS\membermap\Markers\Markers::constructFromData( $_marker );
+				if ( ! $format )
+				{
+					$_marker = \IPS\membermap\Markers\Markers::constructFromData( $_marker );
+				}
+
+				$marker[ $memberId . '-' . $format ] = $_marker;
 						
 			}
 			catch( \UnderflowException $e )

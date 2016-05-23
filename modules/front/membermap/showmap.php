@@ -125,7 +125,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 		</script>
 EOF;
 
-        \IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'map' )->showMap( json_encode( $markers ), $cacheTime, $canAdd, $canEdit );
+        \IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'map' )->showMap( $markers, $cacheTime, $canAdd, $canEdit );
 	}
 
 	/**

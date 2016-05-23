@@ -67,10 +67,10 @@
 
 			if ( getByUser || getOnlineUsers )
 			{
-				if ( !!$( '#mapMarkers' ).html() )
+				if ( !!$( '#mapMarkers' ).attr( 'data-markers' ) )
 				{
 					try {
-						var markersJSON = $.parseJSON( $( '#mapMarkers' ).html() );
+						var markersJSON = $.parseJSON( $( '#mapMarkers' ).attr( 'data-markers' ) );
 						if ( markersJSON.length > 0 )
 						{
 							setMarkers( markersJSON );
@@ -80,7 +80,9 @@
 							ips.ui.flashMsg.show( ips.getString( 'membermap_no_results' ), { timeout: 3, position: 'bottom' } );
 						}
 					}
-					catch(err) {}
+					catch(err) {
+						Debug.log( err );
+					}
 				}
 			}
 
@@ -273,7 +275,7 @@
 		
 		setMarkers = function( markers )
 		{
-			allMarkers = markers.markers;
+			allMarkers = markers;
 		},
 
 		reloadMarkers = function()
@@ -714,8 +716,8 @@
 	
 		showMarkers = function( dontRepan, markers )
 		{
-			dontRepan = typeof dontRepan !== undefined ? dontRepan : false;
-			markers = typeof markers !== undefined ? markers : false;
+			dontRepan = typeof dontRepan !== 'undefined' ? dontRepan : false;
+			markers = typeof markers !== 'undefined' ? markers : false;
 
 			var getByUser 	= ips.utils.url.getParam( 'filter' ) == 'getByUser' ? true : false;
 			var memberId 	= parseInt( ips.utils.url.getParam( 'member_id' ) );
