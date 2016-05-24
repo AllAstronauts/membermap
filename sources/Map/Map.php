@@ -204,7 +204,7 @@ class _Map
 			try
 			{
 				$data = \IPS\Http\Url::external( 
-					( \IPS\Request::i()->isSecure()  ? 'https://' : 'http://' ) . "open.mapquestapi.com/nominatim/v1/search.php?key={$apiKey}&format=json&limit=1&q=" . urlencode( $location ) )->request( 5 )->get()->decodeJson();
+					( \IPS\Request::i()->isSecure()  ? 'https://' : 'http://' ) . "open.mapquestapi.com/nominatim/v1/search.php?key={$apiKey}&format=json&limit=1&q=" . urlencode( $location ) )->request( 30 )->get()->decodeJson();
 
 				if ( is_array( $data ) AND count( $data ) )
 				{
