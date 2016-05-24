@@ -292,6 +292,53 @@
 		
 		loadMarkers = function( forceReload )
 		{
+			function loadNextFile( id )
+			{
+				$.ajax({
+					url: ipsSettings.baseURL.replace('&amp;','&') + '/applications/membermap/interface/getCache.php?id=' + id,
+					cache : false,
+					async: true,
+					dataType: 'json',
+					success:function( res )
+					{
+						if( res.error )
+						{
+							finished();
+							return;
+						}
+
+						/* Show marker layer */
+						showMarkers( false, res.markers );
+						allMarkers = allMarkers.concat( res.markers );
+
+						loadNextFile( ++id );
+					},
+					error:function (xhr, ajaxOptions, thrownError)
+					{
+						if(xhr.status == 404) 
+						{
+							finished();
+						}
+					}
+				});
+			};
+
+			/* Store data in browser when all AJAX calls complete */
+			function finished()
+			{
+				updateOverlays();
+
+				if ( dbEnabled )
+				{
+					var date = new Date();
+					ips.utils.db.set( 'membermap', 'markers', { time: ( date.getTime() / 1000 ), data: allMarkers } );
+					ips.utils.db.set( 'membermap', 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
+
+
+					$( '#elToolsMenuBrowserCache a time' ).html( '(' + ips.getString( 'membermap_browserCache_update' ) + ': ' + ips.utils.time.readable( date.getTime() / 1000 ) + ')' );
+				}
+			};
+
 			forceReload = typeof forceReload !== 'undefined' ? forceReload : false;
 
 			if ( ips.utils.url.getParam( 'rebuildCache' ) == 1 || ips.utils.url.getParam( 'dropBrowserCache' ) == 1 )
@@ -308,66 +355,21 @@
 				return;
 			}
 
-			if ( ! ips.utils.db.isEnabled() )
+			var dbEnabled = ips.utils.db.isEnabled()
+
+			if ( ! dbEnabled )
 			{
 				$( '#elToolsMenuBrowserCache' ).addClass( 'ipsMenu_itemDisabled' );
 				$( '#elToolsMenuBrowserCache a' ).append( '(Not supported)' );
 			}
 
-			if ( forceReload || ! ips.utils.db.isEnabled() )
+			if ( forceReload || ! dbEnabled )
 			{
 				allMarkers = [];
 
 				var startId = 0;
 				
-				function loadNextFile( id )
-				{
-					$.ajax({
-						url: ipsSettings.baseURL.replace('&amp;','&') + '/applications/membermap/interface/getCache.php?id=' + id,
-						cache : false,
-						async: true,
-						dataType: 'json',
-						success:function( res )
-						{
-							if( res.error )
-							{
-								finished();
-								return;
-							}
-
-							/* Show marker layer */
-							showMarkers( false, res.markers );
-							allMarkers = allMarkers.concat( res.markers );
-
-							loadNextFile( ++id );
-						},
-						error:function (xhr, ajaxOptions, thrownError)
-						{
-							if(xhr.status == 404) 
-							{
-								finished();
-							}
-						}
-					});
-				};
-
 				loadNextFile( startId );
-
-				/* Store data in browser when all AJAX calls complete */
-				function finished()
-				{
-					updateOverlays();
-
-					if ( ips.utils.db.isEnabled() )
-					{
-						var date = new Date();
-						ips.utils.db.set( 'membermap', 'markers', { time: ( date.getTime() / 1000 ), data: allMarkers } );
-						ips.utils.db.set( 'membermap', 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
-
-
-						$( '#elToolsMenuBrowserCache a time' ).html( '(' + ips.getString( 'membermap_browserCache_update' ) + ': ' + ips.utils.time.readable( date.getTime() / 1000 ) + ')' );
-					}
-				};
 			}
 			else
 			{
