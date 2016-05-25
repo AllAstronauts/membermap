@@ -193,6 +193,11 @@ EOF;
 					$marker = \IPS\membermap\Markers\Markers::createItem( \IPS\Member::loggedIn(), \IPS\Request::i()->ipAddress(), new \IPS\DateTime, \IPS\membermap\Markers\Groups::load( $groupId ), FALSE );
 					$marker->member_id = \IPS\Member::loggedIn()->member_id;
 				}
+
+				if ( isset( $values['membermap_location'] ) AND ! empty( $values['membermap_location'] ) )
+				{
+					$marker->location = $values['membermap_location'];
+				}
 				
 				$marker->name = \IPS\Member::loggedIn()->name;
 				$marker->lat = $values['lat'];
