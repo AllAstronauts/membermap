@@ -50,7 +50,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 			/* We clicked the tools menu item to force a rebuild */
 			if ( \IPS\Request::i()->isAjax() )
 			{
-				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap', NULL, 'membermap' ) );
+				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=showmap', NULL, 'membermap' ) );
 			}
 		}
 
@@ -102,7 +102,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 		\IPS\Output::i()->sidebar['enabled'] = FALSE;
 
         /* Update session location */
-        \IPS\Session::i()->setLocation( \IPS\Http\Url::internal( 'app=membermap', 'front', 'membermap' ), array(), 'loc_membermap_viewing_membermap' );
+        \IPS\Session::i()->setLocation( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=showmap', 'front', 'membermap' ), array(), 'loc_membermap_viewing_membermap' );
 
         /* Things we need to know in the Javascript */
 		\IPS\Output::i()->jsVars['is_supmod']			= \IPS\Member::loggedIn()->modPermission() ?: 0;

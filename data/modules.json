@@ -5,8 +5,8 @@
             "protected": 0
         },
         "markers": {
-            "default_controller": "",
-            "protected": false
+            "default_controller": "groups",
+            "protected": 0
         }
     },
     "admin": {

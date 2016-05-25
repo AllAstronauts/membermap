@@ -59,7 +59,7 @@ class _membermap extends \IPS\core\FrontNavigation\FrontNavigationAbstract
 	 */
 	public function link()
 	{
-		return \IPS\Http\Url::internal( "app=membermap", 'front', 'membermap' );
+		return \IPS\Http\Url::internal( "app=membermap&module=membermap&controller=showmap", 'front', 'membermap' );
 	}
 	
 	/**
