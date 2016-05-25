@@ -77,7 +77,7 @@ class _membermap extends \IPS\core\FrontNavigation\FrontNavigationAbstract
 	 *
 	 * @return	array
 	 */
-	public function children()
+	public function children( $noStore=FALSE )
 	{
 		return array();
 	}
