@@ -488,24 +488,4 @@ class _Map
 
 		return $markersToKeep;
 	}
-
-
-	/**
-     * Locale friendly floatval() ready for MySQL
-     *
-     * @param   string  float value
-     * @return  integer floated integer
-     */
-    private function _floatVal($floatString)
-    {
-        $floatString = floatval($floatString);
-
-        if($floatString)
-        {
-            $localeInfo = localeconv();
-            $floatString = str_replace($localeInfo["thousands_sep"], "", $floatString);
-            $floatString = str_replace($localeInfo["decimal_point"], ".", $floatString);
-        }
-        return $floatString;
-    }
 }
