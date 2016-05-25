@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="110002">
+ <app key="membermap" version="110003">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
   <word key="__indefart_membermap_marker" js="0">a Member Map Marker</word>
+  <word key="membermap_rebuilding_cache" js="0">Rebuilding Member Map Cache</word>
   <word key="menu__membermap_membermap" js="0">Member Map</word>
   <word key="menu__membermap_membermap_markers" js="0">Markers Groups</word>
   <word key="menu__membermap_membermap_mapmanager" js="0">Map Manager</word>
@@ -34,6 +35,7 @@
   <word key="membermap_marker" js="0">Member Map Marker</word>
   <word key="membermap_marker_pl" js="0">Markers</word>
   <word key="membermap_marker_pl_lc" js="0">markers</word>
+  <word key="membermap_markers_markers_pl" js="0">Member Map</word>
   <word key="membermap_view_this_marker" js="0">View this marker: %s</word>
   <word key="membermap_submit_a_marker" js="0">Add Marker</word>
   <word key="membermap_edit_a_marker" js="0">Edit Marker</word>
@@ -76,6 +78,7 @@
   <word key="import_creategroups" js="0">Create a new group</word>
   <word key="import_creategroups_desc" js="0">Import markers to an existing group, or create a new group for each &quot;Folder&quot; in the .kml file</word>
   <word key="membermap_error_no_id_no_create" js="0">You have to either chose to create a new group, or select an existing group to import markers to</word>
+  <word key="membermap_import_thumbup" js="0">Successfully imported %d markers</word>
   <word key="membermap_mapmanager_activeMaps" js="0">Active Maps</word>
   <word key="membermap_mapmanager_availMaps" js="0">Available Maps</word>
   <word key="membermap_mapmanager_activeOverlays" js="0">Active Overlays</word>
