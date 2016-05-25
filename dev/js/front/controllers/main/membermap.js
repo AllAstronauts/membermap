@@ -294,8 +294,8 @@
 		{
 			function loadNextFile( id )
 			{
-				$.ajax({
-					url: ipsSettings.baseURL.replace('&amp;','&') + '/applications/membermap/interface/getCache.php?id=' + id,
+				ips.getAjax()({
+					url: '?app=membermap&module=membermap&controller=showmap&do=getCache&id=' + id,
 					cache : false,
 					async: true,
 					dataType: 'json',
@@ -368,7 +368,7 @@
 				allMarkers = [];
 
 				var startId = 0;
-				
+
 				loadNextFile( startId );
 			}
 			else
