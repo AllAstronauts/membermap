@@ -50,7 +50,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 			/* We clicked the tools menu item to force a rebuild */
 			if ( \IPS\Request::i()->isAjax() )
 			{
-				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap', NULL, 'membermap' ) );
+				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=showmap', NULL, 'membermap' ) );
 			}
 		}
 
@@ -63,10 +63,10 @@ class _showmap extends \IPS\Dispatcher\Controller
 		{
 			$markers = \IPS\membermap\Map::i()->getMarkerByMember( $getByUser );
 		}
-		else if ( \IPS\Request::i()->filter == 'getOnlineUsers' )
+		/*else if ( \IPS\Request::i()->filter == 'getOnlineUsers' )
 		{
 			$markers = \IPS\membermap\Map::i()->getMarkersByOnlineMembers();
-		}
+		}*/
 
 		/* Get enabled maps */
 		$defaultMaps = \IPS\membermap\Application::getEnabledMaps();
@@ -102,7 +102,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 		\IPS\Output::i()->sidebar['enabled'] = FALSE;
 
         /* Update session location */
-        \IPS\Session::i()->setLocation( \IPS\Http\Url::internal( 'app=membermap', 'front', 'membermap' ), array(), 'loc_membermap_viewing_membermap' );
+        \IPS\Session::i()->setLocation( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=showmap', 'front', 'membermap' ), array(), 'loc_membermap_viewing_membermap' );
 
         /* Things we need to know in the Javascript */
 		\IPS\Output::i()->jsVars['is_supmod']			= \IPS\Member::loggedIn()->modPermission() ?: 0;
@@ -125,7 +125,35 @@ class _showmap extends \IPS\Dispatcher\Controller
 		</script>
 EOF;
 
-        \IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'map' )->showMap( json_encode( $markers ), $cacheTime, $canAdd, $canEdit );
+        \IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'map' )->showMap( $markers, $cacheTime, $canAdd, $canEdit );
+	}
+
+	/**
+	 * Get the cache file
+	 *
+	 * @return json
+	 */
+	protected function getCache()
+	{
+		$fileId = isset( \IPS\Request::i()->id ) ? (int) \IPS\Request::i()->id : NULL;
+
+		if ( $fileId >= 0 )
+		{
+			if ( file_exists( \IPS\ROOT_PATH . "/datastore/membermap_cache/membermap-{$fileId}.json" ) )
+			{
+				$output = \file_get_contents( \IPS\ROOT_PATH . "/datastore/membermap_cache/membermap-{$fileId}.json" );
+			}
+			else
+			{
+				$output = json_encode( array( 'error' => 'not_found' ) );
+			}
+		}
+		else
+		{
+			$output = json_encode( array( 'error' => 'invalid_id' ) );
+		}
+
+		\IPS\Output::i()->sendOutput( $output , 200, 'application/json' );
 	}
 
 	/**
@@ -137,7 +165,7 @@ EOF;
 	{
 		if ( ! \IPS\Member::loggedIn()->member_id )
 		{
-			\IPS\Output::i()->error( 'no_permission', '', 403, '' );
+			\IPS\Output::i()->error( 'no_permission', '2MM3/1', 403, '' );
 		}
 
 		/* Get the members location, if it exists */
@@ -149,12 +177,12 @@ EOF;
 		{
 			if ( ! $existing->canEdit() )
 			{
-				\IPS\Output::i()->error( 'membermap_error_cantEdit', '', 403, '' );
+				\IPS\Output::i()->error( 'membermap_error_cantEdit', '2MM3/2', 403, '' );
 			}
 		}
 		else if ( ! \IPS\membermap\Markers\Groups::load( $groupId )->can( 'add' ) )
 		{
-			\IPS\Output::i()->error( 'membermap_error_cantAdd', '123', 403, '' );
+			\IPS\Output::i()->error( 'membermap_error_cantAdd', '2MM3/3', 403, '' );
 		}
 
 		/* HTML5 GeoLocation form */
@@ -193,6 +221,11 @@ EOF;
 					$marker = \IPS\membermap\Markers\Markers::createItem( \IPS\Member::loggedIn(), \IPS\Request::i()->ipAddress(), new \IPS\DateTime, \IPS\membermap\Markers\Groups::load( $groupId ), FALSE );
 					$marker->member_id = \IPS\Member::loggedIn()->member_id;
 				}
+
+				if ( isset( $values['membermap_location'] ) AND ! empty( $values['membermap_location'] ) )
+				{
+					$marker->location = $values['membermap_location'];
+				}
 				
 				$marker->name = \IPS\Member::loggedIn()->name;
 				$marker->lat = $values['lat'];
@@ -224,7 +257,7 @@ EOF;
 	{
 		if ( ! \IPS\Member::loggedIn()->member_id OR ! intval( \IPS\Request::i()->member_id ) )
 		{
-			\IPS\Output::i()->error( 'no_permission', '1', 403, '' );
+			\IPS\Output::i()->error( 'no_permission', '2MM3/4', 403, '' );
 		}
 
 		/* Get the marker */
@@ -242,7 +275,7 @@ EOF;
 		}
 
 		/* Fall back to a generic error */
-		\IPS\Output::i()->error( 'no_permission', '2', 403, '' );
+		\IPS\Output::i()->error( 'no_permission', '2MM3/5', 403, '' );
 	}
 
 	protected function embed()

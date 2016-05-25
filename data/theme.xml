@@ -5,14 +5,22 @@
 	<div id='membermap_geolocation_wrapper' class='ipsColumn ipsColumn_medium'>{$form1|raw}</div>
 	<div class='ipsColumn ipsColumn_medium'>{$form2|raw}</div>
 </div>]]></template>
- <template template_group="map" template_name="customMarkerPopup" template_data="$marker" template_location="front" template_app="membermap"><![CDATA[<h3>{$marker->name}</h3>
-{$marker->content()|raw}]]></template>
- <template template_group="map" template_name="popupContent" template_data="$marker, $photo" template_location="front" template_app="membermap"><![CDATA[<h3>
-	<a href='{$marker->author()->url()}' target='_blank'>{$marker->_title}</a>
+ <template template_group="map" template_name="customMarkerPopup" template_data="$marker" template_location="front" template_app="membermap"><![CDATA[<h3>
+	<a href='{url="app=membermap&module=markers&controller=markers&id={$marker['marker_id']}" seoTemplate="markers_marker" seoTitle="$marker['marker_name_seo']"}' target='_blank'>
+		{$marker['marker_name']}
+	</a>
 </h3>
-<p class="desc">
-	<img src='{$photo}' itemprop='image' alt='' class='ipsUserPhoto ipsUserPhoto_mini'>
-</p>]]></template>
+<p>{$marker['marker_description']|raw}</p>
+{{if $marker['marker_location']}}
+	<p>{$marker['marker_location']}</p>
+{{endif}}]]></template>
+ <template template_group="map" template_name="popupContent" template_data="$marker, $photo" template_location="front" template_app="membermap"><![CDATA[<h3>
+	<img src='{$photo}' itemprop='image' alt='' class='ipsUserPhoto ipsUserPhoto_mini'> 
+	<a href='{url="app=core&module=members&controller=profile&id={$marker['member_id']}" seoTemplate="profile" seoTitle="$marker['members_seo_name']"}' target='_blank'>{$marker['marker_name']}</a>
+</h3>
+{{if $marker['marker_location']}}
+	<p>{$marker['marker_location']}</p>
+{{endif}}]]></template>
  <template template_group="map" template_name="profileMap" template_data="$member" template_location="front" template_app="membermap"><![CDATA[<div class='ipsWidget ipsWidget_vertical cProfileSidebarBlock ipsBox ipsSpacer_bottom'>
 	<a href='{url="app=tripreport&filter=getByUser&member_id={$member->member_id}" seoTemplate="membermap"}'><h2 class='ipsWidget_title ipsType_reset'>{lang="frontnavigation_membermap"}</h2></a>
 	<div class='ipsWidget_inner ipsPad_half'>
@@ -95,7 +103,7 @@
 	</div>
 </section>
 
-<div id='mapMarkers' class='ipsHide'>{$markers|raw}</div>]]></template>
+<div id='mapMarkers' class='ipsHide' data-markers='{expression="json_encode( $markers )"}'></div>]]></template>
  <template template_group="mapmanager" template_name="wrapper" template_data="" template_location="admin" template_app="membermap"><![CDATA[<div data-controller="membermap.admin.membermap.mapmanager">
 	<div class='cMenuManager'>
 		<div class='ipsColumns ipsColumns_collapsePhone'>
@@ -268,7 +276,7 @@
 	<p class='ipsType_large'>{lang="membermap_no_markers_in_cat"}</p>
 
 	{{if $group->can('add')}}
-		<a href='{url="app=membermap&module=markers&controller=submit&_new=1&group={$group->id}" seoTemplate="downloads_submit"}' class='ipsButton ipsButton_primary ipsButton_medium' data-ipsDialog data-ipsDialog-title='{lang="submit_first_file"}' data-ipsDialog-size='narrow'>{lang="membermap_submit_first_marker"}</a>
+		<a href='{url="app=membermap&module=markers&controller=submit&_new=1&group={$group->id}" seoTemplate="membermap_submit"}' class='ipsButton ipsButton_primary ipsButton_medium'>{lang="membermap_submit_first_marker"}</a>
 	{{endif}}
 </div>]]></template>
  <template template_group="markers" template_name="rows" template_data="$table, $headers, $markers" template_location="front" template_app="membermap"><![CDATA[{{if count( $markers )}}

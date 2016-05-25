@@ -1,3 +1,10 @@
 <ips:template parameters="$marker" />
-<h3>{$marker->name}</h3>
-{$marker->content()|raw}
+<h3>
+	<a href='{url="app=membermap&module=markers&controller=markers&id={$marker['marker_id']}" seoTemplate="markers_marker" seoTitle="$marker['marker_name_seo']"}' target='_blank'>
+		{$marker['marker_name']}
+	</a>
+</h3>
+<p>{$marker['marker_description']|raw}</p>
+{{if $marker['marker_location']}}
+	<p>{$marker['marker_location']}</p>
+{{endif}}

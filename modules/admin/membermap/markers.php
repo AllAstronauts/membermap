@@ -93,7 +93,7 @@ class _markers extends \IPS\Node\Controller
 
 			if ( $group->type == 'member' )
 			{
-				\IPS\Output::i()->error( 'generic_error', '1', 403, '' );
+				\IPS\Output::i()->error( 'generic_error', '1MM4/1', 403, '' );
 			}
 		}
 
@@ -121,15 +121,16 @@ class _markers extends \IPS\Node\Controller
 			}
 
 			/* No group selected, and don't create groups?! */
-			if ( $values['import_creategroups'] == FALSE AND ! $id )
+			if ( $values['import_creategroups'] == FALSE AND ! $values['import_group'] )
 			{
 				$form->error 				= \IPS\Member::loggedIn()->language()->addToStack( 'membermap_error_no_id_no_create' );
 				\IPS\Output::i()->output 	= $form;
 				return;
 			}
 
-			$markers = array();
+			$markers 	= array();
 			$groupOrder = NULL;
+			$imported	= 0;
 
 			foreach( $xml->Document->Folder as $folder )
 			{
@@ -158,7 +159,7 @@ class _markers extends \IPS\Node\Controller
 						'marker_member_id'		=> \IPS\Member::loggedIn()->member_id,
 						'marker_added'			=> time(),
 						'marker_open'			=> 1,
-						'marker_parent_id'		=> $id,
+						'marker_parent_id'		=> isset( $values['import_group'] ) ? $values['import_group']->id : NULL,
 					);
 				}
 
@@ -184,6 +185,7 @@ class _markers extends \IPS\Node\Controller
 					$group->save();
 
 					\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$group->id}", trim( $folderName ) );
+					\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$group->id}_JS", trim( $folderName ), 1 );
 
 					// Add group id to all elements of the array
 					array_walk( $markers, function( &$v, $k ) use ( $group )
@@ -207,7 +209,8 @@ class _markers extends \IPS\Node\Controller
 					), array( 'perm_id=?', $perms['perm_id'] ) );
 
 					// Reset
-					$markers = array();
+					$imported	+= count( $markers );
+					$markers 	= array();
 				}
 			}
 
@@ -216,12 +219,17 @@ class _markers extends \IPS\Node\Controller
 			{
 				\IPS\Db::i()->insert( 'membermap_markers', $markers );
 
-				$group = \IPS\membermap\Markers\Groups::load( $id );
+				$group = $values['import_group'];
 				$group->setLastComment();
 				$group->save();
+				
+				$imported	+= count( $markers );
 			}
 			
 			\IPS\membermap\Map::i()->invalidateJsonCache();
+
+			$message = \IPS\Member::loggedIn()->language()->addToStack( 'membermap_import_thumbup', FALSE, array( 'sprintf' => array( $imported ) ) );
+			\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=membermap&module=membermap&controller=markers" ), $message );
 		}
 		
 		/* Display */

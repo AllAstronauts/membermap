@@ -27,7 +27,7 @@ class _groups extends \IPS\Content\Controller
 	 */
 	public function execute()
 	{
-		\IPS\Output::i()->breadcrumb[] = array( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=membermap', 'front', 'membermap' ), \IPS\Member::loggedIn()->language()->addToStack( 'module__membermap_membermap' ) );
+		\IPS\Output::i()->breadcrumb[] = array( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=showmap', 'front', 'membermap' ), \IPS\Member::loggedIn()->language()->addToStack( 'module__membermap_membermap' ) );
 		\IPS\Output::i()->breadcrumb = array_reverse( \IPS\Output::i()->breadcrumb );
 		parent::execute();
 	}
@@ -48,7 +48,7 @@ class _groups extends \IPS\Content\Controller
 			}
 			catch ( \OutOfRangeException $e )
 			{
-				\IPS\Output::i()->error( 'node_error', '2D175/1', 404, '' );
+				\IPS\Output::i()->error( 'node_error', '2MM2/1', 404, '' );
 			}
 		}
 		else

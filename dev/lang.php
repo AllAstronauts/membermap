@@ -1,9 +1,11 @@
 <?php
 
 $lang = array(
+	/* Various strings */
 	'__app_membermap'			=> "Member Map",
 	'frontnavigation_membermap'	=> "Member Map",
 	'__indefart_membermap_marker'	=> "a Member Map Marker",
+	'membermap_rebuilding_cache'	=> "Rebuilding Member Map Cache",
 
 	/* ACP Module/Menu titles */
 	'menu__membermap_membermap' => "Member Map",
@@ -43,6 +45,7 @@ $lang = array(
 	'membermap_marker' 				=> "Member Map Marker",
 	'membermap_marker_pl'			=> "Markers",
 	'membermap_marker_pl_lc'		=> "markers",
+	'membermap_markers_markers_pl' 	=> "Member Map",
 	'membermap_view_this_marker' 	=> "View this marker: %s",
 	'membermap_submit_a_marker' 	=> "Add Marker",
 	'membermap_edit_a_marker' 		=> "Edit Marker",
@@ -93,8 +96,8 @@ $lang = array(
 	'import_upload'					=> "Marker .kml file",
 	'import_creategroups'			=> "Create a new group",
 	'import_creategroups_desc'		=> "Import markers to an existing group, or create a new group for each \"Folder\" in the .kml file",
-
 	'membermap_error_no_id_no_create'	=> "You have to either chose to create a new group, or select an existing group to import markers to",
+	'membermap_import_thumbup'			=> "Successfully imported %d markers",
 
 
 	/* ACP Map Manager */

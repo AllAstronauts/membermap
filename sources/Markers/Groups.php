@@ -285,7 +285,7 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 			unset( $buttons['delete'] );
 		}
 
-		if ( $this->type == 'custom' )
+		if ( $this->type == 'custom' AND isset( $buttons['edit'] ) )
 		{
 			$buttons['import'] = array(
 				'icon'	=> 'upload',

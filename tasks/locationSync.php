@@ -99,6 +99,9 @@ class _locationSync extends \IPS\Task
 					
 					$marker->save();
 
+					/* Add to index */
+					\IPS\Content\Search\Index::i()->index( $marker );
+
 					$counter++;
 				}
 			}
@@ -115,7 +118,8 @@ class _locationSync extends \IPS\Task
 
 		if( $counter > 0 )
 		{
-			return "Synchronised {$counter} member locations";
+			$foundRows = $members->count();
+			return "Synchronised {$counter} out of {$foundRows} member locations";
 		}
 		else
 		{

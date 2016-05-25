@@ -73,7 +73,7 @@ class _markers
 	 */
 	public function attachmentLookup( $id1, $id2, $id3 )
 	{
-		return \IPS\membermap\Custom\Markers::load( $id1 )->url();
+		return \IPS\membermap\Markers\Markers::load( $id1 )->url();
 	}
 
 	/**

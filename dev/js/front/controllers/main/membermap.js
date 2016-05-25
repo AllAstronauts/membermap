@@ -67,10 +67,10 @@
 
 			if ( getByUser || getOnlineUsers )
 			{
-				if ( !!$( '#mapMarkers' ).html() )
+				if ( !!$( '#mapMarkers' ).attr( 'data-markers' ) )
 				{
 					try {
-						var markersJSON = $.parseJSON( $( '#mapMarkers' ).html() );
+						var markersJSON = $.parseJSON( $( '#mapMarkers' ).attr( 'data-markers' ) );
 						if ( markersJSON.length > 0 )
 						{
 							setMarkers( markersJSON );
@@ -80,7 +80,9 @@
 							ips.ui.flashMsg.show( ips.getString( 'membermap_no_results' ), { timeout: 3, position: 'bottom' } );
 						}
 					}
-					catch(err) {}
+					catch(err) {
+						Debug.log( err );
+					}
 				}
 			}
 
@@ -273,7 +275,7 @@
 		
 		setMarkers = function( markers )
 		{
-			allMarkers = markers.markers;
+			allMarkers = markers;
 		},
 
 		reloadMarkers = function()
@@ -290,6 +292,53 @@
 		
 		loadMarkers = function( forceReload )
 		{
+			function loadNextFile( id )
+			{
+				ips.getAjax()({
+					url: '?app=membermap&module=membermap&controller=showmap&do=getCache&id=' + id,
+					cache : false,
+					async: true,
+					dataType: 'json',
+					success:function( res )
+					{
+						if( res.error )
+						{
+							finished();
+							return;
+						}
+
+						/* Show marker layer */
+						showMarkers( false, res.markers );
+						allMarkers = allMarkers.concat( res.markers );
+
+						loadNextFile( ++id );
+					},
+					error:function (xhr, ajaxOptions, thrownError)
+					{
+						if(xhr.status == 404) 
+						{
+							finished();
+						}
+					}
+				});
+			};
+
+			/* Store data in browser when all AJAX calls complete */
+			function finished()
+			{
+				updateOverlays();
+
+				if ( dbEnabled )
+				{
+					var date = new Date();
+					ips.utils.db.set( 'membermap', 'markers', { time: ( date.getTime() / 1000 ), data: allMarkers } );
+					ips.utils.db.set( 'membermap', 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
+
+
+					$( '#elToolsMenuBrowserCache a time' ).html( '(' + ips.getString( 'membermap_browserCache_update' ) + ': ' + ips.utils.time.readable( date.getTime() / 1000 ) + ')' );
+				}
+			};
+
 			forceReload = typeof forceReload !== 'undefined' ? forceReload : false;
 
 			if ( ips.utils.url.getParam( 'rebuildCache' ) == 1 || ips.utils.url.getParam( 'dropBrowserCache' ) == 1 )
@@ -306,68 +355,21 @@
 				return;
 			}
 
-			if ( ! ips.utils.db.isEnabled() )
+			var dbEnabled = ips.utils.db.isEnabled()
+
+			if ( ! dbEnabled )
 			{
 				$( '#elToolsMenuBrowserCache' ).addClass( 'ipsMenu_itemDisabled' );
 				$( '#elToolsMenuBrowserCache a' ).append( '(Not supported)' );
 			}
 
-			if ( forceReload || ! ips.utils.db.isEnabled() )
+			if ( forceReload || ! dbEnabled )
 			{
 				allMarkers = [];
 
-				$.ajax( ipsSettings.baseURL.replace('&amp;','&') + 'datastore/membermap_cache/membermap-index.json',
-				{	
-					cache : false,
-					dataType: 'json',
-					success: function( res )
-					{
-						if ( typeof res.error !== 'undefined' )
-						{
-							alert(res.error);
-						}
+				var startId = 0;
 
-						if ( res.fileList.length === 0 )
-						{
-							return false;
-						}
-
-						var promise;
-
-						$.each( res.fileList, function( id, file )
-						{
-							promise = $.when( promise, 
-								$.ajax({
-									url: ipsSettings.baseURL.replace('&amp;','&') + '/datastore/' + file,
-									cache : false,
-									dataType: 'json',
-									success:function( res )
-									{
-										/* Show marker layer */
-										showMarkers( false, res );
-										allMarkers = allMarkers.concat( res );
-									}
-								})
-							);
-						});
-
-						/* Store data in browser when all AJAX calls complete */
-						promise.done(function()
-						{
-							updateOverlays();
-
-							if ( ips.utils.db.isEnabled() )
-							{
-								var date = new Date();
-								ips.utils.db.set( 'membermap', 'markers', { time: ( date.getTime() / 1000 ), data: allMarkers } );
-								ips.utils.db.set( 'membermap', 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
-
-
-								$( '#elToolsMenuBrowserCache a time' ).html( '(' + ips.getString( 'membermap_browserCache_update' ) + ': ' + ips.utils.time.readable( date.getTime() / 1000 ) + ')' );
-							}
-						});
-					}
-				});
+				loadNextFile( startId );
 			}
 			else
 			{
@@ -716,8 +718,8 @@
 	
 		showMarkers = function( dontRepan, markers )
 		{
-			dontRepan = typeof dontRepan !== undefined ? dontRepan : false;
-			markers = typeof markers !== undefined ? markers : false;
+			dontRepan = typeof dontRepan !== 'undefined' ? dontRepan : false;
+			markers = typeof markers !== 'undefined' ? markers : false;
 
 			var getByUser 	= ips.utils.url.getParam( 'filter' ) == 'getByUser' ? true : false;
 			var memberId 	= parseInt( ips.utils.url.getParam( 'member_id' ) );
