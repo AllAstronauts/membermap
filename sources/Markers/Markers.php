@@ -405,6 +405,17 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	}
 
 	/**
+	 * Should posting this increment the poster's post count?
+	 *
+	 * @param	\IPS\Node\Model|NULL	$container	Container
+	 * @return	void
+	 */
+	public static function incrementPostCount( \IPS\Node\Model $container = NULL )
+	{
+		return FALSE;
+	}
+
+	/**
 	 * Get all children of a specific group.
 	 *
 	 * @param	INT 	$groupId		Group ID to fetch children from
