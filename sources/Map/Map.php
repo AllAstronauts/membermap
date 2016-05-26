@@ -435,6 +435,15 @@ class _Map
 				}
 
 				$photo = \IPS\Member::photoUrl( $marker );
+				
+				try
+				{
+					$groupName = \IPS\Lang::load( \IPS\Lang::defaultLanguage() )->get( 'core_group_' . $marker['member_group_id'] );
+				}
+				catch ( \UnderflowException $e )
+				{
+					$groupName = '';
+				}
 
 				$markersToKeep[] = array(
 					'type'			=> "member",
@@ -442,7 +451,7 @@ class _Map
 					'lon' 			=> round( (float)$marker['marker_lon'], 5 ),
 					'member_id'		=> $marker['marker_member_id'],
 					'parent_id'		=> $marker['member_group_id'],
-					'parent_name'	=> \IPS\Lang::load( \IPS\Lang::defaultLanguage() )->get( 'core_group_' . $marker['member_group_id'] ),
+					'parent_name'	=> $groupName,
 					'popup' 		=> \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker, $photo ),
 					'markerColour' 	=> $groupCache[ $marker['member_group_id'] ]['g_membermap_markerColour'] ?: 'darkblue',
 				);
