@@ -26,15 +26,15 @@
 			<div class='ipsDataItem_generic ipsDataItem_size9'>
 				<ul class='ipsList_reset'>
 					{{if $marker->location}}
-					<li>
-						{{$location = trim( $marker->location, ',' );}}
-						{$location}
-					</li>
+						<li data-ipsTruncate data-ipsTruncate-size='1 lines' data-ipsTruncate-type='remove'>
+							{{$location = trim( $marker->location, ',' );}}
+							{$location}
+						</li>
+					{{endif}}
 					<li>
 						{{$dms = $marker->_latLngToDMS;}}
 						<span data-ipsTooltip='' title="{$marker->lat}, {$marker->lon}">{$dms}</span>
 					</li>
-					{{endif}}
 				</ul>
 			</div>
 			<div class='ipsDataItem_generic ipsDataItem_size9'>
