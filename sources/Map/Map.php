@@ -427,15 +427,15 @@ class _Map
 		{
 			foreach( $markers as $marker )
 			{
-				if ( $marker['marker_lat'] == 0 AND $marker['marker_lon'] == 0 )
+				/* Member don't exists or lat/lon == 0 (Middle of the ocean) */
+				if ( $marker['member_id'] === NULL OR ( $marker['marker_lat'] == 0 AND $marker['marker_lon'] == 0 ) )
 				{
 					\IPS\Db::i()->delete( 'membermap_markers', array( 'marker_id=?', $marker['marker_id'] ) );
-					
 					continue;
 				}
 
 				$photo = \IPS\Member::photoUrl( $marker );
-				
+
 				try
 				{
 					$groupName = \IPS\Lang::load( \IPS\Lang::defaultLanguage() )->get( 'core_group_' . $marker['member_group_id'] );
@@ -443,6 +443,15 @@ class _Map
 				catch ( \UnderflowException $e )
 				{
 					$groupName = '';
+				}
+
+				if ( isset( $groupCache[ $marker['member_group_id'] ]['g_membermap_markerColour'] ) )
+				{
+					$markerColour = $groupCache[ $marker['member_group_id'] ]['g_membermap_markerColour'];
+				}
+				else
+				{
+					$markerColour = 'darkblue';
 				}
 
 				$markersToKeep[] = array(
@@ -453,7 +462,7 @@ class _Map
 					'parent_id'		=> $marker['member_group_id'],
 					'parent_name'	=> $groupName,
 					'popup' 		=> \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker, $photo ),
-					'markerColour' 	=> $groupCache[ $marker['member_group_id'] ]['g_membermap_markerColour'] ?: 'darkblue',
+					'markerColour' 	=> $markerColour,
 				);
 			}
 		}
