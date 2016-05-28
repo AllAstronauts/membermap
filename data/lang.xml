@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="110003">
+ <app key="membermap" version="110004">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
   <word key="__indefart_membermap_marker" js="0">a Member Map Marker</word>
@@ -29,7 +29,8 @@
   <word key="membermap_marker_updated" js="0">Updated</word>
   <word key="membermap_marker_location" js="0">Location</word>
   <word key="membermap_marker_coordinates" js="0">Coordinates</word>
-  <word key="group_markers_number" js="0">{!# [1:marker][?:markers]}</word>
+  <word key="group_markers_number" js="0">{# [1:marker][?:markers]}</word>
+  <word key="group_markers_number_noCount" js="0">{!# [1:marker][?:markers]}</word>
   <word key="marker_actions" js="0">Marker Actions</word>
   <word key="report_marker" js="0">Report this marker</word>
   <word key="membermap_marker" js="0">Member Map Marker</word>

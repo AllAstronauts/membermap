@@ -21,7 +21,7 @@
 			<dl class="ipsDataItem_stats ipsDataItem_statsLarge">
 				{{$count = \IPS\membermap\Markers\Markers::contentCount( $group );}}
 				<dt class="ipsDataItem_stats_number">{number="$count"}</dt>
-				<dd class="ipsDataItem_stats_type ipsType_light">{lang="group_markers_number" pluralize="$count"}</dd>
+				<dd class="ipsDataItem_stats_type ipsType_light">{lang="group_markers_number_noCount" pluralize="$count"}</dd>
 			</dl>
 			<ul class="ipsDataItem_lastPoster ipsDataItem_withPhoto">
 				{{if $lastPost = $group->lastMarker()}}
