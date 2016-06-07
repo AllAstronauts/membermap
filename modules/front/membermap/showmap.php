@@ -255,6 +255,8 @@ EOF;
 	 */
 	protected function delete()
 	{
+		\IPS\Session::i()->csrfCheck();
+
 		if ( ! \IPS\Member::loggedIn()->member_id OR ! intval( \IPS\Request::i()->member_id ) )
 		{
 			\IPS\Output::i()->error( 'no_permission', '2MM3/4', 403, '' );
