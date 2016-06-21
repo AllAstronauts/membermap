@@ -232,6 +232,8 @@ EOF;
 				$marker->lon = $values['lng'];
 				$marker->save();
 
+				\IPS\Content\Search\Index::i()->index( $marker );
+
 				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap&dropBrowserCache=1&goHome=1', 'front', 'membermap' ) );
 				return;
 			}
