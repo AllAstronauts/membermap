@@ -496,14 +496,6 @@
 					}
 				});
 			}
-			
-
-			
-			/* Get by member */
-			$( '#elInput_membermap_memberName' ).on( 'tokenAdded tokenDeleted', function()
-			{
-				reloadMap();
-			});
 
 			$( '#membermap_button_addLocation, #membermap_button_editLocation' ).click( function()
 			{
@@ -930,7 +922,7 @@
 							}
 							else
 							{
-								window.location.replace( ips.getSetting('baseURL') + "index.php?app=membermap&dropBrowserCache=1&goHome=1" );
+								window.location.replace( ips.getSetting('baseURL') + "index.php?app=membermap&module=membermap&controller=showmap&dropBrowserCache=1&goHome=1" );
 							}
 						}); 
 					}
@@ -967,7 +959,7 @@
 										}
 										else
 										{
-											window.location.replace( ips.getSetting('baseURL') + "index.php?app=membermap&dropBrowserCache=1" );
+											window.location.replace( ips.getSetting('baseURL') + "index.php?app=membermap&module=membermap&controller=showmap&dropBrowserCache=1" );
 										}
 									}); 
 								}
