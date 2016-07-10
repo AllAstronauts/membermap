@@ -511,7 +511,22 @@
 					url: ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=showmap&do=add',
 					callback: function()
 					{
-						if( ! navigator.geolocation )
+						var geolocationSupported = true;
+
+						/* Chrom(e|ium) 50+ stops geolocation on unsecure protocols */
+						if ( L.Browser.chrome === true && document.location.protocol !== 'https:' )
+						{
+							var chromeVersion = navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
+							chromeVersion = chromeVersion ? parseInt( chromeVersion[2], 10 ) : false;
+
+							if ( chromeVersion >= 50 )
+							{
+								geolocationSupported = false;
+							}
+
+						}
+
+						if( ! navigator.geolocation || ! geolocationSupported )
 						{
 							$( '#membermap_geolocation_wrapper' ).hide();
 						}
