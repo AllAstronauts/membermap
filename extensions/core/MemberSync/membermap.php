@@ -112,7 +112,7 @@ class _membermap
 						/* To my understanding we're not allowed to use \IPS\Geolocation, as that uses Google API, and we're not showing the info on a Google Map. */
 						$nominatim = \IPS\membermap\Map::i()->getLatLng( $fieldValue );
 
-						if( is_array( $nominatim ) )
+						if( is_array( $nominatim ) AND count( $nominatim ) )
 						{
 							$lat 		= $nominatim['lat'];
 							$lng 		= $nominatim['lng'];
@@ -136,18 +136,15 @@ class _membermap
 							$marker = \IPS\membermap\Markers\Markers::createItem( $member, \IPS\Request::i()->ipAddress(), new \IPS\DateTime, \IPS\membermap\Markers\Groups::load( $groupId ), FALSE );
 						}
 
-						$marker->lat = $lat;
-						$marker->lon = $lng;
+						$marker->name 		= $member->name;
+						$marker->lat 		= $lat;
+						$marker->lon 		= $lng;
+						$marker->location 	= $location ?: $fieldValue;
+						
 
-						if( $location )
-						{
-							$marker->location = $location;
-						}
-
-						$marker->name = $member->name;
-
+						/* Save and add to search index */
 						$marker->save();
-
+						\IPS\Content\Search\Index::i()->index( $marker );
 					}
 				}
 			}
