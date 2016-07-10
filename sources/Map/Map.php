@@ -222,8 +222,11 @@ class _Map
 					$locCache[ 'cache-' . $locKey ] = false;
 				}
 			}
-			catch( \RuntimeException $e )
+			catch ( \IPS\Http\Request\Exception $e )
 			{
+				\IPS\Log::log( $e, 'membermap' );
+
+				return false;
 			}
 		}		
 
