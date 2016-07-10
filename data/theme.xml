@@ -22,10 +22,10 @@
 	<p>{$marker['marker_location']}</p>
 {{endif}}]]></template>
  <template template_group="map" template_name="profileMap" template_data="$member" template_location="front" template_app="membermap"><![CDATA[<div class='ipsWidget ipsWidget_vertical cProfileSidebarBlock ipsBox ipsSpacer_bottom'>
-	<a href='{url="app=tripreport&filter=getByUser&member_id={$member->member_id}" seoTemplate="membermap"}'><h2 class='ipsWidget_title ipsType_reset'>{lang="frontnavigation_membermap"}</h2></a>
+	<a href='{url="app=membermap&module=membermap&controller=showmap&filter=getByUser&member_id={$member->member_id}" seoTemplate="membermap"}'><h2 class='ipsWidget_title ipsType_reset'>{lang="frontnavigation_membermap"}</h2></a>
 	<div class='ipsWidget_inner ipsPad_half'>
-		<iframe src='{url="app=membermap&do=embed&filter=getByUser&member_id={$member->member_id}" seoTemplate="membermap"}' width='100%' height='300' frameborder='0' scrolling='no' marginheight='0' marginwidth='0'></iframe>
-		<span><a href='{url="app=tripreport&filter=getByUser&member_id={$member->member_id}" seoTemplate="membermap"}'>{lang="membermap_view_fullsize"}</a></small>
+		<iframe src='{url="app=membermap&module=membermap&controller=showmap&do=embed&filter=getByUser&member_id={$member->member_id}" seoTemplate="membermap"}' width='100%' height='300' frameborder='0' scrolling='no' marginheight='0' marginwidth='0'></iframe>
+		<span><a href='{url="app=membermap&module=membermap&controller=showmap&filter=getByUser&member_id={$member->member_id}" seoTemplate="membermap"}'>{lang="membermap_view_fullsize"}</a></small>
 	</div>
 </div>]]></template>
  <template template_group="map" template_name="showMap" template_data="$markers='', $cacheTime=0, $canAdd=false, $canEdit=false" template_location="front" template_app="membermap"><![CDATA[{{if request.do != 'embed'}}
@@ -51,7 +51,7 @@
 								<li class='ipsMenu_sep'><hr></li>
 
 								<li class="ipsMenu_item" id="elMyLocationMenuGoHome">
-									<a href="{url='app=membermap&goHome=1' seoTemplate='membermap'}">{lang="membermap_goHome"}</a>
+									<a href="{url='app=membermap&module=membermap&controller=showmap&goHome=1' seoTemplate='membermap'}">{lang="membermap_goHome"}</a>
 								</li>
 							</ul>
 						</div>
@@ -66,11 +66,11 @@
 					<div id='elToolsMenu_menu' class='ipsMenu ipsMenu_auto ipsHide'>
 						<ul>
 							<li class="ipsMenu_item" id='elToolsMenuBrowserCache'>
-								<a href="{url='app=membermap&dropBrowserCache=1' seoTemplate='membermap'}">{lang="membermap_rebuildBrowserCache"} <time></time></a>
+								<a href="{url='app=membermap&module=membermap&controller=showmap&dropBrowserCache=1' seoTemplate='membermap'}">{lang="membermap_rebuildBrowserCache"} <time></time></a>
 							</li>
 
 							<li class="ipsMenu_item" >
-								<a href="{url='app=membermap&rebuildCache=1' seoTemplate='membermap'}" data-action='ipsMenu_ping'>
+								<a href="{url='app=membermap&module=membermap&controller=showmap&rebuildCache=1' seoTemplate='membermap'}" data-action='ipsMenu_ping'>
 									{{if $cacheTime > 0}}
 										{lang="membermap_rebuildServerCache" htmlsprintf="\IPS\DateTime::ts( $cacheTime )->html( true, true )"}
 									{{else}}
@@ -84,7 +84,7 @@
 				{{endif}}
 
 				<li>
-					<a href="{url='app=membermap&controller=markers&module=groups' seoTemplate='markers'}" title='{lang="membermap_browse_markers"}' class='ipsButton ipsButton_medium ipsButton_fullWidth ipsButton_link'><i class="icon-newspaper"></i> {lang="membermap_browse_markers"}</a>
+					<a href="{url='app=membermap&module=groups&controller=markers' seoTemplate='markers'}" title='{lang="membermap_browse_markers"}' class='ipsButton ipsButton_medium ipsButton_fullWidth ipsButton_link'><i class="icon-newspaper"></i> {lang="membermap_browse_markers"}</a>
 				</li>
 			</ul>
 		</div>
