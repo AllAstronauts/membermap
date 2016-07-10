@@ -24,7 +24,7 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
  */
 class _membermap
 {
-	private $colours = array( 
+	protected $colours = array( 
 			'red', 'darkred', 'lightred', 'orange', 'beige', 'green', 'darkgreen', 'lightgreen', 'blue', 'darkblue', 'lightblue',
 			'purple', 'darkpurple', 'pink', 'cadetblue', 'gray', 'lightgray', 'black', 'white'
 	);

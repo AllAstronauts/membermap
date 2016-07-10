@@ -401,7 +401,7 @@
 					/* Inform that we're showing markers from browser cache */
 					if ( oldMarkersIndicator === null && ! isEmbedded )
 					{
-						oldMarkersIndicator = new L.Control.MembermapOldMarkers({ callback: function() { window.location.href = ips.getSetting('baseURL') + 'index.php?app=membermap&dropBrowserCache=1'; }, time: date });
+						oldMarkersIndicator = new L.Control.MembermapOldMarkers({ callback: function() { window.location.href = ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=showmap&dropBrowserCache=1'; }, time: date });
 						ips.membermap.map.addControl( oldMarkersIndicator );
 					}
 
@@ -496,14 +496,6 @@
 					}
 				});
 			}
-			
-
-			
-			/* Get by member */
-			$( '#elInput_membermap_memberName' ).on( 'tokenAdded tokenDeleted', function()
-			{
-				reloadMap();
-			});
 
 			$( '#membermap_button_addLocation, #membermap_button_editLocation' ).click( function()
 			{
@@ -519,7 +511,22 @@
 					url: ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=showmap&do=add',
 					callback: function()
 					{
-						if( ! navigator.geolocation )
+						var geolocationSupported = true;
+
+						/* Chrom(e|ium) 50+ stops geolocation on unsecure protocols */
+						if ( L.Browser.chrome === true && document.location.protocol !== 'https:' )
+						{
+							var chromeVersion = navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
+							chromeVersion = chromeVersion ? parseInt( chromeVersion[2], 10 ) : false;
+
+							if ( chromeVersion >= 50 )
+							{
+								geolocationSupported = false;
+							}
+
+						}
+
+						if( ! navigator.geolocation || ! geolocationSupported )
 						{
 							$( '#membermap_geolocation_wrapper' ).hide();
 						}
@@ -930,7 +937,7 @@
 							}
 							else
 							{
-								window.location.replace( ips.getSetting('baseURL') + "index.php?app=membermap&dropBrowserCache=1&goHome=1" );
+								window.location.replace( ips.getSetting('baseURL') + "index.php?app=membermap&module=membermap&controller=showmap&dropBrowserCache=1&goHome=1" );
 							}
 						}); 
 					}
@@ -967,7 +974,7 @@
 										}
 										else
 										{
-											window.location.replace( ips.getSetting('baseURL') + "index.php?app=membermap&dropBrowserCache=1" );
+											window.location.replace( ips.getSetting('baseURL') + "index.php?app=membermap&module=membermap&controller=showmap&dropBrowserCache=1" );
 										}
 									}); 
 								}

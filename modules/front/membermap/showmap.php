@@ -232,7 +232,9 @@ EOF;
 				$marker->lon = $values['lng'];
 				$marker->save();
 
-				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap&dropBrowserCache=1&goHome=1', 'front', 'membermap' ) );
+				\IPS\Content\Search\Index::i()->index( $marker );
+
+				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=showmap&dropBrowserCache=1&goHome=1', 'front', 'membermap' ) );
 				return;
 			}
 			catch( \Exception $e )
@@ -255,6 +257,8 @@ EOF;
 	 */
 	protected function delete()
 	{
+		\IPS\Session::i()->csrfCheck();
+
 		if ( ! \IPS\Member::loggedIn()->member_id OR ! intval( \IPS\Request::i()->member_id ) )
 		{
 			\IPS\Output::i()->error( 'no_permission', '2MM3/4', 403, '' );

@@ -22,7 +22,7 @@
 								<li class='ipsMenu_sep'><hr></li>
 
 								<li class="ipsMenu_item" id="elMyLocationMenuGoHome">
-									<a href="{url='app=membermap&goHome=1' seoTemplate='membermap'}">{lang="membermap_goHome"}</a>
+									<a href="{url='app=membermap&module=membermap&controller=showmap&goHome=1' seoTemplate='membermap'}">{lang="membermap_goHome"}</a>
 								</li>
 							</ul>
 						</div>
@@ -37,11 +37,11 @@
 					<div id='elToolsMenu_menu' class='ipsMenu ipsMenu_auto ipsHide'>
 						<ul>
 							<li class="ipsMenu_item" id='elToolsMenuBrowserCache'>
-								<a href="{url='app=membermap&dropBrowserCache=1' seoTemplate='membermap'}">{lang="membermap_rebuildBrowserCache"} <time></time></a>
+								<a href="{url='app=membermap&module=membermap&controller=showmap&dropBrowserCache=1' seoTemplate='membermap'}">{lang="membermap_rebuildBrowserCache"} <time></time></a>
 							</li>
 
 							<li class="ipsMenu_item" >
-								<a href="{url='app=membermap&rebuildCache=1' seoTemplate='membermap'}" data-action='ipsMenu_ping'>
+								<a href="{url='app=membermap&module=membermap&controller=showmap&rebuildCache=1' seoTemplate='membermap'}" data-action='ipsMenu_ping'>
 									{{if $cacheTime > 0}}
 										{lang="membermap_rebuildServerCache" htmlsprintf="\IPS\DateTime::ts( $cacheTime )->html( true, true )"}
 									{{else}}
@@ -55,7 +55,7 @@
 				{{endif}}
 
 				<li>
-					<a href="{url='app=membermap&controller=markers&module=groups' seoTemplate='markers'}" title='{lang="membermap_browse_markers"}' class='ipsButton ipsButton_medium ipsButton_fullWidth ipsButton_link'><i class="icon-newspaper"></i> {lang="membermap_browse_markers"}</a>
+					<a href="{url='app=membermap&module=groups&controller=markers' seoTemplate='markers'}" title='{lang="membermap_browse_markers"}' class='ipsButton ipsButton_medium ipsButton_fullWidth ipsButton_link'><i class="icon-newspaper"></i> {lang="membermap_browse_markers"}</a>
 				</li>
 			</ul>
 		</div>

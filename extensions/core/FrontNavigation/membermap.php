@@ -39,7 +39,29 @@ class _membermap extends \IPS\core\FrontNavigation\FrontNavigationAbstract
 	 */
 	public function canView()
 	{
+		return parent::canView() AND \IPS\Member::loggedIn()->canAccessModule( \IPS\Application\Module::get( 'membermap', 'membermap' ) );
+	}
+
+	/**
+	 * Can this item be used at all?
+	 * For example, if this will link to a particular feature which has been diabled, it should
+	 * not be available, even if the user has permission
+	 *
+	 * @return	bool
+	 */
+	public static function isEnabled()
+	{
 		return TRUE;
+	}
+
+	/**
+	 * Can the currently logged in user access the content this item links to?
+	 *
+	 * @return	bool
+	 */
+	public function canAccessContent()
+	{
+		return \IPS\Member::loggedIn()->canAccessModule( \IPS\Application\Module::get( 'membermap', 'membermap' ) );
 	}
 	
 	/**
