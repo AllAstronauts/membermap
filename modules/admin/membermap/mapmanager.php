@@ -70,8 +70,8 @@ class _mapmanager extends \IPS\Dispatcher\Controller
 		
 		if( !isset( $maps['basemaps'] ) )
 		{
-			/* You can't have a map with no basemap. Defaulting to MapQuestOpen.OSM */
-			$maps['basemaps'] = array( 'MapQuestOpen.OSM' );
+			/* You can't have a map with no basemap. Defaulting to OpenStreetMap.France */
+			$maps['basemaps'] = array( 'OpenStreetMap.France' );
 		}
 		if( !isset( $maps['overlays'] ) )
 		{

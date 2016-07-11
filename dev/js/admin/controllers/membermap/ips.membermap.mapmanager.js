@@ -162,7 +162,7 @@ if ( typeof L !== 'undefined' )
 		for (var provider in L.TileLayer.Provider.providers) {
 			
 			/* Ignore those who require an API key */
-			if( provider === 'HERE' || provider === 'MapBox' )
+			if( provider === 'HERE' || provider === 'MapBox' || provider === 'MapQuestOpen' )
 			{
 				continue;
 			}
