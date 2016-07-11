@@ -16,16 +16,23 @@ namespace IPS\membermap;
  */
 class _Application extends \IPS\Application
 {
-
+	/**
+	 * List of default map providers
+	 * @var array
+	 */
 	public static $defaultMaps = array(
 		'basemaps' => array(
-			'MapQuestOpen.OSM',
+			'OpenStreetMap.France',
 			'Thunderforest.Landscape',
 			'Esri.WorldStreetMap',
 			'Esri.WorldTopoMap',
 		)
 	);
 
+	/**
+	 * Shared API keys. Currently not in use
+	 * @var array
+	 */
 	public static $apiKeys = array(
 		/*'mapquest' => "pEPBzF67CQ8ExmSbV9K6th4rAiEc3wud",*/
 	);
@@ -43,6 +50,13 @@ class _Application extends \IPS\Application
 	{
 	}
 
+	/**
+	 * Get API keys
+	 * Currently it only serves MapQuest, but others may be added in the future
+	 * 
+	 * @param  string 	$service 	Name of the service, will return all keys if param is empty
+	 * @return mixed 	Single API key, or all in an array
+	 */
 	public static function getApiKeys( $service )
 	{
 		if ( ! isset( static::$apiKeys['mapquest'] ) )
@@ -64,6 +78,7 @@ class _Application extends \IPS\Application
 				\IPS\Output::i()->error( '401_error_title', '4MM5/2', 401 );
 			}
 		}
+
 		try
 		{
 			if ( $service )
@@ -77,6 +92,10 @@ class _Application extends \IPS\Application
 		return static::$apiKeys;
 	}
 
+	/**
+	 * Get an array of enabled maps
+	 * @return array 	List of maps
+	 */
 	public static function getEnabledMaps()
 	{
 		$defaultMaps = static::$defaultMaps;
@@ -104,6 +123,10 @@ class _Application extends \IPS\Application
 		return 'map-marker';
 	}
 
+	/**
+	 * All assets required for the marker form(s)
+	 * @return void
+	 */
 	public static function getJsForMarkerForm()
 	{
 		/* Get enabled maps */
