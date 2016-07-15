@@ -59,17 +59,45 @@ class _Map
 			}
 			catch ( \UnderflowException $e )
 			{
-				/* This shouldn't really happen, but you'll never know. */
-				$groupId = \IPS\Db::i()->insert( 'membermap_markers_groups', array(
-					'group_name' 		=> "Members",
-					'group_name_seo'	=> 'members',
-					'group_protected' 	=> 1,
-					'group_type'		=> 'member',
-					'group_pin_colour'	=> '#FFFFFF',
-					'group_pin_bg_colour' 	=> 'darkblue',
-					'group_pin_icon'		=> 'fa-user',
-					'group_position'		=> 1,
-				) );
+				$memberGroup = new \IPS\membermap\Markers\Groups;
+				$memberGroup->name = "Members";
+				$memberGroup->name_seo = "members";
+				$memberGroup->protected = 1;
+				$memberGroup->type 		= "member";
+				$memberGroup->pin_colour = "#FFFFFF";
+				$memberGroup->pin_bg_colour = "darkblue";
+				$memberGroup->pin_icon 		= "fa-user";
+				$memberGroup->position 		= 1;
+
+				$memberGroup->save();
+
+				/* Add in permissions */
+				$groups	= array_filter( iterator_to_array( \IPS\Db::i()->select( 'g_id', 'core_groups' ) ), function( $groupId ) 
+				{
+					if( $groupId == \IPS\Settings::i()->guest_group )
+					{
+						return FALSE;
+					}
+
+					return TRUE;
+				});
+
+				$default = implode( ',', $groups );
+
+				\IPS\Db::i()->insert( 'core_permission_index', array(
+		             'app'			=> 'membermap',
+		             'perm_type'	=> 'membermap',
+		             'perm_type_id'	=> $memberGroup->id,
+		             'perm_view'	=> '*', # view
+		             'perm_2'		=> '*', # read
+		             'perm_3'		=> $default, # add
+		             'perm_4'		=> $default, # edit
+		        ) );
+
+				\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$memberGroup->id}", trim( $memberGroup->name ) );
+				\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$memberGroup->id}_JS", trim( $memberGroup->name ), 1 );
+
+				$groupId = $memberGroup->id;
 			}
 
 			\IPS\Data\Store::i()->membermap_memberGroupId = $groupId;
