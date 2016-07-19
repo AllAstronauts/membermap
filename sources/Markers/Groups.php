@@ -429,6 +429,7 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 */
 	public function delete()
 	{
+		/* Can't delete a protected group */
 		if ( $this->protected )
 		{
 			throw new \DomainException( 'No no no no no' );

@@ -29,6 +29,7 @@ class _groups extends \IPS\Content\Controller
 	{
 		\IPS\Output::i()->breadcrumb[] = array( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=showmap', 'front', 'membermap' ), \IPS\Member::loggedIn()->language()->addToStack( 'module__membermap_membermap' ) );
 		\IPS\Output::i()->breadcrumb = array_reverse( \IPS\Output::i()->breadcrumb );
+
 		parent::execute();
 	}
 
@@ -39,7 +40,6 @@ class _groups extends \IPS\Content\Controller
 	 */
 	protected function manage()
 	{
-		
 		if ( isset( \IPS\Request::i()->id ) )
 		{
 			try
@@ -57,6 +57,12 @@ class _groups extends \IPS\Content\Controller
 		}
 	}
 
+	/**
+	 * Show marker group
+	 * 
+	 * @param  \IPS\membermap\Markers\Group $group Group object
+	 * @return void
+	 */
 	protected function _group( $group )
 	{
 		$_count = \IPS\membermap\Markers\Markers::getItemsWithPermission( array( array( \IPS\membermap\Markers\Markers::$databasePrefix . \IPS\membermap\Markers\Markers::$databaseColumnMap['container'] . '=?', $group->_id ) ), NULL, 1, 'read', NULL, 0, NULL, FALSE, FALSE, FALSE, TRUE );
@@ -84,6 +90,11 @@ class _groups extends \IPS\Content\Controller
 		\IPS\Output::i()->output	= \IPS\Theme::i()->getTemplate( 'markers' )->group( $group, (string) $table );
 	}
 
+	/**
+	 * Show marker group index
+	 * 
+	 * @return void
+	 */
 	protected function _index()
 	{
 		/* Online User Location */
@@ -92,6 +103,4 @@ class _groups extends \IPS\Content\Controller
 		\IPS\Output::i()->title		= \IPS\Member::loggedIn()->language()->addToStack('membermap_marker_groups');
 		\IPS\Output::i()->output	= \IPS\Theme::i()->getTemplate( 'markers' )->index();
 	}
-	
-	// Create new methods with the same name as the 'do' parameter which should execute it
 }

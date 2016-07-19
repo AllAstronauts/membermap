@@ -64,6 +64,11 @@ class _markers extends \IPS\Content\Controller
 
 	}
 	
+	/**
+	 * Show edit form
+	 * 
+	 * @return void
+	 */
 	protected function edit()
 	{
 		if ( !$this->marker->canEdit() and !\IPS\Request::i()->form_submitted ) // We check if the form has been submitted to prevent the user loosing their content

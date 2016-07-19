@@ -64,6 +64,10 @@ class _mapmanager extends \IPS\Dispatcher\Controller
 		\IPS\Output::i()->output .= \IPS\Theme::i()->getTemplate( 'mapmanager' )->wrapper();
 	}
 
+	/**
+	 * Update default maps
+	 * @return void
+	 */
 	public function update()
 	{
 		$maps = \IPS\Request::i()->maps;
@@ -78,10 +82,9 @@ class _mapmanager extends \IPS\Dispatcher\Controller
 			$maps['overlays'] = array();
 		}
 
-		//debug( $maps );
-
 		\IPS\Settings::i()->membermap_activemaps = json_encode( $maps );
 		\IPS\Db::i()->update( 'core_sys_conf_settings', array( 'conf_value' => \IPS\Settings::i()->membermap_activemaps ), array( 'conf_key=?', 'membermap_activemaps' ) );
+		
 		unset( \IPS\Data\Store::i()->settings );
 
 		if( \IPS\Request::i()->isAjax() )
@@ -92,6 +95,4 @@ class _mapmanager extends \IPS\Dispatcher\Controller
 
 		\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=membermap&module=membermap&controller=mapmanager" ), 'saved' );
 	}
-	
-	// Create new methods with the same name as the 'do' parameter which should execute it
 }

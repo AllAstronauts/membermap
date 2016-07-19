@@ -63,10 +63,6 @@ class _showmap extends \IPS\Dispatcher\Controller
 		{
 			$markers = \IPS\membermap\Map::i()->getMarkerByMember( $getByUser );
 		}
-		/*else if ( \IPS\Request::i()->filter == 'getOnlineUsers' )
-		{
-			$markers = \IPS\membermap\Map::i()->getMarkersByOnlineMembers();
-		}*/
 
 		/* Get enabled maps */
 		$defaultMaps = \IPS\membermap\Application::getEnabledMaps();
@@ -105,18 +101,20 @@ class _showmap extends \IPS\Dispatcher\Controller
         \IPS\Session::i()->setLocation( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=showmap', 'front', 'membermap' ), array(), 'loc_membermap_viewing_membermap' );
 
         /* Things we need to know in the Javascript */
-		\IPS\Output::i()->jsVars['is_supmod']			= \IPS\Member::loggedIn()->modPermission() ?: 0;
-		\IPS\Output::i()->jsVars['member_id']			= \IPS\Member::loggedIn()->member_id ?: 0;
-		\IPS\Output::i()->jsVars['membermap_canAdd']	= $canAdd ?: 0;
-        \IPS\Output::i()->jsVars['membermap_canEdit']	= $canEdit ?: 0;
-        \IPS\Output::i()->jsVars['membermap_canDelete']	= $canDelete ?: 0;
-        \IPS\Output::i()->jsVars['membermap_cacheTime'] = $cacheTime;
-		\IPS\Output::i()->jsVars['membermap_bbox'] 		= json_decode( \IPS\Settings::i()->membermap_bbox );
-		\IPS\Output::i()->jsVars['membermap_bbox_zoom'] = intval( \IPS\Settings::i()->membermap_bbox_zoom );
-		\IPS\Output::i()->jsVars['membermap_defaultMaps'] = $defaultMaps;
-		\IPS\Output::i()->jsVars['membermap_mapquestAPI'] = \IPS\membermap\Application::getApiKeys( 'mapquest' ); 
-		\IPS\Output::i()->jsVars['membermap_enable_clustering'] = \IPS\Settings::i()->membermap_enable_clustering == 1 ? 1 : 0;
-		\IPS\Output::i()->jsVars['membermap_groupByMemberGroup'] = \IPS\Settings::i()->membermap_groupByMemberGroup == 1 ? 1 : 0;
+        \IPS\Output::i()->jsVars = array_merge( \IPS\Output::i()->jsVars, array(
+        	'is_supmod'						=> \IPS\Member::loggedIn()->modPermission() ?: 0,
+			'member_id'						=> \IPS\Member::loggedIn()->member_id ?: 0,
+			'membermap_canAdd'				=> $canAdd ?: 0,
+        	'membermap_canEdit'				=> $canEdit ?: 0,
+        	'membermap_canDelete'			=> $canDelete ?: 0,
+        	'membermap_cacheTime'			=> $cacheTime,
+			'membermap_bbox'				=> json_decode( \IPS\Settings::i()->membermap_bbox ),
+			'membermap_bbox_zoom'			=> intval( \IPS\Settings::i()->membermap_bbox_zoom ),
+			'membermap_defaultMaps'			=> $defaultMaps,
+			'membermap_mapquestAPI'			=> \IPS\membermap\Application::getApiKeys( 'mapquest' ),
+			'membermap_enable_clustering' 	=> \IPS\Settings::i()->membermap_enable_clustering == 1 ? 1 : 0,
+			'membermap_groupByMemberGroup'	=> \IPS\Settings::i()->membermap_groupByMemberGroup == 1 ? 1 : 0,
+        ));
 
 
         \IPS\Output::i()->endBodyCode .= <<<EOF
@@ -130,6 +128,7 @@ EOF;
 
 	/**
 	 * Get the cache file
+	 * Proxying it through this instead of exposing the location to the end user, and to send a proper error code
 	 *
 	 * @return json
 	 */
@@ -153,7 +152,7 @@ EOF;
 			$output = json_encode( array( 'error' => 'invalid_id' ) );
 		}
 
-		\IPS\Output::i()->sendOutput( $output , 200, 'application/json' );
+		\IPS\Output::i()->sendOutput( $output, 200, 'application/json' );
 	}
 
 	/**
@@ -232,6 +231,7 @@ EOF;
 				$marker->lon = $values['lng'];
 				$marker->save();
 
+				/* Add to search index */
 				\IPS\Content\Search\Index::i()->index( $marker );
 
 				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=showmap&dropBrowserCache=1&goHome=1', 'front', 'membermap' ) );
@@ -282,6 +282,11 @@ EOF;
 		\IPS\Output::i()->error( 'no_permission', '2MM3/5', 403, '' );
 	}
 
+	/**
+	 * Embed map. Used in users profile
+	 * 
+	 * @return void
+	 */
 	protected function embed()
 	{
 		$this->manage();
