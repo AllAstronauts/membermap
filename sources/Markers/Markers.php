@@ -315,15 +315,24 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 				'attachIds'	  => ( $item ) ? array( $item->id ) : NULL ) );
 
 		$return['container'] = new \IPS\Helpers\Form\Node( 'marker_parent_id', ( ( $item AND $item->parent_id ) ? $item->parent_id : ( $container ? $container->id : 0 ) ), TRUE, array(
-			'class'		=> '\IPS\membermap\Markers\Groups',
-			'permissionCheck' => 'add',
-			'subnodes'	=> false,
+			'class'				=> '\IPS\membermap\Markers\Groups',
+			'permissionCheck' 	=> 'add',
+			'subnodes'			=> false,
+			'where'				=> "group_type != 'member'",
 		) );
+
 
 		$return['location'] = new \IPS\Helpers\Form\Text( 'marker_location', $item ? $item->location : '', FALSE, array(), NULL, NULL, NULL, 'marker_location' );
 
 		$return['lat'] = new \IPS\Helpers\Form\Number( 'marker_lat', $item ? $item->lat : 0, TRUE, array( 'min' => -90, 'max' => 90, 'decimals' => TRUE ), NULL, NULL, NULL, 'marker_lat' );
 		$return['lon'] = new \IPS\Helpers\Form\Number( 'marker_lon', $item ? $item->lon : 0, TRUE, array( 'min' => -180, 'max' => 180, 'decimals' => TRUE ), NULL, NULL, NULL, 'marker_lon' );
+
+		if ( $item AND $item->parent_id AND $item->container()->type == 'member' )
+		{
+			unset( $return['title'] );
+			unset( $return['container'] );
+		}
+
 
 		return $return;
 	}
