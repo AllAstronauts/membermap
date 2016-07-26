@@ -111,6 +111,10 @@ class _membermap
 						/* It's a text field, or \IPS\Geolocation failed to get coordinates (in which case we won't bother either */
 						else
 						{
+							/* Remove HTML, newlines, tab, etc, etc */
+							$fieldValue = preg_replace( "/[\\x00-\\x20]|\\xc2|\\xa0+/", ' ', strip_tags( $fieldValue ) );
+							$fieldValue = trim( preg_replace( "/\s\s+/", ' ', $fieldValue ) );
+
 							/* To my understanding we're not allowed to use \IPS\Geolocation, as that uses Google API, and we're not showing the info on a Google Map. */
 							$nominatim = \IPS\membermap\Map::i()->getLatLng( $fieldValue );
 
