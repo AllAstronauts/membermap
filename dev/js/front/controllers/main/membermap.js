@@ -539,22 +539,15 @@
 							source: function( request, response ) 
 							{
 								ips.getAjax()({ 
-									//url: 'http://www.mapquestapi.com/geocoding/v1/address', 
 									url: '//open.mapquestapi.com/nominatim/v1/search.php',
-									type: 'get',
-									dataType: 'json',
+									dataType: 'jsonp',
+									jsonp: 'json_callback',
 									data: {
 										key: ips.getSetting( 'membermap_mapquestAPI' ),
 
-										// MapQuest Geocode
-										/*location: request.term,
-										outFormat: 'json'*/
-
-										// MapQuest Nominatim
 										format: 'json',
 										q: request.term,
 										extratags: 0,
-
 									},
 									success: function( data ) 
 									{
