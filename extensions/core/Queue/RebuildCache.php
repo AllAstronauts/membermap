@@ -129,7 +129,12 @@ class _RebuildCache
 			\IPS\Data\Store::i()->membermap_cacheTime = time();
 		}
 
-		return $count ? ( $offset + $count ) : NULL;
+		if( ! $count )
+		{
+			throw new \IPS\Task\Queue\OutOfRangeException;
+		}
+
+		return $offset + $count;
 		
 	}
 	
