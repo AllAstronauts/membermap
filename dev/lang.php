@@ -5,6 +5,7 @@ $lang = array(
 	'__app_membermap'			=> "Member Map",
 	'frontnavigation_membermap'	=> "Member Map",
 	'__indefart_membermap_marker'	=> "a Member Map Marker",
+	'__defart_membermap_marker'		=> "Member Map Marker",
 	'membermap_rebuilding_cache'	=> "Rebuilding Member Map Cache",
 
 	/* ACP Module/Menu titles */
