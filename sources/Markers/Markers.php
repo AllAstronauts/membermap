@@ -66,8 +66,6 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 		'approved_date'	=> 'approvedon',
 	);
 
-
-
 	/**
 	 * @brief       Node Class
 	 */
@@ -78,18 +76,15 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	 */
 	public static $formLangPrefix = 'marker_';
 
-
 	/**
 	 * @brief	[Node] Node Title
 	 */
 	public static $title = 'membermap_marker';
 
-
 	/**
 	 * @brief	Icon
 	 */
 	public static $icon = 'map-marker';
-
 
 	/**
 	 * @brief	[Content]	Key for hide reasons
@@ -186,8 +181,8 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	 */
 	public function set_name( $name )
 	{
-		$this->_data['name'] = $name;
-		$this->_data['name_seo'] = \IPS\Http\Url::seoTitle( $name );
+		$this->_data['name'] 		= $name;
+		$this->_data['name_seo'] 	= \IPS\Http\Url::seoTitle( $name ); // TODO: Need to change this to \IPS\Http\Url\Friendly::seoTitle( ... ) in the near future
 	}
 
 	/**
@@ -199,11 +194,11 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	{
 		if( !$this->_data['name_seo'] )
 		{
-			$this->name_seo	= \IPS\Http\Url::seoTitle( $this->name );
+			$this->name_seo	= \IPS\Http\Url::seoTitle( $this->name ); // TODO: Need to change this to \IPS\Http\Url\Friendly::seoTitle( ... ) in the near future
 			$this->save();
 		}
 
-		return $this->_data['name_seo'] ?: \IPS\Http\Url::seoTitle( $this->name );
+		return $this->_data['name_seo'] ?: \IPS\Http\Url::seoTitle( $this->name ); // TODO: Need to change this to \IPS\Http\Url\Friendly::seoTitle( ... ) in the near future
 	}
 
 	/**
@@ -320,15 +315,24 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 				'attachIds'	  => ( $item ) ? array( $item->id ) : NULL ) );
 
 		$return['container'] = new \IPS\Helpers\Form\Node( 'marker_parent_id', ( ( $item AND $item->parent_id ) ? $item->parent_id : ( $container ? $container->id : 0 ) ), TRUE, array(
-			'class'		=> '\IPS\membermap\Markers\Groups',
-			'permissionCheck' => 'add',
-			'subnodes'	=> false,
+			'class'				=> '\IPS\membermap\Markers\Groups',
+			'permissionCheck' 	=> 'add',
+			'subnodes'			=> false,
+			'where'				=> "group_type != 'member'",
 		) );
+
 
 		$return['location'] = new \IPS\Helpers\Form\Text( 'marker_location', $item ? $item->location : '', FALSE, array(), NULL, NULL, NULL, 'marker_location' );
 
 		$return['lat'] = new \IPS\Helpers\Form\Number( 'marker_lat', $item ? $item->lat : 0, TRUE, array( 'min' => -90, 'max' => 90, 'decimals' => TRUE ), NULL, NULL, NULL, 'marker_lat' );
 		$return['lon'] = new \IPS\Helpers\Form\Number( 'marker_lon', $item ? $item->lon : 0, TRUE, array( 'min' => -180, 'max' => 180, 'decimals' => TRUE ), NULL, NULL, NULL, 'marker_lon' );
+
+		if ( $item AND $item->parent_id AND $item->container()->type == 'member' )
+		{
+			unset( $return['title'] );
+			unset( $return['container'] );
+		}
+
 
 		return $return;
 	}
@@ -341,8 +345,6 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	 */
 	public function processForm( $values )
 	{
-
-		$isNew = $this->_new;
 
 		if ( !$this->id )
 		{
@@ -368,15 +370,11 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 		}
 
 		parent::processForm( $values );
-
-		/* Update Category */
-		/*$this->container()->setLastMarker( $this );
-		$this->container()->save();*/
 	}
 
 	/**
 	 * Can edit?
-	 * Authors can always edit their own files
+	 * Authors can always edit their own markers
 	 *
 	 * @param	\IPS\Member|NULL	$member	The member to check for (NULL for currently logged in member)
 	 * @return	bool

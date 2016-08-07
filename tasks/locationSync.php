@@ -1,13 +1,12 @@
 <?php
 /**
- * @brief		locationSync Task
- * @author		<a href='http://www.invisionpower.com'>Invision Power Services, Inc.</a>
- * @copyright	(c) 2001 - 2016 Invision Power Services, Inc.
- * @license		http://www.invisionpower.com/legal/standards/
- * @package		IPS Community Suite
- * @subpackage	membermap
- * @since		05 May 2016
- * @version		SVN_VERSION_NUMBER
+ * @brief		Location Sync task
+ * @author		<a href='http://ipb.silvesterwebdesigns.com'>Stuart Silvester & Martin Aronsen</a>
+ * @copyright	(c) 2015 Stuart Silvester & Martin Aronsen
+ * @package		IPS Social Suite
+ * @subpackage	Member Map
+ * @since		20 Oct 2015
+ * @version		3.1.3
  */
 
 namespace IPS\membermap\tasks;

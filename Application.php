@@ -48,6 +48,9 @@ class _Application extends \IPS\Application
 	 */
 	public function installOther()
 	{
+		/* Install default Members marker group */
+		/* Calling this will create a group if one don't exist */
+		\IPS\membermap\Map::i()->getMemberGroupId();
 	}
 
 	/**

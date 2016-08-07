@@ -72,6 +72,12 @@ class _Upgrade
 
 			$did++;
 
+			/* We don't have a name, likely this member has been deleted */
+			if ( $member['name'] == '' OR $member['name'] == NULL )
+			{
+				continue;
+			}
+
 			\IPS\Db::i()->insert( 'membermap_markers', array(
 				'marker_parent_id' 	=> $memberGroupId,
 				'marker_name'		=> $member['name'],

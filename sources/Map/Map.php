@@ -38,6 +38,11 @@ class _Map
 		return static::$instance;
 	}
 
+	/**
+	 * Get the marker group ID for member markers
+	 * 
+	 * @return int Group ID
+	 */
 	public function getMemberGroupId()
 	{
 		static $groupId = null;
@@ -47,6 +52,7 @@ class _Map
 			return $groupId;
 		}
 
+		/* Get from cache */
 		if ( isset( \IPS\Data\Store::i()->membermap_memberGroupId ) )
 		{
 			$groupId = \IPS\Data\Store::i()->membermap_memberGroupId;
@@ -59,17 +65,46 @@ class _Map
 			}
 			catch ( \UnderflowException $e )
 			{
-				/* This shouldn't really happen, but you'll never know. */
-				$groupId = \IPS\Db::i()->insert( 'membermap_markers_groups', array(
-					'group_name' 		=> "Members",
-					'group_name_seo'	=> 'members',
-					'group_protected' 	=> 1,
-					'group_type'		=> 'member',
-					'group_pin_colour'	=> '#FFFFFF',
-					'group_pin_bg_colour' 	=> 'darkblue',
-					'group_pin_icon'		=> 'fa-user',
-					'group_position'		=> 1,
-				) );
+				/* No group exists. Need to create one then */
+				$memberGroup = new \IPS\membermap\Markers\Groups;
+				$memberGroup->name 			= "Members";
+				$memberGroup->name_seo 		= "members";
+				$memberGroup->protected 	= 1;
+				$memberGroup->type 			= "member";
+				$memberGroup->pin_colour 	= "#FFFFFF";
+				$memberGroup->pin_bg_colour = "darkblue";
+				$memberGroup->pin_icon 		= "fa-user";
+				$memberGroup->position 		= 1;
+
+				$memberGroup->save();
+
+				/* Add in permissions */
+				$groups	= array_filter( iterator_to_array( \IPS\Db::i()->select( 'g_id', 'core_groups' ) ), function( $groupId ) 
+				{
+					if( $groupId == \IPS\Settings::i()->guest_group )
+					{
+						return FALSE;
+					}
+
+					return TRUE;
+				});
+
+				$default = implode( ',', $groups );
+
+				\IPS\Db::i()->insert( 'core_permission_index', array(
+		             'app'			=> 'membermap',
+		             'perm_type'	=> 'membermap',
+		             'perm_type_id'	=> $memberGroup->id,
+		             'perm_view'	=> '*', # view
+		             'perm_2'		=> '*', # read
+		             'perm_3'		=> $default, # add
+		             'perm_4'		=> $default, # edit
+		        ) );
+
+				\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$memberGroup->id}", trim( $memberGroup->name ) );
+				\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$memberGroup->id}_JS", trim( $memberGroup->name ), 1 );
+
+				$groupId = $memberGroup->id;
 			}
 
 			\IPS\Data\Store::i()->membermap_memberGroupId = $groupId;
@@ -124,60 +159,6 @@ class _Map
 		}
 		
 		return $format ? $this->formatMemberMarkers( array( $_marker ) ) : $_marker;
-	}
-
-	/**
-     * Get all markers created by (or for) an online member
-     */
-    public function getMarkersByOnlineMembers()
-    {
-    	$doEmbed = (bool)\IPS\Request::i()->embed;
-		$rows 	 = $blogMarkers = $markers = array();
-
-		$where = array( 
-			array( "core_sessions.running_time>?", \IPS\DateTime::create()->sub( new \DateInterval( 'PT60M' ) )->getTimeStamp() ),
-			array( "core_sessions.login_type!=?", \IPS\Session\Front::LOGIN_TYPE_SPIDER )
-		);
-		
-		if ( !\IPS\Member::loggedIn()->isAdmin() )
-		{
-			$where[] = array( "core_sessions.login_type!=?", \IPS\Session\Front::LOGIN_TYPE_ANONYMOUS );
-		}
-
-		$where[] = "core_groups.g_hide_online_list=0";
-
-		$results = \IPS\Db::i()->select( 'core_sessions.*', 'core_sessions', $where )
-					->join( 'core_groups', 'core_groups.g_id=core_sessions.member_group' );
-
-		
-		foreach ( $results as $r )
-		{
-			$rows[ $r['member_id'] ] = $r;
-		}		
-		
-		if ( ! count( $rows ) )
-		{
-			return false;
-		}
-		/*
-		 * Get markers
-		 */
-
-		$dbMarkers = iterator_to_array( 
-						\IPS\Db::i()->select( 
-							'membermap_members.*, core_members.name, core_members.member_id, core_members.members_seo_name', 
-							'membermap_members', 
-							\IPS\Db::i()->in( 'membermap_members.member_id', array_keys( $rows ) ) 
-						)
-							->join( 'core_members', 'core_members.member_id=membermap_members.member_id' )
-		);
-
-		
-		
-		$markers = $this->formatMarkers( $dbMarkers );
-		
-		
-		return $markers;
 	}
 
 	/**
@@ -256,15 +237,15 @@ class _Map
 	/**
 	 * Invalidate (delete) JSON cache
 	 * There are situations like mass-move or mass-delete where the cache is rewritten for every single node that's created.
-	 * This will force the cache to rewrite itself on the next pageload
+	 * This will force the cache to rewrite itself on the next page load
 	 *
 	 * @return void
 	 */
 	public function invalidateJsonCache()
 	{
+		/* Just reset cachetime to 0. checkForCache() will deal with the actual recaching on the next load */
 		\IPS\Data\Store::i()->membermap_cacheTime = 0;
 
-		/* Just reset cachetime to 0. checkForCache() will deal with the actual recaching on the next load */
 	}
 
 	/**
@@ -349,7 +330,7 @@ class _Map
 		{
 			$useQueue = true;
 		}
-
+		
 		if ( $useQueue OR ( defined( 'MEMBERMAP_FORCE_QUEUE' ) and MEMBERMAP_FORCE_QUEUE ) )
 		{
 			\IPS\Task::queue( 'membermap', 'RebuildCache', array( 'class' => '\IPS\membermap\Map' ), 1, array( 'class' ) );

@@ -85,66 +85,77 @@ class _membermap
 			{
 				if ( isset( $changes['field_' . \IPS\Settings::i()->membermap_profileLocationField ] ) AND ! empty( $changes['field_' . \IPS\Settings::i()->membermap_profileLocationField ] ) )
 				{
-					$lat = $lng = $location = NULL;
-					$fieldValue = $changes['field_' . \IPS\Settings::i()->membermap_profileLocationField ];
-
-					/* If it's an array, it might be from an address field, which already have the lat/lng data */
-					if( is_array( json_decode( $fieldValue, TRUE ) ) )
+					try
 					{
-						$addressData = json_decode( $fieldValue, TRUE );
+						$lat = $lng = $location = NULL;
+						$fieldValue = $changes['field_' . \IPS\Settings::i()->membermap_profileLocationField ];
 
-						if ( is_float( $addressData['lat'] ) AND is_float( $addressData['long'] ) )
+						/* If it's an array, it might be from an address field, which already have the lat/lng data */
+						if( is_array( json_decode( $fieldValue, TRUE ) ) )
 						{
-							$lat = floatval( $addressData['lat'] );
-							$lng = floatval( $addressData['long'] );
+							$addressData = json_decode( $fieldValue, TRUE );
+
+							if ( is_float( $addressData['lat'] ) AND is_float( $addressData['long'] ) )
+							{
+								$lat = floatval( $addressData['lat'] );
+								$lng = floatval( $addressData['long'] );
+							}
+
+							$addressData['addressLines'][] = $addressData['city'];
+
+							if ( count( $addressData['addressLines'] ) )
+							{
+								$location = implode( ', ', $addressData['addressLines'] );
+							}
 						}
-
-						$addressData['addressLines'][] = $addressData['city'];
-
-						if ( count( $addressData['addressLines'] ) )
-						{
-							$location = implode( ', ', $addressData['addressLines'] );
-						}
-					}
-					/* It's a text field, or \IPS\Geolocation failed to get coordinates (in which case we won't bother either */
-					else
-					{
-						/* To my understanding we're not allowed to use \IPS\Geolocation, as that uses Google API, and we're not showing the info on a Google Map. */
-						$nominatim = \IPS\membermap\Map::i()->getLatLng( $fieldValue );
-
-						if( is_array( $nominatim ) AND count( $nominatim ) )
-						{
-							$lat 		= $nominatim['lat'];
-							$lng 		= $nominatim['lng'];
-							$location 	= $nominatim['location'];
-						}
-					}
-
-					if( $lat AND $lng )
-					{
-						$existingMarker = \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE );
-
-						if( $existingMarker instanceof \IPS\membermap\Markers\Markers )
-						{
-							$marker 			= $existingMarker;
-							$marker->updated 	= time();
-						}
+						/* It's a text field, or \IPS\Geolocation failed to get coordinates (in which case we won't bother either */
 						else
 						{
-							$groupId = \IPS\membermap\Map::i()->getMemberGroupId();
+							/* Remove HTML, newlines, tab, etc, etc */
+							$fieldValue = preg_replace( "/[\\x00-\\x20]|\\xc2|\\xa0+/", ' ', strip_tags( $fieldValue ) );
+							$fieldValue = trim( preg_replace( "/\s\s+/", ' ', $fieldValue ) );
 
-							$marker = \IPS\membermap\Markers\Markers::createItem( $member, \IPS\Request::i()->ipAddress(), new \IPS\DateTime, \IPS\membermap\Markers\Groups::load( $groupId ), FALSE );
+							/* To my understanding we're not allowed to use \IPS\Geolocation, as that uses Google API, and we're not showing the info on a Google Map. */
+							$nominatim = \IPS\membermap\Map::i()->getLatLng( $fieldValue );
+
+							if( is_array( $nominatim ) AND count( $nominatim ) )
+							{
+								$lat 		= $nominatim['lat'];
+								$lng 		= $nominatim['lng'];
+								$location 	= $nominatim['location'];
+							}
 						}
 
-						$marker->name 		= $member->name;
-						$marker->lat 		= $lat;
-						$marker->lon 		= $lng;
-						$marker->location 	= $location ?: $fieldValue;
-						
+						if( $lat AND $lng )
+						{
+							$existingMarker = \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE );
 
-						/* Save and add to search index */
-						$marker->save();
-						\IPS\Content\Search\Index::i()->index( $marker );
+							if( $existingMarker instanceof \IPS\membermap\Markers\Markers )
+							{
+								$marker 			= $existingMarker;
+								$marker->updated 	= time();
+							}
+							else
+							{
+								$groupId = \IPS\membermap\Map::i()->getMemberGroupId();
+
+								$marker = \IPS\membermap\Markers\Markers::createItem( $member, \IPS\Request::i()->ipAddress(), new \IPS\DateTime, \IPS\membermap\Markers\Groups::load( $groupId ), FALSE );
+							}
+
+							$marker->name 		= $member->name;
+							$marker->lat 		= $lat;
+							$marker->lon 		= $lng;
+							$marker->location 	= $location ?: $fieldValue;
+							
+
+							/* Save and add to search index */
+							$marker->save();
+							\IPS\Content\Search\Index::i()->index( $marker );
+						}
+					}
+					catch ( \Exception $e )
+					{
+						/* Something went wrong. Such as the input field being an editor */
 					}
 				}
 			}

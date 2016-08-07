@@ -1,16 +1,18 @@
 <ips:template parameters="$canSubmitMarkers, $currentGroup=NULL" />
 
 {{if $canSubmitMarkers AND ( !$currentGroup OR $currentGroup->can('add') ) }}
-<li class='ipsToolList_primaryAction'>
-	<a class="ipsButton ipsButton_medium ipsButton_important ipsButton_fullWidth" 
-		href="
-			{{if $currentGroup}}
-				{url="app=membermap&module=markers&controller=submit&group={$currentGroup->id}&_new=1" seoTemplate="membermap_submit"}
-			{{else}}
-				{url="app=membermap&module=markers&controller=submit&_new=1" seoTemplate="membermap_submit"}
-			{{endif}}
-		">
-			{lang="membermap_submit_a_marker"}
-	</a>
-</li>
+	{{if ! $currentGroup OR $currentGroup->type != 'member'}}
+		<li class='ipsToolList_primaryAction'>
+			<a class="ipsButton ipsButton_medium ipsButton_important ipsButton_fullWidth" 
+				href="
+					{{if $currentGroup}}
+						{url="app=membermap&module=markers&controller=submit&group={$currentGroup->id}&_new=1" seoTemplate="membermap_submit"}
+					{{else}}
+						{url="app=membermap&module=markers&controller=submit&_new=1" seoTemplate="membermap_submit"}
+					{{endif}}
+				">
+					{lang="membermap_submit_a_marker"}
+			</a>
+		</li>
+	{{endif}}
 {{endif}}
