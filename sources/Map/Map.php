@@ -203,7 +203,8 @@ class _Map
 					$locCache[ 'cache-' . $locKey ] = false;
 				}
 			}
-			catch ( \IPS\Http\Request\Exception $e )
+			/* \RuntimeException catches BAD_JSON and \IPS\Http\Request\Exception both */
+			catch ( \RuntimeException $e )
 			{
 				\IPS\Log::log( $e, 'membermap' );
 

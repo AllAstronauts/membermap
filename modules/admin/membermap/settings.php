@@ -69,7 +69,7 @@ class _settings extends \IPS\Dispatcher\Controller
 
 			$form->addHeader( 'membermap_autoUpdate' );
 
-			$profileFields = array();
+			$profileFields = array( '' => ' -- ' . \IPS\Member::loggedIn()->language()->addToStack( 'membermap_profileLocationField' ) . ' -- ' );
 			foreach ( \IPS\core\ProfileFields\Field::fields( array(), \IPS\core\ProfileFields\Field::PROFILE ) as $group => $fields )
 			{
 				foreach ( $fields as $id => $field )
