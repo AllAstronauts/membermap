@@ -53,6 +53,9 @@ $lang = array(
 	'membermap_edit_a_marker' 		=> "Edit Marker",
 	'membermap_no_markers_in_cat'	=> "There are no markers in this group",
 	'membermap_submit_first_marker' => "Why don't you submit the first one?",
+	'membermap_pending_approval'	=> "This marker is not yet approved and is currently only visible to staff.",
+	'membermap_delete_title'		=> "Delete this marker",
+	'membermap_approve_title'		=> "Approve this marker",
 
 
 	/* Session Location */
