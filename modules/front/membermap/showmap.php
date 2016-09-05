@@ -31,7 +31,6 @@ class _showmap extends \IPS\Dispatcher\Controller
 	 */
 	public function execute()
 	{
-		
 		parent::execute();
 	}
 
@@ -53,7 +52,6 @@ class _showmap extends \IPS\Dispatcher\Controller
 				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=showmap', NULL, 'membermap' ) );
 			}
 		}
-
 
 		$cacheTime 	= isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
 
@@ -216,8 +214,7 @@ EOF;
 				}
 				else
 				{
-
-					$marker = \IPS\membermap\Markers\Markers::createItem( \IPS\Member::loggedIn(), \IPS\Request::i()->ipAddress(), new \IPS\DateTime, \IPS\membermap\Markers\Groups::load( $groupId ), FALSE );
+					$marker = \IPS\membermap\Markers\Markers::createItem( \IPS\Member::loggedIn(), \IPS\Request::i()->ipAddress(), new \IPS\DateTime, \IPS\membermap\Markers\Groups::load( $groupId ) );
 					$marker->member_id = \IPS\Member::loggedIn()->member_id;
 				}
 
@@ -234,7 +231,16 @@ EOF;
 				/* Add to search index */
 				\IPS\Content\Search\Index::i()->index( $marker );
 
-				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=showmap&dropBrowserCache=1&goHome=1', 'front', 'membermap' ) );
+				/* Content approval is requred, redirect the member to the marker page, where this is made clear */
+				if ( $marker->hidden() )
+				{
+					\IPS\Output::i()->redirect( $marker->url() );
+				}
+				else
+				{
+					\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=showmap&dropBrowserCache=1&goHome=1', 'front', 'membermap' ) );
+				}
+
 				return;
 			}
 			catch( \Exception $e )
