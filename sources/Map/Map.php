@@ -139,7 +139,7 @@ class _Map
 			{
 				$groupId = $this->getMemberGroupId();
 
-				$_marker = \IPS\Db::i()->select( '*', array( 'membermap_markers', 'mm' ), array( 'mm.marker_member_id=? AND mm.marker_parent_id=?', intval( $memberId ), $groupId ) )
+				$_marker = \IPS\Db::i()->select( '*', array( 'membermap_markers', 'mm' ), array( 'mm.marker_member_id=? AND mm.marker_parent_id=?', intval( $memberId ), intval( $groupId ) ) )
 						->join( array( 'core_members', 'm' ), 'mm.marker_member_id=m.member_id' )
 						->join( array( 'core_groups', 'g' ), 'm.member_group_id=g.g_id' )
 						->first();
@@ -184,8 +184,10 @@ class _Map
 		{
 			try
 			{
-				$data = \IPS\Http\Url::external( 
-					( \IPS\Request::i()->isSecure()  ? 'https://' : 'http://' ) . "open.mapquestapi.com/nominatim/v1/search.php?key={$apiKey}&format=json&limit=1&q=" . urlencode( $location ) )->request( 30 )->get()->decodeJson();
+				$data = \IPS\Http\Url::external( "https://open.mapquestapi.com/nominatim/v1/search.php?key={$apiKey}&format=json&limit=1&q=" . urlencode( $location ) )
+					->request( 15 )
+					->get()
+					->decodeJson();
 
 				if ( is_array( $data ) AND count( $data ) )
 				{
