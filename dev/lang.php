@@ -33,6 +33,16 @@ $lang = array(
 	'membermap_marker_groups' 	=> "Marker Groups",
 	'membermap_groups' 			=> "Groups",
 
+	/* ACP Mod Permissions */
+	'modperms__core_Content_membermap_Markers_Markers' => "Member Map",
+	'membermap_markers_groups'			=> "Marker Groups",
+	'can_edit_membermap_marker'			=> "Can edit markers?",
+	'can_hide_membermap_marker'			=> "Can hide markers?",
+	'can_unhide_membermap_marker'		=> "Can unhide markers?",
+	'can_view_hidden_membermap_marker'	=> "Can view hidden markers?",
+	'can_move_membermap_marker'			=> "Can move markers?",
+	'can_delete_membermap_marker'		=> "Can delete markers?",
+
 	/* Front-end marker view */
 	'membermap_marker_info' 		=> "Marker Information",
 	'membermap_marker_author' 		=> "Added by",
@@ -59,7 +69,7 @@ $lang = array(
 
 
 	/* Session Location */
-	'loc_membermap_viewing_membermap' => "Viewing the Member Map",
+	'loc_membermap_viewing_membermap' => "Viewing Member Map",
 
 
 	/* ACP Settings */	
