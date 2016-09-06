@@ -10,18 +10,18 @@
 		<input type="hidden" name="plupload" value="{expression="md5( uniqid() )"}">
 	{{endif}}
 	
-	<ul class='ipsForm ipsForm_vertical'>
-		{{foreach $elements as $collection}}
-			{{foreach $collection as $inputName => $input}}
-				{{if in_array( $inputName, array( 'marker_title', 'marker_description' ) )}}
-					{$input|raw}
-				{{endif}}
-			{{endforeach}}
-		{{endforeach}}
-	</ul>
-	<br>
-
 	<div class='ipsBox'>
+		<ul class='ipsForm ipsForm_vertical'>
+			{{foreach $elements as $collection}}
+				{{foreach $collection as $inputName => $input}}
+					{{if in_array( $inputName, array( 'marker_title', 'marker_description' ) )}}
+						{$input|raw}
+					{{endif}}
+				{{endforeach}}
+			{{endforeach}}
+		</ul>
+		<br>
+
 		<div class='ipsColumns'>
 			<div class='ipsColumn ipsColumn_veryWide'>
 				<ul class='ipsForm ipsPad ipsForm_vertical'>
