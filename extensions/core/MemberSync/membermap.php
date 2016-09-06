@@ -34,7 +34,6 @@ class _membermap
 	public function onMerge( $member, $member2 )
 	{
 		/* A member can't have multiple locations, so we'll have to delete one of them */
-
 		$memderLoc 	= \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE );
 		$memder2Loc = \IPS\membermap\Map::i()->getMarkerByMember( $member2->member_id, FALSE );
 

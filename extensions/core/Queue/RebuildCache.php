@@ -135,7 +135,6 @@ class _RebuildCache
 		}
 
 		return $offset + $count;
-		
 	}
 	
 	/**

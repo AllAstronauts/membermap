@@ -1,5 +1,4 @@
 <ips:template parameters="$id, $action, $elements, $hiddenValues, $actionButtons, $uploadField, $class=''" />
-
 <form accept-charset='utf-8' id='membermap_marker_form' class="ipsForm {$class}" action="{$action}" method="post" {{if $uploadField}}enctype="multipart/form-data"{{endif}} data-ipsForm data-controller="membermap.front.markers.markerform">
 	<input type="hidden" name="{$id}_submitted" value="1">
 	{{foreach $hiddenValues as $k => $v}}
