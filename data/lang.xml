@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="110007">
+ <app key="membermap" version="110008">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
   <word key="__indefart_membermap_marker" js="0">a Member Map Marker</word>
@@ -24,6 +24,14 @@
   <word key="r__markers_permissions" js="0">Can manage permissions?</word>
   <word key="membermap_marker_groups" js="0">Marker Groups</word>
   <word key="membermap_groups" js="0">Groups</word>
+  <word key="modperms__core_Content_membermap_Markers_Markers" js="0">Member Map</word>
+  <word key="membermap_markers_groups" js="0">Marker Groups</word>
+  <word key="can_edit_membermap_marker" js="0">Can edit markers?</word>
+  <word key="can_hide_membermap_marker" js="0">Can hide markers?</word>
+  <word key="can_unhide_membermap_marker" js="0">Can unhide markers?</word>
+  <word key="can_view_hidden_membermap_marker" js="0">Can view hidden markers?</word>
+  <word key="can_move_membermap_marker" js="0">Can move markers?</word>
+  <word key="can_delete_membermap_marker" js="0">Can delete markers?</word>
   <word key="membermap_marker_info" js="0">Marker Information</word>
   <word key="membermap_marker_author" js="0">Added by</word>
   <word key="membermap_marker_date" js="0">Submitted</word>
@@ -43,7 +51,10 @@
   <word key="membermap_edit_a_marker" js="0">Edit Marker</word>
   <word key="membermap_no_markers_in_cat" js="0">There are no markers in this group</word>
   <word key="membermap_submit_first_marker" js="0">Why don't you submit the first one?</word>
-  <word key="loc_membermap_viewing_membermap" js="0">Viewing the Member Map</word>
+  <word key="membermap_pending_approval" js="0">This marker is not yet approved and is currently only visible to staff.</word>
+  <word key="membermap_delete_title" js="0">Delete this marker</word>
+  <word key="membermap_approve_title" js="0">Approve this marker</word>
+  <word key="loc_membermap_viewing_membermap" js="0">Viewing Member Map</word>
   <word key="map_settings" js="0">Map Settings</word>
   <word key="api_settings" js="0">API Keys</word>
   <word key="membermap_enable_clustering" js="0">Enable Marker Clustering?</word>
