@@ -117,7 +117,7 @@
 			/* Init events */
 			initEvents();	
 		},
-		
+
 		setMobileDevice = function( bool )
 		{
 			isMobileDevice = bool;
@@ -126,6 +126,46 @@
 		setEmbed = function( bool )
 		{
 			isEmbedded = bool;
+		},
+
+		setZoomLevel = function( setZoomLevel )
+		{
+			zoomLevel = parseInt( setZoomLevel, 10 );
+		},
+
+		setCenter = function( setLat, setLng )
+		{
+			initialCenter = new L.LatLng( parseFloat( setLat ), parseFloat( setLng ) );
+		},
+		
+		setMapHeight = function()
+		{
+			if ( stuffSize === 0 )
+			{
+				stuffSize = $( '#membermapWrapper' ).offset().top;
+			}
+			
+			var browserHeight = $( window ).height();
+			
+			var scrollY = ( window.pageYOffset !== undefined ) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop; /* DIE IE */
+			var leftForMe;
+			
+			if ( scrollY > stuffSize )
+			{
+				leftForMe = $( window ).height();
+			}
+			else
+			{
+				leftForMe = browserHeight - stuffSize + scrollY;
+			}
+			if ( $( '#mapWrapper' ).height() !== leftForMe )
+			{
+				$( '#mapWrapper' ).css( { height: leftForMe } );
+				
+				return true;
+			}
+			
+			return false;
 		},
 		
 		clear =function()
@@ -137,6 +177,23 @@
 		{
 			clear();
 			showMarkers( true );
+		},
+		
+		setMarkers = function( markers )
+		{
+			allMarkers = markers;
+		},
+
+		reloadMarkers = function()
+		{
+			if ( oldMarkersIndicator !== null )
+			{
+				ips.membermap.map.removeControl( oldMarkersIndicator );
+			}
+			
+			clear();
+
+			loadMarkers( true );
 		},
 
 		setupMap = function()
@@ -175,7 +232,7 @@
 
 					baseMaps[ prettyName ] = mapServices[ key ] = L.tileLayer.provider( name );
 
-					if ( defaultMap == '' )
+					if ( defaultMap === '' )
 					{
 						defaultMap = key;
 					}
@@ -273,23 +330,6 @@
 			ips.membermap.map = map;
 		},
 		
-		setMarkers = function( markers )
-		{
-			allMarkers = markers;
-		},
-
-		reloadMarkers = function()
-		{
-			if ( oldMarkersIndicator !== null )
-			{
-				ips.membermap.map.removeControl( oldMarkersIndicator );
-			}
-			
-			clear();
-
-			loadMarkers( true );
-		},
-		
 		loadMarkers = function( forceReload )
 		{
 			function loadNextFile( id )
@@ -355,7 +395,7 @@
 				return;
 			}
 
-			var dbEnabled = ips.utils.db.isEnabled()
+			var dbEnabled = ips.utils.db.isEnabled();
 
 			if ( ! dbEnabled )
 			{
@@ -421,7 +461,7 @@
 			/* Count all markers in each overlay */
 			$.each( overlayControl._layers, function( id, layer )
 			{
-				if ( layer.overlay == true && layer.layer.getLayers() !== 'undefined' && layer.layer.getLayers().length > 0 )
+				if ( layer.overlay === true && layer.layer.getLayers() !== 'undefined' && layer.layer.getLayers().length > 0 )
 				{
 					var count = layer.layer.getLayers().length;
 					if ( count > 0 )
@@ -512,6 +552,11 @@
 					callback: function()
 					{
 						var geolocationSupported = true;
+
+						if ( ! ( 'geolocation' in navigator ) )
+						{
+							geolocationSupported = false;
+						}
 
 						/* Chrom(e|ium) 50+ stops geolocation on unsecure protocols */
 						if ( L.Browser.chrome === true && document.location.protocol !== 'https:' )
@@ -610,11 +655,10 @@
 		},
 
 
-
 		processGeolocation = function(e)
 		{
 			e.preventDefault();
-			if(navigator.geolocation)
+			if ( navigator.geolocation )
 			{
 				navigator.geolocation.getCurrentPosition( function( position )
 				{
@@ -674,46 +718,6 @@
 					enableHighAccuracy: true
 				});
 			}
-		},
-
-		setZoomLevel = function( setZoomLevel )
-		{
-			zoomLevel = parseInt( setZoomLevel, 10 );
-		},
-
-		setCenter = function( setLat, setLng )
-		{
-			initialCenter = new L.LatLng( parseFloat( setLat ), parseFloat( setLng ) );
-		},
-		
-		setMapHeight = function()
-		{
-			if ( stuffSize === 0 )
-			{
-				stuffSize = $( '#membermapWrapper' ).offset().top;
-			}
-			
-			var browserHeight = $( window ).height();
-			
-			var scrollY = ( window.pageYOffset !== undefined ) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop; /* DIE IE */
-			var leftForMe;
-			
-			if ( scrollY > stuffSize )
-			{
-				leftForMe = $( window ).height();
-			}
-			else
-			{
-				leftForMe = browserHeight - stuffSize + scrollY;
-			}
-			if ( $( '#mapWrapper' ).height() !== leftForMe )
-			{
-				$( '#mapWrapper' ).css( { height: leftForMe } );
-				
-				return true;
-			}
-			
-			return false;
 		},
 	
 		showMarkers = function( dontRepan, markers )
