@@ -1,17 +1,25 @@
 <ips:template parameters="$marker, $prevReport='', $nextReport=''" />
 {{if $marker->hidden() === 1 and $marker->canUnhide()}}
 	<div class="ipsMessage ipsMessage_warning ipsSpacer_both">
-		<p class="ipsType_reset">{lang="file_pending_approval"}</p>
+		<p class="ipsType_reset">{lang="membermap_pending_approval"}</p>
 		<br>
 		<ul class='ipsList_inline'>
-			<li><a href="{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'unhide' ) )}" class="ipsButton ipsButton_positive ipsButton_verySmall" title='{lang="approve_title_file"}'><i class="fa fa-check"></i> {lang="approve"}</a></li>
+			<li>
+				<a href="{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'unhide' ) )}" class="ipsButton ipsButton_positive ipsButton_verySmall" title='{lang="membermap_approve_title"}'>
+					<i class="fa fa-check"></i> {lang="approve"}
+				</a>
+			</li>
 			{{if $marker->canDelete()}}
-				<li><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'delete' ) )}' data-confirm  title='{lang="downloads_delete_title"}' class='ipsButton ipsButton_negative ipsButton_verySmall'><i class='fa fa-times'></i> {lang="delete"}</a></li>
+				<li>
+					<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'delete' ) )}' data-confirm  title='{lang="membermap_delete_title"}' class='ipsButton ipsButton_negative ipsButton_verySmall'>
+						<i class='fa fa-times'></i> {lang="delete"}
+					</a>
+				</li>
 			{{endif}}
 		</ul>
 	</div>
 {{endif}}
-<article data-controller="membermap.front.markers.markerview" data-lon="{$marker->lon}" data-lat="{$marker->lat}" data-name="{$marker->_title}">
+<article data-controller="membermap.front.markers.markerview" data-lon="{$marker->lon}" data-lat="{$marker->lat}" data-name="{$marker->_title}" class='ipsBox ipsPad'>
 	<div class='ipsColumns ipsClear ipsClearfix'>
 		<div class='ipsColumn ipsColumn_fluid'>
 				<div class="ipsClearfix">

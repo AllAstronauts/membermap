@@ -34,7 +34,6 @@ class _membermap
 	public function onMerge( $member, $member2 )
 	{
 		/* A member can't have multiple locations, so we'll have to delete one of them */
-
 		$memderLoc 	= \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE );
 		$memder2Loc = \IPS\membermap\Map::i()->getMarkerByMember( $member2->member_id, FALSE );
 
@@ -79,6 +78,16 @@ class _membermap
 	 */
 	public function onProfileUpdate( $member, $changes )
 	{
+		/* An endless loop is formed when \Item::createItem() is saving \Member, which then fire this membersync, which then calls \Item::createItem, and so on, and so on */
+		static $wereDoneHere = false;
+
+		if ( $wereDoneHere )
+		{
+			return;
+		}
+
+		$wereDoneHere = true;
+
 		if( count( $changes ) AND \IPS\Settings::i()->membermap_monitorLocationField )
 		{
 			if( \IPS\Settings::i()->membermap_monitorLocationField_groupPerm === '*' or \IPS\Member::loggedIn()->inGroup( explode( ',', \IPS\Settings::i()->membermap_monitorLocationField_groupPerm ) ) )
@@ -139,7 +148,7 @@ class _membermap
 							{
 								$groupId = \IPS\membermap\Map::i()->getMemberGroupId();
 
-								$marker = \IPS\membermap\Markers\Markers::createItem( $member, \IPS\Request::i()->ipAddress(), new \IPS\DateTime, \IPS\membermap\Markers\Groups::load( $groupId ), FALSE );
+								$marker = \IPS\membermap\Markers\Markers::createItem( $member, \IPS\Request::i()->ipAddress(), new \IPS\DateTime, \IPS\membermap\Markers\Groups::load( $groupId ) );
 							}
 
 							$marker->name 		= $member->name;
@@ -156,6 +165,9 @@ class _membermap
 					catch ( \Exception $e )
 					{
 						/* Something went wrong. Such as the input field being an editor */
+						\IPS\Log::log( $e, 'membermap' );
+
+						return false;
 					}
 				}
 			}

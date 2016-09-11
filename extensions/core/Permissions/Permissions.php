@@ -1,13 +1,12 @@
 <?php
 /**
- * @brief		Permissions
- * @author		<a href='http://www.invisionpower.com'>Invision Power Services, Inc.</a>
- * @copyright	(c) 2001 - 2016 Invision Power Services, Inc.
- * @license		http://www.invisionpower.com/legal/standards/
- * @package		IPS Community Suite
+ * @brief		Permissions Extension
+ * @author		<a href='http://ipb.silvesterwebdesigns.com'>Stuart Silvester & Martin Aronsen</a>
+ * @copyright	(c) 2015 Stuart Silvester & Martin Aronsen
+ * @package		IPS Social Suite
  * @subpackage	Member Map
- * @since		27 Feb 2016
- * @version		SVN_VERSION_NUMBER
+ * @since		20 Oct 2015
+ * @version		3.0.0
  */
 
 namespace IPS\membermap\extensions\core\Permissions;
@@ -45,5 +44,4 @@ class _Permissions
 			}
 		);
 	}
-
 }

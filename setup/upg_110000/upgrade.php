@@ -21,35 +21,7 @@ class _Upgrade
 	 */
 	public function step1()
 	{
-		if ( $_SESSION['_membermapMemberGroupId'] > 0 )
-		{
-			$memberGroupId = $_SESSION['_membermapMemberGroupId'];
-		}
-		else
-		{
-			try
-			{
-				$memberGroup = \IPS\Db::i()->select( 'group_id', 'membermap_markers_groups', array( 'group_type=?', 'member' ) )->first();
-				$memberGroupId = $memberGroup['group_id'];
-			}
-			catch( \UnderflowException $e )
-			{
-				/* Create the group for members */
-				$memberGroupId = \IPS\Db::i()->insert( 'membermap_markers_groups', array(
-					'group_name' 		=> "Members",
-					'group_name_seo'	=> 'members',
-					'group_protected' 	=> 1,
-					'group_type'		=> 'member',
-					'group_pin_colour'	=> '#FFFFFF',
-					'group_pin_bg_colour' 	=> 'darkblue',
-					'group_pin_icon'		=> 'fa-user',
-					'group_position'		=> 1,
-				) );
-			}
-
-			$_SESSION['_membermapMemberGroupId'] = $memberGroupId;
-		}
-
+		$memberGroupId = \IPS\membermap\Map::i()->getMemberGroupId();
 
 		$limit		= 0;
 		$did		= 0;
@@ -85,7 +57,7 @@ class _Upgrade
 				'marker_lat'		=> $member['lat'],
 				'marker_lon'		=> $member['lon'],
 				'marker_member_id'	=> $member['member_id'],
-				'marker_added'		=> $member['marker_date'],
+				'marker_added'		=> $member['marker_date'] ?: time(),
 			) );
 		}
 

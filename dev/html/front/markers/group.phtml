@@ -7,22 +7,24 @@
 		</div>
 	{{endif}}
 </div>
-{{if \IPS\membermap\Markers\Groups::canOnAny('add') AND ( !$group OR $group->can('add') ) }}
-<ul class="ipsToolList ipsToolList_horizontal ipsResponsive_hidePhone ipsClearfix ipsSpacer_both">
-	{template="groupButtons" group="markers" params="\IPS\membermap\Markers\Groups::canOnAny('add'), $group"}
-</ul>
-{{elseif $group AND $group->type == 'member' AND ! $group->can( 'add' ) AND $existing = \IPS\membermap\Map::i()->getMarkerByMember( \IPS\Member::loggedIn()->member_id, FALSE ) }}
+<div>
+	{{if \IPS\membermap\Markers\Groups::canOnAny('add') AND ( !$group OR $group->can('add') ) }}
 	<ul class="ipsToolList ipsToolList_horizontal ipsResponsive_hidePhone ipsClearfix ipsSpacer_both">
-		<li class='ipsToolList_primaryAction'>{lang="membermap_only_one_marker" sprintf="$existing->url()"}</li>
+		{template="groupButtons" group="markers" params="\IPS\membermap\Markers\Groups::canOnAny('add'), $group"}
 	</ul>
-{{endif}}
+	{{elseif $group AND $group->type == 'member' AND ! $group->can( 'add' ) AND $existing = \IPS\membermap\Map::i()->getMarkerByMember( \IPS\Member::loggedIn()->member_id, FALSE ) }}
+		<ul class="ipsToolList ipsToolList_horizontal ipsResponsive_hidePhone ipsClearfix ipsSpacer_both">
+			<li class='ipsToolList_primaryAction'>{lang="membermap_only_one_marker" sprintf="$existing->url()"}</li>
+		</ul>
+	{{endif}}
 
-<div class='ipsBox'>
-	{$table|raw}
+	<div class='ipsBox'>
+		{$table|raw}
+	</div>
+
+	{{if \IPS\membermap\Markers\Groups::canOnAny('add') AND ( !$group OR $group->can('add') ) }}
+	<ul class="ipsToolList ipsToolList_horizontal ipsResponsive_hidePhone ipsClearfix ipsSpacer_both">
+		{template="groupButtons" group="markers" params="\IPS\membermap\Markers\Groups::canOnAny('add'), $group"}
+	</ul>
+	{{endif}}
 </div>
-
-{{if \IPS\membermap\Markers\Groups::canOnAny('add') AND ( !$group OR $group->can('add') ) }}
-<ul class="ipsToolList ipsToolList_horizontal ipsResponsive_hidePhone ipsClearfix ipsSpacer_both">
-	{template="groupButtons" group="markers" params="\IPS\membermap\Markers\Groups::canOnAny('add'), $group"}
-</ul>
-{{endif}}

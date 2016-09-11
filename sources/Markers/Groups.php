@@ -312,8 +312,6 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 		/* Build form */
 		$form->add( new \IPS\Helpers\Form\Translatable( 'group_name', NULL, TRUE, array( 'app' => 'membermap', 'key' => ( $this->id ? "membermap_marker_group_{$this->id}" : NULL ) ) ) );
 
-
-
 		$form->add( new \IPS\Helpers\Form\YesNo( 'group_moderate', $this->id ? $this->moderate : FALSE, FALSE ) );
 
 		if( $this->type == 'custom' )
@@ -380,6 +378,7 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 				unset( $values[ $val ] );
 			}
 		}
+		
 		return $values;
 	}
 

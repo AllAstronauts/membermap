@@ -69,7 +69,7 @@ class _settings extends \IPS\Dispatcher\Controller
 
 			$form->addHeader( 'membermap_autoUpdate' );
 
-			$profileFields = array();
+			$profileFields = array( '' => ' -- ' . \IPS\Member::loggedIn()->language()->addToStack( 'membermap_profileLocationField' ) . ' -- ' );
 			foreach ( \IPS\core\ProfileFields\Field::fields( array(), \IPS\core\ProfileFields\Field::PROFILE ) as $group => $fields )
 			{
 				foreach ( $fields as $id => $field )
@@ -77,7 +77,6 @@ class _settings extends \IPS\Dispatcher\Controller
 					$profileFields[ 'core_pfieldgroups_' . $group ][ $id ] = $field->name;
 				}
 			}
-
 
 			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_monitorLocationField', \IPS\Settings::i()->membermap_monitorLocationField, FALSE, 
 				array( 'togglesOn' => array( 'membermap_profileLocationField', 'membermap_monitorLocationField_groupPerm', 'membermap_syncLocationField' ) ) 
@@ -96,9 +95,7 @@ class _settings extends \IPS\Dispatcher\Controller
 	        ) );
 
 	        $form->add( new \IPS\Helpers\Form\YesNo( 'membermap_syncLocationField', \IPS\Settings::i()->membermap_syncLocationField, FALSE, array(), NULL, NULL, NULL, 'membermap_syncLocationField' ) );
-			
 		}
-
 
 		if ( $values = $form->values( TRUE ) )
 		{
@@ -109,7 +106,7 @@ class _settings extends \IPS\Dispatcher\Controller
 				$values['membermap_bbox'] = "";
 			}
 
-			\IPS\DB::i()->update( 'core_tasks', array( 'enabled' => $values['membermap_syncLocationField'] ? 1 : 0 ), array( '`key`=?', 'locationSync' ) );
+			\IPS\DB::i()->update( 'core_tasks', array( 'enabled' => isset( $values['membermap_syncLocationField'] ) AND $values['membermap_syncLocationField'] ? 1 : 0 ), array( '`key`=?', 'locationSync' ) );
 
 
 			$form->saveAsSettings( $values );

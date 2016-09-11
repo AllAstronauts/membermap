@@ -252,7 +252,7 @@
 			
 			if ( ips.getSetting( 'membermap_enable_clustering' ) == 1 )
 			{
-				mastergroup = L.markerClusterGroup({ zoomToBoundsOnClick: true, disableClusteringAtZoom: ( $( '#mapWrapper' ).height() > 1000 ? 13 : 11 ) });
+				mastergroup = L.markerClusterGroup({ zoomToBoundsOnClick: true /*, disableClusteringAtZoom: ( $( '#mapWrapper' ).height() > 1000 ? 13 : 11 )*/ });
 			}
 			else
 			{

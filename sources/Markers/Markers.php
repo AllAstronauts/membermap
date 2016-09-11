@@ -1,6 +1,6 @@
 <?php
 /**
- * @brief		Custom Markers
+ * @brief		Map Markers
  * @author		<a href='http://ipb.silvesterwebdesigns.com'>Stuart Silvester & Martin Aronsen</a>
  * @copyright	(c) 2015 Stuart Silvester & Martin Aronsen
  * @package		IPS Social Suite
@@ -318,7 +318,7 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 			'class'				=> '\IPS\membermap\Markers\Groups',
 			'permissionCheck' 	=> 'add',
 			'subnodes'			=> false,
-			'where'				=> "group_type != 'member'",
+			'where'				=> array( "group_type != 'member'" ),
 		) );
 
 
@@ -345,7 +345,6 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	 */
 	public function processForm( $values )
 	{
-
 		if ( !$this->id )
 		{
 			$this->save();
@@ -353,7 +352,6 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 			\IPS\File::claimAttachments( 'custom-markers-new', $this->id );
 		}
 
-		
 		if ( isset( $values['marker_parent_id'] ) AND ( ! empty( $values['marker_parent_id'] ) OR $values['marker_parent_id'] === 0 ) )
 		{
 			$this->parent_id = $values['marker_parent_id']->id;

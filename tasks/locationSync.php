@@ -36,7 +36,7 @@ class _locationSync extends \IPS\Task
 	 */
 	public function execute()
 	{
-		if ( ! \IPS\Settings::i()->membermap_syncLocationField OR ! \IPS\Settings::i()->membermap_monitorLocationField )
+		if ( ! \IPS\Settings::i()->membermap_syncLocationField OR ! \IPS\Settings::i()->membermap_monitorLocationField OR ! \IPS\Settings::i()->membermap_profileLocationField )
 		{
 			$this->enabled = FALSE;
 			$this->save();
@@ -68,6 +68,8 @@ class _locationSync extends \IPS\Task
 			
 			foreach( $members as $member )
 			{	
+				$lat = $lng = $location = NULL;
+
 				$_member = \IPS\Member::constructFromData( $member );
 			
 				/* Need to set this to prevent us from looping over the same members with invalid locations over and over again */
@@ -81,20 +83,50 @@ class _locationSync extends \IPS\Task
 					continue;
 				}
 
-				$nominatim = \IPS\membermap\Map::i()->getLatLng( $_location );
-
-				if( is_array( $nominatim ) )
+				/* If it's an array, it might be from an address field, which already have the lat/lng data */
+				if( is_array( json_decode( $_location, TRUE ) ) )
 				{
-					$lat 		= $nominatim['lat'];
-					$lng 		= $nominatim['lng'];
-					$location 	= $nominatim['location'];
+					$addressData = json_decode( $_location, TRUE );
 
+					if ( is_float( $addressData['lat'] ) AND is_float( $addressData['long'] ) )
+					{
+						$lat = floatval( $addressData['lat'] );
+						$lng = floatval( $addressData['long'] );
+					}
+
+					$addressData['addressLines'][] = $addressData['city'];
+
+					if ( count( $addressData['addressLines'] ) )
+					{
+						$location = implode( ', ', $addressData['addressLines'] );
+					}
+				}
+				/* It's a text field, or \IPS\Geolocation failed to get coordinates (in which case we won't bother either */
+				else
+				{
+					/* Remove HTML, newlines, tab, etc, etc */
+					$_location = preg_replace( "/[\\x00-\\x20]|\\xc2|\\xa0+/", ' ', strip_tags( $_location ) );
+					$_location = trim( preg_replace( "/\s\s+/", ' ', $_location ) );
+
+					/* To my understanding we're not allowed to use \IPS\Geolocation, as that uses Google API, and we're not showing the info on a Google Map. */
+					$nominatim = \IPS\membermap\Map::i()->getLatLng( $_location );
+
+					if( is_array( $nominatim ) AND count( $nominatim ) )
+					{
+						$lat 		= $nominatim['lat'];
+						$lng 		= $nominatim['lng'];
+						$location 	= $nominatim['location'];
+					}
+				}
+
+				if( $lat AND $lng )
+				{
 					$marker = \IPS\membermap\Markers\Markers::createItem( $_member, NULL, new \IPS\DateTime, \IPS\membermap\Markers\Groups::load( $memberMarkerGroupId ), FALSE );
 						
-					$marker->lat = $lat;
-					$marker->lon = $lng;
-					$marker->location = $location ?: $_location;
-					$marker->name = $_member->name;
+					$marker->name 		= $_member->name;
+					$marker->lat 		= $lat;
+					$marker->lon 		= $lng;
+					$marker->location 	= $location ?: $_location;
 					
 					$marker->save();
 
@@ -109,9 +141,16 @@ class _locationSync extends \IPS\Task
 		catch ( \UnderflowException $e )
 		{
 		}
+		/* Have to catch \RuntimeException to catch the BAD_JSON error */
+		catch ( \RuntimeException $e )
+		{
+			\IPS\Log::log( array( $e->getMessage(), $nominatim ), 'membermap' );
+		}
 		/* Any other exception means an error which should be logged */
 		catch ( \Exception $e )
 		{
+			\IPS\Log::log( array( $e->getMessage(), $nominatim ), 'membermap' );
+			
 			throw new \IPS\Task\Exception( $this, $e->getMessage() );
 		}
 
