@@ -1,10 +1,10 @@
 {
-    "NumberInput": {
-        "type": "C",
-        "class": "\\IPS\\Helpers\\Form\\Number"
-    },
     "profileMap": {
         "type": "S",
         "class": "\\IPS\\Theme\\class_core_front_profile"
+    },
+    "NumberInput": {
+        "type": "C",
+        "class": "\\IPS\\Helpers\\Form\\Number"
     }
 }
