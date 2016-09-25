@@ -82,7 +82,7 @@ class _groups extends \IPS\Content\Controller
 
 		/* Online User Location */
 		$permissions = $group->permissions();
-		\IPS\Session::i()->setLocation( $group->url(), explode( ",", $permissions['perm_view'] ), 'loc_membermap_viewing_group', array( "membermap_group_{$group->id}" => TRUE ) );
+		\IPS\Session::i()->setLocation( $group->url(), explode( ",", $permissions['perm_view'] ), 'loc_membermap_viewing_group', array( "membermap_marker_group_{$group->id}" => TRUE ) );
 
 		/* Output */
 		\IPS\Output::i()->title		= $group->_title;
