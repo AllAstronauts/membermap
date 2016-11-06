@@ -55,6 +55,7 @@ class _locationSync extends \IPS\Task
 			$where[] = array( "( pf.field_{$fieldKey} IS NOT NULL OR pf.field_{$fieldKey} != '' )" );
 			$where[] = array( "mm.marker_id IS NULL" );
 			$where[] = array( "m.membermap_location_synced = 0" );
+			$where[] = array( '( ! ' . \IPS\Db::i()->bitwiseWhere( \IPS\Member::$bitOptions['members_bitoptions'], 'bw_is_spammer' ) . ' )' );
 
 			if( \IPS\Settings::i()->membermap_monitorLocationField_groupPerm !== '*' )
 			{

@@ -117,24 +117,24 @@ class _Map
 	 * Get a single member's location
 	 * 
 	 * @param 		int 	Member ID
+	 * @param    	bool 	Format marker. $loadMemberData needs to be TRUE for this to happen
+	 * @param 		bool 	Load member and group data
 	 * @return		mixed 	Members location record, or false if non-existent
 	 */
 	public function getMarkerByMember( $memberId, $format=TRUE, $loadMemberdata=TRUE )
 	{
 		static $marker = array();
-
 		if ( ! intval( $memberId ) )
 		{
 			return false;
 		}
 
-		if( isset( $marker[ $memberId . '-' . $format ] ) )
+		if( isset( $marker[ $memberId . '-' . ( $format ? '1' : '0' ) ] ) )
 		{
-			$_marker = $marker[ $memberId . '-' . $format ];
+			$_marker = $marker[ $memberId . '-' . ( $format ? '1' : '0' ) ];
 		}
 		else
 		{
-
 			try
 			{
 				$groupId = $this->getMemberGroupId();
@@ -149,12 +149,12 @@ class _Map
 				
 				$_marker = $db->first();
 
-				if ( ! $format )
+				if ( ! $format OR ! $loadMemberdata )
 				{
 					$_marker = \IPS\membermap\Markers\Markers::constructFromData( $_marker );
 				}
 
-				$marker[ $memberId . '-' . $format ] = $_marker;
+				$marker[ $memberId . '-' . ( $format ? '1' : '0' ) ] = $_marker;
 						
 			}
 			catch( \UnderflowException $e )
@@ -163,7 +163,7 @@ class _Map
 			}
 		}
 		
-		return $format ? $this->formatMemberMarkers( array( $_marker ) ) : $_marker;
+		return ( $format AND $loadMemberdata ) ? $this->formatMemberMarkers( array( $_marker ) ) : $_marker;
 	}
 
 	/**
