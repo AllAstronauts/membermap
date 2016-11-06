@@ -23,7 +23,6 @@ class _Application extends \IPS\Application
 	public static $defaultMaps = array(
 		'basemaps' => array(
 			'OpenStreetMap.France',
-			'Thunderforest.Landscape',
 			'Esri.WorldStreetMap',
 			'Esri.WorldTopoMap',
 		)

@@ -88,6 +88,19 @@ class _membermap
 
 		$wereDoneHere = true;
 
+		if( isset( $changes['name'] ) )
+		{
+			$existingMarker = \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE, FALSE );
+
+			if( $existingMarker instanceof \IPS\membermap\Markers\Markers )
+			{
+				$existingMarker->name 		= $member->name;
+				$existingMarker->updated 	= time();
+
+				$existingMarker->save();
+			}
+		}
+
 		if( count( $changes ) AND \IPS\Settings::i()->membermap_monitorLocationField )
 		{
 			if( \IPS\Settings::i()->membermap_monitorLocationField_groupPerm === '*' or \IPS\Member::loggedIn()->inGroup( explode( ',', \IPS\Settings::i()->membermap_monitorLocationField_groupPerm ) ) )

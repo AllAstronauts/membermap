@@ -119,7 +119,7 @@ class _Map
 	 * @param 		int 	Member ID
 	 * @return		mixed 	Members location record, or false if non-existent
 	 */
-	public function getMarkerByMember( $memberId, $format=TRUE )
+	public function getMarkerByMember( $memberId, $format=TRUE, $loadMemberdata=TRUE )
 	{
 		static $marker = array();
 
@@ -139,10 +139,15 @@ class _Map
 			{
 				$groupId = $this->getMemberGroupId();
 
-				$_marker = \IPS\Db::i()->select( '*', array( 'membermap_markers', 'mm' ), array( 'mm.marker_member_id=? AND mm.marker_parent_id=?', intval( $memberId ), intval( $groupId ) ) )
-						->join( array( 'core_members', 'm' ), 'mm.marker_member_id=m.member_id' )
-						->join( array( 'core_groups', 'g' ), 'm.member_group_id=g.g_id' )
-						->first();
+				$db = \IPS\Db::i()->select( '*', array( 'membermap_markers', 'mm' ), array( 'mm.marker_member_id=? AND mm.marker_parent_id=?', intval( $memberId ), intval( $groupId ) ) );
+
+				if ( $loadMemberdata )
+				{
+					$db->join( array( 'core_members', 'm' ), 'mm.marker_member_id=m.member_id' );
+					$db->join( array( 'core_groups', 'g' ), 'm.member_group_id=g.g_id' );
+				}
+				
+				$_marker = $db->first();
 
 				if ( ! $format )
 				{
