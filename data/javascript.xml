@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <javascript app="membermap">
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/main" javascript_name="jquery.showLoading.min.js" javascript_type="controller" javascript_version="110008" javascript_position="1000050"><![CDATA[﻿/*
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/main" javascript_name="jquery.showLoading.min.js" javascript_type="controller" javascript_version="110009" javascript_position="1000050"><![CDATA[﻿/*
  * jQuery showLoading plugin v1.0
  * 
  * Copyright (c) 2009 Jim Keller
@@ -35,7 +35,7 @@ return this;};jQuery.fn.hideLoading=function(options){var settings={};jQuery.ext
 else{indicatorID=jQuery(this).attr('id');}
 jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(document.body).find('#loading-indicator-'+indicatorID+'-overlay').remove();return this;};
 ]]></file>
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/main" javascript_name="membermap.js" javascript_type="controller" javascript_version="110008" javascript_position="1000050"><![CDATA[/**
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/main" javascript_name="membermap.js" javascript_type="controller" javascript_version="110009" javascript_position="1000050"><![CDATA[/**
  * Member Map, by Stuart Silvester & Martin Aronsen
  */
 ;( function($, _, undefined){
@@ -1104,7 +1104,7 @@ L.Control.FullScreen.mergeOptions({
 	title: ips.getString( 'leaflet_fullScreen' ) || 'Full Screen',
 	titleCancel: ips.getString( 'leaflet_exitFullScreen' ) || 'Exit Full Screen',
 });]]></file>
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/markers" javascript_name="ips.markers.markerform.js" javascript_type="controller" javascript_version="110008" javascript_position="1000100"><![CDATA[;( function($, _, undefined){
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/markers" javascript_name="ips.markers.markerform.js" javascript_type="controller" javascript_version="110009" javascript_position="1000100"><![CDATA[;( function($, _, undefined){
 	"use strict";
 
 	ips.controller.register('membermap.front.markers.markerform', {
@@ -1341,7 +1341,7 @@ L.Control.FullScreen.mergeOptions({
 		}
 	});
 }(jQuery, _));]]></file>
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/markers" javascript_name="ips.markers.markerview.js" javascript_type="controller" javascript_version="110008" javascript_position="1000100"><![CDATA[;( function($, _, undefined){
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/markers" javascript_name="ips.markers.markerview.js" javascript_type="controller" javascript_version="110009" javascript_position="1000100"><![CDATA[;( function($, _, undefined){
 	"use strict";
 
 	ips.controller.register('membermap.front.markers.markerview', {
@@ -1425,43 +1425,43 @@ L.Control.FullScreen.mergeOptions({
 		}
 	});
 }(jQuery, _));]]></file>
- <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.groupform.js" javascript_type="controller" javascript_version="110008" javascript_position="1000050">;( function($, _, undefined){&#13;
-	&quot;use strict&quot;;&#13;
-&#13;
-	ips.controller.register('membermap.admin.membermap.groupform', {&#13;
-&#13;
-		initialize: function () {&#13;
-			this.monitorColourPickers();&#13;
-		},&#13;
-&#13;
-		monitorColourPickers: function()&#13;
-		{&#13;
-			var self		= this;&#13;
-			var icon 		= $( 'input[name=&quot;group_pin_icon&quot;]' ).eq(0);&#13;
-			var iconColour 	= $( 'input[name=&quot;group_pin_colour&quot;]' ).eq(0);&#13;
-			var bgColour 	= $( 'input[name=&quot;group_pin_bg_colour&quot;]' );&#13;
-&#13;
-&#13;
-			bgColour.on('change', function()&#13;
-			{&#13;
-				var colour = $( 'input[name=&quot;group_pin_bg_colour&quot;]:checked' ).val();&#13;
-				$( '#markerExample' ).removeClass().addClass( 'awesome-marker awesome-marker-icon-' + colour )&#13;
-			});&#13;
-&#13;
-			iconColour.on('change', function()&#13;
-			{&#13;
-				$('#markerExample i').css({ 'color': '#' + iconColour.val() });&#13;
-			});&#13;
-&#13;
-			icon.on('change', function()&#13;
-			{&#13;
-				$('#markerExample i').removeClass().addClass( 'fa fa-fw' ).addClass( icon.val() );&#13;
-			});&#13;
-&#13;
-		}&#13;
-	});&#13;
+ <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.groupform.js" javascript_type="controller" javascript_version="110009" javascript_position="1000050">;( function($, _, undefined){
+	&quot;use strict&quot;;
+
+	ips.controller.register('membermap.admin.membermap.groupform', {
+
+		initialize: function () {
+			this.monitorColourPickers();
+		},
+
+		monitorColourPickers: function()
+		{
+			var self		= this;
+			var icon 		= $( 'input[name=&quot;group_pin_icon&quot;]' ).eq(0);
+			var iconColour 	= $( 'input[name=&quot;group_pin_colour&quot;]' ).eq(0);
+			var bgColour 	= $( 'input[name=&quot;group_pin_bg_colour&quot;]' );
+
+
+			bgColour.on('change', function()
+			{
+				var colour = $( 'input[name=&quot;group_pin_bg_colour&quot;]:checked' ).val();
+				$( '#markerExample' ).removeClass().addClass( 'awesome-marker awesome-marker-icon-' + colour )
+			});
+
+			iconColour.on('change', function()
+			{
+				$('#markerExample i').css({ 'color': '#' + iconColour.val() });
+			});
+
+			icon.on('change', function()
+			{
+				$('#markerExample i').removeClass().addClass( 'fa fa-fw' ).addClass( icon.val() );
+			});
+
+		}
+	});
 }(jQuery, _));</file>
- <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.mapmanager.js" javascript_type="controller" javascript_version="110008" javascript_position="1000050"><![CDATA[;( function($, _, undefined){
+ <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.mapmanager.js" javascript_type="controller" javascript_version="110009" javascript_position="1000050"><![CDATA[;( function($, _, undefined){
 	"use strict";
 
 	ips.controller.register('membermap.admin.membermap.mapmanager', {
@@ -1622,13 +1622,14 @@ L.Control.FullScreen.mergeOptions({
 if ( typeof L !== 'undefined' )
 {
 	L.tileLayer.provider.eachLayer = function (callback) {
-		for (var provider in L.TileLayer.Provider.providers) {
-			
+		for ( var provider in L.TileLayer.Provider.providers ) 
+		{
 			/* Ignore those who require an API key */
-			if( provider === 'HERE' || provider === 'MapBox' || provider === 'MapQuestOpen' )
+			if( $.inArray( provider, [ 'HERE', 'MapBox', 'Thunderforest', 'JusticeMap' ] ) > -1 )
 			{
 				continue;
 			}
+
 			if (L.TileLayer.Provider.providers[provider].variants) {
 				for (var variant in L.TileLayer.Provider.providers[provider].variants) {
 					callback(provider + '.' + variant);
@@ -1639,66 +1640,57 @@ if ( typeof L !== 'undefined' )
 		}
 	};
 }]]></file>
- <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.settings.js" javascript_type="controller" javascript_version="110008" javascript_position="1000050">;( function($, _, undefined){&#13;
-	&quot;use strict&quot;;&#13;
-&#13;
-	ips.controller.register('membermap.admin.membermap.settings', {&#13;
-&#13;
-		initialize: function () &#13;
-		{&#13;
-			$( '#elInput_membermap_bbox_location' ).autocomplete({&#13;
-				source: function( request, response ) &#13;
-				{&#13;
-					ips.getAjax()({ &#13;
-						//url: 'http://www.mapquestapi.com/geocoding/v1/address', &#13;
-						url: 'https://open.mapquestapi.com/nominatim/v1/search.php',&#13;
-						type: 'get',&#13;
-						dataType: 'json',&#13;
-						data: {&#13;
-							key: ips.getSetting( 'membermap_mapquestAPI' ),&#13;
-&#13;
-							// MapQuest Geocode&#13;
-							/*location: request.term,&#13;
-							outFormat: 'json'*/&#13;
-&#13;
-							// MapQuest Nominatim&#13;
-							format: 'json',&#13;
-							q: request.term,&#13;
-							extratags: 0,&#13;
-&#13;
-						},&#13;
-						success: function( data ) &#13;
-						{&#13;
-							// MapQuest&#13;
-&#13;
-							// MapQuest Nominatim&#13;
-							response( $.map( data, function( item )&#13;
-							{&#13;
-								Debug.log( item );&#13;
-								return {&#13;
-									value: item.display_name,&#13;
-									bbox: {&#13;
-										minLat: parseFloat( item.boundingbox[0] ).toFixed( 6 ),&#13;
-										maxLat: parseFloat( item.boundingbox[1] ).toFixed( 6 ),&#13;
-										minLng: parseFloat( item.boundingbox[2] ).toFixed( 6 ),&#13;
-										maxLng: parseFloat( item.boundingbox[3] ).toFixed( 6 )&#13;
-									}&#13;
-								};&#13;
-							}));&#13;
-&#13;
-						}&#13;
-					});&#13;
-				},&#13;
-				minLength: 3,&#13;
-				select: function( event, ui ) &#13;
-				{&#13;
-					$( '#membermap_form_settings input[name=&quot;membermap_bbox&quot;]').val( JSON.stringify( ui.item.bbox ) );&#13;
-				}&#13;
-			});&#13;
-		}&#13;
-	});&#13;
+ <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.settings.js" javascript_type="controller" javascript_version="110009" javascript_position="1000050">;( function($, _, undefined){
+	&quot;use strict&quot;;
+
+	ips.controller.register('membermap.admin.membermap.settings', {
+
+		initialize: function () 
+		{
+			$( '#elInput_membermap_bbox_location' ).autocomplete({
+				source: function( request, response ) 
+				{
+					ips.getAjax()({ 
+						url: 'https://open.mapquestapi.com/nominatim/v1/search.php',
+						type: 'get',
+						dataType: 'json',
+						data: {
+							key: ips.getSetting( 'membermap_mapquestAPI' ),
+							format: 'json',
+							q: request.term,
+							extratags: 0,
+
+						},
+						success: function( data ) 
+						{
+							// MapQuest Nominatim
+							response( $.map( data, function( item )
+							{
+								Debug.log( item );
+								return {
+									value: item.display_name,
+									bbox: {
+										minLat: parseFloat( item.boundingbox[0] ).toFixed( 6 ),
+										maxLat: parseFloat( item.boundingbox[1] ).toFixed( 6 ),
+										minLng: parseFloat( item.boundingbox[2] ).toFixed( 6 ),
+										maxLng: parseFloat( item.boundingbox[3] ).toFixed( 6 )
+									}
+								};
+							}));
+
+						}
+					});
+				},
+				minLength: 3,
+				select: function( event, ui ) 
+				{
+					$( '#membermap_form_settings input[name=&quot;membermap_bbox&quot;]').val( JSON.stringify( ui.item.bbox ) );
+				}
+			});
+		}
+	});
 }(jQuery, _));</file>
- <file javascript_app="membermap" javascript_location="admin" javascript_path="templates" javascript_name="ips.templates.membermap.js" javascript_type="template" javascript_version="110008" javascript_position="1000100"><![CDATA[ips.templates.set( 'mapManager.listItem', "\
+ <file javascript_app="membermap" javascript_location="admin" javascript_path="templates" javascript_name="ips.templates.membermap.js" javascript_type="template" javascript_version="110009" javascript_position="1000100"><![CDATA[ips.templates.set( 'mapManager.listItem', "\
 	<li data-provider='{{name}}' data-type='{{type}}' data-order='{{order}}'>\
 		<div class='cMenuManager_leaf'>\
 			<h3 class='cMenuManager_leafTitle'>\

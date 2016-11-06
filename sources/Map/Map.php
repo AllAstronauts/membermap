@@ -117,39 +117,44 @@ class _Map
 	 * Get a single member's location
 	 * 
 	 * @param 		int 	Member ID
+	 * @param    	bool 	Format marker. $loadMemberData needs to be TRUE for this to happen
+	 * @param 		bool 	Load member and group data
 	 * @return		mixed 	Members location record, or false if non-existent
 	 */
-	public function getMarkerByMember( $memberId, $format=TRUE )
+	public function getMarkerByMember( $memberId, $format=TRUE, $loadMemberdata=TRUE )
 	{
 		static $marker = array();
-
 		if ( ! intval( $memberId ) )
 		{
 			return false;
 		}
 
-		if( isset( $marker[ $memberId . '-' . $format ] ) )
+		if( isset( $marker[ $memberId . '-' . ( $format ? '1' : '0' ) ] ) )
 		{
-			$_marker = $marker[ $memberId . '-' . $format ];
+			$_marker = $marker[ $memberId . '-' . ( $format ? '1' : '0' ) ];
 		}
 		else
 		{
-
 			try
 			{
 				$groupId = $this->getMemberGroupId();
 
-				$_marker = \IPS\Db::i()->select( '*', array( 'membermap_markers', 'mm' ), array( 'mm.marker_member_id=? AND mm.marker_parent_id=?', intval( $memberId ), intval( $groupId ) ) )
-						->join( array( 'core_members', 'm' ), 'mm.marker_member_id=m.member_id' )
-						->join( array( 'core_groups', 'g' ), 'm.member_group_id=g.g_id' )
-						->first();
+				$db = \IPS\Db::i()->select( '*', array( 'membermap_markers', 'mm' ), array( 'mm.marker_member_id=? AND mm.marker_parent_id=?', intval( $memberId ), intval( $groupId ) ) );
 
-				if ( ! $format )
+				if ( $loadMemberdata )
+				{
+					$db->join( array( 'core_members', 'm' ), 'mm.marker_member_id=m.member_id' );
+					$db->join( array( 'core_groups', 'g' ), 'm.member_group_id=g.g_id' );
+				}
+				
+				$_marker = $db->first();
+
+				if ( ! $format OR ! $loadMemberdata )
 				{
 					$_marker = \IPS\membermap\Markers\Markers::constructFromData( $_marker );
 				}
 
-				$marker[ $memberId . '-' . $format ] = $_marker;
+				$marker[ $memberId . '-' . ( $format ? '1' : '0' ) ] = $_marker;
 						
 			}
 			catch( \UnderflowException $e )
@@ -158,7 +163,7 @@ class _Map
 			}
 		}
 		
-		return $format ? $this->formatMemberMarkers( array( $_marker ) ) : $_marker;
+		return ( $format AND $loadMemberdata ) ? $this->formatMemberMarkers( array( $_marker ) ) : $_marker;
 	}
 
 	/**

@@ -34,8 +34,8 @@ class _membermap
 	public function onMerge( $member, $member2 )
 	{
 		/* A member can't have multiple locations, so we'll have to delete one of them */
-		$memderLoc 	= \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE );
-		$memder2Loc = \IPS\membermap\Map::i()->getMarkerByMember( $member2->member_id, FALSE );
+		$memberLoc 	= \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE );
+		$member2Loc = \IPS\membermap\Map::i()->getMarkerByMember( $member2->member_id, FALSE );
 
 		// Delete $member2's location if $member have one 
 		if ( $memberLoc instanceof \IPS\membermap\Markers\Markers )
@@ -61,11 +61,52 @@ class _membermap
 	 */
 	public function onDelete( $member )
 	{
-		$memderLoc 	= \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE );
+		$memberLoc 	= \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE, FALSE );
 
 		if ( $memberLoc instanceof \IPS\membermap\Markers\Markers )
 		{
 			$memberLoc->delete();
+		}
+	}
+
+	/**
+	 * Member is flagged as spammer
+	 *
+	 * @param	$member	\IPS\Member	The member
+	 * @return	void
+	 */
+	public function onSetAsSpammer( $member )
+	{
+		$memberLoc 	= \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE, FALSE );
+
+		if ( $memberLoc instanceof \IPS\membermap\Markers\Markers )
+		{
+			$memberLoc->hide( NULL );
+		}
+	}
+	
+	/**
+	 * Member is unflagged as spammer
+	 *
+	 * @param	$member	\IPS\Member	The member
+	 * @return	void
+	 */
+	public function onUnSetAsSpammer( $member )
+	{
+		$memberLoc 	= \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE, FALSE );
+
+		if ( $memberLoc instanceof \IPS\membermap\Markers\Markers )
+		{
+			//$memberLoc->hide( NULL ); // Can't use this because of this bug: https://invisionpower.com/4bugtrack/archived-reports/content-classes-assumes-commenting-is-always-available-r12385/
+			
+			$memberLoc->open = 1;
+			$memberLoc->save();
+
+			/* Update search index */
+	        if ( $memberLoc instanceof \IPS\Content\Searchable )
+	        {
+	            \IPS\Content\Search\Index::i()->index( $memberLoc );
+	        }
 		}
 	}
 
@@ -88,7 +129,20 @@ class _membermap
 
 		$wereDoneHere = true;
 
-		if( count( $changes ) AND \IPS\Settings::i()->membermap_monitorLocationField )
+		if( isset( $changes['name'] ) )
+		{
+			$existingMarker = \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE, FALSE );
+
+			if( $existingMarker instanceof \IPS\membermap\Markers\Markers )
+			{
+				$existingMarker->name 		= $member->name;
+				$existingMarker->updated 	= time();
+
+				$existingMarker->save();
+			}
+		}
+
+		if( count( $changes ) AND \IPS\Settings::i()->membermap_monitorLocationField AND ! $member->members_bitoptions['bw_is_spammer'] )
 		{
 			if( \IPS\Settings::i()->membermap_monitorLocationField_groupPerm === '*' or \IPS\Member::loggedIn()->inGroup( explode( ',', \IPS\Settings::i()->membermap_monitorLocationField_groupPerm ) ) )
 			{

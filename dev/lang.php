@@ -69,7 +69,9 @@ $lang = array(
 
 
 	/* Session Location */
-	'loc_membermap_viewing_membermap' => "Viewing Member Map",
+	'loc_membermap_viewing_membermap' 	=> "Viewing Member Map",
+	'loc_membermap_viewing_group'		=> "Viewing Member Map marker group: %s",
+	'loc_membermap_browsing_groups'		=> "Viewing Member Map marker groups",
 
 
 	/* ACP Settings */	

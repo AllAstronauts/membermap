@@ -1,8 +1,8 @@
 {
     "application_title": "Member Map",
-    "app_author": "Stuart Silvester & Martin Aronsen",
+    "app_author": "Martin Aronsen & Stuart Silvester",
     "app_directory": "membermap",
     "app_protected": 0,
-    "app_website": "http:\/\/ipb.silvesterwebdesigns.com",
-    "app_update_check": "http:\/\/ipb.silvesterwebdesigns.com\/update-check\/?app=membermap"
+    "app_website": "https:\/\/invisionpower.com\/files\/file\/3070-member-map\/",
+    "app_update_check": "https:\/\/martinaronsen.github.io\/updateCheck\/membermap.json"
 }

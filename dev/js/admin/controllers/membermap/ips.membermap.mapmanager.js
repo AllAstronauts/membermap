@@ -159,13 +159,14 @@
 if ( typeof L !== 'undefined' )
 {
 	L.tileLayer.provider.eachLayer = function (callback) {
-		for (var provider in L.TileLayer.Provider.providers) {
-			
+		for ( var provider in L.TileLayer.Provider.providers ) 
+		{
 			/* Ignore those who require an API key */
-			if( provider === 'HERE' || provider === 'MapBox' || provider === 'MapQuestOpen' )
+			if( $.inArray( provider, [ 'HERE', 'MapBox', 'Thunderforest', 'JusticeMap' ] ) > -1 )
 			{
 				continue;
 			}
+
 			if (L.TileLayer.Provider.providers[provider].variants) {
 				for (var variant in L.TileLayer.Provider.providers[provider].variants) {
 					callback(provider + '.' + variant);
