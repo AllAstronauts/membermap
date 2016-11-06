@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="110008">
+ <app key="membermap" version="110009">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
   <word key="__indefart_membermap_marker" js="0">a Member Map Marker</word>
@@ -55,6 +55,8 @@
   <word key="membermap_delete_title" js="0">Delete this marker</word>
   <word key="membermap_approve_title" js="0">Approve this marker</word>
   <word key="loc_membermap_viewing_membermap" js="0">Viewing Member Map</word>
+  <word key="loc_membermap_viewing_group" js="0">Viewing Member Map marker group: %s</word>
+  <word key="loc_membermap_browsing_groups" js="0">Viewing Member Map marker groups</word>
   <word key="map_settings" js="0">Map Settings</word>
   <word key="api_settings" js="0">API Keys</word>
   <word key="membermap_enable_clustering" js="0">Enable Marker Clustering?</word>
