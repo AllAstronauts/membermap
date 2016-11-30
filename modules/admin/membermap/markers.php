@@ -132,39 +132,13 @@ class _markers extends \IPS\Node\Controller
 			$groupOrder = NULL;
 			$imported	= 0;
 
-			foreach( $xml->Document->Folder as $folder )
+			$this->_parseKml( $markers, $xml->Document, '' );
+
+
+			foreach( $markers as $folder )
 			{
-				if( ! isset( $folder->Placemark ) )
-				{
-					continue;
-				}
-
-				$folderName = (string) $folder->name;
-
-				foreach( $folder->Placemark as $placemark )
-				{
-					if ( ! isset( $placemark->Point->coordinates ) )
-					{
-						continue;
-					}
-
-					list( $lon, $lat, $elev ) = explode( ',', $placemark->Point->coordinates );
-
-					$markers[] = array(
-						'marker_name'			=> (string) $placemark->name,
-						'marker_name_seo'		=> \IPS\Http\Url::seoTitle( (string) $placemark->name ),
-						'marker_description'	=> (string) $placemark->description,
-						'marker_lat'			=> $lat,
-						'marker_lon'			=> $lon,
-						'marker_member_id'		=> \IPS\Member::loggedIn()->member_id,
-						'marker_added'			=> time(),
-						'marker_open'			=> 1,
-						'marker_parent_id'		=> isset( $values['import_group'] ) ? $values['import_group']->id : NULL,
-					);
-				}
-
 				/* Create a new group per "folder" */
-				if ( $values['import_creategroups'] == TRUE AND count( $markers ) > 0 )
+				if ( $values['import_creategroups'] == TRUE AND count( $folder['markers'] ) > 0 )
 				{
 					if ( $groupOrder === NULL )
 					{
@@ -174,8 +148,8 @@ class _markers extends \IPS\Node\Controller
 					$groupOrder = $groupOrder + 1;
 
 					$group 						= new \IPS\membermap\Markers\Groups;
-					$group->name 				= $folderName;
-					$group->name_seo 			= \IPS\Http\Url::seoTitle( $folderName );
+					$group->name 				= $folder['name'];
+					$group->name_seo 			= \IPS\Http\Url::seoTitle( $group->name );
 					$group->type 				= 'custom';
 					$group->pin_colour 			= '#FFFFFF';
 					$group->pin_bg_colour 		= 'red';
@@ -184,17 +158,17 @@ class _markers extends \IPS\Node\Controller
 
 					$group->save();
 
-					\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$group->id}", trim( $folderName ) );
-					\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$group->id}_JS", trim( $folderName ), 1 );
+					\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$group->id}", trim( $group->name ) );
+					\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$group->id}_JS", trim( $group->name ), 1 );
 
 					// Add group id to all elements of the array
-					array_walk( $markers, function( &$v, $k ) use ( $group )
+					array_walk( $folder['markers'], function( &$v, $k ) use ( $group )
 					{
 						$v['marker_parent_id'] = $group->id;
 					} );
 
 					// Insert
-					\IPS\Db::i()->insert( 'membermap_markers', $markers );
+					\IPS\Db::i()->insert( 'membermap_markers', $folder['markers'] );
 
 					$group->setLastComment();
 					$group->save();
@@ -209,21 +183,23 @@ class _markers extends \IPS\Node\Controller
 					), array( 'perm_id=?', $perms['perm_id'] ) );
 
 					// Reset
-					$imported	+= count( $markers );
-					$markers 	= array();
+					$imported	+= count( $folder['markers'] );
 				}
-			}
+				else
+				{
+					array_walk( $folder['markers'], function( &$v, $k ) use ( $group )
+					{
+						$v['marker_parent_id'] = $values['import_group']->id;
+					} );
 
-			/* If we still got markers here, it's all pushed to one group, probably */
-			if ( is_array( $markers ) AND count( $markers ) > 0 )
-			{
-				\IPS\Db::i()->insert( 'membermap_markers', $markers );
+					\IPS\Db::i()->insert( 'membermap_markers', $folder['markers'] );
 
-				$group = $values['import_group'];
-				$group->setLastComment();
-				$group->save();
-				
-				$imported	+= count( $markers );
+					$group = $values['import_group'];
+					$group->setLastComment();
+					$group->save();
+					
+					$imported	+= count( $markers );
+				}
 			}
 			
 			\IPS\membermap\Map::i()->invalidateJsonCache();
@@ -234,5 +210,51 @@ class _markers extends \IPS\Node\Controller
 		
 		/* Display */
 		\IPS\Output::i()->output = $form;
+	}
+
+	protected function _parseKml( &$markers, $_folder, $prevFolderName='' )
+	{
+		foreach( $_folder->Folder as $folder )
+		{
+			$folderName = isset( $folder->name ) ? (string) $folder->name : '';
+
+			if ( isset( $folder->Folder ) AND ! isset( $folder->Placemark ) AND ( is_object( $folder->Folder ) OR is_array( $folder->Folder ) ) )
+			{
+				$this->_parseKml( $markers, $folder, $folderName );
+			}
+			else
+			{
+				if (  $folder->Placemark  )
+				{
+					$prevFolderName = $prevFolderName ?: $folderName;
+
+					foreach( $folder->Placemark as $placemark )
+					{
+						if ( ! isset( $placemark->Point->coordinates ) )
+						{
+							continue;
+						}
+
+						if ( ! isset( $markers[ \substr( md5( $prevFolderName ), 0, 10 ) ] ) )
+						{
+							$markers[ \substr( md5( $prevFolderName ), 0, 10 ) ]  = array( 'name' => $prevFolderName, 'markers' => array() );
+						}
+
+						list( $lon, $lat, $elev ) = explode( ',', $placemark->Point->coordinates );
+
+						$markers[ \substr( md5( $prevFolderName ), 0, 10 ) ]['markers'][] = array(
+							'marker_name'			=> (string) $placemark->name,
+							'marker_name_seo'		=> \IPS\Http\Url::seoTitle( (string) $placemark->name ),
+							'marker_description'	=> (string) $placemark->description,
+							'marker_lat'			=> $lat,
+							'marker_lon'			=> $lon,
+							'marker_member_id'		=> \IPS\Member::loggedIn()->member_id,
+							'marker_added'			=> time(),
+							'marker_open'			=> 1,
+						);
+					}
+				}
+			}
+		}
 	}
 }
