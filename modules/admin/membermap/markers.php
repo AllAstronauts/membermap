@@ -97,7 +97,7 @@ class _markers extends \IPS\Node\Controller
 			}
 		}
 
-		$form->add( new \IPS\Helpers\Form\Upload( 'import_upload', NULL, TRUE, array( 'allowedFileTypes' => array( 'kml' ), 'temporary' => TRUE ) ) );
+		$form->add( new \IPS\Helpers\Form\Upload( 'import_upload', NULL, TRUE, array( 'allowedFileTypes' => array( 'kml', 'kmz' ), 'temporary' => TRUE ) ) );
 		$form->add( new \IPS\Helpers\Form\YesNo( 'import_creategroups', FALSE, FALSE, array( 'togglesOff' => array( 'import_group' ) ) ) );
 		$form->add( new \IPS\Helpers\Form\Node( 'import_group', $id ?: 0, FALSE, array(
 			'class'				=> '\IPS\membermap\Markers\Groups',
@@ -109,9 +109,46 @@ class _markers extends \IPS\Node\Controller
 
 		if ( $values = $form->values() )
 		{
+			/* If this is a KMZ file we need to unzip it first */
 			try
 			{
-				$xml = \IPS\Xml\SimpleXML::loadFile( $values['import_upload'] );
+				if ( mb_substr( $values['import_upload'], -4 ) !== '.kmz' )
+				{
+					/* If rename fails on a significant number of customer's servers, we might have to consider using
+						move_uploaded_file into uploads and rename in there */
+					rename( $values['import_upload'], $values['import_upload'] . ".kmz" );
+					
+					$values['import_upload'] .= ".kmz";
+				}
+
+				/* Test the phar */
+				$_xml = new \PharData( $values['import_upload'], \Phar::CURRENT_AS_FILEINFO | \Phar::KEY_AS_FILENAME );
+
+				foreach ( new \RecursiveIteratorIterator( $_xml ) as $file )
+				{
+					if ( mb_substr( $file->getFileName(), -4 ) === '.kml' )
+					{
+						$kmlFile = $file->getPathName();
+						break;
+					}
+				}
+			}
+			catch( \UnexpectedValueException $e )
+			{
+				/* Nope, it's not a KMZ file */
+				$kmlFile = $values['import_upload'];
+			}
+			catch( \PharException $e )
+			{
+				$form->error 				= \IPS\Member::loggedIn()->language()->addToStack( 'xml_upload_invalid' );
+				\IPS\Output::i()->output 	= $form;
+				return;
+			}
+
+			/* Try loading the KML */
+			try
+			{	
+				$kml = \IPS\Xml\SimpleXML::loadFile( $kmlFile );
 			}
 			catch ( \InvalidArgumentException $e ) 
 			{
@@ -132,73 +169,73 @@ class _markers extends \IPS\Node\Controller
 			$groupOrder = NULL;
 			$imported	= 0;
 
-			$this->_parseKml( $markers, $xml->Document, '' );
-
+			$this->_parseKml( $markers, $kml->Document, '' );
 
 			foreach( $markers as $folder )
 			{
-				/* Create a new group per "folder" */
-				if ( $values['import_creategroups'] == TRUE AND count( $folder['markers'] ) > 0 )
+				if ( count( $folder['markers'] ) > 0 )
 				{
-					if ( $groupOrder === NULL )
+					/* Create a new group per "folder" */
+					if ( $values['import_creategroups'] == TRUE )
 					{
-						$groupOrder = \IPS\Db::i()->select( array( "MAX( `group_position` ) as position" ), 'membermap_markers_groups' )->first();
+						if ( $groupOrder === NULL )
+						{
+							$groupOrder = \IPS\Db::i()->select( array( "MAX( `group_position` ) as position" ), 'membermap_markers_groups' )->first();
+						}
+
+						$groupOrder = $groupOrder + 1;
+
+						$group 						= new \IPS\membermap\Markers\Groups;
+						$group->name 				= $folder['name'];
+						$group->name_seo 			= \IPS\Http\Url::seoTitle( $group->name );
+						$group->type 				= 'custom';
+						$group->pin_colour 			= '#FFFFFF';
+						$group->pin_bg_colour 		= 'red';
+						$group->pin_icon 			= 'fa-globe';
+						$group->position 			= $groupOrder;
+
+						$group->save();
+
+						// Set default permissions
+						$perms = $group->permissions();
+						\IPS\Db::i()->update( 'core_permission_index', array(
+							'perm_view'	 => '*',
+							'perm_2'	 => '*',  #read
+							'perm_3'     => \IPS\Settings::i()->admin_group,  #add
+						    'perm_4'     => \IPS\Settings::i()->admin_group,  #edit
+						), array( 'perm_id=?', $perms['perm_id'] ) );
+
+						\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$group->id}", trim( $group->name ) );
+						\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$group->id}_JS", trim( $group->name ), 1 );
+
+
+						// Add group id to all elements of the array
+						array_walk( $folder['markers'], function( &$v, $k ) use ( $group )
+						{
+							$v['marker_parent_id'] = $group->id;
+						} );
+
+					}
+					elseif ( $values['import_group'] )
+					{
+						array_walk( $folder['markers'], function( &$v, $k ) use ( $values )
+						{
+							$v['marker_parent_id'] = $values['import_group']->id;
+						} );
+
+						$group = $values['import_group'];
 					}
 
-					$groupOrder = $groupOrder + 1;
-
-					$group 						= new \IPS\membermap\Markers\Groups;
-					$group->name 				= $folder['name'];
-					$group->name_seo 			= \IPS\Http\Url::seoTitle( $group->name );
-					$group->type 				= 'custom';
-					$group->pin_colour 			= '#FFFFFF';
-					$group->pin_bg_colour 		= 'red';
-					$group->pin_icon 			= 'fa-globe';
-					$group->position 			= $groupOrder;
-
-					$group->save();
-
-					\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$group->id}", trim( $group->name ) );
-					\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$group->id}_JS", trim( $group->name ), 1 );
-
-					// Add group id to all elements of the array
-					array_walk( $folder['markers'], function( &$v, $k ) use ( $group )
+					/* Split the group into smaller chunks to prevent too large insert queries */
+					foreach( array_chunk( $folder['markers'], 100, TRUE ) as $chunks )
 					{
-						$v['marker_parent_id'] = $group->id;
-					} );
+						\IPS\Db::i()->insert( 'membermap_markers', $chunks );
+					}
 
-					// Insert
-					\IPS\Db::i()->insert( 'membermap_markers', $folder['markers'] );
-
-					$group->setLastComment();
-					$group->save();
-
-					// Set default permissions
-					$perms = $group->permissions();
-					\IPS\Db::i()->update( 'core_permission_index', array(
-						'perm_view'	 => '*',
-						'perm_2'	 => '*',  #read
-						'perm_3'     => \IPS\Settings::i()->admin_group,  #add
-					    'perm_4'     => \IPS\Settings::i()->admin_group,  #edit
-					), array( 'perm_id=?', $perms['perm_id'] ) );
-
-					// Reset
-					$imported	+= count( $folder['markers'] );
-				}
-				else
-				{
-					array_walk( $folder['markers'], function( &$v, $k ) use ( $group )
-					{
-						$v['marker_parent_id'] = $values['import_group']->id;
-					} );
-
-					\IPS\Db::i()->insert( 'membermap_markers', $folder['markers'] );
-
-					$group = $values['import_group'];
 					$group->setLastComment();
 					$group->save();
 					
-					$imported	+= count( $markers );
+					$imported	+= count( $folder['markers'] );
 				}
 			}
 			
