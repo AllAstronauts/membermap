@@ -370,7 +370,29 @@ class _Map
 			{
 				$customMarkers[] = $marker;
 			}
-		}		
+		}
+
+		/* Get from extensions */
+		$extensions = \IPS\Application::allExtensions( 'membermap', 'Mapmarkers', FALSE );
+
+		foreach ( $extensions as $k => $class )
+		{
+			$appMarkers = $class->getLocations();
+			if ( is_array( $appMarkers ) AND count( $appMarkers ) )
+			{
+				/* Set 'appName' if it isn't already */
+				array_walk( $appMarkers, function( &$v, $k ) use ( $k )
+				{
+					if ( ! $v['appName'] )
+					{
+						$appName = substr( $k, strpos( $k, '_' ) + 1 );
+						$v['appName'] = $appName;
+					}
+				} );
+
+				$customMarkers = array_merge( $customMarkers, $class->getLocations() );
+			}
+		}
 
 		$markers = $this->formatMemberMarkers( $memberMarkers );
 
@@ -480,9 +502,10 @@ class _Map
 		{
 			foreach( $markers as $marker )
 			{
-				$popup = \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->customMarkerPopup( $marker );
+				$popup = isset( $marker['popup'] ) ? $marker['popup'] : \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->customMarkerPopup( $marker );
 				\IPS\Output::i()->parseFileObjectUrls( $popup );
-				
+				\IPS\Member::loggedIn()->language()->parseOutputForDisplay( $popup );
+
 				$markersToKeep[] = array(
 					'type'			=> "custom",
 					'lat' 			=> round( (float)$marker['marker_lat'], 5 ),
@@ -491,7 +514,9 @@ class _Map
 					'icon'			=> $marker['group_pin_icon'],
 					'colour'		=> $marker['group_pin_colour'],
 					'bgColour'		=> in_array( $marker['group_pin_bg_colour'], $validColours ) ? $marker['group_pin_bg_colour'] : 'red',
-					'parent_id' 	=> $marker['marker_parent_id'],
+					'parent_id' 	=> isset( $marker['marker_parent_id'] ) ? $marker['marker_parent_id'] : NULL,
+					'from_app'		=> isset( $marker['appName'] ) ? TRUE : FALSE,
+					'appName'		=> isset( $marker['appName'] ) ? $marker['appName'] : NULL,
 				);
 			}
 		}
