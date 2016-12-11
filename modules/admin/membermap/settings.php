@@ -52,11 +52,13 @@ class _settings extends \IPS\Dispatcher\Controller
 
 		$form = new \IPS\Helpers\Form;
 
+		/* API Key */
 		$form->addHeader('api_settings');
 		$form->add( new \IPS\Helpers\Form\Text( 'membermap_mapQuestAPI', \IPS\Settings::i()->membermap_mapQuestAPI, TRUE, array(), NULL, NULL, NULL, 'membermap_mapQuestAPI' ) );
 
 		if ( ! empty( \IPS\Settings::i()->membermap_mapQuestAPI ) )
 		{
+			/* Map Settings */
 			$form->attributes['data-controller'] 	= 'membermap.admin.membermap.settings';
 			$form->attributes['id'] 				= 'membermap_form_settings';
 
@@ -67,6 +69,8 @@ class _settings extends \IPS\Dispatcher\Controller
 			$form->add( new \IPS\Helpers\Form\Number( 'membermap_bbox_zoom', intval( \IPS\Settings::i()->membermap_bbox_zoom ), FALSE, array( 'min' => 1, 'max' => 18 ) ) );
 			$form->hiddenValues['membermap_bbox'] = \IPS\Settings::i()->membermap_bbox;
 
+
+			/* Profile Synchronization */
 			$form->addHeader( 'membermap_autoUpdate' );
 
 			$profileFields = array( '' => ' -- ' . \IPS\Member::loggedIn()->language()->addToStack( 'membermap_profileLocationField' ) . ' -- ' );
@@ -91,12 +95,67 @@ class _settings extends \IPS\Dispatcher\Controller
 			) );
 
 			$form->add( new \IPS\Helpers\Form\Select(
-	            'membermap_monitorLocationField_groupPerm',
-	            \IPS\Settings::i()->membermap_monitorLocationField_groupPerm != '' ? ( \IPS\Settings::i()->membermap_monitorLocationField_groupPerm === '*' ? '*' : explode( ",", \IPS\Settings::i()->membermap_monitorLocationField_groupPerm ) ) : '*',
-	            FALSE,array( 'options' => \IPS\Member\Group::groups(), 'multiple' => TRUE, 'parse' => 'normal', 'unlimited' => '*', 'unlimitedLang' => 'all' ), NULL, NULL, NULL, 'membermap_monitorLocationField_groupPerm'
-	        ) );
+				'membermap_monitorLocationField_groupPerm',
+				\IPS\Settings::i()->membermap_monitorLocationField_groupPerm != '' ? ( \IPS\Settings::i()->membermap_monitorLocationField_groupPerm === '*' ? '*' : explode( ",", \IPS\Settings::i()->membermap_monitorLocationField_groupPerm ) ) : '*',
+				FALSE,array( 'options' => \IPS\Member\Group::groups(), 'multiple' => TRUE, 'parse' => 'normal', 'unlimited' => '*', 'unlimitedLang' => 'all' ), NULL, NULL, NULL, 'membermap_monitorLocationField_groupPerm'
+			) );
 
-	        $form->add( new \IPS\Helpers\Form\YesNo( 'membermap_syncLocationField', \IPS\Settings::i()->membermap_syncLocationField, FALSE, array(), NULL, NULL, NULL, 'membermap_syncLocationField' ) );
+			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_syncLocationField', \IPS\Settings::i()->membermap_syncLocationField, FALSE, array(), NULL, NULL, NULL, 'membermap_syncLocationField' ) );
+
+
+			/* Calendar Extension */
+			$form->addHeader( 'membermap_calendarExt_header' );
+			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_calendarExt', \IPS\Settings::i()->membermap_calendarExt, FALSE, 
+				array( 'togglesOn' => array( 'membermap_calendars', 'membermap_calendar_icon', 'membermap_calendar_colour', 'membermap_calendar_bgcolour', 'membermap_calendar_marker_example' ) ) 
+			) );
+
+
+			$calendars = array();
+
+			foreach( \IPS\calendar\Calendar::roots() as $calendar )
+			{
+				$calendars[ $calendar->id ]	= $calendar->_title;
+			}
+
+			$form->add( new \IPS\Helpers\Form\Select(
+				'membermap_calendars',
+				\IPS\Settings::i()->membermap_calendars != '' ? ( \IPS\Settings::i()->membermap_calendars === '*' ? '*' : explode( ",", \IPS\Settings::i()->membermap_calendars ) ) : '*',
+				FALSE,array( 'options' => $calendars, 'multiple' => TRUE, 'parse' => 'normal', 'unlimited' => '*', 'unlimitedLang' => 'all' ), NULL, NULL, NULL, 'membermap_calendars'
+			) );
+
+
+			$form->add( new \IPS\Helpers\Form\Number( 'membermap_calendar_days_ahead', \IPS\Settings::i()->membermap_calendar_days_ahead, TRUE, array( 'min' => 7 ), NULL, NULL, NULL, 'membermap_calendar_days_ahead' ) );
+
+			$colours = array( 
+				'red', 'darkred', 'lightred', 'orange', 'beige', 'green', 'darkgreen', 'lightgreen', 'blue', 'darkblue', 'lightblue',
+				'purple', 'darkpurple', 'pink', 'cadetblue', 'gray', 'lightgray', 'black', 'white'
+			);
+
+
+			$icon 		= \IPS\Settings::i()->membermap_calendar_icon ?: 'fa-calendar';
+			$iconColour = \IPS\Settings::i()->membermap_calendar_colour ?: '#ff0000';
+			$bgColour 	= \IPS\Settings::i()->membermap_calendar_bgcolour ?: 'red';
+
+			/* Selected a valid colour? */
+			$bgColour = in_array( $bgColour, $colours ) ? $bgColour : 'red';
+			
+			$radioOpt = array();
+			foreach( $colours as $c )
+			{
+				$radioOpt[ $c ] = \IPS\Theme::i()->resource( "awesome-marker-icon-{$c}.png", "membermap", 'admin' );
+			}
+
+			$form->add( new \IPS\Helpers\Form\Text( 'membermap_calendar_icon', $icon, TRUE, array(), NULL, NULL, NULL, 'membermap_calendar_icon' ) );
+			$form->add( new \IPS\Helpers\Form\Color( 'membermap_calendar_colour', $iconColour, TRUE, array(), NULL, NULL, NULL, 'membermap_calendar_colour' ) );
+			$form->add( new \IPS\Helpers\Form\Radio( 'membermap_calendar_bgcolour', $bgColour, TRUE, array(
+				'options' => $radioOpt,
+				'parse' => 'image',
+				'descriptions' => array( 'white' => \IPS\Member::loggedIn()->language()->addToStack( 'group_pin_bg_colour_white' ) ) /* Just because white is difficult to see on the page */
+			), NULL, NULL, NULL, 'membermap_calendar_bgcolour'));
+
+			$form->addDummy( 'membermap_calendar_marker_example', "<span class='awesome-marker awesome-marker-icon-{$bgColour}' id='markerExample'><i class='fa fa-fw {$icon}' style='color: {$iconColour}'></i></span>", '', '', 'membermap_calendar_marker_example' );
+
+
 		}
 
 		if ( $values = $form->values( TRUE ) )
@@ -112,6 +171,8 @@ class _settings extends \IPS\Dispatcher\Controller
 
 
 			$form->saveAsSettings( $values );
+			\IPS\membermap\Map::i()->invalidateJsonCache();
+			
 			\IPS\Session::i()->log( 'acplogs__membermap_settings' );
 
 			\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=membermap&module=membermap&controller=settings" ), 'saved' );

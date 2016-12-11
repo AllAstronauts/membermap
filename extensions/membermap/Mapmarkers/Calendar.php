@@ -31,11 +31,21 @@ class _Calendar
 	 */
 	public function getLocations()
 	{
+		if ( ! \IPS\Settings::i()->membermap_calendarExt )
+		{
+			return;
+		}
+		
 		$where = array();
 		$where[] = array( '( event_location IS NOT NULL AND LEFT( event_location, 11 ) != \'{"lat":null\' )' );
 
+		if( \IPS\Settings::i()->membermap_calendars !== '*' )
+		{
+			$where[] = array( \IPS\Db::i()->in( 'event_calendar_id', explode( ',', \IPS\Settings::i()->membermap_calendars ) ) );
+		}
+
 		$startDate	= new \IPS\calendar\Date( "now",  NULL );
-		$endDate	= $startDate->adjust( "+31 days" );
+		$endDate	= $startDate->adjust( "+" . intval( \IPS\Settings::i()->membermap_calendar_days_ahead ) . " days" );
 
 		/* Get timezone adjusted versions of start/end time */
 		$startDateTimezone	= \IPS\calendar\Date::parseTime( $startDate->mysqlDatetime() );
@@ -229,9 +239,9 @@ class _Calendar
 					'popup' 				=> \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->calendarPopup( $event, $startDate ),
 					'marker_lat'			=> $location['lat'],
 					'marker_lon'			=> $location['long'],
-					'group_pin_bg_colour'	=> "red",
-					'group_pin_colour'		=> "green",
-					'group_pin_icon'		=> "fa-calendar",
+					'group_pin_bg_colour'	=> \IPS\Settings::i()->membermap_calendar_bgcolour ?: "white",
+					'group_pin_colour'		=> \IPS\Settings::i()->membermap_calendar_colour ?: "#ff0000",
+					'group_pin_icon'		=> \IPS\Settings::i()->membermap_calendar_icon ?: 'fa-calendar',
 				);
 			}
 		}

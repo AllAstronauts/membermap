@@ -378,6 +378,7 @@ class _Map
 		foreach ( $extensions as $k => $class )
 		{
 			$appMarkers = $class->getLocations();
+			
 			if ( is_array( $appMarkers ) AND count( $appMarkers ) )
 			{
 				/* Set 'appName' if it isn't already */

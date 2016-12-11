@@ -90,8 +90,18 @@ $lang = array(
 	'membermap_profileLocationField' => "Select profile field",
 	'membermap_profileLocationField_desc' => "Select the custom profile field where members enter their location",
 	'membermap_monitorLocationField_groupPerm' => "Enable for",
-	'membermap_syncLocationField'	=> "Import members without a map marker?",
+	'membermap_syncLocationField'		=> "Import members without a map marker?",
 	'membermap_syncLocationField_desc'	=> "This will import members that have a location set in the profile, but not one in the map. This will turn itself off once all members are processed.",
+	'membermap_calendarExt_header'		=> "Calendar Extension",
+	'membermap_calendarExt'				=> "Enable Calendar Extension?",
+	'membermap_calendarExt_desc'		=> "When enabled, this will show upcoming events that have specified a location.",
+	'membermap_calendars'				=> "Enabled calendars",
+	'membermap_calendar_days_ahead'		=> "Number of days ahead to show",
+	'membermap_calendar_icon'			=> "Marker Icon",
+	'membermap_calendar_icon_desc'		=> "Choose any icon from the <a href='http://fontawesome.io/icons/' target='_blank'>Font Awesome icon set</a>, input the full name in the box above, i.e. `fa-calendar`",
+	'membermap_calendar_colour'			=> "Marker Icon Colour",
+	'membermap_calendar_bgcolour'		=> "Marker Pin Colour",
+	'membermap_calendar_marker_example'	=> "Marker Preview",
 
 
 	/* ACP Marker Group Settings */
