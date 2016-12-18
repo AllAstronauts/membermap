@@ -518,6 +518,7 @@ class _Map
 					'parent_id' 	=> isset( $marker['marker_parent_id'] ) ? $marker['marker_parent_id'] : NULL,
 					'from_app'		=> isset( $marker['appName'] ) ? TRUE : FALSE,
 					'appName'		=> isset( $marker['appName'] ) ? $marker['appName'] : NULL,
+					'expiryDate'	=> isset( $marker['expiryDate'] ) ? $marker['expiryDate'] : NULL,
 				);
 			}
 		}

@@ -18,6 +18,7 @@ class _Calendar
 	 * 
 	 * @return  array(
 					'appName'				=> '', // Application name. Will be used as the name of the group in the map
+					'expiryDate'			=> 0,  // Unix timestamp for when the cache would need to be re-done.
 					'popup' 				=> '', // Popup content
 					'marker_lat'			=> 0,  // Latitude
 					'marker_lon'			=> 0,  // Longitude
@@ -125,32 +126,7 @@ class _Calendar
 		/* We need to make sure ranged events repeat each day that they occur on */
 		$formattedEvents	= array();
 
-		if( $formatEvents )
-		{
-			foreach( $events as $event )
-			{
-				/* Is this a ranged event? */
-				if( $event->_end_date !== NULL AND $event->_start_date->mysqlDatetime( FALSE ) < $event->_end_date->mysqlDatetime( FALSE ) )
-				{
-					$date	= $event->_start_date;
-					while( $date->mysqlDatetime( FALSE ) < $event->_end_date->mysqlDatetime( FALSE ) )
-					{
-						$formattedEvents[ $date->mysqlDatetime( FALSE ) ]['ranged'][ $event->id ]	= $event;
-						$date	= $date->adjust( '+1 day' );
-					}
-
-					$formattedEvents[ $event->_end_date->mysqlDatetime( FALSE ) ]['ranged'][ $event->id ]	= $event;
-				}
-				else
-				{
-					$formattedEvents[ $event->_start_date->mysqlDatetime( FALSE ) ]['single'][ $event->id ]	= $event;
-				}
-			}
-		}
-		else
-		{
-			$formattedEvents	= iterator_to_array( $events );
-		}
+		$formattedEvents	= iterator_to_array( $events );
 
 		/* Now get the recurring events.... */
 		$recurringEvents	= \IPS\calendar\Event::getItemsWithPermission( array_merge( $where, array( array( 'event_recurring IS NOT NULL' ) ) ), 'event_start_date ASC', NULL );
@@ -165,62 +141,30 @@ class _Calendar
 			/* Do we have any? */
 			if( count( $occurrences ) )
 			{
-				/* Are we formatting events? If so, place into the array as appropriate. */
-				if( $formatEvents )
-				{
-					foreach( $occurrences as $occurrence )
-					{
-						/* Is this a ranged repeating event? */
-						if( $occurrence['endDate'] !== NULL )
-						{
-							$date	= $occurrence['startDate'];
-							$eDate	= ( $thisEndDate->mysqlDatetime( FALSE ) < $occurrence['endDate']->mysqlDatetime( FALSE ) ) ? $thisEndDate : $occurrence['endDate'];
-							while( $date->mysqlDatetime( FALSE ) < $eDate->mysqlDatetime( FALSE ) )
-							{
-								$formattedEvents[ $date->mysqlDatetime( FALSE ) ]['ranged'][ $event->id ]	= $event;
-								$date	= $date->adjust( '+1 day' );
-							}
-
-							$formattedEvents[ $occurrence['endDate']->mysqlDatetime( FALSE ) ]['ranged'][ $event->id ]	= $event;
-						}
-						else
-						{
-							$formattedEvents[ $occurrence['startDate']->mysqlDatetime( FALSE ) ]['single'][ $event->id ]	= $event;
-						}
-					}
-				}
-				/* Otherwise we only want one instance of the event in our final array */
-				else
-				{
-					$formattedEvents[]	= $event;
-				}
+				$formattedEvents[]	= $event;
 			}
 		}
 
-		/* Resort non-formatted events */
-		if( $formatEvents === FALSE )
+		/* @note: Error suppressor is needed due to PHP bug https://bugs.php.net/bug.php?id=50688 */
+		@usort( $formattedEvents, function( $a, $b ) use ( $startDate )
 		{
-			/* @note: Error suppressor is needed due to PHP bug https://bugs.php.net/bug.php?id=50688 */
-			@usort( $formattedEvents, function( $a, $b ) use ( $startDate )
+			if( $a->nextOccurrence( $startDate, 'startDate' ) === NULL )
 			{
-				if( $a->nextOccurrence( $startDate, 'startDate' ) === NULL )
-				{
-					return -1;
-				}
+				return -1;
+			}
 
-				if( $b->nextOccurrence( $startDate, 'startDate' ) === NULL )
-				{
-					return 1;
-				}
+			if( $b->nextOccurrence( $startDate, 'startDate' ) === NULL )
+			{
+				return 1;
+			}
 
-				if ( $a->nextOccurrence( $startDate, 'startDate' )->mysqlDatetime() == $b->nextOccurrence( $startDate, 'startDate' )->mysqlDatetime() )
-				{
-					return 0;
-				}
-				
-				return ( $a->nextOccurrence( $startDate, 'startDate' )->mysqlDatetime() < $b->nextOccurrence( $startDate, 'startDate' )->mysqlDatetime() ) ? -1 : 1;
-			} );
-		}
+			if ( $a->nextOccurrence( $startDate, 'startDate' )->mysqlDatetime() == $b->nextOccurrence( $startDate, 'startDate' )->mysqlDatetime() )
+			{
+				return 0;
+			}
+			
+			return ( $a->nextOccurrence( $startDate, 'startDate' )->mysqlDatetime() < $b->nextOccurrence( $startDate, 'startDate' )->mysqlDatetime() ) ? -1 : 1;
+		} );
 
 		$return = array();
 
@@ -233,9 +177,22 @@ class _Calendar
 				{
 					continue;
 				}
+				$nextDate = NULL;
+
+				if ( $event->all_day )
+				{
+					$nextDate = $event->nextOccurrence( $startDate, 'startDate' ) !== NULL ? $event->nextOccurrence( $startDate, 'startDate' ) : $event->lastOccurrence( 'startDate' );
+					$nextDate = $nextDate->adjust( "+1 day 3 hours" );
+				}
+				else
+				{
+					$nextDate = $event->nextOccurrence( $startDate, 'endDate' ) !== NULL ? $event->nextOccurrence( $startDate, 'endDate' ) : $event->lastOccurrence( 'endDate' );
+					$nextDate = $nextDate->adjust( '+3 hours' );
+				}
 
 				$return[] = array(
 					'appName'				=> 'Calendar',
+					'expiryDate'			=> $nextDate->getTimestamp(),
 					'popup' 				=> \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->calendarPopup( $event, $startDate ),
 					'marker_lat'			=> $location['lat'],
 					'marker_lon'			=> $location['long'],

@@ -795,6 +795,15 @@
 					}
 					else
 					{
+						if ( typeof this.expiryDate == 'number' )
+						{
+							if ( this.expiryDate < ( Date.now() / 1000 | 0 ) )
+							{
+								Debug.log( "Cache expired" );
+								window.location.href = ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=showmap&rebuildCache=1';
+							}
+						}
+
 						iconColour 	= this.colour;
 						icon 		= this.icon || 'fa-map-marker';
 						bgColour 	= this.bgColour;
