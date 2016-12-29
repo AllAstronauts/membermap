@@ -382,7 +382,7 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	public function canEdit( $member=NULL )
 	{
 		$member = $member ?: \IPS\Member::loggedIn();
-		return ( $member->member_id == $this->author()->member_id ) or parent::canEdit( $member );
+		return ( $member->member_id > 0 AND $member->member_id == $this->author()->member_id ) or parent::canEdit( $member );
 	}
 
 	/**
