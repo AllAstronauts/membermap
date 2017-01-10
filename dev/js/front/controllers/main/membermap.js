@@ -20,7 +20,6 @@
 			overlayControl = null,
 			
 			mastergroup = null,
-			memberMarkers = null,
 			allMarkers = [],
 			
 			icons = [],
@@ -173,12 +172,6 @@
 			mastergroup.clearLayers();
 		},
 		
-		reloadMap = function()
-		{
-			clear();
-			showMarkers( true );
-		},
-		
 		setMarkers = function( markers )
 		{
 			allMarkers = markers;
@@ -325,6 +318,12 @@
 			map.on( 'baselayerchange', function( baselayer )
 			{
 				ips.utils.cookie.set( 'membermap_baseMap', baselayer.name.toLowerCase().replace( /\s/g, '' ) );
+			});
+
+			/* Truncate popup content */
+			map.on( 'popupopen', function( popup ) 
+			{
+				ips.ui.truncate.respond( $( '.membermap_popupContent' ), { type: 'hide', size: '3 lines' } );
 			});
 			
 			ips.membermap.map = map;
@@ -741,7 +740,6 @@
 
 			if ( markers.length > 0 )
 			{
-
 				$.each( markers, function() 
 				{		
 					/* Don't show these, as they all end up in the middle of the middle of the South Atlantic Ocean. */
@@ -956,7 +954,6 @@
 
 		getMarkerContextMenu = function( marker, markerData )
 		{
-			
 			if ( ips.getSetting( 'is_supmod' ) ||  ( ips.getSetting( 'member_id' ) == marker.member_id && ips.getSetting( 'membermap_canDelete' ) ) ) 
 			{
 				return [{
@@ -1003,6 +1000,7 @@
 		{
 			var urlObject = ips.utils.url.getURIObject();
 			var queryKeys = urlObject.queryKey;
+			var newUrl;
 
 			delete queryKeys[ param ];
 
@@ -1015,11 +1013,11 @@
 					return a;
 				}, [] ).join( '&' );
 
-				var newUrl = window.location.origin + window.location.pathname + '?' + newQuery;
+				newUrl = window.location.origin + window.location.pathname + '?' + newQuery;
 			}
 			else
 			{
-				var newUrl = window.location.origin + window.location.pathname;
+				newUrl = window.location.origin + window.location.pathname;
 			}
 
 			History.replaceState( null, document.title, newUrl );
