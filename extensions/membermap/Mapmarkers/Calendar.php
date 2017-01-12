@@ -230,7 +230,6 @@ class _Calendar
 		} );
 
 		$return = array();
-
 		if ( is_array( $formattedEvents ) AND count( $formattedEvents ) )
 		{
 			foreach( $formattedEvents as $event )
@@ -240,16 +239,29 @@ class _Calendar
 				{
 					continue;
 				}
+
 				$nextDate = NULL;
 
 				if ( $event->all_day )
 				{
 					$nextDate = $event->nextOccurrence( $startDate, 'startDate' ) !== NULL ? $event->nextOccurrence( $startDate, 'startDate' ) : $event->lastOccurrence( 'startDate' );
+					
+					if ( $nextDate == NULL )
+					{
+						continue;
+					}
+
 					$nextDate = $nextDate->adjust( "+1 day 3 hours" );
 				}
 				else
 				{
 					$nextDate = $event->nextOccurrence( $startDate, 'endDate' ) !== NULL ? $event->nextOccurrence( $startDate, 'endDate' ) : $event->lastOccurrence( 'endDate' );
+
+					if ( $nextDate == NULL )
+					{
+						continue;
+					}
+
 					$nextDate = $nextDate->adjust( '+3 hours' );
 				}
 
