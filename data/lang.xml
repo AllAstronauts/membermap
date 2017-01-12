@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="110009">
+ <app key="membermap" version="110010">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
   <word key="__indefart_membermap_marker" js="0">a Member Map Marker</word>
@@ -74,6 +74,16 @@
   <word key="membermap_monitorLocationField_groupPerm" js="0">Enable for</word>
   <word key="membermap_syncLocationField" js="0">Import members without a map marker?</word>
   <word key="membermap_syncLocationField_desc" js="0">This will import members that have a location set in the profile, but not one in the map. This will turn itself off once all members are processed.</word>
+  <word key="membermap_calendarExt_header" js="0">Calendar Extension</word>
+  <word key="membermap_calendarExt" js="0">Enable Calendar Extension?</word>
+  <word key="membermap_calendarExt_desc" js="0">When enabled, this will show upcoming events that have specified a location.</word>
+  <word key="membermap_calendars" js="0">Enabled calendars</word>
+  <word key="membermap_calendar_days_ahead" js="0">Number of days ahead to show</word>
+  <word key="membermap_calendar_icon" js="0">Marker Icon</word>
+  <word key="membermap_calendar_icon_desc" js="0"><![CDATA[Choose any icon from the <a href='http://fontawesome.io/icons/' target='_blank'>Font Awesome icon set</a>, input the full name in the box above, i.e. `fa-calendar`]]></word>
+  <word key="membermap_calendar_colour" js="0">Marker Icon Colour</word>
+  <word key="membermap_calendar_bgcolour" js="0">Marker Pin Colour</word>
+  <word key="membermap_calendar_marker_example" js="0">Marker Preview</word>
   <word key="g_membermap_canAdd" js="0">Can add location to map</word>
   <word key="g_membermap_canEdit" js="0">Can edit their location</word>
   <word key="g_membermap_canDelete" js="0">Can delete their location</word>
