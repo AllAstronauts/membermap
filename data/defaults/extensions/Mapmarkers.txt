@@ -30,6 +30,16 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 class _{class}
 {
     /**
+     * Settings Form
+     *
+     * @param   \IPS\Helpers\Form       $form   The form
+     * @return  void
+     */
+    public function getSettings( &$form )
+    {
+        return $form;
+    }
+    /**
      * 
      * @return  array(
                     'appName'               => '', // Application name. Will be used as the name of the group in the map

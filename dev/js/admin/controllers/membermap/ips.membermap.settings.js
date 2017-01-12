@@ -52,27 +52,34 @@
 		monitorColourPickers: function()
 		{
 			var self		= this;
-			var icon 		= $( 'input[name="membermap_calendar_icon"]' ).eq(0);
-			var iconColour 	= $( 'input[name="membermap_calendar_colour"]' ).eq(0);
-			var bgColour 	= $( 'input[name="membermap_calendar_bgcolour"]' );
 
-
-			bgColour.on('change', function()
+			$( '.markerExample' ).each( function() 
 			{
-				var colour = $( 'input[name="membermap_calendar_bgcolour"]:checked' ).val();
-				$( '#markerExample' ).removeClass().addClass( 'awesome-marker awesome-marker-icon-' + colour )
-			});
+				var elem = $( this );
+				var idPrefix = elem.attr( 'data-prefix' );
 
-			iconColour.on('change', function()
-			{
-				$('#markerExample i').css({ 'color': '#' + iconColour.val() });
-			});
+				var icon 		= $( 'input[name="' + idPrefix + '_icon"]' ).eq(0);
+				var iconColour 	= $( 'input[name="' + idPrefix + '_colour"]' ).eq(0);
+				var bgColour 	= $( 'input[name="' + idPrefix + '_bgcolour"]' );
 
-			icon.on('change', function()
-			{
-				$('#markerExample i').removeClass().addClass( 'fa fa-fw' ).addClass( icon.val() );
-			});
 
+				bgColour.on('change', function()
+				{
+					var colour = $( 'input[name="' + idPrefix + '_bgcolour"]:checked' ).val();
+					elem.removeClass().addClass( 'awesome-marker awesome-marker-icon-' + colour )
+				});
+
+				iconColour.on('change', function()
+				{
+					Debug.log( elem.children( 'i' ) );
+					elem.children( 'i' ).css({ 'color': '#' + iconColour.val() });
+				});
+
+				icon.on('change', function()
+				{
+					elem.children( 'i' ).removeClass().addClass( 'fa fa-fw' ).addClass( icon.val() );
+				});
+			});
 		}
 	});
 }(jQuery, _));
