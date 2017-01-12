@@ -3,7 +3,7 @@
  https://github.com/Leaflet/Leaflet.markercluster
  (c) 2012-2013, Dave Leaver, smartrak
 
- Built Sept 11, 2016
+ Built Jan 12, 2017
 
 */
 (function (window, document, undefined) {/*
@@ -417,7 +417,7 @@ L.MarkerClusterGroup = L.FeatureGroup.extend({
 		this.eachLayer(function (marker) {
 			marker.off('move', this._childMarkerMoved, this);
 			delete marker.__parent;
-		});
+		}, this);
 
 		if (this._map) {
 			//Reset _topClusterLevel and the DistanceGrids
