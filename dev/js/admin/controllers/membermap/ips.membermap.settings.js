@@ -45,6 +45,41 @@
 					$( '#membermap_form_settings input[name="membermap_bbox"]').val( JSON.stringify( ui.item.bbox ) );
 				}
 			});
+
+			this.monitorColourPickers();
+		},
+
+		monitorColourPickers: function()
+		{
+			var self		= this;
+
+			$( '.markerExample' ).each( function() 
+			{
+				var elem = $( this );
+				var idPrefix = elem.attr( 'data-prefix' );
+
+				var icon 		= $( 'input[name="' + idPrefix + '_icon"]' ).eq(0);
+				var iconColour 	= $( 'input[name="' + idPrefix + '_colour"]' ).eq(0);
+				var bgColour 	= $( 'input[name="' + idPrefix + '_bgcolour"]' );
+
+
+				bgColour.on('change', function()
+				{
+					var colour = $( 'input[name="' + idPrefix + '_bgcolour"]:checked' ).val();
+					elem.removeClass().addClass( 'awesome-marker awesome-marker-icon-' + colour )
+				});
+
+				iconColour.on('change', function()
+				{
+					Debug.log( elem.children( 'i' ) );
+					elem.children( 'i' ).css({ 'color': '#' + iconColour.val() });
+				});
+
+				icon.on('change', function()
+				{
+					elem.children( 'i' ).removeClass().addClass( 'fa fa-fw' ).addClass( icon.val() );
+				});
+			});
 		}
 	});
 }(jQuery, _));

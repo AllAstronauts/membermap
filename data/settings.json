@@ -16,6 +16,30 @@
         "default": "7"
     },
     {
+        "key": "membermap_calendarExt",
+        "default": "1"
+    },
+    {
+        "key": "membermap_calendar_bgcolour",
+        "default": "white"
+    },
+    {
+        "key": "membermap_calendar_colour",
+        "default": "#ff0000"
+    },
+    {
+        "key": "membermap_calendar_days_ahead",
+        "default": "60"
+    },
+    {
+        "key": "membermap_calendar_icon",
+        "default": "fa-calendar"
+    },
+    {
+        "key": "membermap_calendars",
+        "default": "*"
+    },
+    {
         "key": "membermap_enable_clustering",
         "default": "1"
     },

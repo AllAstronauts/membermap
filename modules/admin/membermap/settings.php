@@ -52,11 +52,13 @@ class _settings extends \IPS\Dispatcher\Controller
 
 		$form = new \IPS\Helpers\Form;
 
+		/* API Key */
 		$form->addHeader('api_settings');
 		$form->add( new \IPS\Helpers\Form\Text( 'membermap_mapQuestAPI', \IPS\Settings::i()->membermap_mapQuestAPI, TRUE, array(), NULL, NULL, NULL, 'membermap_mapQuestAPI' ) );
 
 		if ( ! empty( \IPS\Settings::i()->membermap_mapQuestAPI ) )
 		{
+			/* Map Settings */
 			$form->attributes['data-controller'] 	= 'membermap.admin.membermap.settings';
 			$form->attributes['id'] 				= 'membermap_form_settings';
 
@@ -67,13 +69,17 @@ class _settings extends \IPS\Dispatcher\Controller
 			$form->add( new \IPS\Helpers\Form\Number( 'membermap_bbox_zoom', intval( \IPS\Settings::i()->membermap_bbox_zoom ), FALSE, array( 'min' => 1, 'max' => 18 ) ) );
 			$form->hiddenValues['membermap_bbox'] = \IPS\Settings::i()->membermap_bbox;
 
+
+			/* Profile Synchronization */
 			$form->addHeader( 'membermap_autoUpdate' );
 
 			$profileFields = array( '' => ' -- ' . \IPS\Member::loggedIn()->language()->addToStack( 'membermap_profileLocationField' ) . ' -- ' );
-			foreach ( \IPS\core\ProfileFields\Field::fields( array(), \IPS\core\ProfileFields\Field::PROFILE ) as $group => $fields )
+			foreach ( \IPS\core\ProfileFields\Field::fieldData() as $group => $fields )
 			{
 				foreach ( $fields as $id => $field )
 				{
+					$field = \IPS\core\ProfileFields\Field::constructFromData( $field )->buildHelper();
+					
 					$profileFields[ 'core_pfieldgroups_' . $group ][ $id ] = $field->name;
 				}
 			}
@@ -89,12 +95,25 @@ class _settings extends \IPS\Dispatcher\Controller
 			) );
 
 			$form->add( new \IPS\Helpers\Form\Select(
-	            'membermap_monitorLocationField_groupPerm',
-	            \IPS\Settings::i()->membermap_monitorLocationField_groupPerm != '' ? ( \IPS\Settings::i()->membermap_monitorLocationField_groupPerm === '*' ? '*' : explode( ",", \IPS\Settings::i()->membermap_monitorLocationField_groupPerm ) ) : '*',
-	            FALSE,array( 'options' => \IPS\Member\Group::groups(), 'multiple' => TRUE, 'parse' => 'normal', 'unlimited' => '*', 'unlimitedLang' => 'all' ), NULL, NULL, NULL, 'membermap_monitorLocationField_groupPerm'
-	        ) );
+				'membermap_monitorLocationField_groupPerm',
+				\IPS\Settings::i()->membermap_monitorLocationField_groupPerm != '' ? ( \IPS\Settings::i()->membermap_monitorLocationField_groupPerm === '*' ? '*' : explode( ",", \IPS\Settings::i()->membermap_monitorLocationField_groupPerm ) ) : '*',
+				FALSE,array( 'options' => \IPS\Member\Group::groups(), 'multiple' => TRUE, 'parse' => 'normal', 'unlimited' => '*', 'unlimitedLang' => 'all' ), NULL, NULL, NULL, 'membermap_monitorLocationField_groupPerm'
+			) );
 
-	        $form->add( new \IPS\Helpers\Form\YesNo( 'membermap_syncLocationField', \IPS\Settings::i()->membermap_syncLocationField, FALSE, array(), NULL, NULL, NULL, 'membermap_syncLocationField' ) );
+			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_syncLocationField', \IPS\Settings::i()->membermap_syncLocationField, FALSE, array(), NULL, NULL, NULL, 'membermap_syncLocationField' ) );
+
+
+			/* Get from extensions */
+			$extensions = \IPS\Application::allExtensions( 'membermap', 'Mapmarkers', FALSE );
+
+			foreach ( $extensions as $k => $class )
+			{
+				if ( method_exists( $class, 'getSettings' ) )
+				{
+					 $class->getSettings( $form );
+				}
+			}
+
 		}
 
 		if ( $values = $form->values( TRUE ) )
@@ -110,6 +129,8 @@ class _settings extends \IPS\Dispatcher\Controller
 
 
 			$form->saveAsSettings( $values );
+			\IPS\membermap\Map::i()->invalidateJsonCache();
+			
 			\IPS\Session::i()->log( 'acplogs__membermap_settings' );
 
 			\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=membermap&module=membermap&controller=settings" ), 'saved' );

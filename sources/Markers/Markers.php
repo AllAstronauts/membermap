@@ -226,14 +226,16 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 
 		$lat 	= abs( $lat );
 	    $lng 	= abs( $lng );
+
 	    $latDeg = floor( $lat );
 	    $latMin = floor( ( $lat - $latDeg ) * 60 );
-	    $latSec = round( ( $lat - $latDeg - $latMin / 60 ) * 1e3 * 3600 ) / 1e3;
+	    $latSec = floor( ( $lat - $latDeg - $latMin / 60 ) * 1e3 * 3600 ) / 1e3;
+
 	    $lngDeg = floor( $lng );
 	    $lngMin = floor( ( $lng - $lngDeg ) * 60 );
 	    $lngSec = floor( ( $lng - $lngDeg - $lngMin / 60 ) * 1e3 * 3600 ) / 1e3;
 
-	    return "{$NS} {$latDeg}&deg; {$latMin}' {$latSec}'' &nbsp; {$EW} {$lngDeg}&deg; {$lngMin}' {$lngMin}''";
+	    return "{$NS} {$latDeg}&deg; {$latMin}' {$latSec}'' &nbsp; {$EW} {$lngDeg}&deg; {$lngMin}' {$lngSec}''";
 	}
 
 	/**
@@ -380,7 +382,7 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	public function canEdit( $member=NULL )
 	{
 		$member = $member ?: \IPS\Member::loggedIn();
-		return ( $member->member_id == $this->author()->member_id ) or parent::canEdit( $member );
+		return ( $member->member_id > 0 AND $member->member_id == $this->author()->member_id ) or parent::canEdit( $member );
 	}
 
 	/**

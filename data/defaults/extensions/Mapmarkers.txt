@@ -1,0 +1,61 @@
+<?php
+/**
+ * @brief       Member Map Mapmarkers Extension: {class}
+ * @author      Stuart Silvester & Martin Aronsen
+ * @copyright   (c) 2015 Stuart Silvester & Martin Aronsen
+ * @license     http://www.invisionpower.com/legal/standards/
+ * @package     IPS Community Suite
+{subpackage}
+ * @since       {date}
+ * @version     SVN_VERSION_NUMBER
+ */
+
+/*
+ *  If you store location data in your app you can use this extension to present it in Member Map.
+ *  If you need to force a rebuild of the Member Map cache, call \IPS\membermap\Map::i()->invalidateJsonCache()
+ */
+
+namespace IPS\{app}\extensions\membermap\Mapmarkers;
+
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
+	exit;
+}
+
+/**
+ * {class}
+ */
+class _{class}
+{
+    /**
+     * Settings Form
+     *
+     * @param   \IPS\Helpers\Form       $form   The form
+     * @return  void
+     */
+    public function getSettings( &$form )
+    {
+        return $form;
+    }
+    /**
+     * 
+     * @return  array(
+                    'appName'               => '', // Application name. Will be used as the name of the group in the map
+                    'popup'                 => '', // Popup content
+                    'marker_lat'            => 0,  // Latitude
+                    'marker_lon'            => 0,  // Longitude
+                    'group_pin_bg_colour'   => "", // Marker pin colour. +
+                    'group_pin_colour'      => "", // Any HTML colour names
+                    'group_pin_icon'        => "fa-", // FontAwesome icon
+                );
+
+        +: Valid colours are 'red', 'darkred', 'lightred', 'orange', 'beige', 'green', 'darkgreen', 'lightgreen', 'blue', 'darkblue', 'lightblue',
+            'purple', 'darkpurple', 'pink', 'cadetblue', 'gray', 'lightgray', 'black' and 'white'.
+     */
+    public function getLocations()
+    {
+        return array();
+    }
+}

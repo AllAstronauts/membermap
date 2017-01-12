@@ -20,7 +20,6 @@
 			overlayControl = null,
 			
 			mastergroup = null,
-			memberMarkers = null,
 			allMarkers = [],
 			
 			icons = [],
@@ -173,12 +172,6 @@
 			mastergroup.clearLayers();
 		},
 		
-		reloadMap = function()
-		{
-			clear();
-			showMarkers( true );
-		},
-		
 		setMarkers = function( markers )
 		{
 			allMarkers = markers;
@@ -325,6 +318,12 @@
 			map.on( 'baselayerchange', function( baselayer )
 			{
 				ips.utils.cookie.set( 'membermap_baseMap', baselayer.name.toLowerCase().replace( /\s/g, '' ) );
+			});
+
+			/* Truncate popup content */
+			map.on( 'popupopen', function( popup ) 
+			{
+				ips.ui.truncate.respond( $( '.membermap_popupContent' ), { type: 'hide', size: '3 lines' } );
 			});
 			
 			ips.membermap.map = map;
@@ -741,7 +740,6 @@
 
 			if ( markers.length > 0 )
 			{
-
 				$.each( markers, function() 
 				{		
 					/* Don't show these, as they all end up in the middle of the middle of the South Atlantic Ocean. */
@@ -795,6 +793,15 @@
 					}
 					else
 					{
+						if ( typeof this.expiryDate == 'number' )
+						{
+							if ( this.expiryDate < ( Date.now() / 1000 | 0 ) )
+							{
+								Debug.log( "Cache expired" );
+								window.location.href = ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=showmap&rebuildCache=1';
+							}
+						}
+
 						iconColour 	= this.colour;
 						icon 		= this.icon || 'fa-map-marker';
 						bgColour 	= this.bgColour;
@@ -860,10 +867,12 @@
 					}
 					else
 					{
+						this.parent_id = this.appName || this.parent_id;
+						
 						if ( typeof overlayMaps[ 'custom-' + this.parent_id ] === "undefined" )
 						{
 							overlayMaps[ 'custom-' + this.parent_id ] = L.featureGroup.subGroup( mastergroup ).addTo( map );
-							overlayControl.addOverlay( overlayMaps[ 'custom-' + this.parent_id  ], ips.getString( 'membermap_marker_group_' + this.parent_id + '_JS' ) || this.parent_name );
+							overlayControl.addOverlay( overlayMaps[ 'custom-' + this.parent_id  ], ips.getString( 'membermap_marker_group_' + this.parent_id + '_JS' ) || ( this.parent_name ? this.parent_name : this.appName ) );
 						}
 						
 						overlayMaps[ 'custom-' + this.parent_id ].addLayer( mapMarker );
@@ -945,7 +954,6 @@
 
 		getMarkerContextMenu = function( marker, markerData )
 		{
-			
 			if ( ips.getSetting( 'is_supmod' ) ||  ( ips.getSetting( 'member_id' ) == marker.member_id && ips.getSetting( 'membermap_canDelete' ) ) ) 
 			{
 				return [{
@@ -992,6 +1000,7 @@
 		{
 			var urlObject = ips.utils.url.getURIObject();
 			var queryKeys = urlObject.queryKey;
+			var newUrl;
 
 			delete queryKeys[ param ];
 
@@ -1004,11 +1013,11 @@
 					return a;
 				}, [] ).join( '&' );
 
-				var newUrl = window.location.origin + window.location.pathname + '?' + newQuery;
+				newUrl = window.location.origin + window.location.pathname + '?' + newQuery;
 			}
 			else
 			{
-				var newUrl = window.location.origin + window.location.pathname;
+				newUrl = window.location.origin + window.location.pathname;
 			}
 
 			History.replaceState( null, document.title, newUrl );
