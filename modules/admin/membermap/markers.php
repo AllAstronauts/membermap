@@ -169,7 +169,7 @@ class _markers extends \IPS\Node\Controller
 			$groupOrder = NULL;
 			$imported	= 0;
 
-			$this->_parseKml( $markers, $kml->Document, '' );
+			$this->_parseKml( $markers, ( $kml->Document ? $kml->Document : $kml ) , '' );
 
 			foreach( $markers as $folder )
 			{
@@ -251,47 +251,59 @@ class _markers extends \IPS\Node\Controller
 
 	protected function _parseKml( &$markers, $_folder, $prevFolderName='' )
 	{
-		foreach( $_folder->Folder as $folder )
+		if ( isset( $_folder->Folder ) )
 		{
-			$folderName = isset( $folder->name ) ? (string) $folder->name : '';
+			foreach( $_folder->Folder as $folder )
+			{
+				$folderName = isset( $folder->name ) ? (string) $folder->name : '';
 
-			if ( isset( $folder->Folder ) AND ! isset( $folder->Placemark ) AND ( is_object( $folder->Folder ) OR is_array( $folder->Folder ) ) )
-			{
-				$this->_parseKml( $markers, $folder, $folderName );
-			}
-			else
-			{
-				if (  $folder->Placemark  )
+				if ( isset( $folder->Folder ) AND ! isset( $folder->Placemark ) AND ( is_object( $folder->Folder ) OR is_array( $folder->Folder ) ) )
 				{
-					$prevFolderName = $prevFolderName ?: $folderName;
-
-					foreach( $folder->Placemark as $placemark )
+					$this->_parseKml( $markers, $folder, $folderName );
+				}
+				else
+				{
+					if (  $folder->Placemark  )
 					{
-						if ( ! isset( $placemark->Point->coordinates ) )
-						{
-							continue;
-						}
+						$prevFolderName = $prevFolderName ?: $folderName;
 
-						if ( ! isset( $markers[ \substr( md5( $prevFolderName ), 0, 10 ) ] ) )
-						{
-							$markers[ \substr( md5( $prevFolderName ), 0, 10 ) ]  = array( 'name' => $prevFolderName, 'markers' => array() );
-						}
-
-						list( $lon, $lat, $elev ) = explode( ',', $placemark->Point->coordinates );
-
-						$markers[ \substr( md5( $prevFolderName ), 0, 10 ) ]['markers'][] = array(
-							'marker_name'			=> (string) $placemark->name,
-							'marker_name_seo'		=> \IPS\Http\Url::seoTitle( (string) $placemark->name ),
-							'marker_description'	=> (string) $placemark->description,
-							'marker_lat'			=> $lat,
-							'marker_lon'			=> $lon,
-							'marker_member_id'		=> \IPS\Member::loggedIn()->member_id,
-							'marker_added'			=> time(),
-							'marker_open'			=> 1,
-						);
+						$this->_parseKmlPlacemark( $markers, $folder, $prevFolderName );
 					}
 				}
 			}
+		}
+		else if ( $_folder->Placemark )
+		{
+			$this->_parseKmlPlacemark( $markers, $_folder, 'New group' );
+		}
+	}
+
+	protected function _parseKmlPlacemark( &$markers, $folder, $prevFolderName )
+	{
+		foreach( $folder->Placemark as $placemark )
+		{
+			if ( ! isset( $placemark->Point->coordinates ) )
+			{
+				continue;
+			}
+
+			if ( ! isset( $markers[ \substr( md5( $prevFolderName ), 0, 10 ) ] ) )
+			{
+				$markers[ \substr( md5( $prevFolderName ), 0, 10 ) ]  = array( 'name' => $prevFolderName, 'markers' => array() );
+			}
+
+			list( $lon, $lat, $elev ) = explode( ',', $placemark->Point->coordinates );
+
+			$markers[ \substr( md5( $prevFolderName ), 0, 10 ) ]['markers'][] = array(
+				'marker_name'			=> (string) $placemark->name,
+				'marker_name_seo'		=> \IPS\Http\Url::seoTitle( (string) $placemark->name ),
+				'marker_description'	=> (string) $placemark->description,
+				'marker_lat'			=> $lat,
+				'marker_lon'			=> $lon,
+				'marker_member_id'		=> \IPS\Member::loggedIn()->member_id,
+				'marker_added'			=> time(),
+				'marker_open'			=> 1,
+			);
 		}
 	}
 }
