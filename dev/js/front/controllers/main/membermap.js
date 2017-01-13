@@ -751,7 +751,9 @@
 					var bgColour 	= 'darkblue';
 					var icon 		= 'user';
 					var iconColour 	= 'white';
-					var popupOptions = {};
+					var popupOptions = {
+						autoPan: false
+					};
 
 					if ( this.type == 'member' )
 					{
@@ -806,9 +808,7 @@
 						icon 		= this.icon || 'fa-map-marker';
 						bgColour 	= this.bgColour;
 
-						popupOptions = {
-							minWidth: 320
-						};
+						popupOptions.minWidth = 320;
 					}
 
 					var _icon = L.AwesomeMarkers.icon({
