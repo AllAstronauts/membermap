@@ -848,8 +848,20 @@
 						{
 							if ( typeof overlayMaps[ 'member-' + this.parent_id ] === "undefined" )
 							{
-								overlayMaps[ 'member-' + this.parent_id ] = L.featureGroup.subGroup( mastergroup ).addTo( map );
+								overlayMaps[ 'member-' + this.parent_id ] = L.featureGroup.subGroup( mastergroup );
 								overlayControl.addOverlay( overlayMaps[ 'member-' + this.parent_id  ], this.parent_name );
+
+								if ( ips.getSetting( 'membermap_onlyShowGroup' ).length > 0 )
+								{
+									if ( $.inArray( this.parent_name.toLowerCase(), ips.getSetting( 'membermap_onlyShowGroup' ) ) !== -1 )
+									{
+										overlayMaps[ 'member-' + this.parent_id ].addTo( map );
+									}
+								}
+								else
+								{
+									overlayMaps[ 'member-' + this.parent_id ].addTo( map );
+								}
 							}
 
 							overlayMaps[ 'member-' + this.parent_id ].addLayer( mapMarker );
@@ -859,8 +871,20 @@
 						{
 							if ( typeof overlayMaps['members'] === "undefined" )
 							{
-								overlayMaps['members'] = L.featureGroup.subGroup( mastergroup ).addTo( map );
+								overlayMaps['members'] = L.featureGroup.subGroup( mastergroup );
 								overlayControl.addOverlay( overlayMaps['members'], ips.getString( 'membermap_overlay_members' ) );
+
+								if ( ips.getSetting( 'membermap_onlyShowGroup' ).length > 0 )
+								{
+									if ( $.inArray( "members", ips.getSetting( 'membermap_onlyShowGroup' ) ) !== -1 )
+									{
+										overlayMaps['members'].addTo( map );
+									}
+								}
+								else
+								{
+									overlayMaps['members'].addTo( map );
+								}
 							}
 							
 							overlayMaps['members'].addLayer( mapMarker );
@@ -872,8 +896,22 @@
 						
 						if ( typeof overlayMaps[ 'custom-' + this.parent_id ] === "undefined" )
 						{
-							overlayMaps[ 'custom-' + this.parent_id ] = L.featureGroup.subGroup( mastergroup ).addTo( map );
-							overlayControl.addOverlay( overlayMaps[ 'custom-' + this.parent_id  ], ips.getString( 'membermap_marker_group_' + this.parent_id + '_JS' ) || ( this.parent_name ? this.parent_name : this.appName ) );
+							var layerName = ips.getString( 'membermap_marker_group_' + this.parent_id + '_JS' ) || ( this.parent_name ? this.parent_name : this.appName );
+
+							overlayMaps[ 'custom-' + this.parent_id ] = L.featureGroup.subGroup( mastergroup );
+							overlayControl.addOverlay( overlayMaps[ 'custom-' + this.parent_id  ], layerName );
+
+							if ( ips.getSetting( 'membermap_onlyShowGroup' ).length > 0 )
+							{
+								if ( $.inArray( layerName.toLowerCase(), ips.getSetting( 'membermap_onlyShowGroup' ) ) !== -1 )
+								{
+									overlayMaps[ 'custom-' + this.parent_id ].addTo( map );
+								}
+							}
+							else
+							{
+								overlayMaps[ 'custom-' + this.parent_id ].addTo( map );
+							}
 						}
 						
 						overlayMaps[ 'custom-' + this.parent_id ].addLayer( mapMarker );

@@ -112,6 +112,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 			'membermap_mapquestAPI'			=> \IPS\membermap\Application::getApiKeys( 'mapquest' ),
 			'membermap_enable_clustering' 	=> \IPS\Settings::i()->membermap_enable_clustering == 1 ? 1 : 0,
 			'membermap_groupByMemberGroup'	=> \IPS\Settings::i()->membermap_groupByMemberGroup == 1 ? 1 : 0,
+			'membermap_onlyShowGroup'		=> \IPS\Request::i()->group ? explode( ',', mb_strtolower( \IPS\Request::i()->group ) ) : array(),
         ));
 
 
