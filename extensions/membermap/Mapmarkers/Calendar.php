@@ -244,7 +244,7 @@ class _Calendar
 
 				if ( $event->all_day )
 				{
-					$nextDate = $event->nextOccurrence( $startDate, 'startDate' ) !== NULL ? $event->nextOccurrence( $startDate, 'startDate' ) : $event->lastOccurrence( 'startDate' );
+					$nextDate = $event->nextOccurrence( $startDate, 'endDate' ) !== NULL ? $event->nextOccurrence( $startDate, 'endDate' ) : $event->lastOccurrence( 'endDate' );
 
 					$nextDate = $nextDate->adjust( "+1 day 3 hours" );
 				}

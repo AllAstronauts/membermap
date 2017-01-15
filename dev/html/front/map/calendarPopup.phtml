@@ -13,9 +13,6 @@
 	{{endif}}
 </div>
 <div class='ipsDataItem_main cWidgetComments'>
-	{{if $event->container()->allow_comments && $orientation == 'vertical'}}
-		<div class="ipsCommentCount ipsPos_right {{if $event->comments === 0}}ipsFaded{{endif}}" data-ipsTooltip title='{lang="replies_number" pluralize="$event->comments"}'>{expression="$event->comments"}</div>
-	{{endif}}
 	<div class='ipsType_break ipsContained'>
 		<a href="{$event->url()}" title='{lang="view_this_event" sprintf="$event->title"}'  target='_blank' rel="nooptimize">{$event->title}</a>
 	</div>
@@ -37,10 +34,7 @@
 		{{endif}}
 	</strong>
 	<br>
-	{{if $event->container()->allow_comments}}
-		<span class="{{if $event->comments === 0}}ipsFaded{{endif}}" data-ipsTooltip title='{lang="replies_number" pluralize="$event->comments"}'><i class='fa fa-comment'></i> {expression="$event->comments"}</span>&nbsp;&nbsp;
-	{{endif}}
-	<div class='ipsType_medium ipsType_richText' data-ipsTruncate data-ipsTruncate-type='remove' data-ipsTruncate-size='2 lines'>
+	<div class='membermap_popupContent'>
 		{$event->truncated()|raw}
 	</div>
 </div>

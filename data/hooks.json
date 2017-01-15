@@ -6,5 +6,9 @@
     "NumberInput": {
         "type": "C",
         "class": "\\IPS\\Helpers\\Form\\Number"
+    },
+    "calendarEvent": {
+        "type": "C",
+        "class": "\\IPS\\calendar\\Event"
     }
 }
