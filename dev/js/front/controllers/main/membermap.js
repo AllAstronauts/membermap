@@ -399,7 +399,7 @@
 			if ( ! dbEnabled )
 			{
 				$( '#elToolsMenuBrowserCache' ).addClass( 'ipsMenu_itemDisabled' );
-				$( '#elToolsMenuBrowserCache a' ).append( '(Not supported)' );
+				$( '#elToolsMenuBrowserCache a' ).append( '(Not supported by your browser)' );
 			}
 
 			if ( forceReload || ! dbEnabled )
@@ -795,11 +795,12 @@
 					}
 					else
 					{
-						if ( typeof this.expiryDate == 'number' )
+						if ( typeof this.expiryDate === 'number' )
 						{
-							if ( this.expiryDate < ( Date.now() / 1000 | 0 ) )
+							if ( parseInt( this.expiryDate ) > 0 && parseInt( this.expiryDate ) < ( Date.now() / 1000 | 0 ) )
 							{
 								Debug.log( "Cache expired" );
+
 								window.location.href = ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=showmap&rebuildCache=1';
 							}
 						}
