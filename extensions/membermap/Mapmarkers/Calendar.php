@@ -101,7 +101,7 @@ class _Calendar
 		}
 		
 		$where = array();
-		$where[] = array( '( event_location IS NOT NULL AND LEFT( event_location, 11 ) != \'{"lat":null\' )' );
+		$where[] = array( 'event_location IS NOT NULL' );
 
 		if( \IPS\Settings::i()->membermap_calendars !== '*' )
 		{
@@ -235,6 +235,10 @@ class _Calendar
 			foreach( $formattedEvents as $event )
 			{
 				$location = json_decode( $event->location, TRUE );
+
+				$location['lat']  = $location['mm_lat']  ?: $location['lat'];
+				$location['long'] = $location['mm_long'] ?: $location['long'];
+
 				if ( ! $location['lat'] OR ! $location['long'] )
 				{
 					continue;
