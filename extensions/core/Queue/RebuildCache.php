@@ -76,7 +76,7 @@ class _RebuildCache
 		$memberMarkers = array();
 		$customMarkers = array();
 		
-		$selectColumns = array( 'mm.*', 'mg.*', 'm.member_id', 'm.name', 'm.members_seo_name', 'm.member_group_id', 'm.pp_photo_type', 'm.pp_main_photo', 'm.pp_thumb_photo' );
+		$selectColumns = array( 'mm.*', 'mg.*', 'm.member_id', 'm.name', 'm.members_seo_name', 'm.member_group_id', 'm.pp_photo_type', 'm.pp_main_photo', 'm.pp_thumb_photo', 'pi.perm_2 as viewPerms' );
 		
 		if ( \IPS\Settings::i()->allow_gravatars )
 		{
@@ -88,6 +88,7 @@ class _RebuildCache
 		/* Remember to update membermap\Map too */
 		$_markers = \IPS\Db::i()->select( implode( ',', $selectColumns ), array( 'membermap_markers', 'mm' ), array( 'marker_open=1' ), 'mg.group_position ASC, mm.marker_id DESC', array( $offset, $this->perCycle ) )
 					->join( array( 'membermap_markers_groups', 'mg' ), 'mm.marker_parent_id=mg.group_id' )
+					->join( array( 'core_permission_index', 'pi' ), "( pi.perm_type_id=mg.group_id AND pi.app='membermap' AND pi.perm_type='membermap' )" )
 					->join( array( 'core_members', 'm' ), 'mm.marker_member_id=m.member_id' );
 
 		foreach( $_markers as $marker )
@@ -101,6 +102,29 @@ class _RebuildCache
 			else
 			{
 				$customMarkers[] = $marker;
+			}
+		}
+		
+		/* Get from extensions */
+		$extensions = \IPS\Application::allExtensions( 'membermap', 'Mapmarkers', FALSE );
+
+		foreach ( $extensions as $k => $class )
+		{
+			$appMarkers = $class->getLocations();
+			
+			if ( is_array( $appMarkers ) AND count( $appMarkers ) )
+			{
+				/* Set 'appName' if it isn't already */
+				array_walk( $appMarkers, function( &$v, $k ) use ( $k )
+				{
+					if ( ! $v['appName'] )
+					{
+						$appName = substr( $k, strpos( $k, '_' ) + 1 );
+						$v['appName'] = $appName;
+					}
+				} );
+
+				$customMarkers = array_merge( $customMarkers, $class->getLocations() );
 			}
 		}
 

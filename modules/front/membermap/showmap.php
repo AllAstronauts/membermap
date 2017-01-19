@@ -102,6 +102,7 @@ class _showmap extends \IPS\Dispatcher\Controller
         \IPS\Output::i()->jsVars = array_merge( \IPS\Output::i()->jsVars, array(
         	'is_supmod'						=> \IPS\Member::loggedIn()->modPermission() ?: 0,
 			'member_id'						=> \IPS\Member::loggedIn()->member_id ?: 0,
+			'member_group'					=> \IPS\Member::loggedIn()->member_group_id ?: 0,
 			'membermap_canAdd'				=> $canAdd ?: 0,
         	'membermap_canEdit'				=> $canEdit ?: 0,
         	'membermap_canDelete'			=> $canDelete ?: 0,
@@ -112,6 +113,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 			'membermap_mapquestAPI'			=> \IPS\membermap\Application::getApiKeys( 'mapquest' ),
 			'membermap_enable_clustering' 	=> \IPS\Settings::i()->membermap_enable_clustering == 1 ? 1 : 0,
 			'membermap_groupByMemberGroup'	=> \IPS\Settings::i()->membermap_groupByMemberGroup == 1 ? 1 : 0,
+			'membermap_onlyShowGroup'		=> \IPS\Request::i()->group ? explode( ',', mb_strtolower( \IPS\Request::i()->group ) ) : array(),
         ));
 
 

@@ -22,6 +22,11 @@ class _Calendar
 	 */
 	public function getSettings( &$form )
 	{
+		if ( ! \IPS\Application::appIsEnabled( 'calendar' ) )
+		{
+			return $form;
+		}
+
 		$form->addHeader( 'membermap_calendarExt_header' );
 		$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_calendarExt', \IPS\Settings::i()->membermap_calendarExt, FALSE, 
 			array( 'togglesOn' => array( 'membermap_calendars', 'membermap_calendar_days_ahead', 'membermap_calendar_icon', 'membermap_calendar_colour', 'membermap_calendar_bgcolour', 'membermap_calendar_marker_example' ) ) 
@@ -95,13 +100,13 @@ class _Calendar
 	 */
 	public function getLocations()
 	{
-		if ( ! \IPS\Settings::i()->membermap_calendarExt )
+		if ( ! \IPS\Settings::i()->membermap_calendarExt OR ! \IPS\Application::appIsEnabled( 'calendar' ) )
 		{
 			return;
 		}
 		
 		$where = array();
-		$where[] = array( '( event_location IS NOT NULL AND LEFT( event_location, 11 ) != \'{"lat":null\' )' );
+		$where[] = array( 'event_location IS NOT NULL' );
 
 		if( \IPS\Settings::i()->membermap_calendars !== '*' )
 		{
@@ -184,15 +189,16 @@ class _Calendar
 		}
 
 		/* Get the non-recurring events */
-		$events	= \IPS\calendar\Event::getItemsWithPermission( array_merge( $where, $nonRecurring ), 'event_start_date ASC', NULL );
+		$events	= \IPS\calendar\Event::getItemsWithPermission( array_merge( $where, $nonRecurring ), 'event_start_date ASC', NULL, NULL );
 
 		/* We need to make sure ranged events repeat each day that they occur on */
 		$formattedEvents	= array();
 
 		$formattedEvents	= iterator_to_array( $events );
 
+
 		/* Now get the recurring events.... */
-		$recurringEvents	= \IPS\calendar\Event::getItemsWithPermission( array_merge( $where, array( array( 'event_recurring IS NOT NULL' ) ) ), 'event_start_date ASC', NULL );
+		$recurringEvents	= \IPS\calendar\Event::getItemsWithPermission( array_merge( $where, array( array( 'event_recurring IS NOT NULL' ) ) ), 'event_start_date ASC', NULL, NULL );
 
 		/* Loop over any results */
 		foreach( $recurringEvents as $event )
@@ -235,6 +241,10 @@ class _Calendar
 			foreach( $formattedEvents as $event )
 			{
 				$location = json_decode( $event->location, TRUE );
+
+				$location['lat']  = $location['mm_lat']  ?: $location['lat'];
+				$location['long'] = $location['mm_long'] ?: $location['long'];
+
 				if ( ! $location['lat'] OR ! $location['long'] )
 				{
 					continue;
@@ -285,6 +295,9 @@ class _Calendar
 					continue;
 				}
 
+				$viewPerms = $event->container()->permissions(); 
+				$viewPerms = $viewPerms['perm_2'];
+
 				$return[] = array(
 					'appName'				=> 'Calendar',
 					'expiryDate'			=> $nextDate->getTimestamp(),
@@ -294,6 +307,7 @@ class _Calendar
 					'group_pin_bg_colour'	=> \IPS\Settings::i()->membermap_calendar_bgcolour ?: "white",
 					'group_pin_colour'		=> \IPS\Settings::i()->membermap_calendar_colour ?: "#ff0000",
 					'group_pin_icon'		=> \IPS\Settings::i()->membermap_calendar_icon ?: 'fa-calendar',
+					'viewPerms'				=> $viewPerms,
 				);
 			}
 		}
