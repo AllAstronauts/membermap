@@ -747,6 +747,12 @@
 					{
 						return;
 					}
+
+					/* Do we have permission to see this marker? */
+					if ( $.inArray( ips.getSetting( 'member_group' ), this.viewPerms ) === -1 && this.viewPerms !== '*' )
+					{
+						return;
+					}
 					
 					var bgColour 	= 'darkblue';
 					var icon 		= 'user';

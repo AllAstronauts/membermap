@@ -346,7 +346,7 @@ class _Map
 		}
 
 
-		$selectColumns = array( 'mm.*', 'mg.*', 'm.member_id', 'm.name', 'm.members_seo_name', 'm.member_group_id', 'm.pp_photo_type', 'm.pp_main_photo', 'm.pp_thumb_photo' );
+		$selectColumns = array( 'mm.*', 'mg.*', 'm.member_id', 'm.name', 'm.members_seo_name', 'm.member_group_id', 'm.pp_photo_type', 'm.pp_main_photo', 'm.pp_thumb_photo', 'pi.perm_2 as viewPerms' );
 		
 		if ( \IPS\Settings::i()->allow_gravatars )
 		{
@@ -358,6 +358,7 @@ class _Map
 		/* Remember to update the queue too */
 		$_markers = \IPS\Db::i()->select( implode( ',', $selectColumns ), array( 'membermap_markers', 'mm' ), array( 'marker_open=1' ), 'mg.group_position ASC, mm.marker_id DESC' )
 					->join( array( 'membermap_markers_groups', 'mg' ), 'mm.marker_parent_id=mg.group_id' )
+					->join( array( 'core_permission_index', 'pi' ), "( pi.perm_type_id=mg.group_id AND pi.app='membermap' AND pi.perm_type='membermap' )" )
 					->join( array( 'core_members', 'm' ), 'mm.marker_member_id=m.member_id' );
 
 		foreach( $_markers as $marker )
@@ -395,12 +396,13 @@ class _Map
 			}
 		}
 
+		/* Format markers */
 		$markers = $this->formatMemberMarkers( $memberMarkers );
-
 		$custMarkers = $this->formatCustomMarkers( $customMarkers );
 
 		$markers = array_merge( $markers, $custMarkers );
 
+		/* Split into decent chuncks */
 		$markers = array_chunk( $markers, 500 );
 		
 		$this->deleteCacheFiles();
@@ -478,6 +480,7 @@ class _Map
 					'parent_name'	=> $groupName,
 					'popup' 		=> \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker, $photo ),
 					'markerColour' 	=> $markerColour,
+					'viewPerms'		=> ( $marker['viewPerms'] === '*' OR $marker['viewPerms'] === NULL ) ? '*' : array_map( 'intval', explode( ',', $marker['viewPerms'] ) ),
 				);
 			}
 		}
@@ -519,6 +522,7 @@ class _Map
 					'from_app'		=> isset( $marker['appName'] ) ? TRUE : FALSE,
 					'appName'		=> isset( $marker['appName'] ) ? $marker['appName'] : NULL,
 					'expiryDate'	=> isset( $marker['expiryDate'] ) ? $marker['expiryDate'] : NULL,
+					'viewPerms'		=> ( $marker['viewPerms'] === '*' OR $marker['viewPerms'] === NULL ) ? '*' : array_map( 'intval', explode( ',', $marker['viewPerms'] ) ),
 				);
 			}
 		}
