@@ -447,7 +447,8 @@ class _Map
 				/* Member don't exists or lat/lon == 0 (Middle of the ocean) */
 				if ( $marker['member_id'] === NULL OR ( $marker['marker_lat'] == 0 AND $marker['marker_lon'] == 0 ) )
 				{
-					\IPS\Db::i()->delete( 'membermap_markers', array( 'marker_id=?', $marker['marker_id'] ) );
+					//\IPS\Db::i()->delete( 'membermap_markers', array( 'marker_id=?', $marker['marker_id'] ) );
+					\IPS\membermap\Markers\Markers::constructFromData( $marker )->delete();
 					continue;
 				}
 
