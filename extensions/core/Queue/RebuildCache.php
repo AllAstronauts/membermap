@@ -115,7 +115,7 @@ class _RebuildCache
 			if ( is_array( $appMarkers ) AND count( $appMarkers ) )
 			{
 				/* Set 'appName' if it isn't already */
-				array_walk( $appMarkers, function( &$v, $k ) use ( $k )
+				array_walk( $appMarkers, function( &$v, $key ) use ( $k )
 				{
 					if ( ! $v['appName'] )
 					{

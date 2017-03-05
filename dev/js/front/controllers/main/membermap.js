@@ -331,6 +331,11 @@
 		
 		loadMarkers = function( forceReload )
 		{
+			var localStoragePrefix = "";
+			if( !_.isUndefined( ips.getSetting('cookie_prefix') ) && ips.getSetting('cookie_prefix') != '' ){
+				localStoragePrefix = ips.getSetting('cookie_prefix') + '.';
+			}
+
 			function loadNextFile( id )
 			{
 				ips.getAjax()({
@@ -370,8 +375,8 @@
 				if ( dbEnabled )
 				{
 					var date = new Date();
-					ips.utils.db.set( 'membermap', 'markers', { time: ( date.getTime() / 1000 ), data: allMarkers } );
-					ips.utils.db.set( 'membermap', 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
+					ips.utils.db.set( 'membermap', localStoragePrefix + 'markers', { time: ( date.getTime() / 1000 ), data: allMarkers } );
+					ips.utils.db.set( 'membermap', localStoragePrefix + 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
 
 
 					$( '#elToolsMenuBrowserCache a time' ).html( '(' + ips.getString( 'membermap_browserCache_update' ) + ': ' + ips.utils.time.readable( date.getTime() / 1000 ) + ')' );
@@ -413,8 +418,8 @@
 			else
 			{
 				/* Get data from browser storage */
-				var data 		= ips.utils.db.get('membermap', 'markers' );
-				var cacheTime 	= ips.utils.db.get('membermap', 'cacheTime' );
+				var data 		= ips.utils.db.get('membermap', localStoragePrefix + 'markers' );
+				var cacheTime 	= ips.utils.db.get('membermap', localStoragePrefix + 'cacheTime' );
 			
 				if ( data === null || cacheTime < ips.getSetting( 'membermap_cacheTime' ) )
 				{
@@ -1040,6 +1045,31 @@
 
 			return [];
 		},
+		
+		paneZindex = 450,
+
+		addCustomOverlay = function( id, name )
+		{				
+			if ( typeof overlayMaps[ 'custom-' + id ] === "undefined" )
+			{
+				overlayMaps[ 'custom-' + id ] = L.featureGroup();
+				overlayControl.addOverlay( overlayMaps[ 'custom-' + id ], name );
+
+				overlayMaps[ 'custom-' + id ].addTo( map );
+
+				/* Create a pane for each */
+				map.createPane( id + 'Pane' );
+				map.getPane( id + 'Pane' ).style.zIndex = paneZindex;
+				paneZindex = paneZindex - 1;
+			}
+
+			return overlayMaps[ 'custom-' + id ];
+		},
+
+		getMapObject = function()
+		{
+			return map;
+		},
 
 		removeURIParam = function( param )
 		{
@@ -1073,8 +1103,9 @@
 			setMarkers: setMarkers,
 			setCenter: setCenter,
 			setZoomLevel: setZoomLevel,
-			map: map,
-			loadMarkers: loadMarkers
+			map: getMapObject,
+			loadMarkers: loadMarkers,
+			addCustomOverlay: addCustomOverlay
 		};
 	});
 }(jQuery, _));

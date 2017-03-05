@@ -157,7 +157,6 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	public static function basicDataColumns()
 	{
 		$return = parent::basicDataColumns();
-		$return[] = 'marker_name';
 		$return[] = 'marker_description';
 		$return[] = 'marker_location';
 		return $return;

@@ -40,7 +40,10 @@ class membermap_hook_calendarEvent extends _HOOK_CLASS_
 						{
 							foreach ( array_reverse( $location[ $k ] ) as $v )
 							{
-								$_locationArr[] = $v;
+								if ( $v )
+								{
+									$_locationArr[] = $v;
+								}
 							}
 						}
 						else
@@ -52,27 +55,20 @@ class membermap_hook_calendarEvent extends _HOOK_CLASS_
 
 				$_locationStr = trim( implode( ', ', array_reverse( $_locationArr ) ), ', ' );
 
-				if ( $_locationStr AND mb_strlen( $_locationStr ) > 4 AND $latLng = \IPS\membermap\Map::i()->getLatLng( $_locationStr ) )
+				if ( $_locationStr AND mb_strlen( $_locationStr ) > 4 )
 				{
-					if ( $latLng['lat'] AND $latLng['lng'] )
+					if ( $latLng = \IPS\membermap\Map::i()->getLatLng( $_locationStr ) )
 					{
-						/* Don't overwrite what's already in the JSON, as that will change how the mini map looks */
-						$location['mm_lat'] = $latLng['lat'];
-						$location['mm_long'] = $latLng['lng'];
+						if ( $latLng['lat'] AND $latLng['lng'] )
+						{
+							/* Don't overwrite what's already in the JSON, as that will change how the mini map looks */
+							$location['mm_lat'] = $latLng['lat'];
+							$location['mm_long'] = $latLng['lng'];
 
-						$this->location = json_encode( $location );
-						parent::save();
+							$this->location = json_encode( $location );
+							parent::save();
+						}
 					}
-					else
-					{
-						$this->location = NULL;
-						parent::save();
-					}
-				}
-				else
-				{
-					$this->location = NULL;
-					parent::save();
 				}
 			}
 

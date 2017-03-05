@@ -383,7 +383,7 @@ class _Map
 			if ( is_array( $appMarkers ) AND count( $appMarkers ) )
 			{
 				/* Set 'appName' if it isn't already */
-				array_walk( $appMarkers, function( &$v, $k ) use ( $k )
+				array_walk( $appMarkers, function( &$v, $key ) use ( $k )
 				{
 					if ( ! $v['appName'] )
 					{
@@ -447,7 +447,8 @@ class _Map
 				/* Member don't exists or lat/lon == 0 (Middle of the ocean) */
 				if ( $marker['member_id'] === NULL OR ( $marker['marker_lat'] == 0 AND $marker['marker_lon'] == 0 ) )
 				{
-					\IPS\Db::i()->delete( 'membermap_markers', array( 'marker_id=?', $marker['marker_id'] ) );
+					//\IPS\Db::i()->delete( 'membermap_markers', array( 'marker_id=?', $marker['marker_id'] ) );
+					\IPS\membermap\Markers\Markers::constructFromData( $marker )->delete();
 					continue;
 				}
 
