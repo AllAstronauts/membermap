@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <javascript app="membermap">
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/main" javascript_name="jquery.showLoading.min.js" javascript_type="controller" javascript_version="110013" javascript_position="1000050"><![CDATA[﻿/*
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/main" javascript_name="jquery.showLoading.min.js" javascript_type="controller" javascript_version="110014" javascript_position="1000050"><![CDATA[﻿/*
  * jQuery showLoading plugin v1.0
  * 
  * Copyright (c) 2009 Jim Keller
@@ -35,7 +35,7 @@ return this;};jQuery.fn.hideLoading=function(options){var settings={};jQuery.ext
 else{indicatorID=jQuery(this).attr('id');}
 jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(document.body).find('#loading-indicator-'+indicatorID+'-overlay').remove();return this;};
 ]]></file>
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/main" javascript_name="membermap.js" javascript_type="controller" javascript_version="110013" javascript_position="1000050"><![CDATA[/**
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/main" javascript_name="membermap.js" javascript_type="controller" javascript_version="110014" javascript_position="1000050"><![CDATA[/**
  * Member Map, by Stuart Silvester & Martin Aronsen
  */
 ;( function($, _, undefined){
@@ -368,6 +368,11 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 		
 		loadMarkers = function( forceReload )
 		{
+			var localStoragePrefix = "";
+			if( !_.isUndefined( ips.getSetting('cookie_prefix') ) && ips.getSetting('cookie_prefix') != '' ){
+				localStoragePrefix = ips.getSetting('cookie_prefix') + '.';
+			}
+
 			function loadNextFile( id )
 			{
 				ips.getAjax()({
@@ -407,8 +412,8 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 				if ( dbEnabled )
 				{
 					var date = new Date();
-					ips.utils.db.set( 'membermap', 'markers', { time: ( date.getTime() / 1000 ), data: allMarkers } );
-					ips.utils.db.set( 'membermap', 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
+					ips.utils.db.set( 'membermap', localStoragePrefix + 'markers', { time: ( date.getTime() / 1000 ), data: allMarkers } );
+					ips.utils.db.set( 'membermap', localStoragePrefix + 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
 
 
 					$( '#elToolsMenuBrowserCache a time' ).html( '(' + ips.getString( 'membermap_browserCache_update' ) + ': ' + ips.utils.time.readable( date.getTime() / 1000 ) + ')' );
@@ -450,8 +455,8 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 			else
 			{
 				/* Get data from browser storage */
-				var data 		= ips.utils.db.get('membermap', 'markers' );
-				var cacheTime 	= ips.utils.db.get('membermap', 'cacheTime' );
+				var data 		= ips.utils.db.get('membermap', localStoragePrefix + 'markers' );
+				var cacheTime 	= ips.utils.db.get('membermap', localStoragePrefix + 'cacheTime' );
 			
 				if ( data === null || cacheTime < ips.getSetting( 'membermap_cacheTime' ) )
 				{
@@ -1077,6 +1082,31 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 
 			return [];
 		},
+		
+		paneZindex = 450,
+
+		addCustomOverlay = function( id, name )
+		{				
+			if ( typeof overlayMaps[ 'custom-' + id ] === "undefined" )
+			{
+				overlayMaps[ 'custom-' + id ] = L.featureGroup();
+				overlayControl.addOverlay( overlayMaps[ 'custom-' + id ], name );
+
+				overlayMaps[ 'custom-' + id ].addTo( map );
+
+				/* Create a pane for each */
+				map.createPane( id + 'Pane' );
+				map.getPane( id + 'Pane' ).style.zIndex = paneZindex;
+				paneZindex = paneZindex - 1;
+			}
+
+			return overlayMaps[ 'custom-' + id ];
+		},
+
+		getMapObject = function()
+		{
+			return map;
+		},
 
 		removeURIParam = function( param )
 		{
@@ -1110,8 +1140,9 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 			setMarkers: setMarkers,
 			setCenter: setCenter,
 			setZoomLevel: setZoomLevel,
-			map: map,
-			loadMarkers: loadMarkers
+			map: getMapObject,
+			loadMarkers: loadMarkers,
+			addCustomOverlay: addCustomOverlay
 		};
 	});
 }(jQuery, _));
@@ -1158,7 +1189,7 @@ L.Control.FullScreen.mergeOptions({
 	title: ips.getString( 'leaflet_fullScreen' ) || 'Full Screen',
 	titleCancel: ips.getString( 'leaflet_exitFullScreen' ) || 'Exit Full Screen',
 });]]></file>
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/markers" javascript_name="ips.markers.markerform.js" javascript_type="controller" javascript_version="110013" javascript_position="1000100"><![CDATA[;( function($, _, undefined){
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/markers" javascript_name="ips.markers.markerform.js" javascript_type="controller" javascript_version="110014" javascript_position="1000100"><![CDATA[;( function($, _, undefined){
 	"use strict";
 
 	ips.controller.register('membermap.front.markers.markerform', {
@@ -1395,7 +1426,7 @@ L.Control.FullScreen.mergeOptions({
 		}
 	});
 }(jQuery, _));]]></file>
- <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/markers" javascript_name="ips.markers.markerview.js" javascript_type="controller" javascript_version="110013" javascript_position="1000100"><![CDATA[;( function($, _, undefined){
+ <file javascript_app="membermap" javascript_location="front" javascript_path="controllers/markers" javascript_name="ips.markers.markerview.js" javascript_type="controller" javascript_version="110014" javascript_position="1000100"><![CDATA[;( function($, _, undefined){
 	"use strict";
 
 	ips.controller.register('membermap.front.markers.markerview', {
@@ -1479,7 +1510,7 @@ L.Control.FullScreen.mergeOptions({
 		}
 	});
 }(jQuery, _));]]></file>
- <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.groupform.js" javascript_type="controller" javascript_version="110013" javascript_position="1000050">;( function($, _, undefined){
+ <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.groupform.js" javascript_type="controller" javascript_version="110014" javascript_position="1000050">;( function($, _, undefined){
 	&quot;use strict&quot;;
 
 	ips.controller.register('membermap.admin.membermap.groupform', {
@@ -1515,7 +1546,7 @@ L.Control.FullScreen.mergeOptions({
 		}
 	});
 }(jQuery, _));</file>
- <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.mapmanager.js" javascript_type="controller" javascript_version="110013" javascript_position="1000050"><![CDATA[;( function($, _, undefined){
+ <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.mapmanager.js" javascript_type="controller" javascript_version="110014" javascript_position="1000050"><![CDATA[;( function($, _, undefined){
 	"use strict";
 
 	ips.controller.register('membermap.admin.membermap.mapmanager', {
@@ -1694,7 +1725,7 @@ if ( typeof L !== 'undefined' )
 		}
 	};
 }]]></file>
- <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.settings.js" javascript_type="controller" javascript_version="110013" javascript_position="1000050">;( function($, _, undefined){
+ <file javascript_app="membermap" javascript_location="admin" javascript_path="controllers/membermap" javascript_name="ips.membermap.settings.js" javascript_type="controller" javascript_version="110014" javascript_position="1000050">;( function($, _, undefined){
 	&quot;use strict&quot;;
 
 	ips.controller.register('membermap.admin.membermap.settings', {
@@ -1779,7 +1810,7 @@ if ( typeof L !== 'undefined' )
 		}
 	});
 }(jQuery, _));</file>
- <file javascript_app="membermap" javascript_location="admin" javascript_path="templates" javascript_name="ips.templates.membermap.js" javascript_type="template" javascript_version="110013" javascript_position="1000100"><![CDATA[ips.templates.set( 'mapManager.listItem', "\
+ <file javascript_app="membermap" javascript_location="admin" javascript_path="templates" javascript_name="ips.templates.membermap.js" javascript_type="template" javascript_version="110014" javascript_position="1000100"><![CDATA[ips.templates.set( 'mapManager.listItem', "\
 	<li data-provider='{{name}}' data-type='{{type}}' data-order='{{order}}'>\
 		<div class='cMenuManager_leaf'>\
 			<h3 class='cMenuManager_leafTitle'>\
