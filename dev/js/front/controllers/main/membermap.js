@@ -1040,6 +1040,31 @@
 
 			return [];
 		},
+		
+		paneZindex = 450,
+
+		addCustomOverlay = function( id, name )
+		{				
+			if ( typeof overlayMaps[ 'custom-' + id ] === "undefined" )
+			{
+				overlayMaps[ 'custom-' + id ] = L.featureGroup();
+				overlayControl.addOverlay( overlayMaps[ 'custom-' + id ], name );
+
+				overlayMaps[ 'custom-' + id ].addTo( map );
+
+				/* Create a pane for each */
+				map.createPane( id + 'Pane' );
+				map.getPane( id + 'Pane' ).style.zIndex = paneZindex;
+				paneZindex = paneZindex - 1;
+			}
+
+			return overlayMaps[ 'custom-' + id ];
+		},
+
+		getMapObject = function()
+		{
+			return map;
+		},
 
 		removeURIParam = function( param )
 		{
@@ -1073,8 +1098,9 @@
 			setMarkers: setMarkers,
 			setCenter: setCenter,
 			setZoomLevel: setZoomLevel,
-			map: map,
-			loadMarkers: loadMarkers
+			map: getMapObject,
+			loadMarkers: loadMarkers,
+			addCustomOverlay: addCustomOverlay
 		};
 	});
 }(jQuery, _));
