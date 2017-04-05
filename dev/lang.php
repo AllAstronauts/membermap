@@ -105,11 +105,9 @@ $lang = array(
 
 
 	/* ACP Marker Group Settings */
-	'g_membermap_canAdd' 			=> "Can add location to map",
-	'g_membermap_canEdit' 			=> "Can edit their location",
-	'g_membermap_canDelete' 		=> "Can delete their location",
 	'g_membermap_markerColour' 		=> "Marker Colour",
 	'g_membermap_markerColour_desc' => "The members own marker will always be green",
+	'g_membermap_delete_own'		=> "Can delete own markers?",
 	'group_marker_example' 			=> "Marker Preview",
 	'group_name' 					=> "Marker Group Name",
 	'group_pin_icon' 				=> "Marker Icon",

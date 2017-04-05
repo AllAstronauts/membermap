@@ -372,6 +372,38 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	}
 
 	/**
+	 * Can delete?
+	 *
+	 * @param	\IPS\Member|NULL	$member	The member to check for (NULL for currently logged in member)
+	 * @return	bool
+	 */
+	public function canDelete( $member=NULL )
+	{
+		$member = $member ?: \IPS\Member::loggedIn();
+		
+		/* Can we delete our own content? */
+		if ( $member->member_id == $this->author()->member_id AND $member->group['g_membermap_delete_own'] )
+		{
+			return TRUE;
+		}
+		
+		/* What about this? */
+		try
+		{
+			return static::modPermission( 'delete', $member, $this->container() );
+		}
+		catch ( \BadMethodCallException $e )
+		{
+			return $member->modPermission( "can_delete_content" );
+		}
+
+		/* Member Map does not honor the "can delete own content" group setting anymore.
+		 * That's why we don't return parent::canDelete() */
+		
+		return FALSE;
+	}
+
+	/**
 	 * Can edit?
 	 * Authors can always edit their own markers
 	 *
