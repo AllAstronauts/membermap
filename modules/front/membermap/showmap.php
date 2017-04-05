@@ -101,7 +101,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 
         /* Things we need to know in the Javascript */
         \IPS\Output::i()->jsVars = array_merge( \IPS\Output::i()->jsVars, array(
-        	'is_supmod'						=> \IPS\Member::loggedIn()->modPermission() ?: 0,
+        	'canModerateMap'				=> \IPS\Member::loggedIn()->modPermission( 'can_delete_membermap_marker' ) ?: 0,
 			'member_id'						=> \IPS\Member::loggedIn()->member_id ?: 0,
 			'member_group'					=> \IPS\Member::loggedIn()->member_group_id ?: 0,
 			'membermap_canAdd'				=> $canAdd ?: 0,
@@ -276,15 +276,10 @@ EOF;
 		/* Get the marker */
 		$existing = \IPS\membermap\Map::i()->getMarkerByMember( intval( \IPS\Request::i()->member_id ), FALSE );
 
-		if ( isset( $existing ) )
+		if ( isset( $existing ) AND $existing->canDelete() )
 		{
-			$is_supmod		= \IPS\Member::loggedIn()->modPermission() ?: 0;
-
-			if ( $is_supmod OR ( $existing->mapped( 'author' ) == \IPS\Member::loggedIn()->member_id AND $existing->canDelete() ) )
-			{
-				$existing->delete();
-				\IPS\Output::i()->json( 'OK' );
-			}
+			$existing->delete();
+			\IPS\Output::i()->json( 'OK' );
 		}
 
 		/* Fall back to a generic error */

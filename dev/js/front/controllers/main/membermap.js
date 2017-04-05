@@ -834,7 +834,7 @@
 					var contextMenu = [];
 					var enableContextMenu = false;
 
-					if ( this.type == 'member' && ( ips.getSetting( 'is_supmod' ) ||  ( ips.getSetting( 'member_id' ) == this.member_id && ips.getSetting( 'membermap_canDelete' ) ) ) )
+					if ( this.type == 'member' && ( ips.getSetting( 'canModerateMap' ) ||  ( ips.getSetting( 'memberID' ) == this.member_id && ips.getSetting( 'membermap_canDelete' ) ) ) )
 					{
 						enableContextMenu = true;
 						contextMenu = getMarkerContextMenu( this );
@@ -1004,7 +1004,7 @@
 
 		getMarkerContextMenu = function( marker, markerData )
 		{
-			if ( ips.getSetting( 'is_supmod' ) ||  ( ips.getSetting( 'member_id' ) == marker.member_id && ips.getSetting( 'membermap_canDelete' ) ) ) 
+			if ( ips.getSetting( 'canModerateMap' ) ||  ( ips.getSetting( 'memberID' ) == marker.member_id && ips.getSetting( 'membermap_canDelete' ) ) ) 
 			{
 				return [{
 					'text': 'Delete',
