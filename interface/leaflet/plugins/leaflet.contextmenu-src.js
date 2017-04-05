@@ -1,27 +1,27 @@
 /*
-	Leaflet.contextmenu, a context menu for Leaflet.
-	(c) 2015, Adam Ratcliffe, GeoSmart Maps Limited
+    Leaflet.contextmenu, a context menu for Leaflet.
+    (c) 2015, Adam Ratcliffe, GeoSmart Maps Limited
 
-	@preserve
+    @preserve
 */
 
 (function(factory) {
-	// Packaging/modules magic dance
-	var L;
-	if (typeof define === 'function' && define.amd) {
-		// AMD
-		define(['leaflet'], factory);
-	} else if (typeof module === 'object' && typeof module.exports === 'object') {
-		// Node/CommonJS
-		L = require('leaflet');
-		module.exports = factory(L);
-	} else {
-		// Browser globals
-		if (typeof window.L === 'undefined') {
-			throw new Error('Leaflet must be loaded first');
-		}
-		factory(window.L);
-	}
+    // Packaging/modules magic dance
+    var L;
+    if (typeof define === 'function' && define.amd) {
+        // AMD
+        define(['leaflet'], factory);
+    } else if (typeof module === 'object' && typeof module.exports === 'object') {
+        // Node/CommonJS
+        L = require('leaflet');
+        module.exports = factory(L);
+    } else {
+        // Browser globals
+        if (typeof window.L === 'undefined') {
+            throw new Error('Leaflet must be loaded first');
+        }
+        factory(window.L);
+    }
 })(function(L) {
 L.Map.mergeOptions({
     contextmenuItems: []
@@ -144,16 +144,22 @@ L.Map.ContextMenu = L.Handler.extend({
                 contextmenu: this,
                 el: item
             });
+
+            return item;
         }
+
+        return null;
     },
 
     removeAllItems: function () {
-        var item;
+        var items = this._container.children,
+            item;
 
-        while (this._container.children.length) {
-            item = this._container.children[0];
+        while (items.length) {
+            item = items[0];
             this._removeItem(L.Util.stamp(item));
         }
+        return items;
     },
 
     hideAllItems: function () {
@@ -322,7 +328,7 @@ L.Map.ContextMenu = L.Handler.extend({
                 func.call(context || map, me._showLocation);
             }
 
-            me._map.fire('contextmenu:select', {
+            me._map.fire('contextmenu.select', {
                 contextmenu: me,
                 el: el
             });

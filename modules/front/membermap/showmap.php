@@ -221,10 +221,7 @@ EOF;
 					$marker->member_id = \IPS\Member::loggedIn()->member_id;
 				}
 
-				if ( isset( $values['membermap_location'] ) AND ! empty( $values['membermap_location'] ) )
-				{
-					$marker->location = $values['membermap_location'];
-				}
+				$marker->location = ( isset( $values['membermap_location'] ) AND ! empty( $values['membermap_location'] ) ) ? $values['membermap_location'] : "";
 				
 				$marker->name = \IPS\Member::loggedIn()->name;
 				$marker->lat = $values['lat'];
@@ -234,7 +231,7 @@ EOF;
 				/* Add to search index */
 				\IPS\Content\Search\Index::i()->index( $marker );
 
-				/* Content approval is requred, redirect the member to the marker page, where this is made clear */
+				/* Content approval is required, redirect the member to the marker page, where this is made clear */
 				if ( $marker->hidden() )
 				{
 					\IPS\Output::i()->redirect( $marker->url() );

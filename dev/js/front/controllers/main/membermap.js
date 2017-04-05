@@ -331,16 +331,11 @@
 		
 		loadMarkers = function( forceReload )
 		{
-			var localStoragePrefix = "";
-			if( !_.isUndefined( ips.getSetting('cookie_prefix') ) && ips.getSetting('cookie_prefix') != '' ){
-				localStoragePrefix = ips.getSetting('cookie_prefix') + '.';
-			}
-
 			function loadNextFile( id )
 			{
 				ips.getAjax()({
-					url: '?app=membermap&module=membermap&controller=showmap&do=getCache&id=' + id,
-					cache : false,
+					url: ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=showmap&do=getCache&id=' + id,
+					cache: false,
 					async: true,
 					dataType: 'json',
 					success:function( res )
@@ -375,7 +370,7 @@
 				if ( dbEnabled )
 				{
 					var date = new Date();
-					ips.utils.db.set( 'membermap', localStoragePrefix + 'markers', { time: ( date.getTime() / 1000 ), data: allMarkers } );
+					ips.utils.db.set( 'membermap', localStoragePrefix + 'markers', { time: parseInt( date.getTime() / 1000, 10 ), data: allMarkers } );
 					ips.utils.db.set( 'membermap', localStoragePrefix + 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
 
 
@@ -399,6 +394,12 @@
 				return;
 			}
 
+			var localStoragePrefix = "";
+			if( !_.isUndefined( ips.getSetting('cookie_prefix') ) && ips.getSetting('cookie_prefix') != '' )
+			{
+				localStoragePrefix = ips.getSetting('cookie_prefix') + '.';
+			}
+
 			var dbEnabled = ips.utils.db.isEnabled();
 
 			if ( ! dbEnabled )
@@ -411,9 +412,7 @@
 			{
 				allMarkers = [];
 
-				var startId = 0;
-
-				loadNextFile( startId );
+				loadNextFile( 0 );
 			}
 			else
 			{
@@ -496,7 +495,7 @@
 
 			/* Contextual menu */
 			/* Needs to run this after the markers, as we need to know if we're editing or adding the location */
-			if ( ips.getSetting( 'member_id' ) )
+			if ( ips.getSetting( 'memberID' ) )
 			{
 				if ( hasLocation && ips.getSetting( 'membermap_canEdit' ) )
 				{
@@ -768,7 +767,7 @@
 
 					if ( this.type == 'member' )
 					{
-						if ( this.member_id == ips.getSetting( 'member_id' ) )
+						if ( this.member_id == ips.getSetting( 'memberID' ) )
 						{
 							/* This is me! */
 							icon = 'home';
@@ -1048,14 +1047,17 @@
 		
 		paneZindex = 450,
 
-		addCustomOverlay = function( id, name )
+		addCustomOverlay = function( id, name, defaultOn )
 		{				
 			if ( typeof overlayMaps[ 'custom-' + id ] === "undefined" )
 			{
 				overlayMaps[ 'custom-' + id ] = L.featureGroup();
 				overlayControl.addOverlay( overlayMaps[ 'custom-' + id ], name );
 
-				overlayMaps[ 'custom-' + id ].addTo( map );
+				if ( defaultOn ) 
+				{
+					overlayMaps[ 'custom-' + id ].addTo( map );
+				}
 
 				/* Create a pane for each */
 				map.createPane( id + 'Pane' );
