@@ -364,7 +364,7 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 			\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$this->id}", $values['group_name'] );
 			\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$this->id}_JS", $values['group_name'], 1 );
 			
-			$this->name_seo = \IPS\Http\Url::seoTitle( $values['group_name'][ \IPS\Lang::defaultLanguage() ] );
+			$this->name_seo = \IPS\Http\Url\Friendly::seoTitle( $values['group_name'][ \IPS\Lang::defaultLanguage() ] );
 			
 			unset( $values['group_name'] );
 		}

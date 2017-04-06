@@ -105,26 +105,30 @@ class _RebuildCache
 			}
 		}
 		
-		/* Get from extensions */
-		$extensions = \IPS\Application::allExtensions( 'membermap', 'Mapmarkers', FALSE );
-
-		foreach ( $extensions as $k => $class )
+		/* Only get from extensions on the first run, if not these will be included in every single cache file */
+		if ( $offset == 0 )
 		{
-			$appMarkers = $class->getLocations();
-			
-			if ( is_array( $appMarkers ) AND count( $appMarkers ) )
-			{
-				/* Set 'appName' if it isn't already */
-				array_walk( $appMarkers, function( &$v, $key ) use ( $k )
-				{
-					if ( ! $v['appName'] )
-					{
-						$appName = substr( $k, strpos( $k, '_' ) + 1 );
-						$v['appName'] = $appName;
-					}
-				} );
+			/* Get from extensions */
+			$extensions = \IPS\Application::allExtensions( 'membermap', 'Mapmarkers', FALSE );
 
-				$customMarkers = array_merge( $customMarkers, $class->getLocations() );
+			foreach ( $extensions as $k => $class )
+			{
+				$appMarkers = $class->getLocations();
+				
+				if ( is_array( $appMarkers ) AND count( $appMarkers ) )
+				{
+					/* Set 'appName' if it isn't already */
+					array_walk( $appMarkers, function( &$v, $key ) use ( $k )
+					{
+						if ( ! $v['appName'] )
+						{
+							$appName = substr( $k, strpos( $k, '_' ) + 1 );
+							$v['appName'] = $appName;
+						}
+					} );
+
+					$customMarkers = array_merge( $customMarkers, $class->getLocations() );
+				}
 			}
 		}
 
@@ -143,7 +147,6 @@ class _RebuildCache
 				json_encode( 
 					array(
 						'markers' 	=> $markers,
-						'memUsage' 	=> ( ( memory_get_usage( TRUE ) - $currentMemUsage ) / 1024 ) . 'kB',
 						'fromQueue'	=> 1
 					) 
 				)

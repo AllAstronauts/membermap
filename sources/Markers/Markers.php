@@ -92,34 +92,6 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	public static $hideLogKey = 'membermap-marker';
 
 	/**
-	 * @brief	[Node] ACP Restrictions
-	 * @code
-	 	array(
-	 		'app'		=> 'core',				// The application key which holds the restrictrions
-	 		'module'	=> 'foo',				// The module key which holds the restrictions
-	 		'map'		=> array(				// [Optional] The key for each restriction - can alternatively use "prefix"
-	 			'add'			=> 'foo_add',
-	 			'edit'			=> 'foo_edit',
-	 			'permissions'	=> 'foo_perms',
-	 			'delete'		=> 'foo_delete'
-	 		),
-	 		'all'		=> 'foo_manage',		// [Optional] The key to use for any restriction not provided in the map (only needed if not providing all 4)
-	 		'prefix'	=> 'foo_',				// [Optional] Rather than specifying each  key in the map, you can specify a prefix, and it will automatically look for restrictions with the key "[prefix]_add/edit/permissions/delete"
-	 * @endcode
-	 */
-	protected static $restrictions = array(
-		'app'		=> 'membermap',
-		'module'	=> 'membermap',
-		'prefix' 	=> 'markers',
-		'all'		=> 'markers_manage',
-		'map'		=> array(				
-	 			'add'			=> 'markers_add',
-	 			'edit'			=> 'markers_edit',
-	 			'delete'		=> 'markers_delete'
-	 		),
-	);
-
-	/**
 	 * @brief	Cached URLs
 	 */
 	protected $_url	= array();
@@ -181,7 +153,7 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	public function set_name( $name )
 	{
 		$this->_data['name'] 		= $name;
-		$this->_data['name_seo'] 	= \IPS\Http\Url::seoTitle( $name ); // TODO: Need to change this to \IPS\Http\Url\Friendly::seoTitle( ... ) in the near future
+		$this->_data['name_seo'] 	= \IPS\Http\Url\Friendly::seoTitle( $name );
 	}
 
 	/**
@@ -193,11 +165,11 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	{
 		if( !$this->_data['name_seo'] )
 		{
-			$this->name_seo	= \IPS\Http\Url::seoTitle( $this->name ); // TODO: Need to change this to \IPS\Http\Url\Friendly::seoTitle( ... ) in the near future
+			$this->name_seo	= \IPS\Http\Url\Friendly::seoTitle( $this->name );
 			$this->save();
 		}
 
-		return $this->_data['name_seo'] ?: \IPS\Http\Url::seoTitle( $this->name ); // TODO: Need to change this to \IPS\Http\Url\Friendly::seoTitle( ... ) in the near future
+		return $this->_data['name_seo'] ?: \IPS\Http\Url\Friendly::seoTitle( $this->name );
 	}
 
 	/**
@@ -369,6 +341,38 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 		}
 
 		parent::processForm( $values );
+	}
+
+	/**
+	 * Can delete?
+	 *
+	 * @param	\IPS\Member|NULL	$member	The member to check for (NULL for currently logged in member)
+	 * @return	bool
+	 */
+	public function canDelete( $member=NULL )
+	{
+		$member = $member ?: \IPS\Member::loggedIn();
+		
+		/* Can we delete our own content? */
+		if ( $member->member_id == $this->author()->member_id AND $member->group['g_membermap_delete_own'] )
+		{
+			return TRUE;
+		}
+		
+		/* What about this? */
+		try
+		{
+			return static::modPermission( 'delete', $member, $this->container() );
+		}
+		catch ( \BadMethodCallException $e )
+		{
+			return $member->modPermission( "can_delete_content" );
+		}
+
+		/* Member Map does not honor the "can delete own content" group setting anymore.
+		 * That's why we don't return parent::canDelete() */
+		
+		return FALSE;
 	}
 
 	/**

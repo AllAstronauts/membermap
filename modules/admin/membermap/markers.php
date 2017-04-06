@@ -187,7 +187,7 @@ class _markers extends \IPS\Node\Controller
 
 						$group 						= new \IPS\membermap\Markers\Groups;
 						$group->name 				= $folder['name'];
-						$group->name_seo 			= \IPS\Http\Url::seoTitle( $group->name );
+						$group->name_seo 			= \IPS\Http\Url\Friendly::seoTitle( $group->name );
 						$group->type 				= 'custom';
 						$group->pin_colour 			= '#FFFFFF';
 						$group->pin_bg_colour 		= 'red';
@@ -296,7 +296,7 @@ class _markers extends \IPS\Node\Controller
 
 			$markers[ \substr( md5( $prevFolderName ), 0, 10 ) ]['markers'][] = array(
 				'marker_name'			=> (string) $placemark->name,
-				'marker_name_seo'		=> \IPS\Http\Url::seoTitle( (string) $placemark->name ),
+				'marker_name_seo'		=> \IPS\Http\Url\Friendly::seoTitle( (string) $placemark->name ),
 				'marker_description'	=> (string) $placemark->description,
 				'marker_lat'			=> $lat,
 				'marker_lon'			=> $lon,

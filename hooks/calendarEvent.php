@@ -25,7 +25,7 @@ class membermap_hook_calendarEvent extends _HOOK_CLASS_
 		/* Rebuild the cache if any event with a location is changed */
 		if ( $this->location !== NULL )
 		{
-			\IPS\membermap\Map::invalidateJsonCache();
+			\IPS\membermap\Map::i()->invalidateJsonCache();
 
 			$location = json_decode( $this->location, TRUE );
 			$_locationArr = array();

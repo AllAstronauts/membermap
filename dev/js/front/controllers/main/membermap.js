@@ -311,8 +311,6 @@
 
 			map.addLayer( mastergroup );
 			
-
-
 			overlayControl = L.control.layers( baseMaps, overlayMaps, { collapsed: ( isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
 
 			map.on( 'baselayerchange', function( baselayer )
@@ -331,16 +329,11 @@
 		
 		loadMarkers = function( forceReload )
 		{
-			var localStoragePrefix = "";
-			if( !_.isUndefined( ips.getSetting('cookie_prefix') ) && ips.getSetting('cookie_prefix') != '' ){
-				localStoragePrefix = ips.getSetting('cookie_prefix') + '.';
-			}
-
 			function loadNextFile( id )
 			{
 				ips.getAjax()({
-					url: '?app=membermap&module=membermap&controller=showmap&do=getCache&id=' + id,
-					cache : false,
+					url: ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=showmap&do=getCache&id=' + id,
+					cache: false,
 					async: true,
 					dataType: 'json',
 					success:function( res )
@@ -375,7 +368,7 @@
 				if ( dbEnabled )
 				{
 					var date = new Date();
-					ips.utils.db.set( 'membermap', localStoragePrefix + 'markers', { time: ( date.getTime() / 1000 ), data: allMarkers } );
+					ips.utils.db.set( 'membermap', localStoragePrefix + 'markers', { time: parseInt( date.getTime() / 1000, 10 ), data: allMarkers } );
 					ips.utils.db.set( 'membermap', localStoragePrefix + 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
 
 
@@ -399,6 +392,12 @@
 				return;
 			}
 
+			var localStoragePrefix = "";
+			if( !_.isUndefined( ips.getSetting('cookie_prefix') ) && ips.getSetting('cookie_prefix') != '' )
+			{
+				localStoragePrefix = ips.getSetting('cookie_prefix') + '.';
+			}
+
 			var dbEnabled = ips.utils.db.isEnabled();
 
 			if ( ! dbEnabled )
@@ -411,9 +410,7 @@
 			{
 				allMarkers = [];
 
-				var startId = 0;
-
-				loadNextFile( startId );
+				loadNextFile( 0 );
 			}
 			else
 			{
@@ -445,7 +442,15 @@
 					/* Inform that we're showing markers from browser cache */
 					if ( oldMarkersIndicator === null && ! isEmbedded )
 					{
-						oldMarkersIndicator = new L.Control.MembermapOldMarkers({ callback: function() { window.location.href = ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=showmap&dropBrowserCache=1'; }, time: date });
+						oldMarkersIndicator = new L.Control.MembermapOldMarkers(
+						{ 
+							callback: function() 
+							{ 
+								window.location.href = ips.getSetting( 'baseURL' ) + 'index.php?app=membermap&module=membermap&controller=showmap&dropBrowserCache=1'; 
+							}, 
+							time: date 
+						});
+
 						ips.membermap.map.addControl( oldMarkersIndicator );
 					}
 
@@ -496,7 +501,7 @@
 
 			/* Contextual menu */
 			/* Needs to run this after the markers, as we need to know if we're editing or adding the location */
-			if ( ips.getSetting( 'member_id' ) )
+			if ( ips.getSetting( 'memberID' ) )
 			{
 				if ( hasLocation && ips.getSetting( 'membermap_canEdit' ) )
 				{
@@ -572,7 +577,6 @@
 							{
 								geolocationSupported = false;
 							}
-
 						}
 
 						if( ! navigator.geolocation || ! geolocationSupported )
@@ -600,27 +604,6 @@
 									},
 									success: function( data ) 
 									{
-										// MapQuest
-										/* If adminArea5 is empty, it's likely we don't have a result */
-										/*if ( data.results[0].locations[0].adminArea5 )
-										{
-											response( $.map( data.results[0].locations, function( item )
-											{
-												return {
-													value: item.adminArea5 + 
-														( item.adminArea4 ? ', ' + item.adminArea4 : '' ) + 
-														( item.adminArea3 ? ', ' + item.adminArea3 : '' ) + 
-														( item.adminArea2 ? ', ' + item.adminArea2 : '' ) +
-														( item.adminArea1 ? ', ' + item.adminArea1 : '' ),
-													latLng: item.latLng
-												};
-											}));
-										}
-										else
-										{
-											response([]);
-										}*/
-
 										// MapQuest Nominatim
 										response( $.map( data, function( item )
 										{
@@ -747,7 +730,7 @@
 			{
 				$.each( markers, function() 
 				{		
-					/* Don't show these, as they all end up in the middle of the middle of the South Atlantic Ocean. */
+					/* Don't show these, as they all end up in the middle of the South Atlantic Ocean. */
 					if ( this.lat === 0 && this.lon === 0 )
 					{
 						return;
@@ -768,7 +751,7 @@
 
 					if ( this.type == 'member' )
 					{
-						if ( this.member_id == ips.getSetting( 'member_id' ) )
+						if ( this.member_id == ips.getSetting( 'memberID' ) )
 						{
 							/* This is me! */
 							icon = 'home';
@@ -834,7 +817,7 @@
 					var contextMenu = [];
 					var enableContextMenu = false;
 
-					if ( this.type == 'member' && ( ips.getSetting( 'is_supmod' ) ||  ( ips.getSetting( 'member_id' ) == this.member_id && ips.getSetting( 'membermap_canDelete' ) ) ) )
+					if ( this.type == 'member' && ( ips.getSetting( 'canModerateMap' ) ||  ( ips.getSetting( 'memberID' ) == this.member_id && ips.getSetting( 'membermap_canDelete' ) ) ) )
 					{
 						enableContextMenu = true;
 						contextMenu = getMarkerContextMenu( this );
@@ -1004,7 +987,7 @@
 
 		getMarkerContextMenu = function( marker, markerData )
 		{
-			if ( ips.getSetting( 'is_supmod' ) ||  ( ips.getSetting( 'member_id' ) == marker.member_id && ips.getSetting( 'membermap_canDelete' ) ) ) 
+			if ( ips.getSetting( 'canModerateMap' ) ||  ( ips.getSetting( 'memberID' ) == marker.member_id && ips.getSetting( 'membermap_canDelete' ) ) ) 
 			{
 				return [{
 					'text': 'Delete',
@@ -1048,14 +1031,17 @@
 		
 		paneZindex = 450,
 
-		addCustomOverlay = function( id, name )
+		addCustomOverlay = function( id, name, defaultOn )
 		{				
 			if ( typeof overlayMaps[ 'custom-' + id ] === "undefined" )
 			{
 				overlayMaps[ 'custom-' + id ] = L.featureGroup();
 				overlayControl.addOverlay( overlayMaps[ 'custom-' + id ], name );
 
-				overlayMaps[ 'custom-' + id ].addTo( map );
+				if ( defaultOn ) 
+				{
+					overlayMaps[ 'custom-' + id ].addTo( map );
+				}
 
 				/* Create a pane for each */
 				map.createPane( id + 'Pane' );

@@ -57,6 +57,11 @@ class _membermap
 			\IPS\Db::i()->dropColumn( 'core_groups', 'g_membermap_canDelete' );
 		}
 
+		if( \IPS\Db::i()->checkForColumn( 'core_groups', 'g_membermap_delete_own' ) )
+		{
+			\IPS\Db::i()->dropColumn( 'core_groups', 'g_membermap_delete_own' );
+		}
+
 		if( \IPS\Db::i()->checkForColumn( 'core_members', 'membermap_location_synced' ) )
 		{
 			\IPS\Db::i()->dropColumn( 'core_members', 'membermap_location_synced' );

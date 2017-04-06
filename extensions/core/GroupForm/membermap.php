@@ -36,7 +36,10 @@ class _membermap
 	 * @return	void
 	 */
 	public function process( &$form, $group )
-	{		
+	{
+		$form->add( new \IPS\Helpers\Form\YesNo( 'g_membermap_delete_own', $group->g_membermap_delete_own, FALSE ) );
+		
+
 		$bgColour 	= $group->g_membermap_markerColour ? $group->g_membermap_markerColour : 'darkblue';
 
 		/* Selected a valid colour? */
@@ -69,5 +72,6 @@ class _membermap
 		$bgColour = in_array( $bgColour, $this->colours ) ? $bgColour : 'darkblue';
 
 		$group->g_membermap_markerColour = $bgColour;
+		$group->g_membermap_delete_own 	 = $values['g_membermap_delete_own'];
 	}
 }

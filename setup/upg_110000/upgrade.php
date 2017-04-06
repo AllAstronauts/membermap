@@ -104,7 +104,7 @@ class _Upgrade
 			\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$group->id}", trim( $group->name ) );
 			\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$group->id}_JS", trim( $group->name ), 1 );
 
-			$group->name_seo 	= \IPS\Http\Url::seoTitle( trim( $group->name ) );
+			$group->name_seo 	= \IPS\Http\Url\Friendly::seoTitle( trim( $group->name ) );
 
 			if ( $group->type == 'custom' )
 			{
@@ -160,7 +160,7 @@ class _Upgrade
 	{
 		foreach( \IPS\Db::i()->select( '*', 'membermap_markers', 'marker_name_seo = "" OR marker_name_seo IS NULL' ) as $marker )
 		{
-			$seoName = \IPS\Http\Url::seoTitle( trim( $marker['marker_name'] ) );
+			$seoName = \IPS\Http\Url\Friendly::seoTitle( trim( $marker['marker_name'] ) );
 			\IPS\Db::i()->update( 'membermap_markers', array( 'marker_name_seo' => $seoName ), 'marker_id=' . $marker['marker_id'] );
 		}
 

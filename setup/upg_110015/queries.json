@@ -1,0 +1,17 @@
+{
+    "1": {
+        "method": "addColumn",
+        "params": [
+            "core_groups",
+            {
+                "name": "g_membermap_delete_own",
+                "type": "TINYINT",
+                "length": 1,
+                "null": false,
+                "default": 0,
+                "comment": "Can delete own markers?",
+                "unsigned": true
+            }
+        ]
+    }
+}

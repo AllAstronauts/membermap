@@ -90,8 +90,12 @@ class _showmap extends \IPS\Dispatcher\Controller
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'membermap.css', 'membermap' ) );
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.css', 'membermap', 'global' ) );
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'jquery-ui.css', 'membermap', 'global' ) );
-		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'plugins.combined.css', 'membermap' ) );
-
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.control.fullscreen.css', 'membermap' ) );
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.control.loading.css', 'membermap' ) );
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.awesome-markers.css', 'membermap' ) );
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.contextmenu.css', 'membermap' ) );
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.markercluster.css', 'membermap' ) );
+		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'jq.showloading.css', 'membermap' ) );
 
 		\IPS\Output::i()->title = \IPS\Member::loggedIn()->language()->addToStack( '__app_membermap' );
 		\IPS\Output::i()->sidebar['enabled'] = FALSE;
@@ -101,7 +105,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 
         /* Things we need to know in the Javascript */
         \IPS\Output::i()->jsVars = array_merge( \IPS\Output::i()->jsVars, array(
-        	'is_supmod'						=> \IPS\Member::loggedIn()->modPermission() ?: 0,
+        	'canModerateMap'				=> \IPS\Member::loggedIn()->modPermission( 'can_delete_membermap_marker' ) ?: 0,
 			'member_id'						=> \IPS\Member::loggedIn()->member_id ?: 0,
 			'member_group'					=> \IPS\Member::loggedIn()->member_group_id ?: 0,
 			'membermap_canAdd'				=> $canAdd ?: 0,
@@ -221,10 +225,7 @@ EOF;
 					$marker->member_id = \IPS\Member::loggedIn()->member_id;
 				}
 
-				if ( isset( $values['membermap_location'] ) AND ! empty( $values['membermap_location'] ) )
-				{
-					$marker->location = $values['membermap_location'];
-				}
+				$marker->location = ( isset( $values['membermap_location'] ) AND ! empty( $values['membermap_location'] ) ) ? $values['membermap_location'] : "";
 				
 				$marker->name = \IPS\Member::loggedIn()->name;
 				$marker->lat = $values['lat'];
@@ -234,7 +235,7 @@ EOF;
 				/* Add to search index */
 				\IPS\Content\Search\Index::i()->index( $marker );
 
-				/* Content approval is requred, redirect the member to the marker page, where this is made clear */
+				/* Content approval is required, redirect the member to the marker page, where this is made clear */
 				if ( $marker->hidden() )
 				{
 					\IPS\Output::i()->redirect( $marker->url() );
@@ -276,15 +277,10 @@ EOF;
 		/* Get the marker */
 		$existing = \IPS\membermap\Map::i()->getMarkerByMember( intval( \IPS\Request::i()->member_id ), FALSE );
 
-		if ( isset( $existing ) )
+		if ( isset( $existing ) AND $existing->canDelete() )
 		{
-			$is_supmod		= \IPS\Member::loggedIn()->modPermission() ?: 0;
-
-			if ( $is_supmod OR ( $existing->mapped( 'author' ) == \IPS\Member::loggedIn()->member_id AND $existing->canDelete() ) )
-			{
-				$existing->delete();
-				\IPS\Output::i()->json( 'OK' );
-			}
+			$existing->delete();
+			\IPS\Output::i()->json( 'OK' );
 		}
 
 		/* Fall back to a generic error */
