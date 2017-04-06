@@ -311,8 +311,6 @@
 
 			map.addLayer( mastergroup );
 			
-
-
 			overlayControl = L.control.layers( baseMaps, overlayMaps, { collapsed: ( isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
 
 			map.on( 'baselayerchange', function( baselayer )
@@ -444,7 +442,15 @@
 					/* Inform that we're showing markers from browser cache */
 					if ( oldMarkersIndicator === null && ! isEmbedded )
 					{
-						oldMarkersIndicator = new L.Control.MembermapOldMarkers({ callback: function() { window.location.href = ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=showmap&dropBrowserCache=1'; }, time: date });
+						oldMarkersIndicator = new L.Control.MembermapOldMarkers(
+						{ 
+							callback: function() 
+							{ 
+								window.location.href = ips.getSetting( 'baseURL' ) + 'index.php?app=membermap&module=membermap&controller=showmap&dropBrowserCache=1'; 
+							}, 
+							time: date 
+						});
+
 						ips.membermap.map.addControl( oldMarkersIndicator );
 					}
 
@@ -571,7 +577,6 @@
 							{
 								geolocationSupported = false;
 							}
-
 						}
 
 						if( ! navigator.geolocation || ! geolocationSupported )
@@ -599,27 +604,6 @@
 									},
 									success: function( data ) 
 									{
-										// MapQuest
-										/* If adminArea5 is empty, it's likely we don't have a result */
-										/*if ( data.results[0].locations[0].adminArea5 )
-										{
-											response( $.map( data.results[0].locations, function( item )
-											{
-												return {
-													value: item.adminArea5 + 
-														( item.adminArea4 ? ', ' + item.adminArea4 : '' ) + 
-														( item.adminArea3 ? ', ' + item.adminArea3 : '' ) + 
-														( item.adminArea2 ? ', ' + item.adminArea2 : '' ) +
-														( item.adminArea1 ? ', ' + item.adminArea1 : '' ),
-													latLng: item.latLng
-												};
-											}));
-										}
-										else
-										{
-											response([]);
-										}*/
-
 										// MapQuest Nominatim
 										response( $.map( data, function( item )
 										{
@@ -746,7 +730,7 @@
 			{
 				$.each( markers, function() 
 				{		
-					/* Don't show these, as they all end up in the middle of the middle of the South Atlantic Ocean. */
+					/* Don't show these, as they all end up in the middle of the South Atlantic Ocean. */
 					if ( this.lat === 0 && this.lon === 0 )
 					{
 						return;

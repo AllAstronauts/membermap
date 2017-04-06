@@ -368,16 +368,11 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 		
 		loadMarkers = function( forceReload )
 		{
-			var localStoragePrefix = "";
-			if( !_.isUndefined( ips.getSetting('cookie_prefix') ) && ips.getSetting('cookie_prefix') != '' ){
-				localStoragePrefix = ips.getSetting('cookie_prefix') + '.';
-			}
-
 			function loadNextFile( id )
 			{
 				ips.getAjax()({
-					url: '?app=membermap&module=membermap&controller=showmap&do=getCache&id=' + id,
-					cache : false,
+					url: ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=showmap&do=getCache&id=' + id,
+					cache: false,
 					async: true,
 					dataType: 'json',
 					success:function( res )
@@ -412,7 +407,7 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 				if ( dbEnabled )
 				{
 					var date = new Date();
-					ips.utils.db.set( 'membermap', localStoragePrefix + 'markers', { time: ( date.getTime() / 1000 ), data: allMarkers } );
+					ips.utils.db.set( 'membermap', localStoragePrefix + 'markers', { time: parseInt( date.getTime() / 1000, 10 ), data: allMarkers } );
 					ips.utils.db.set( 'membermap', localStoragePrefix + 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
 
 
@@ -436,6 +431,12 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 				return;
 			}
 
+			var localStoragePrefix = "";
+			if( !_.isUndefined( ips.getSetting('cookie_prefix') ) && ips.getSetting('cookie_prefix') != '' )
+			{
+				localStoragePrefix = ips.getSetting('cookie_prefix') + '.';
+			}
+
 			var dbEnabled = ips.utils.db.isEnabled();
 
 			if ( ! dbEnabled )
@@ -448,9 +449,7 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 			{
 				allMarkers = [];
 
-				var startId = 0;
-
-				loadNextFile( startId );
+				loadNextFile( 0 );
 			}
 			else
 			{
@@ -1085,14 +1084,17 @@ jQuery(document.body).find('#loading-indicator-'+indicatorID).remove();jQuery(do
 		
 		paneZindex = 450,
 
-		addCustomOverlay = function( id, name )
+		addCustomOverlay = function( id, name, defaultOn )
 		{				
 			if ( typeof overlayMaps[ 'custom-' + id ] === "undefined" )
 			{
 				overlayMaps[ 'custom-' + id ] = L.featureGroup();
 				overlayControl.addOverlay( overlayMaps[ 'custom-' + id ], name );
 
-				overlayMaps[ 'custom-' + id ].addTo( map );
+				if ( defaultOn ) 
+				{
+					overlayMaps[ 'custom-' + id ].addTo( map );
+				}
 
 				/* Create a pane for each */
 				map.createPane( id + 'Pane' );
