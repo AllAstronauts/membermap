@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="110014">
+ <app key="membermap" version="110015">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
   <word key="__indefart_membermap_marker" js="0">a Member Map Marker</word>
@@ -84,11 +84,9 @@
   <word key="membermap_calendar_colour" js="0">Marker Icon Colour</word>
   <word key="membermap_calendar_bgcolour" js="0">Marker Pin Colour</word>
   <word key="membermap_calendar_marker_example" js="0">Marker Preview</word>
-  <word key="g_membermap_canAdd" js="0">Can add location to map</word>
-  <word key="g_membermap_canEdit" js="0">Can edit their location</word>
-  <word key="g_membermap_canDelete" js="0">Can delete their location</word>
   <word key="g_membermap_markerColour" js="0">Marker Colour</word>
   <word key="g_membermap_markerColour_desc" js="0">The members own marker will always be green</word>
+  <word key="g_membermap_delete_own" js="0">Can delete own markers?</word>
   <word key="group_marker_example" js="0">Marker Preview</word>
   <word key="group_name" js="0">Marker Group Name</word>
   <word key="group_pin_icon" js="0">Marker Icon</word>
