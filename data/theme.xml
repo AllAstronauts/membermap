@@ -574,31 +574,19 @@
 </form>]]></template>
  <template template_group="submit" template_name="submitPage" template_data="$output" template_location="front" template_app="membermap"><![CDATA[{template="pageHeader" group="global" app="core" params="\IPS\Output::i()->title"}
 {$output|raw}]]></template>
- <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="Control.FullScreen.css">.leaflet-control-zoom-fullscreen { background-image: url( {resource=&quot;icon-fullscreen.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;} ); }
-.leaflet-container:-webkit-full-screen { width: 100% !important; height: 100% !important; z-index: 99999; }
-.leaflet-pseudo-fullscreen { position: fixed !important; width: 100% !important; height: 100% !important; top: 0px !important; left: 0px !important; z-index: 99999; }</css>
- <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="Control.Loading.css"><![CDATA[.leaflet-control-loading {
-    /* This is where your loading indicator would go */
-    background: url({resource="loading.gif" app="membermap" location="front"});
-}
-
-.leaflet-control-loading,
-.leaflet-control-zoom a.leaflet-control-loading {
-    display: none;
-}
-
-.leaflet-control-loading.is-loading,
-.leaflet-control-zoom a.leaflet-control-loading.is-loading {
-    display: block;
-}
-
-/* Necessary for display consistency in Leaflet >= 0.6 */
-.leaflet-bar-part-bottom {
-    border-bottom: medium none;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-}
-]]></css>
+ <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="jq.showloading.css">.loading-indicator {&#13;
+	height: 80px;&#13;
+	width: 80px;&#13;
+	background: url({resource=&quot;jQloading.gif&quot; app=&quot;membermap&quot; location=&quot;front&quot;});&#13;
+	background-repeat: no-repeat;&#13;
+	background-position: center center;&#13;
+}&#13;
+&#13;
+.loading-indicator-overlay {&#13;
+	background-color: #FFFFFF;&#13;
+	opacity: 0.6;&#13;
+	filter: alpha(opacity = 60);&#13;
+}</css>
  <css css_location="global" css_app="membermap" css_attributes="" css_path="." css_name="jquery-ui.css"><![CDATA[/*! jQuery UI - v1.11.4 - 2015-12-16
 * http://jqueryui.com
 * Includes: core.css, resizable.css, autocomplete.css, menu.css, progressbar.css, slider.css, theme.css
@@ -1424,15 +1412,15 @@ Version: 1.0
 }</css>
  <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="leaflet.contextmenu.css">.leaflet-contextmenu {
     display: none;
-	box-shadow: 0 1px 7px rgba(0,0,0,0.4);
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
+    box-shadow: 0 1px 7px rgba(0,0,0,0.4);
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
     padding: 4px 0;
     background-color: #fff;
     cursor: default;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
 }
 
 .leaflet-contextmenu a.leaflet-contextmenu-item {
@@ -1445,19 +1433,20 @@ Version: 1.0
     border-top: 1px solid transparent;
     border-bottom: 1px solid transparent;
     cursor: default;
+    outline: none;
 }
 
 .leaflet-contextmenu a.leaflet-contextmenu-item-disabled {
     opacity: 0.5;
 }
 
-.leaflet-contextmenu a.leaflet-contextmenu-item:hover {
+.leaflet-contextmenu a.leaflet-contextmenu-item.over {
     background-color: #f4f4f4;
     border-top: 1px solid #f0f0f0;
     border-bottom: 1px solid #f0f0f0;
 }
 
-.leaflet-contextmenu a.leaflet-contextmenu-item-disabled:hover {
+.leaflet-contextmenu a.leaflet-contextmenu-item-disabled.over {
     background-color: inherit;
     border-top: 1px solid transparent;
     border-bottom: 1px solid transparent;
@@ -1475,6 +1464,31 @@ Version: 1.0
     border-bottom: 1px solid #ccc;
     margin: 5px 0;
 }</css>
+ <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="leaflet.control.fullscreen.css">.leaflet-control-zoom-fullscreen { background-image: url( {resource=&quot;icon-fullscreen.png&quot; app=&quot;membermap&quot; location=&quot;front&quot;} ); }
+.leaflet-container:-webkit-full-screen { width: 100% !important; height: 100% !important; z-index: 99999; }
+.leaflet-pseudo-fullscreen { position: fixed !important; width: 100% !important; height: 100% !important; top: 0px !important; left: 0px !important; z-index: 99999; }</css>
+ <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="leaflet.control.loading.css"><![CDATA[.leaflet-control-loading {
+    /* This is where your loading indicator would go */
+    background: url({resource="loading.gif" app="membermap" location="front"});
+}
+
+.leaflet-control-loading,
+.leaflet-control-zoom a.leaflet-control-loading {
+    display: none;
+}
+
+.leaflet-control-loading.is-loading,
+.leaflet-control-zoom a.leaflet-control-loading.is-loading {
+    display: block;
+}
+
+/* Necessary for display consistency in Leaflet >= 0.6 */
+.leaflet-bar-part-bottom {
+    border-bottom: medium none;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+]]></css>
  <css css_location="global" css_app="membermap" css_attributes="" css_path="." css_name="leaflet.css"><![CDATA[/* required styles */
 
 .leaflet-pane,
@@ -2100,15 +2114,7 @@ Version: 1.0
 	border-right-color: #fff;
 	}
 ]]></css>
- <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="MarkerCluster.css">.leaflet-cluster-anim .leaflet-marker-icon, .leaflet-cluster-anim .leaflet-marker-shadow {
-	-webkit-transition: -webkit-transform 0.2s ease-out, opacity 0.2s ease-in;
-	-moz-transition: -moz-transform 0.2s ease-out, opacity 0.2s ease-in;
-	-o-transition: -o-transform 0.2s ease-out, opacity 0.2s ease-in;
-	transition: transform 0.2s ease-out, opacity 0.2s ease-in;
-	}
-
-
-.marker-cluster-small {
+ <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="leaflet.markercluster.css">.marker-cluster-small {
 	background-color: rgba(181, 226, 140, 0.6);
 	}
 .marker-cluster-small div {
@@ -2129,6 +2135,28 @@ Version: 1.0
 	background-color: rgba(241, 128, 23, 0.6);
 	}
 
+	/* IE 6-8 fallback colors */
+.leaflet-oldie .marker-cluster-small {
+	background-color: rgb(181, 226, 140);
+	}
+.leaflet-oldie .marker-cluster-small div {
+	background-color: rgb(110, 204, 57);
+	}
+
+.leaflet-oldie .marker-cluster-medium {
+	background-color: rgb(241, 211, 87);
+	}
+.leaflet-oldie .marker-cluster-medium div {
+	background-color: rgb(240, 194, 12);
+	}
+
+.leaflet-oldie .marker-cluster-large {
+	background-color: rgb(253, 156, 115);
+	}
+.leaflet-oldie .marker-cluster-large div {
+	background-color: rgb(241, 128, 23);
+}
+
 .marker-cluster {
 	background-clip: padding-box;
 	border-radius: 20px;
@@ -2145,7 +2173,23 @@ Version: 1.0
 	}
 .marker-cluster span {
 	line-height: 30px;
-	}</css>
+	}
+
+.leaflet-cluster-anim .leaflet-marker-icon, .leaflet-cluster-anim .leaflet-marker-shadow {
+	-webkit-transition: -webkit-transform 0.3s ease-out, opacity 0.3s ease-in;
+	-moz-transition: -moz-transform 0.3s ease-out, opacity 0.3s ease-in;
+	-o-transition: -o-transform 0.3s ease-out, opacity 0.3s ease-in;
+	transition: transform 0.3s ease-out, opacity 0.3s ease-in;
+}
+
+.leaflet-cluster-spider-leg {
+	/* stroke-dashoffset (duration and function) should match with leaflet-marker-icon transform in order to track it exactly */
+	-webkit-transition: -webkit-stroke-dashoffset 0.3s ease-out, -webkit-stroke-opacity 0.3s ease-in;
+	-moz-transition: -moz-stroke-dashoffset 0.3s ease-out, -moz-stroke-opacity 0.3s ease-in;
+	-o-transition: -o-stroke-dashoffset 0.3s ease-out, -o-stroke-opacity 0.3s ease-in;
+	transition: stroke-dashoffset 0.3s ease-out, stroke-opacity 0.3s ease-in;
+}
+</css>
  <css css_location="admin" css_app="membermap" css_attributes="" css_path="." css_name="membermap.css">#mapWrapper {
   position: relative;
   overflow: hidden;
@@ -2479,301 +2523,6 @@ Version: 1.0
 .leaflet-draw-tooltip-subtext {
 	color: #f8d5e4;
 }]]></css>
- <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="plugins.combined.css"><![CDATA[/*
- * Fullscreen
- */
-.leaflet-control-zoom-fullscreen { background-image: url( {resource="icon-fullscreen.png" app="membermap" location="front"} ); }
-.leaflet-container:-webkit-full-screen { width: 100% !important; height: 100% !important; z-index: 99999; }
-.leaflet-pseudo-fullscreen { position: fixed !important; width: 100% !important; height: 100% !important; top: 0px !important; left: 0px !important; z-index: 99999; }
-
-/*
- * Control.Loading
- */
-.leaflet-control-loading {
-    /* This is where your loading indicator would go */
-    background: url({resource="loading.gif" app="membermap" location="front"});
-}
-
-.leaflet-control-loading,
-.leaflet-control-zoom a.leaflet-control-loading {
-    display: none;
-}
-
-.leaflet-control-loading.is-loading,
-.leaflet-control-zoom a.leaflet-control-loading.is-loading {
-    display: block;
-}
-
-/* Necessary for display consistency in Leaflet >= 0.6 */
-.leaflet-bar-part-bottom {
-    border-bottom: medium none;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-}
-
-
-/*
-Awesome Markers
-Author: L. Voogdt
-License: MIT
-Version: 1.0
-*/
-
-/* Marker setup */
-.awesome-marker {
-  background: url({resource="markers-soft.png" app="membermap" location="front"}) no-repeat 0 0;
-  width: 35px;
-  height: 46px;
-  position:absolute;
-  left:0;
-  top:0;
-  display: block;
-  text-align: center;
-}
-
-.awesome-marker-shadow {
-  background: url({resource="markers-shadow.png" app="membermap" location="front"}) no-repeat 0 0;
-  width: 36px;
-  height: 16px;
-}
-
-/* Retina displays */
-@media (min--moz-device-pixel-ratio: 1.5),(-o-min-device-pixel-ratio: 3/2),
-(-webkit-min-device-pixel-ratio: 1.5),(min-device-pixel-ratio: 1.5),(min-resolution: 1.5dppx) {
- .awesome-marker {
-  background-image: url({resource="markers-soft@2x.png" app="membermap" location="front"});
-  background-size: 720px 46px;
- }
- .awesome-marker-shadow {
-  background-image: url({resource="markers-shadow@2x.png" app="membermap" location="front"});
-  background-size: 35px 16px;
- }
-}
-
-.awesome-marker i {
-  color: #333;
-  margin-top: 5px;
-  display: inline-block;
-  font-size: 25px;
-}
-
-.awesome-marker .icon-white {
-  color: #fff;
-}
-
-/* Colors */
-.awesome-marker-icon-red {
-  background-position: 0 0;
-}
-
-.awesome-marker-icon-darkred {
-  background-position: -180px 0;
-}
-
-.awesome-marker-icon-lightred {
-  background-position: -360px 0;
-}
-
-.awesome-marker-icon-orange {
-  background-position: -36px 0;
-}
-
-.awesome-marker-icon-beige {
-  background-position: -396px 0;
-}
-
-.awesome-marker-icon-green {
-  background-position: -72px 0;
-}
-
-.awesome-marker-icon-darkgreen {
-  background-position: -252px 0;
-}
-
-.awesome-marker-icon-lightgreen {
-  background-position: -432px 0;
-}
-
-.awesome-marker-icon-blue {
-  background-position: -108px 0;
-}
-
-.awesome-marker-icon-darkblue {
-  background-position: -216px 0;
-}
-
-.awesome-marker-icon-lightblue {
-  background-position: -468px 0;
-}
-
-.awesome-marker-icon-purple {
-  background-position: -144px 0;
-}
-
-.awesome-marker-icon-darkpurple {
-  background-position: -288px 0;
-}
-
-.awesome-marker-icon-pink {
-  background-position: -504px 0;
-}
-
-.awesome-marker-icon-cadetblue {
-  background-position: -324px 0;
-}
-
-.awesome-marker-icon-white {
-  background-position: -576px 0;
-}
-
-.awesome-marker-icon-gray {
-  background-position: -648px 0;
-}
-
-.awesome-marker-icon-lightgray {
-  background-position: -612px 0;
-}
-
-.awesome-marker-icon-black {
-  background-position: -682px 0;
-}
-
-/*
- * Context Menu 
- */
-.leaflet-contextmenu {
-    display: none;
-	box-shadow: 0 1px 7px rgba(0,0,0,0.4);
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
-    padding: 4px 0;
-    background-color: #fff;
-    cursor: default;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	user-select: none;
-}
-
-.leaflet-contextmenu a.leaflet-contextmenu-item {
-    display: block;
-    color: #222;
-    font-size: 12px;
-    line-height: 20px;
-    text-decoration: none;
-    padding: 0 12px;
-    border-top: 1px solid transparent;
-    border-bottom: 1px solid transparent;
-    cursor: default;
-}
-
-.leaflet-contextmenu a.leaflet-contextmenu-item-disabled {
-    opacity: 0.5;
-}
-
-.leaflet-contextmenu a.leaflet-contextmenu-item:hover {
-    background-color: #f4f4f4;
-    border-top: 1px solid #f0f0f0;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.leaflet-contextmenu a.leaflet-contextmenu-item-disabled:hover {
-    background-color: inherit;
-    border-top: 1px solid transparent;
-    border-bottom: 1px solid transparent;
-}
-
-.leaflet-contextmenu-icon {
-    margin: 2px 8px 0 0;
-    width: 16px;
-    height: 16px;
-    float: left;
-    border: 0;
-}
-
-.leaflet-contextmenu-separator {
-    border-bottom: 1px solid #ccc;
-    margin: 5px 0;
-}
-
-/*
- * MarkerCluster
- */
-.leaflet-cluster-anim .leaflet-marker-icon, .leaflet-cluster-anim .leaflet-marker-shadow {
-	-webkit-transition: -webkit-transform 0.2s ease-out, opacity 0.2s ease-in;
-	-moz-transition: -moz-transform 0.2s ease-out, opacity 0.2s ease-in;
-	-o-transition: -o-transform 0.2s ease-out, opacity 0.2s ease-in;
-	transition: transform 0.2s ease-out, opacity 0.2s ease-in;
-	}
-
-
-.marker-cluster-small {
-	background-color: rgba(181, 226, 140, 0.6);
-	}
-.marker-cluster-small div {
-	background-color: rgba(110, 204, 57, 0.6);
-	}
-
-.marker-cluster-medium {
-	background-color: rgba(241, 211, 87, 0.6);
-	}
-.marker-cluster-medium div {
-	background-color: rgba(240, 194, 12, 0.6);
-	}
-
-.marker-cluster-large {
-	background-color: rgba(253, 156, 115, 0.6);
-	}
-.marker-cluster-large div {
-	background-color: rgba(241, 128, 23, 0.6);
-	}
-
-.marker-cluster {
-	background-clip: padding-box;
-	border-radius: 20px;
-	}
-.marker-cluster div {
-	width: 30px;
-	height: 30px;
-	margin-left: 5px;
-	margin-top: 5px;
-
-	text-align: center;
-	border-radius: 15px;
-	font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
-	}
-.marker-cluster span {
-	line-height: 30px;
-	}
-
-/* 
- * Show Loading
- */
-.loading-indicator {
-	height: 80px;
-	width: 80px;
-	background: url({resource="jQloading.gif" app="membermap" location="front"});
-	background-repeat: no-repeat;
-	background-position: center center;
-}
-
-.loading-indicator-overlay {
-	background-color: #FFFFFF;
-	opacity: 0.6;
-	filter: alpha(opacity = 60);
-}]]></css>
- <css css_location="front" css_app="membermap" css_attributes="" css_path="." css_name="showLoading.css">.loading-indicator {&#13;
-	height: 80px;&#13;
-	width: 80px;&#13;
-	background: url({resource=&quot;jQloading.gif&quot; app=&quot;membermap&quot; location=&quot;front&quot;});&#13;
-	background-repeat: no-repeat;&#13;
-	background-position: center center;&#13;
-}&#13;
-&#13;
-.loading-indicator-overlay {&#13;
-	background-color: #FFFFFF;&#13;
-	opacity: 0.6;&#13;
-	filter: alpha(opacity = 60);&#13;
-}</css>
  <resource name="awesome-marker-icon-beige.png" app="membermap" location="admin" path="/">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</resource>
  <resource name="awesome-marker-icon-black.png" app="membermap" location="admin" path="/">iVBORw0KGgoAAAANSUhEUgAAACMAAAAuCAYAAACiR6CHAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAAAGYktHRAD/AP8A/6C9p5MAAAAJb0ZGcwAAAqoAAAAAAPUylW8AAAAJcEhZcwAACxMAAAsTAQCanBgAAARqSURBVFjDzVlNiB1FEP66untmkVX8CYt78OBBwYuQi3jyEF3F256EnJQgmEgQXBCCIf4iiQmiXoIX8aAkeAhmxdOKARExkqggBEFXV3IIgcTIquuG7qouDzvznDc78/53SUHzuqe7q775qmr655m5uTksLy8jpQRjDEohIhARUkpQVRARjDFQ1c5Yay2YufMcALz3EBFUpewrf+v1lZWVDZu4gcSNOrF4s2kAMwBmAQQAlwCsAvhnu8DcRUTz1tpdRPSAc+5WAFMAEoDrqvo3gAuq+qWIfGqM+XHiYFR1hoj2O+eecc7NGGO6YgwbLp8GMK2qs6r6iIgcZOaPReQYgAv9bAwUM8aYee/92TzPD2VZNlMGc9HXVcpnRATv/VSe50/mef4NEb1YDdqRwBDRgampqVNZlt1N9P/wBmY2gSvmw3t/c57nb3jvTwC4bWgwqgpjzNE8zw8756iNgaZnTYCttcjzfLf3/jSA24cCQ0T7vfcvWGt7GqmzUh9bbRMRsix7yDn3PhrileoTivrOLMvedM41AhlE6oDLdgFo3lq70AimRjc55444524aFUgTK1Wx1iLLsoPGmHu6wDRQust7/2gb1aNI0ws5526x1j7ftQRVBxTrzVP1OBkHSBsgYwycc08YY+7sAqOqZdlhrX1sEsYHEWvtHUT0+CZminI/Ee2YNCtN7AAb2QXgwbLtrLWw1pZg7ttqVqrbjSIs7u2Aq2XS7Ha5qAJupgOm1ue3FcmG5GXFlTu5gror/RazSYuqXuuAYWaISLmV/GGrwdS3niml78s2xRghImXH+ZTSxeqkSYKr60opIaX0RQdMWSkCd5WZP9suV4nI5ZTSmQ4Y51xXuonIh8wsW8lKGaPMfBLAHx0w5TemZEdVv2Xmz9uOFZMCxcxrIvJeVXfTqq0i8k7b2WdcVsp2jPGkqv5cfU71z37BzhIzL1VSftKs/CUiR+v9tLa21smminFl5tdEhKtKRgHWlEExxuMAfqlvwGh9fR0ppSYlX8cYP5qUe8p6jPHXlNKx+t65y01Nwsyvxxj/nBQ7IgJmfklVr9U8sQGmj57fYoyvjhLMTUEbQvgkpXSibQ5VETYVETnOzF8NE8wt7rkiIgu95g1yoowhhAVmXq8qH4YdEUEI4YCq/j4uGKjq+RjjW4O4q8U9iymlD9rY74CpnwrbiogcjjGe6+WuFvdcEpHnAPSlcpjLon+ZeR8zrw3KDjOnEMKzqnqx14t2wAyTqqr6XYzxlepHsjRej6WUEkII76aUFge1UT+q9C3M/HYIYakXI8Xac5aZD1X7+sbMEG4qRURkb4zxct1IKTHGqyGEPQDWhlE80gVjSmklhLCPmTfRw8wpxrhXVX8aVu/It52qerqe7iKCGOMRVT01ik4HtN+39JMiJnZmWfYwAIQQFpn55VLnSGDGkOvMvAfAOQCrIvI0AB5VmRORTTfaQ8pFEdltjFkFcHUcReMyAwBQ1TOT2BGa7T5B9pIb6r+D/wAF60sF97gxTwAAAABJRU5ErkJggg==</resource>
  <resource name="awesome-marker-icon-blue.png" app="membermap" location="admin" path="/">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</resource>
