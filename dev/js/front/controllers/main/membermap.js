@@ -990,7 +990,7 @@
 			if ( ips.getSetting( 'canModerateMap' ) ||  ( ips.getSetting( 'memberID' ) == marker.member_id && ips.getSetting( 'membermap_canDelete' ) ) ) 
 			{
 				return [{
-					'text': 'Delete',
+					'text': ips.getString( 'delete' ),
 					index: 0,
 					callback: function(e)
 					{
