@@ -282,8 +282,11 @@
 
 			map = L.map( 'mapCanvas', 
 			{
+				minZoom: 1,
 				zoom: ( zoomLevel || 7 ),
 				layers: [ mapServices[ defaultMap ] ],
+				maxBounds: L.latLngBounds( L.latLng( -89.98155760646617, -180 ), L.latLng( 89.99346179538875, 180 ) ),
+				maxBoundsViscosity: 1.0,
 				contextmenu: ( isMobileDevice ? false : true ),
 				contextmenuWidth: 180,
 				contextmenuItems: contextMenu,
@@ -292,7 +295,7 @@
 				attributionControl: true,
 				crs: L.CRS.EPSG3857
 			});
-			
+
 			if ( isMobileDevice === false ) 
 			{
 				L.control.scale().addTo(map);
@@ -323,6 +326,20 @@
 			{
 				ips.ui.truncate.respond( $( '.membermap_popupContent' ), { type: 'hide', size: '3 lines' } );
 			});
+
+			/* Add 'night and day' overlay */
+			if ( ips.getSetting( 'membermap_showNightAndDay' ) )
+			{
+				var terminator = L.terminator();
+				terminator.addTo(map);
+
+				setInterval(function()
+				{
+					var terminator2 = L.terminator();
+					terminator.setLatLngs( terminator2.getLatLngs() );
+					terminator.redraw();
+				}, 500);
+			}
 			
 			ips.membermap.map = map;
 		},
