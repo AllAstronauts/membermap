@@ -53,10 +53,17 @@
 {{if $marker['marker_location']}}
 	<p>{$marker['marker_location']}</p>
 {{endif}}]]></template>
- <template template_group="map" template_name="popupContent" template_data="$marker, $photo" template_location="front" template_app="membermap"><![CDATA[<h3>
-	<img src='{$photo}' itemprop='image' alt='' class='ipsUserPhoto ipsUserPhoto_mini'> 
-	<a href='{url="app=core&module=members&controller=profile&id={$marker['member_id']}" seoTemplate="profile" seoTitle="$marker['members_seo_name']"}' target='_blank' rel="nooptimize">{$marker['marker_name']}</a>
-</h3>
+ <template template_group="map" template_name="popupContent" template_data="$marker, $photo" template_location="front" template_app="membermap"><![CDATA[<div class="ipsPhotoPanel ipsPhotoPanel_tiny ipsClearfix">
+	<a class='ipsUserPhoto ipsUserPhoto_mini' href='{url="app=core&module=members&controller=profile&id={$marker['member_id']}" seoTemplate="profile" seoTitle="$marker['members_seo_name']"}' target='_blank' rel="nooptimize">
+		<img src='{$photo}' itemprop='image' alt=''>
+	</a>
+	<div>
+		<p class='ipsType_large'>
+			<a href='{url="app=core&module=members&controller=profile&id={$marker['member_id']}" seoTemplate="profile" seoTitle="$marker['members_seo_name']"}' target='_blank' rel="nooptimize">{$marker['marker_name']}</a>
+		</p>
+		<span class='localTime ipsHide ipsType_light ipsType_small' data-timezone="{$marker['timezone']}"></span>
+	</div>
+</div>
 {{if $marker['marker_location']}}
 	<p>{$marker['marker_location']}</p>
 {{endif}}]]></template>
@@ -97,9 +104,13 @@
 					</li>
 				{{endif}}
 
+				<li>
+					<a href="{url='app=membermap&module=markers&controller=groups' seoTemplate='markers'}" title='{lang="membermap_browse_markers"}' class='ipsButton ipsButton_medium ipsButton_fullWidth ipsButton_link'><i class="icon-newspaper"></i> {lang="membermap_browse_markers"}</a>
+				</li>
+
 				{{if \IPS\Member::loggedIn()->isAdmin()}}
 				<li class='ipsToolList_primaryAction ipsResponsive_hidePhone'>
-					<a href='#elToolsMenu' id='elToolsMenu' data-ipsmenu class='ipsButton ipsButton_normal ipsButton_medium'>
+					<a href='#elToolsMenu' id='elToolsMenu' data-ipsmenu class='ipsButton ipsButton_normal ipsButton_link'>
 						 &nbsp;{lang="membermap_adminTools"} <i class='fa fa-caret-down'></i>
 					</a>
 					<div id='elToolsMenu_menu' class='ipsMenu ipsMenu_auto ipsHide'>
@@ -121,10 +132,6 @@
 					</div>
 				</li>
 				{{endif}}
-
-				<li>
-					<a href="{url='app=membermap&module=markers&controller=groups' seoTemplate='markers'}" title='{lang="membermap_browse_markers"}' class='ipsButton ipsButton_medium ipsButton_fullWidth ipsButton_link'><i class="icon-newspaper"></i> {lang="membermap_browse_markers"}</a>
-				</li>
 			</ul>
 		</div>
 	</header>
