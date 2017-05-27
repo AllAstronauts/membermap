@@ -282,8 +282,11 @@
 
 			map = L.map( 'mapCanvas', 
 			{
+				minZoom: 1,
 				zoom: ( zoomLevel || 7 ),
 				layers: [ mapServices[ defaultMap ] ],
+				maxBounds: L.latLngBounds( L.latLng( -89.98155760646617, -180 ), L.latLng( 89.99346179538875, 180 ) ),
+				maxBoundsViscosity: 1.0,
 				contextmenu: ( isMobileDevice ? false : true ),
 				contextmenuWidth: 180,
 				contextmenuItems: contextMenu,
@@ -292,7 +295,7 @@
 				attributionControl: true,
 				crs: L.CRS.EPSG3857
 			});
-			
+
 			if ( isMobileDevice === false ) 
 			{
 				L.control.scale().addTo(map);
@@ -319,10 +322,33 @@
 			});
 
 			/* Truncate popup content */
-			map.on( 'popupopen', function( popup ) 
+			map.on( 'popupopen', function( e ) 
 			{
 				ips.ui.truncate.respond( $( '.membermap_popupContent' ), { type: 'hide', size: '3 lines' } );
+
+				var localTimezoneElem 	= $( e.popup._contentNode ).find( '.localTime' );
+				var localTimezone 		= $( localTimezoneElem ).attr( 'data-timezone' );
+
+				if ( localTimezone != '' && ! _.isUndefined( localTimezone ) )
+				{
+					var localTimeString = new Date().toLocaleTimeString( ( navigator.language || $( 'html' ).attr( 'lang' ) ), { timeZone: localTimezone, hour: '2-digit', minute:'2-digit'} );
+					localTimezoneElem.html( ips.getString( 'membermap_localTime', { time: localTimeString } ) ).show();
+				}
 			});
+
+			/* Add 'night and day' overlay */
+			if ( ips.getSetting( 'membermap_showNightAndDay' ) )
+			{
+				var terminator = L.terminator();
+				terminator.addTo(map);
+
+				setInterval(function()
+				{
+					var terminator2 = L.terminator();
+					terminator.setLatLngs( terminator2.getLatLngs() );
+					terminator.redraw();
+				}, 500);
+			}
 			
 			ips.membermap.map = map;
 		},
@@ -746,7 +772,8 @@
 					var icon 		= 'user';
 					var iconColour 	= 'white';
 					var popupOptions = {
-						autoPan: false
+						autoPan: false,
+						minWidth: 175
 					};
 
 					if ( this.type == 'member' )
@@ -990,7 +1017,7 @@
 			if ( ips.getSetting( 'canModerateMap' ) ||  ( ips.getSetting( 'memberID' ) == marker.member_id && ips.getSetting( 'membermap_canDelete' ) ) ) 
 			{
 				return [{
-					'text': 'Delete',
+					'text': ips.getString( 'delete' ),
 					index: 0,
 					callback: function(e)
 					{

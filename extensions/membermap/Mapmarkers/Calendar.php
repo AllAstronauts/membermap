@@ -27,6 +27,7 @@ class _Calendar
 			return $form;
 		}
 
+		$form->addTab( 'membermap_settings_tab_calendar' );
 		$form->addHeader( 'membermap_calendarExt_header' );
 		$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_calendarExt', \IPS\Settings::i()->membermap_calendarExt, FALSE, 
 			array( 'togglesOn' => array( 'membermap_calendars', 'membermap_calendar_days_ahead', 'membermap_calendar_icon', 'membermap_calendar_colour', 'membermap_calendar_bgcolour', 'membermap_calendar_marker_example' ) ) 

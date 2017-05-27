@@ -29,9 +29,13 @@
 					</li>
 				{{endif}}
 
+				<li>
+					<a href="{url='app=membermap&module=markers&controller=groups' seoTemplate='markers'}" title='{lang="membermap_browse_markers"}' class='ipsButton ipsButton_medium ipsButton_fullWidth ipsButton_link'><i class="icon-newspaper"></i> {lang="membermap_browse_markers"}</a>
+				</li>
+
 				{{if \IPS\Member::loggedIn()->isAdmin()}}
 				<li class='ipsToolList_primaryAction ipsResponsive_hidePhone'>
-					<a href='#elToolsMenu' id='elToolsMenu' data-ipsmenu class='ipsButton ipsButton_normal ipsButton_medium'>
+					<a href='#elToolsMenu' id='elToolsMenu' data-ipsmenu class='ipsButton ipsButton_normal ipsButton_link'>
 						 &nbsp;{lang="membermap_adminTools"} <i class='fa fa-caret-down'></i>
 					</a>
 					<div id='elToolsMenu_menu' class='ipsMenu ipsMenu_auto ipsHide'>
@@ -53,10 +57,6 @@
 					</div>
 				</li>
 				{{endif}}
-
-				<li>
-					<a href="{url='app=membermap&module=markers&controller=groups' seoTemplate='markers'}" title='{lang="membermap_browse_markers"}' class='ipsButton ipsButton_medium ipsButton_fullWidth ipsButton_link'><i class="icon-newspaper"></i> {lang="membermap_browse_markers"}</a>
-				</li>
 			</ul>
 		</div>
 	</header>

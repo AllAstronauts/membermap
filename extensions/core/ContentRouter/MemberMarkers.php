@@ -35,7 +35,7 @@ class _MemberMarkers
 	 * @param	\IPS\Member|NULL	$member		If checking access, the member to check for, or NULL to not check access
 	 * @return	void
 	 */
-	public function __construct( \IPS\Member $member = NULL )
+	public function __construct( $member = NULL )
 	{
 		if ( $member === NULL or $member->canAccessModule( \IPS\Application\Module::get( 'membermap', 'membermap', 'front' ) ) )
 		{

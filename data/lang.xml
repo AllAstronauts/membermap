@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="110015">
+ <app key="membermap" version="110016">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
   <word key="__indefart_membermap_marker" js="0">a Member Map Marker</word>
@@ -59,6 +59,9 @@
   <word key="loc_membermap_browsing_groups" js="0">Viewing Member Map marker groups</word>
   <word key="map_settings" js="0">Map Settings</word>
   <word key="api_settings" js="0">API Keys</word>
+  <word key="membermap_settings_tab_general" js="0">General</word>
+  <word key="membermap_settings_tab_profile" js="0">Profile sync</word>
+  <word key="membermap_settings_tab_calendar" js="0">Calendar ext.</word>
   <word key="membermap_enable_clustering" js="0">Enable Marker Clustering?</word>
   <word key="membermap_bbox_location" js="0">Define Forced Bounding Box</word>
   <word key="membermap_bbox_location_desc" js="0">Use the field above to search for a location that will always be in center of your map. The map will only focus on this area, regardless of markers outside of it. Try a few of the results from the search untill you find one that suits your needs.</word>
@@ -66,6 +69,7 @@
   <word key="membermap_mapQuestAPI_desc" js="0"><![CDATA[Sign up for your own personal API Key at <a href='https://developer.mapquest.com/' target='_blank'>MapQuest</a>. This is required for the map to work.]]></word>
   <word key="membermap_bbox_zoom" js="0">Default Zoom Level</word>
   <word key="membermap_bbox_zoom_desc" js="0">Only affective when a bounding box is defined.</word>
+  <word key="membermap_showNightAndDay" js="0">Show a 'night and day' overlay</word>
   <word key="membermap_groupByMemberGroup" js="0">Group member markers by member group?</word>
   <word key="membermap_autoUpdate" js="0">Profile location synchronisation</word>
   <word key="membermap_monitorLocationField" js="0">Enable profile sync?</word>
@@ -161,6 +165,7 @@
   <word key="membermap_noHTTPS" js="1">HTTP Only</word>
   <word key="membermap_noHTTPS_desc" js="1"><![CDATA[This provider only serves content over the HTTP protocol, this will not work if you&rsquo;re using HTTPS]]></word>
   <word key="membermap_browserCache_update" js="1">Last Update</word>
+  <word key="membermap_localTime" js="1">Local Time: {{time}}</word>
   <word key="leaflet_zoomIn" js="1">Zoom in</word>
   <word key="leaflet_zoomOut" js="1">Zoom out</word>
   <word key="leaflet_fullScreen" js="1">Full Screen</word>

@@ -346,7 +346,7 @@ class _Map
 		}
 
 
-		$selectColumns = array( 'mm.*', 'mg.*', 'm.member_id', 'm.name', 'm.members_seo_name', 'm.member_group_id', 'm.pp_photo_type', 'm.pp_main_photo', 'm.pp_thumb_photo', 'pi.perm_2 as viewPerms' );
+		$selectColumns = array( 'mm.*', 'mg.*', 'm.member_id', 'm.name', 'm.members_seo_name', 'm.member_group_id', 'm.pp_photo_type', 'm.pp_main_photo', 'm.pp_thumb_photo', 'm.timezone', 'pi.perm_2 as viewPerms' );
 		
 		if ( \IPS\Settings::i()->allow_gravatars )
 		{
@@ -471,7 +471,7 @@ class _Map
 				{
 					$markerColour = 'darkblue';
 				}
-
+				
 				$markersToKeep[] = array(
 					'type'			=> "member",
 					'lat' 			=> round( (float)$marker['marker_lat'], 5 ),

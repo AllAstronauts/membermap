@@ -53,6 +53,7 @@ class _settings extends \IPS\Dispatcher\Controller
 		$form = new \IPS\Helpers\Form;
 
 		/* API Key */
+		$form->addTab( 'membermap_settings_tab_general' );
 		$form->addHeader('api_settings');
 		$form->add( new \IPS\Helpers\Form\Text( 'membermap_mapQuestAPI', \IPS\Settings::i()->membermap_mapQuestAPI, TRUE, array(), NULL, NULL, NULL, 'membermap_mapQuestAPI' ) );
 
@@ -65,12 +66,14 @@ class _settings extends \IPS\Dispatcher\Controller
 			$form->addHeader('map_settings');
 			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_groupByMemberGroup', \IPS\Settings::i()->membermap_groupByMemberGroup ) );
 			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_enable_clustering', \IPS\Settings::i()->membermap_enable_clustering ) );
+			$form->hiddenValues['membermap_bbox'] = \IPS\Settings::i()->membermap_bbox;
 			$form->add( new \IPS\Helpers\Form\Text( 'membermap_bbox_location', \IPS\Settings::i()->membermap_bbox_location, FALSE, array(), NULL, NULL, NULL, 'membermap_bbox_location' ) );
 			$form->add( new \IPS\Helpers\Form\Number( 'membermap_bbox_zoom', intval( \IPS\Settings::i()->membermap_bbox_zoom ), FALSE, array( 'min' => 1, 'max' => 18 ) ) );
-			$form->hiddenValues['membermap_bbox'] = \IPS\Settings::i()->membermap_bbox;
+			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_showNightAndDay', \IPS\Settings::i()->membermap_showNightAndDay ) );
 
 
 			/* Profile Synchronization */
+			$form->addTab( 'membermap_settings_tab_profile' );
 			$form->addHeader( 'membermap_autoUpdate' );
 
 			$profileFields = array( '' => ' -- ' . \IPS\Member::loggedIn()->language()->addToStack( 'membermap_profileLocationField' ) . ' -- ' );
@@ -109,8 +112,8 @@ class _settings extends \IPS\Dispatcher\Controller
 			foreach ( $extensions as $k => $class )
 			{
 				if ( method_exists( $class, 'getSettings' ) )
-				{
-					 $class->getSettings( $form );
+				{	
+					$class->getSettings( $form );
 				}
 			}
 

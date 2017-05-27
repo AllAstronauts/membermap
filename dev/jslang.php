@@ -21,6 +21,7 @@ $lang = array(
 	'membermap_noHTTPS' 				=> "HTTP Only",
 	'membermap_noHTTPS_desc' 			=> "This provider only serves content over the HTTP protocol, this will not work if you&rsquo;re using HTTPS",
 	'membermap_browserCache_update'		=> "Last Update",
+	'membermap_localTime'				=> "Local Time: {{time}}",
 
 	/* Leaflet & Plugins lang bits */
 	'leaflet_zoomIn'					=> "Zoom in",
