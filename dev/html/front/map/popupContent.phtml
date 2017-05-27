@@ -1,8 +1,15 @@
 <ips:template parameters="$marker, $photo" />
-<h3>
-	<img src='{$photo}' itemprop='image' alt='' class='ipsUserPhoto ipsUserPhoto_mini'> 
-	<a href='{url="app=core&module=members&controller=profile&id={$marker['member_id']}" seoTemplate="profile" seoTitle="$marker['members_seo_name']"}' target='_blank' rel="nooptimize">{$marker['marker_name']}</a>
-</h3>
+<div class="ipsPhotoPanel ipsPhotoPanel_tiny ipsClearfix">
+	<a class='ipsUserPhoto ipsUserPhoto_mini' href='{url="app=core&module=members&controller=profile&id={$marker['member_id']}" seoTemplate="profile" seoTitle="$marker['members_seo_name']"}' target='_blank' rel="nooptimize">
+		<img src='{$photo}' itemprop='image' alt=''>
+	</a>
+	<div>
+		<p class='ipsType_large'>
+			<a href='{url="app=core&module=members&controller=profile&id={$marker['member_id']}" seoTemplate="profile" seoTitle="$marker['members_seo_name']"}' target='_blank' rel="nooptimize">{$marker['marker_name']}</a>
+		</p>
+		<span class='localTime ipsHide ipsType_light ipsType_small' data-timezone="{$marker['timezone']}"></span>
+	</div>
+</div>
 {{if $marker['marker_location']}}
 	<p>{$marker['marker_location']}</p>
 {{endif}}

@@ -322,9 +322,18 @@
 			});
 
 			/* Truncate popup content */
-			map.on( 'popupopen', function( popup ) 
+			map.on( 'popupopen', function( e ) 
 			{
 				ips.ui.truncate.respond( $( '.membermap_popupContent' ), { type: 'hide', size: '3 lines' } );
+
+				var localTimezoneElem 	= $( e.popup._contentNode ).find( '.localTime' );
+				var localTimezone 		= $( localTimezoneElem ).attr( 'data-timezone' );
+
+				if ( localTimezone != '' && ! _.isUndefined( localTimezone ) )
+				{
+					var localTimeString = new Date().toLocaleTimeString( ( navigator.language || $( 'html' ).attr( 'lang' ) ), { timeZone: localTimezone, hour: '2-digit', minute:'2-digit'} );
+					localTimezoneElem.html( ips.getString( 'membermap_localTime', { time: localTimeString } ) ).show();
+				}
 			});
 
 			/* Add 'night and day' overlay */
@@ -763,7 +772,8 @@
 					var icon 		= 'user';
 					var iconColour 	= 'white';
 					var popupOptions = {
-						autoPan: false
+						autoPan: false,
+						minWidth: 175
 					};
 
 					if ( this.type == 'member' )
