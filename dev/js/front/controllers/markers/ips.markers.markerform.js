@@ -10,79 +10,13 @@
 
 		initialize: function () 
 		{
+			this.setupMap();
 			this.setup();
+			this.setupEvents();
 		},
 
 		setup: function()
 		{
-			$( '#elInput_marker_location' ).autocomplete({
-				source: function( request, response ) 
-				{
-					ips.getAjax()({ 
-						//url: 'http://www.mapquestapi.com/geocoding/v1/address', 
-						url: '//open.mapquestapi.com/nominatim/v1/search.php',
-						type: 'get',
-						dataType: 'json',
-						data: {
-							key: ips.getSetting( 'membermap_mapquestAPI' ),
-
-							// MapQuest Geocode
-							/*location: request.term,
-							outFormat: 'json'*/
-
-							// MapQuest Nominatim
-							format: 'json',
-							q: request.term,
-							extratags: 0,
-
-						},
-						success: function( data ) 
-						{
-							// MapQuest
-							/* If adminArea5 is empty, it's likely we don't have a result */
-							/*if ( data.results[0].locations[0].adminArea5 )
-							{
-								response( $.map( data.results[0].locations, function( item )
-								{
-									return {
-										value: item.adminArea5 + 
-											( item.adminArea4 ? ', ' + item.adminArea4 : '' ) + 
-											( item.adminArea3 ? ', ' + item.adminArea3 : '' ) + 
-											( item.adminArea2 ? ', ' + item.adminArea2 : '' ) +
-											( item.adminArea1 ? ', ' + item.adminArea1 : '' ),
-										latLng: item.latLng
-									};
-								}));
-							}
-							else
-							{
-								response([]);
-							}*/
-
-							// MapQuest Nominatim
-							response( $.map( data, function( item )
-							{
-								return {
-									value: item.display_name,
-									latLng: {
-										lat: item.lat,
-										lng: item.lon
-									}
-								};
-							}));
-
-						}
-					});
-				},
-				minLength: 3,
-				select: function( event, ui ) 
-				{
-					$( '#membermap_marker_form input[name="marker_lat"]').val( parseFloat( ui.item.latLng.lat ).toFixed(6) );
-					$( '#membermap_marker_form input[name="marker_lon"]' ).val( parseFloat( ui.item.latLng.lng ).toFixed(6) );
-				}
-			});
-
-			this.setupMap();
 					
 			var icon = L.AwesomeMarkers.icon({
 				prefix: 'fa',
@@ -110,7 +44,7 @@
 				this.marker.setLatLng( new L.LatLng( parseFloat( $( '#membermap_marker_form input[name="marker_lat"]' ).val() ), parseFloat( $( '#membermap_marker_form input[name="marker_lon"]' ).val() ) ) );
 				this.marker.setOpacity( 1 );
 
-				this.infowindow.setContent( '<h4>' + $( '#elInput_marker_title' ).val() + '</h4>' + $( '#elInput_marker_location' ).val() );
+				this.infowindow.setContent( '<h4>' + ( $( '#elInput_marker_title' ).val() || '' ) + '</h4>' + $( '#elInput_marker_location' ).val() );
 
 				this.marker.openPopup();
 			
@@ -122,7 +56,10 @@
 				this.map.panTo( this.bounds.getCenter() );
 				this.map.setZoom( this.map.getZoom() + 1 );
 			}
+		},
 
+		setupEvents: function()
+		{
 			var that = this;
 			
 			this.marker.on( 'dragend', function( e ) 
@@ -134,6 +71,50 @@
 			this.map.on( 'click', function( e )
 			{
 				that.findMarkerPosition( e.latlng.lat, e.latlng.lng );
+			});
+
+
+			$( '#elInput_marker_location' ).autocomplete({
+				minLength: 3,
+				source: function( request, response ) 
+				{
+					Debug.log( request );
+					ips.getAjax()({ 
+						url: ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=ajax&do=mapquestSearch',
+						type: 'get',
+						dataType: 'json',
+						data: 
+						{
+							q: request.term
+						},
+						success: function( data ) 
+						{
+							// MapQuest Nominatim
+							response( $.map( data, function( item )
+							{
+								return {
+									value: item.display_name,
+									latLng: {
+										lat: item.lat,
+										lng: item.lon
+									}
+								};
+							}));
+
+						}
+					});
+				},
+				select: function( event, ui ) 
+				{
+					$( '#membermap_marker_form input[name="marker_lat"]').val( parseFloat( ui.item.latLng.lat ).toFixed(6) );
+					$( '#membermap_marker_form input[name="marker_lon"]' ).val( parseFloat( ui.item.latLng.lng ).toFixed(6) );
+
+					that.marker.setLatLng( new L.LatLng( parseFloat( $( '#membermap_marker_form input[name="marker_lat"]' ).val() ), parseFloat( $( '#membermap_marker_form input[name="marker_lon"]' ).val() ) ), 8 );
+
+					that.map.flyTo( that.marker.getLatLng(), 8 );
+
+					that.infowindow.setContent( '<h4>' + ( $( '#elInput_marker_title' ).val() || '' ) + '</h4>' + ui.item.value );
+				}
 			});
 		},
 
@@ -186,19 +167,18 @@
 		{
 			var that = this;
 
-			
 			$( '#membermap_marker_form input[name="marker_lat"]' ).val( parseFloat( lat ).toFixed( 6 ) );
 			$( '#membermap_marker_form input[name="marker_lon"]' ).val( parseFloat( lng ).toFixed( 6 ) );
 
-			that.marker.setLatLng( [ lat, lng ] );
-			that.marker.setOpacity( 1 );
+			this.marker.setLatLng( [ lat, lng ] );
+			this.marker.setOpacity( 1 );
 						
 			ips.getAjax()({ 
-				url: '//www.mapquestapi.com/geocoding/v1/reverse', 
+				url: ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=ajax&do=mapquestReverseLookup', 
 				type: 'get',
 				dataType: 'json',
-				data: {
-					key: ips.getSetting( 'membermap_mapquestAPI' ),
+				data: 
+				{
 					lat: lat,
 					lng: lng
 
@@ -207,7 +187,7 @@
 				{
 					// MapQuest
 					/* If adminArea5 is empty, it's likely we don't have a result */
-					if ( data.results[0].locations[0].adminArea4 )
+					if ( data.results[0].locations[0].adminArea5 )
 					{
 						var item = data.results[0].locations[0];
 						var location = ( item.adminArea5 ? item.adminArea5 : '' ) + 
@@ -219,7 +199,7 @@
 						location = location.replace( /(^\s*,)|(,\s*$)/g, '' );
 
 						$( '#elInput_marker_location' ).val( location );
-						that.infowindow.setContent( '<h4>' + $( '#elInput_marker_title' ).val() + '</h4>' + location );
+						that.infowindow.setContent( '<h4>' + ( $( '#elInput_marker_title' ).val() || '' ) + '</h4>' + location );
 					}
 					else
 					{
@@ -228,10 +208,8 @@
 					}
 					
 					that.marker.openPopup();
-
 				}
 			});
-
 		}
 	});
 }(jQuery, _));

@@ -358,7 +358,7 @@
 			function loadNextFile( id )
 			{
 				ips.getAjax()({
-					url: ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=showmap&do=getCache&id=' + id,
+					url: ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=ajax&do=getCache&id=' + id,
 					cache: false,
 					async: true,
 					dataType: 'json',
@@ -618,15 +618,12 @@
 							source: function( request, response ) 
 							{
 								ips.getAjax()({ 
-									url: '//open.mapquestapi.com/nominatim/v1/search.php',
+									url: ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=ajax&do=mapquestSearch',
 									dataType: 'jsonp',
 									jsonp: 'json_callback',
-									data: {
-										key: ips.getSetting( 'membermap_mapquestAPI' ),
-
-										format: 'json',
+									data: 
+									{
 										q: request.term,
-										extratags: 0,
 									},
 									success: function( data ) 
 									{
@@ -684,11 +681,11 @@
 					/* Skip this for now, will have to see how many requests this app consumes per month */
 
 					ips.getAjax()({ 
-						url: '//www.mapquestapi.com/geocoding/v1/reverse', 
+						url: ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=ajax&do=mapquestReverseLookup', 
 						type: 'get',
 						dataType: 'json',
-						data: {
-							key: ips.getSetting( 'membermap_mapquestAPI' ),
+						data: 
+						{
 							lat: position.coords.latitude,
 							lng: position.coords.longitude
 

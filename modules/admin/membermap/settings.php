@@ -47,8 +47,6 @@ class _settings extends \IPS\Dispatcher\Controller
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'jquery/jquery-ui.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'admin_membermap.js', 'membermap', 'admin' ) );
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'jquery-ui.css', 'membermap', 'global' ) );
-		
-		\IPS\Output::i()->jsVars['membermap_mapquestAPI'] = \IPS\membermap\Application::getApiKeys( 'mapquest' ); 
 
 		$form = new \IPS\Helpers\Form;
 
@@ -140,5 +138,26 @@ class _settings extends \IPS\Dispatcher\Controller
 		}
 		
 		\IPS\Output::i()->output = $form;
+	}
+
+	protected function mapquestSearch()
+	{
+		$location 	= \IPS\Request::i()->q;
+		$data 		= array();
+		
+		if ( $location )
+		{
+			$apiKey = \IPS\membermap\Application::getApiKeys( 'mapquest' );
+			try
+			{
+				$data = \IPS\Http\Url::external( "https://open.mapquestapi.com/nominatim/v1/search.php?key={$apiKey}&format=json&q=" . urlencode( $location ) )->request( 15 )->get()->decodeJson();
+			}
+			catch( \Exception $e ) 
+			{
+				\IPS\Log::log( $e, 'membermap' );
+			}
+		}
+		
+		\IPS\Output::i()->json( $data );	
 	}
 }
