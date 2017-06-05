@@ -116,7 +116,6 @@ class _showmap extends \IPS\Dispatcher\Controller
 			'membermap_bbox'				=> json_decode( \IPS\Settings::i()->membermap_bbox ),
 			'membermap_bbox_zoom'			=> intval( \IPS\Settings::i()->membermap_bbox_zoom ),
 			'membermap_defaultMaps'			=> $defaultMaps,
-			'membermap_mapquestAPI'			=> \IPS\membermap\Application::getApiKeys( 'mapquest' ),
 			'membermap_enable_clustering' 	=> \IPS\Settings::i()->membermap_enable_clustering == 1 ? 1 : 0,
 			'membermap_groupByMemberGroup'	=> \IPS\Settings::i()->membermap_groupByMemberGroup == 1 ? 1 : 0,
 			'membermap_onlyShowGroup'		=> \IPS\Request::i()->group ? explode( ',', mb_strtolower( \IPS\Request::i()->group ) ) : array(),
@@ -131,35 +130,6 @@ class _showmap extends \IPS\Dispatcher\Controller
 EOF;
 
         \IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'map' )->showMap( $markers, $cacheTime, $canAdd, $canEdit );
-	}
-
-	/**
-	 * Get the cache file
-	 * Proxying it through this instead of exposing the location to the end user, and to send a proper error code
-	 *
-	 * @return json
-	 */
-	protected function getCache()
-	{
-		$fileId = isset( \IPS\Request::i()->id ) ? (int) \IPS\Request::i()->id : NULL;
-
-		if ( $fileId >= 0 )
-		{
-			if ( file_exists( \IPS\ROOT_PATH . "/datastore/membermap_cache/membermap-{$fileId}.json" ) )
-			{
-				$output = \file_get_contents( \IPS\ROOT_PATH . "/datastore/membermap_cache/membermap-{$fileId}.json" );
-			}
-			else
-			{
-				$output = json_encode( array( 'error' => 'not_found' ) );
-			}
-		}
-		else
-		{
-			$output = json_encode( array( 'error' => 'invalid_id' ) );
-		}
-
-		\IPS\Output::i()->sendOutput( $output, 200, 'application/json' );
 	}
 
 	/**
