@@ -356,7 +356,7 @@ class _Map
 		}
 
 		/* Remember to update the queue too */
-		$_markers = \IPS\Db::i()->select( implode( ',', $selectColumns ), array( 'membermap_markers', 'mm' ), array( 'marker_open=1' ), 'mg.group_position ASC, mm.marker_id DESC' )
+		$_markers = \IPS\Db::i()->select( implode( ',', $selectColumns ), array( 'membermap_markers', 'mm' ), array( 'marker_open=1' ), 'mg.group_position ASC, mm.marker_name ASC' )
 					->join( array( 'membermap_markers_groups', 'mg' ), 'mm.marker_parent_id=mg.group_id' )
 					->join( array( 'core_permission_index', 'pi' ), "( pi.perm_type_id=mg.group_id AND pi.app='membermap' AND pi.perm_type='membermap' )" )
 					->join( array( 'core_members', 'm' ), 'mm.marker_member_id=m.member_id' );
@@ -440,6 +440,14 @@ class _Map
 		$markersToKeep = array();
 		$groupCache = \IPS\Data\Store::i()->groups;
 
+		/* Get staff groups */
+		$_staff = iterator_to_array( \IPS\Db::i()->select( '*', 'core_leaders' ) );
+		$staff 	= array();
+		foreach( $_staff as $s )
+		{
+			$staff[ $s['leader_type'] ][ $s['leader_type_id'] ] = $s;
+		}
+
 		if ( is_array( $markers ) AND count( $markers ) )
 		{
 			foreach( $markers as $marker )
@@ -471,21 +479,34 @@ class _Map
 				{
 					$markerColour = 'darkblue';
 				}
+
+				$isStaff = FALSE;
+
+				if ( isset( $staff['g'][ $marker['member_group_id'] ] ) )
+				{
+					$isStaff = TRUE;
+				}
+				elseif ( isset( $staff['m'][ $marker['marker_member_id'] ] ) )
+				{
+					$isStaff = TRUE;
+				}
 				
 				$markersToKeep[] = array(
 					'type'			=> "member",
 					'lat' 			=> round( (float)$marker['marker_lat'], 5 ),
 					'lon' 			=> round( (float)$marker['marker_lon'], 5 ),
 					'member_id'		=> $marker['marker_member_id'],
+					'member_name'	=> $marker['marker_name'],
 					'parent_id'		=> $marker['member_group_id'],
 					'parent_name'	=> $groupName,
 					'popup' 		=> \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker, $photo ),
 					'markerColour' 	=> $markerColour,
 					'viewPerms'		=> ( $marker['viewPerms'] === '*' OR $marker['viewPerms'] === NULL ) ? '*' : array_map( 'intval', explode( ',', $marker['viewPerms'] ) ),
+					'isStaff'		=> $isStaff,
 				);
 			}
 		}
-		
+
 		return $markersToKeep;
 	}
 

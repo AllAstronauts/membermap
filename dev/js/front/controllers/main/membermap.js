@@ -739,6 +739,11 @@
 			var memberId 	= parseInt( ips.utils.url.getParam( 'member_id' ) );
 			var flyToZoom 	= 8;
 
+			/* Member List block */
+			var showStaffMembersBlock	= false;
+			var showFollowedUsersBlock 	= false;
+			var showOtherUsersBlock		= false;
+
 			if ( forceBounds )
 			{
 				dontRepan = true;
@@ -861,6 +866,46 @@
 
 					if ( this.type == 'member' )
 					{
+						/* Add to member list sidebar */
+						if ( $( '#memberList_staff' ).length )
+						{
+							var title = $( '<li>' ).append( marker.member_name );
+
+							if ( marker.isStaff )
+							{
+								 $( '#memberList_staff div ul' ).append( title );
+								 showStaffMembersBlock = true;
+							}
+							else if ( $.inArray( marker.member_id, ips.getSetting( 'membermap_membersIFollow' ) ) !== -1 )
+							{
+								 $( '#memberList_followers div ul' ).append( title );
+								showFollowedUsersBlock = true;
+							}
+							else
+							{
+								$( '#memberList_others div ul' ).append( title );
+								showOtherUsersBlock = true;
+							}
+
+							$( title ).click( function() 
+							{
+								if ( ips.getSetting( 'membermap_enable_clustering' ) == 1  )
+								{
+									mastergroup.zoomToShowLayer( mapMarker, function()
+									{
+										map.panTo( mapMarker.getLatLng() );
+										mapMarker.openPopup(); 
+									});
+								}
+								else
+								{
+									map.flyTo( mapMarker.getLatLng(), 8 );
+									mapMarker.openPopup(); 
+								}
+							});
+						}
+
+
 						/* Group by member group */
 						if ( ips.getSetting( 'membermap_groupByMemberGroup' ) && this.parent_id > 0 )
 						{
@@ -954,6 +999,9 @@
 			if ( dontRepan === false )
 			{
 				if ( initialCenter instanceof L.LatLng )
+
+				/* Show the sidebar blocks, if we have content in them */
+				if ( showStaffMembersBlock && $( '#memberList_staff' ).is( ':hidden' ) )
 				{
 					if ( zoomLevel )
 					{
@@ -963,13 +1011,28 @@
 					{
 						map.flyTo( initialCenter );
 					}
+					$( '#memberList_staff' ).slideDown( 200 );
 				}
 				else
+				
+				if ( showFollowedUsersBlock && $( '#memberList_followers' ).is( ':hidden' ) )
 				{
 					map.fitBounds( mastergroup.getBounds(), { 
 						padding: [50, 50],
 						maxZoom: 11
 					});
+					$( '#memberList_followers' ).slideDown( 200 );
+				}
+				
+				if ( showOtherUsersBlock && $( '#memberList_others' ).is( ':hidden' ) )
+				{
+					$( '#memberList_others' ).slideDown( 200 );
+				}
+
+				/* Don't show the title unless there are staff members or users you follow in any other blocks */
+				if ( showOtherUsersBlock && ( showStaffMembersBlock || showFollowedUsersBlock ) && $( '#memberList_others h3' ).is( ':hidden' ) )
+				{
+					$( '#memberList_others h3' ).show();
 				}
 			}
 		},

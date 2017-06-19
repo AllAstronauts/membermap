@@ -181,4 +181,11 @@ $lang = array(
 	'membermap_rebuildBrowserCache' 		=> "Rebuild Browser Cache",
 	'membermap_rebuildServerCache' 			=> "Rebuild Server Cache (Last Update: %s)",
 	'membermap_rebuildServerCache_notSet' 	=> "Rebuild Server Cache (Not created yet)",
+
+	/* Member List block */
+	'block_memberList'						=> "Member List",
+	'block_memberList_desc'					=> "Shows a list of member markers in the sidebar. Does not work on any other apps.",
+	'block_memberList_staff'				=> "Staff members",
+	'block_memberList_followers'			=> "Members you follow",
+	'block_memberList_others'				=> "Other members",
 );

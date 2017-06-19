@@ -1,1 +1,12 @@
-[]
+{
+    "memberList": {
+        "class": "\\IPS\\Widget\\StaticCache",
+        "restrict": [
+            "sidebar"
+        ],
+        "default_area": "sidebar",
+        "allow_reuse": false,
+        "menu_style": "menu",
+        "embeddable": false
+    }
+}
