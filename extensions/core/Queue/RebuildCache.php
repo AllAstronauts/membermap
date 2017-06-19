@@ -64,6 +64,9 @@ class _RebuildCache
 	 */
 	public function run( $data, $offset )
 	{
+		/* https://bugs.php.net/bug.php?id=72567 */
+		ini_set('serialize_precision', 14);
+
 		$currentMemUsage = memory_get_usage( TRUE );
 
 		/* Wipe out the old files on the first run */

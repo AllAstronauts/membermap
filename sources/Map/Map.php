@@ -294,7 +294,10 @@ class _Map
 	 * @return	array	Parsed list of markers
 	 */
 	public function recacheJsonFile()
-	{	
+	{
+		/* https://bugs.php.net/bug.php?id=72567 */
+		ini_set('serialize_precision', 14);
+
 		/* The upgrader kept firing this off whenever a group/marker was saved. */
 		if ( isset( \IPS\Request::i()->controller ) AND \IPS\Request::i()->controller == 'applications' )
 		{
