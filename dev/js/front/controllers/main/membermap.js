@@ -4,7 +4,7 @@
 ;( function($, _, undefined){
 	"use strict";
 
-	ips.createModule('ips.membermap', function() 
+	ips.createModule( 'ips.membermap', function() 
 	{
 		var map = null,
 			defaultMaps = {},
@@ -23,7 +23,6 @@
 			allMarkers = [],
 			
 			icons = [],
-			isMobileDevice = false,
 			isEmbedded = false,
 			
 			bounds = null,
@@ -36,10 +35,34 @@
 
 			counter = 0,
 
-			hasLocation = false;
+			hasLocation = false,
+
+			dontRepan = false;
 	
 		var initMap = function()
 		{
+			/* Default bounding box */
+			var southWest = new L.LatLng( 56.83, -7.14 );
+			var northEast = new L.LatLng( 74.449, 37.466 );
+
+			/* Bounding Box */
+			var bbox = ips.getSetting( 'membermap_bbox' );
+
+			if ( bbox !== null && bbox.minLat && bbox.minLng && bbox.maxLat && bbox.maxLng )
+			{
+				southWest = new L.LatLng( bbox.minLat, bbox.minLng );
+				northEast = new L.LatLng( bbox.maxLat, bbox.maxLng );
+
+				forceBounds = true;
+
+				if ( ips.getSetting( 'membermap_bbox_zoom' ) )
+				{
+					setZoomLevel( ips.getSetting( 'membermap_bbox_zoom' ) );
+				}
+			}
+
+			bounds = new L.LatLngBounds(southWest, northEast);
+
 			/* Safari gets cranky if this is loaded after the map is set up */
 			$( window ).on( 'scroll resize', function()
 			{
@@ -51,20 +74,16 @@
 				
 				setMapHeight();
 				
-				map.invalidateSize();
+				map.invalidateSize( { debounceMoveend: true } );
 			});
-
-			setMobileDevice( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) );
-
 
 			defaultMaps = ips.getSetting( 'membermap_defaultMaps' );
 
 
 			/* Showing a single user or online user, get the markers from DOM */
 			var getByUser = ips.utils.url.getParam( 'filter' ) == 'getByUser' ? true : false;
-			var getOnlineUsers = ips.utils.url.getParam( 'filter' ) == 'getOnlineUsers' ? true : false;
 
-			if ( getByUser || getOnlineUsers )
+			if ( getByUser )
 			{
 				if ( !!$( '#mapMarkers' ).attr( 'data-markers' ) )
 				{
@@ -85,16 +104,15 @@
 				}
 			}
 
-			/* Set lat/lon from URL */
+			/* Set lat, lon and zoom from URL */
 			var centerLat = parseFloat( unescape( ips.utils.url.getParam( 'lat' ) ).replace( ',', '.' ) );
 			var centerLng = parseFloat( unescape( ips.utils.url.getParam( 'lng' ) ).replace( ',', '.' ) );
+			var initZoom = parseInt( ips.utils.url.getParam( 'zoom' ) );
+			
 			if ( centerLat && centerLng )
 			{
 				setCenter( centerLat, centerLng );
 			}
-
-			/* Set zoom level from URL */
-			var initZoom = parseInt( ips.utils.url.getParam( 'zoom' ) );
 			
 			if ( initZoom )
 			{
@@ -115,11 +133,6 @@
 			
 			/* Init events */
 			initEvents();	
-		},
-
-		setMobileDevice = function( bool )
-		{
-			isMobileDevice = bool;
 		},
 		
 		setEmbed = function( bool )
@@ -157,10 +170,11 @@
 			{
 				leftForMe = browserHeight - stuffSize + scrollY;
 			}
+
 			if ( $( '#mapWrapper' ).height() !== leftForMe )
 			{
 				$( '#mapWrapper' ).css( { height: leftForMe } );
-				
+				$( '#membermap_memberList' ).css( { height: ( leftForMe + $( '.ipsPageHeader' ).height() ) } );
 				return true;
 			}
 			
@@ -170,6 +184,12 @@
 		clear =function()
 		{
 			mastergroup.clearLayers();
+
+			/* Default bounding box */
+			var southWest = new L.LatLng( 56.83, -7.14 );
+			var northEast = new L.LatLng( 74.449, 37.466 );
+		
+			bounds = new L.LatLngBounds(southWest, northEast);
 		},
 		
 		setMarkers = function( markers )
@@ -191,28 +211,6 @@
 
 		setupMap = function()
 		{
-			/* Bounding Box */
-			var bbox = ips.getSetting( 'membermap_bbox' );
-
-			if ( bbox !== null && bbox.minLat && bbox.minLng && bbox.maxLat && bbox.maxLng )
-			{
-				var southWest = new L.LatLng( bbox.minLat, bbox.minLng );
-				var northEast = new L.LatLng( bbox.maxLat, bbox.maxLng );
-
-				forceBounds = true;
-
-				if ( ips.getSetting( 'membermap_bbox_zoom' ) )
-				{
-					setZoomLevel( ips.getSetting( 'membermap_bbox_zoom' ) );
-				}
-			}
-			else
-			{
-				/* Default bounding box */
-				var southWest = new L.LatLng( 56.83, -7.14 );
-				var northEast = new L.LatLng( 74.449, 37.466 );
-			}
-			bounds = new L.LatLngBounds(southWest, northEast);
 
 			var defaultMap = '';
 
@@ -287,16 +285,15 @@
 				layers: [ mapServices[ defaultMap ] ],
 				maxBounds: L.latLngBounds( L.latLng( -89.98155760646617, -180 ), L.latLng( 89.99346179538875, 180 ) ),
 				maxBoundsViscosity: 1.0,
-				contextmenu: ( isMobileDevice ? false : true ),
+				contextmenu: ( L.Browser.mobile ? false : true ),
 				contextmenuWidth: 180,
 				contextmenuItems: contextMenu,
-				fullscreenControl: isMobileDevice ? false : true,
-				loadingControl: isMobileDevice ? false : true,
+				fullscreenControl: L.Browser.mobile ? false : true,
 				attributionControl: true,
 				crs: L.CRS.EPSG3857
 			});
 
-			if ( isMobileDevice === false ) 
+			if ( L.Browser.mobile === false ) 
 			{
 				L.control.scale().addTo(map);
 			}
@@ -305,7 +302,7 @@
 			
 			if ( ips.getSetting( 'membermap_enable_clustering' ) == 1 )
 			{
-				mastergroup = L.markerClusterGroup({ zoomToBoundsOnClick: true /*, disableClusteringAtZoom: ( $( '#mapWrapper' ).height() > 1000 ? 13 : 11 )*/ });
+				mastergroup = L.markerClusterGroup({ chunkedLoading: true, zoomToBoundsOnClick: true });
 			}
 			else
 			{
@@ -314,14 +311,14 @@
 
 			map.addLayer( mastergroup );
 			
-			overlayControl = L.control.layers( baseMaps, overlayMaps, { collapsed: ( isMobileDevice || isEmbedded ? true : false ) } ).addTo( map );
+			overlayControl = L.control.layers( baseMaps, overlayMaps, { collapsed: ( L.Browser.mobile || isEmbedded ? true : false ) } ).addTo( map );
 
 			map.on( 'baselayerchange', function( baselayer )
 			{
 				ips.utils.cookie.set( 'membermap_baseMap', baselayer.name.toLowerCase().replace( /\s/g, '' ) );
 			});
 
-			/* Truncate popup content */
+			/* Truncate popup content and format local time */
 			map.on( 'popupopen', function( e ) 
 			{
 				ips.ui.truncate.respond( $( '.membermap_popupContent' ), { type: 'hide', size: '3 lines' } );
@@ -329,10 +326,10 @@
 				var localTimezoneElem 	= $( e.popup._contentNode ).find( '.localTime' );
 				var localTimezone 		= $( localTimezoneElem ).attr( 'data-timezone' );
 
-				if ( localTimezone != '' && ! _.isUndefined( localTimezone ) )
+				if ( localTimezone !== '' && ! _.isUndefined( localTimezone ) && localTimezoneElem.attr( 'data-parsed' ) !== 1 )
 				{
 					var localTimeString = new Date().toLocaleTimeString( ( navigator.language || $( 'html' ).attr( 'lang' ) ), { timeZone: localTimezone, hour: '2-digit', minute:'2-digit'} );
-					localTimezoneElem.html( ips.getString( 'membermap_localTime', { time: localTimeString } ) ).show();
+					localTimezoneElem.attr( 'data-parsed', '1' ).html( ips.getString( 'membermap_localTime', { time: localTimeString } ) ).show();
 				}
 			});
 
@@ -354,53 +351,134 @@
 		},
 		
 		loadMarkers = function( forceReload )
-		{
-			function loadNextFile( id )
+		{	
+			var dbCacheDate;
+
+			function loadNextFile( id, fromDb )
 			{
-				ips.getAjax()({
-					url: ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=ajax&do=getCache&id=' + id,
-					cache: false,
-					async: true,
-					dataType: 'json',
-					success:function( res )
+				if ( fromDb )
+				{
+					/* Get data from browser storage */
+					var data 		= ips.utils.db.get('membermap', localStoragePrefix + 'markers_' + id );
+					var cacheTime 	= ips.utils.db.get('membermap', localStoragePrefix + 'cacheTime' );
+				
+					if ( ( id === 0 && data === null ) || cacheTime < ips.getSetting( 'membermap_cacheTime' ) )
 					{
-						if( res.error )
+						if ( id === 0 && data === null )
 						{
-							finished();
+							/* This is the first load after we split the localStorage into chunks. Delete the old storage */
+							ips.utils.db.remove('membermap', localStoragePrefix + 'markers' );
+						}
+
+						reloadMarkers();
+						return;
+					}
+
+					/* if data is null, and it's not the first one, we're finished */
+					if ( data === null )
+					{
+						finished( true );
+						return;
+					}
+
+					if ( data.data !== null && data.data.length > 0 )
+					{
+						/* Reload cache if it's older than 24 hrs */
+						dbCacheDate = new Date( data.time * 1000 );
+						var nowdate = new Date();
+						if ( ( ( nowdate.getTime() - dbCacheDate.getTime() ) / 1000 ) > 86400 )
+						{
+							reloadMarkers();
 							return;
 						}
 
-						/* Show marker layer */
-						showMarkers( false, res.markers );
-						allMarkers = allMarkers.concat( res.markers );
+						showMarkers( false, data.data );
+						allMarkers = allMarkers.concat( data.data );
 
-						loadNextFile( ++id );
-					},
-					error:function (xhr, ajaxOptions, thrownError)
-					{
-						if(xhr.status == 404) 
-						{
-							finished();
-						}
+						loadNextFile( ++id, true );
+						return;
 					}
-				});
-			};
+				}
+				else
+				{
+					ips.getAjax()({
+						url: ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=ajax&do=getCache&id=' + id,
+						cache: false,
+						async: true,
+						dataType: 'json',
+						success:function( res )
+						{
+							if( res.error )
+							{
+								finished();
+								return;
+							}
+
+							var nextId = id + 1;
+
+							if ( dbEnabled )
+							{
+								ips.utils.db.set( 'membermap', localStoragePrefix + 'markers_' + id, { time: parseInt( ( new Date() ).getTime() / 1000, 10 ), data: res.markers } );
+
+								Debug.log( "Stored ID: " + id );
+								Debug.log( JSON.stringify( res.markers ).length );
+
+								/* Delete the next localStorage. This one might be the last chunk */
+								ips.utils.db.remove('membermap', localStoragePrefix + 'markers_' + nextId );
+							}
+
+							/* Show marker layer */
+							showMarkers( false, res.markers );
+							allMarkers = allMarkers.concat( res.markers );
+
+							loadNextFile( nextId, false );
+							return;
+						},
+						error:function (xhr, ajaxOptions, thrownError)
+						{
+							if ( xhr.status == 404 ) 
+							{
+								finished( false );
+								return;
+							}
+						}
+					});
+				}
+			}
 
 			/* Store data in browser when all AJAX calls complete */
-			function finished()
+			function finished( fromDb )
 			{
 				updateOverlays();
 
-				if ( dbEnabled )
+				if ( fromDb )
 				{
-					var date = new Date();
-					ips.utils.db.set( 'membermap', localStoragePrefix + 'markers', { time: parseInt( date.getTime() / 1000, 10 ), data: allMarkers } );
-					ips.utils.db.set( 'membermap', localStoragePrefix + 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
+					/* Inform that we're showing markers from browser cache */
+					if ( oldMarkersIndicator === null && ! isEmbedded && ! _.isUndefined( dbCacheDate ) )
+					{
+						oldMarkersIndicator = new L.Control.MembermapOldMarkers(
+						{ 
+							callback: function() 
+							{ 
+								window.location.href = ips.getSetting( 'baseURL' ) + 'index.php?app=membermap&module=membermap&controller=showmap&dropBrowserCache=1'; 
+							}, 
+							time: dbCacheDate 
+						});
 
-
-					$( '#elToolsMenuBrowserCache a time' ).html( '(' + ips.getString( 'membermap_browserCache_update' ) + ': ' + ips.utils.time.readable( date.getTime() / 1000 ) + ')' );
+						map.addControl( oldMarkersIndicator );
+					}
 				}
-			};
+				else
+				{
+					if ( dbEnabled )
+					{
+						ips.utils.db.set( 'membermap', localStoragePrefix + 'cacheTime', ips.getSetting( 'membermap_cacheTime' ) );
+					}
+				}
+				
+				var date = _.isUndefined( dbCacheDate ) ? new Date() : dbCacheDate;
+				$( '#elToolsMenuBrowserCache a time' ).html( '(' + ips.getString( 'membermap_browserCache_update' ) + ': ' + ips.utils.time.readable( date.getTime() / 1000 ) + ')' );
+			}
 
 			forceReload = typeof forceReload !== 'undefined' ? forceReload : false;
 
@@ -419,7 +497,7 @@
 			}
 
 			var localStoragePrefix = "";
-			if( !_.isUndefined( ips.getSetting('cookie_prefix') ) && ips.getSetting('cookie_prefix') != '' )
+			if( !_.isUndefined( ips.getSetting('cookie_prefix') ) && ips.getSetting('cookie_prefix') !== '' )
 			{
 				localStoragePrefix = ips.getSetting('cookie_prefix') + '.';
 			}
@@ -432,67 +510,35 @@
 				$( '#elToolsMenuBrowserCache a' ).append( '(Not supported by your browser)' );
 			}
 
+
 			if ( forceReload || ! dbEnabled )
 			{
 				allMarkers = [];
 
-				loadNextFile( 0 );
+				/* Get fresh from the server */
+				loadNextFile( 0, false );
 			}
 			else
 			{
-				/* Get data from browser storage */
-				var data 		= ips.utils.db.get('membermap', localStoragePrefix + 'markers' );
-				var cacheTime 	= ips.utils.db.get('membermap', localStoragePrefix + 'cacheTime' );
-			
-				if ( data === null || cacheTime < ips.getSetting( 'membermap_cacheTime' ) )
-				{
-					reloadMarkers();
-					return;
-				}
-
-				if ( data.data.length > 0 && typeof data.data !== null )
-				{
-					/* Reload cache if it's older than 24 hrs */
-					var date = new Date( data.time * 1000 ),
-					nowdate = new Date();
-					if ( ( ( nowdate.getTime() - date.getTime() ) / 1000 ) > 86400 )
-					{
-						reloadMarkers();
-						return;
-					}
-
-					allMarkers = data.data;
-					showMarkers( false, data.data );
-					updateOverlays();
-					
-					/* Inform that we're showing markers from browser cache */
-					if ( oldMarkersIndicator === null && ! isEmbedded )
-					{
-						oldMarkersIndicator = new L.Control.MembermapOldMarkers(
-						{ 
-							callback: function() 
-							{ 
-								window.location.href = ips.getSetting( 'baseURL' ) + 'index.php?app=membermap&module=membermap&controller=showmap&dropBrowserCache=1'; 
-							}, 
-							time: date 
-						});
-
-						ips.membermap.map.addControl( oldMarkersIndicator );
-					}
-
-					$( '#elToolsMenuBrowserCache a time' ).html( '(' + ips.getString( 'membermap_browserCache_update' ) + ': ' + ips.utils.time.readable( date / 1000 ) + ')' );
-				}
-				else
-				{
-					reloadMarkers();
-					return;
-				}
+				/* Use localStorage */
+				loadNextFile( 0, true );
 			}
-
 		},
 
 		updateOverlays = function()
 		{
+			/* Add marker groups to the map.
+			 * If we do this on the showMarkers() function, MarkerCluster will not do it's "chunkedLoading" magic, 
+			 * and the cluster icon will be created/updated for every single marker */
+			$.each( overlayMaps, function( id, group )
+			{
+				if ( group.addToMap )
+				{
+					group.addTo( map );
+					bounds.extend( group.getBounds() );
+				}
+			});
+
 			/* Count all markers in each overlay */
 			$.each( overlayControl._layers, function( id, layer )
 			{
@@ -524,6 +570,8 @@
 				});
 			}
 
+			overlayControl._update();
+
 
 			/* Contextual menu */
 			/* Needs to run this after the markers, as we need to know if we're editing or adding the location */
@@ -549,29 +597,32 @@
 				}
 			}
 
-			overlayControl._update();
+			/* We don't want to move the map around if we're changing filters or reloading markers */
+			if ( dontRepan === false )
+			{
+				if ( initialCenter instanceof L.LatLng )
+				{
+					if ( zoomLevel )
+					{
+						map.flyTo( initialCenter, zoomLevel, { duration: 1.4 } );
+					}
+					else
+					{
+						map.flyTo( initialCenter );
+					}
+				}
+				else
+				{
+					map.fitBounds( bounds, { 
+						padding: [50, 50],
+						maxZoom: 11
+					});
+				}
+			}
 		},
 		
 		initEvents = function()
 		{
-			/* And adjust it if we resize our browser */
-			if ( isMobileDevice === false && isEmbedded === false )
-			{
-				$( "#mapWrapper" ).resizable(
-				{
-					zIndex: 15000,
-					handles: 's',
-					stop: function(event, ui) 
-					{
-						$(this).css("width", '');
-					},
-					resize: function( event, ui )
-					{
-						map.invalidateSize();
-					}
-				});
-			}
-
 			$( '#membermap_button_addLocation, #membermap_button_editLocation' ).click( function()
 			{
 				if ( typeof popups['addLocationPopup'] === 'object' )
@@ -676,47 +727,6 @@
 					$( '#membermap_form_location input[name="lng"]' ).val( position.coords.longitude );
 
 					$( '#membermap_form_location' ).submit();
-					return;
-
-					/* Skip this for now, will have to see how many requests this app consumes per month */
-
-					ips.getAjax()({ 
-						url: ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=ajax&do=mapquestReverseLookup', 
-						type: 'get',
-						dataType: 'json',
-						data: 
-						{
-							lat: position.coords.latitude,
-							lng: position.coords.longitude
-
-						},
-						success: function( data ) 
-						{
-							// MapQuest
-							/* If adminArea5 is empty, it's likely we don't have a result */
-							if ( data.results[0].locations[0].adminArea5 )
-							{
-								var item = data.results[0].locations[0];
-								var location = item.adminArea5 + 
-											( item.adminArea4 ? ', ' + item.adminArea4 : '' ) + 
-											( item.adminArea3 ? ', ' + item.adminArea3 : '' ) + 
-											( item.adminArea2 ? ', ' + item.adminArea2 : '' ) +
-											( item.adminArea1 ? ', ' + item.adminArea1 : '' );
-
-								$( '#elInput_membermap_location' ).val( location );
-
-								$( '#membermap_form_location' ).submit();
-									
-							}
-							else
-							{
-								$( '#membermap_geolocation_wrapper' ).hide();
-								$( '#membermap_addLocation_error' ).html( ips.getString( 'memebermap_geolocation_error' ) ).show();
-							}
-
-						}
-					});
-
 				},
 				function( error )
 				{
@@ -754,18 +764,21 @@
 				markers = allMarkers;
 			}
 
-			if ( markers.length > 0 )
+			var length = markers.length;
+			if ( length > 0 )
 			{
-				$.each( markers, function() 
-				{		
+				for ( var i=0; i < length; i++ ) 
+				{
+   					var marker = markers[i];
+
 					/* Don't show these, as they all end up in the middle of the South Atlantic Ocean. */
-					if ( this.lat === 0 && this.lon === 0 )
+					if ( marker.lat === 0 && marker.lon === 0 )
 					{
 						return;
 					}
 
-					/* Do we have permission to see this marker? */
-					if ( $.inArray( ips.getSetting( 'member_group' ), this.viewPerms ) === -1 && this.viewPerms !== '*' )
+					/* Do we have permission to see marker marker? */
+					if (marker.viewPerms !== '*' && $.inArray( ips.getSetting( 'member_group' ), marker.viewPerms ) === -1 )
 					{
 						return;
 					}
@@ -778,9 +791,9 @@
 						minWidth: 175
 					};
 
-					if ( this.type == 'member' )
+					if ( marker.type == 'member' )
 					{
-						if ( this.member_id == ips.getSetting( 'memberID' ) )
+						if ( marker.member_id == ips.getSetting( 'memberID' ) )
 						{
 							/* This is me! */
 							icon = 'home';
@@ -801,7 +814,7 @@
 							if ( ips.utils.url.getParam( 'goHome' ) == 1 )
 							{
 								getByUser 	= true;
-								memberId 	= this.member_id;
+								memberId 	= marker.member_id;
 								flyToZoom 	= 10;
 
 								removeURIParam( 'goHome' );
@@ -810,17 +823,17 @@
 						}
 						else
 						{
-							if ( this.markerColour )
+							if ( marker.markerColour )
 							{
-								bgColour = this.markerColour;
+								bgColour = marker.markerColour;
 							}
 						}
 					}
 					else
 					{
-						if ( typeof this.expiryDate === 'number' )
+						if ( typeof marker.expiryDate === 'number' )
 						{
-							if ( parseInt( this.expiryDate ) > 0 && parseInt( this.expiryDate ) < ( Date.now() / 1000 | 0 ) )
+							if ( parseInt( marker.expiryDate ) > 0 && parseInt( marker.expiryDate ) < Math.round( new Date().getTime() / 1000 ) )
 							{
 								Debug.log( "Cache expired" );
 
@@ -828,9 +841,9 @@
 							}
 						}
 
-						iconColour 	= this.colour;
-						icon 		= this.icon || 'fa-map-marker';
-						bgColour 	= this.bgColour;
+						iconColour 	= marker.colour;
+						icon 		= marker.icon || 'fa-map-marker';
+						bgColour 	= marker.bgColour;
 
 						popupOptions.minWidth = 320;
 					}
@@ -846,25 +859,26 @@
 					var contextMenu = [];
 					var enableContextMenu = false;
 
-					if ( this.type == 'member' && ( ips.getSetting( 'canModerateMap' ) ||  ( ips.getSetting( 'memberID' ) == this.member_id && ips.getSetting( 'membermap_canDelete' ) ) ) )
+					if ( marker.type == 'member' && ( ips.getSetting( 'canModerateMap' ) ||  ( ips.getSetting( 'memberID' ) == marker.member_id && ips.getSetting( 'membermap_canDelete' ) ) ) )
 					{
 						enableContextMenu = true;
-						contextMenu = getMarkerContextMenu( this );
+						contextMenu = getMarkerContextMenu( marker );
 					}
 					
-					var mapMarker = new L.Marker( 
-						[ this.lat, this.lon ], 
+					/* Why 'let' and not 'var'? https://stackoverflow.com/questions/4091765/assign-click-handlers-in-for-loop */
+					let mapMarker = L.marker( 
+						L.latLng( marker.lat, marker.lon ), 
 						{ 
-							title: this.title,
+							title: marker.title,
 							icon: _icon,
 							contextmenu: enableContextMenu,
 						    contextmenuItems: contextMenu
 						}
-					).bindPopup( this.popup, ( popupOptions || {} ) );
-					
-					mapMarker.markerData = this;
+					);
 
-					if ( this.type == 'member' )
+					mapMarker.bindPopup( marker.popup, ( popupOptions || {} ) );
+
+					if ( marker.type == 'member' )
 					{
 						/* Add to member list sidebar */
 						if ( $( '#memberList_staff' ).length )
@@ -907,120 +921,114 @@
 
 
 						/* Group by member group */
-						if ( ips.getSetting( 'membermap_groupByMemberGroup' ) && this.parent_id > 0 )
+						if ( ips.getSetting( 'membermap_groupByMemberGroup' ) && marker.parent_id > 0 )
 						{
-							if ( typeof overlayMaps[ 'member-' + this.parent_id ] === "undefined" )
+							if ( _.isUndefined( overlayMaps[ 'member-' + marker.parent_id ] ) )
 							{
-								overlayMaps[ 'member-' + this.parent_id ] = L.featureGroup.subGroup( mastergroup );
-								overlayControl.addOverlay( overlayMaps[ 'member-' + this.parent_id  ], this.parent_name );
+								overlayMaps[ 'member-' + marker.parent_id ] = L.featureGroup.subGroup( mastergroup );
+								overlayControl.addOverlay( overlayMaps[ 'member-' + marker.parent_id  ], marker.parent_name );
 
+								overlayMaps[ 'member-' + marker.parent_id ].addToMap = 0;
+
+								/* This was a custom request. Add "&group=<groupname>,<groupname2>" to the URL to only show those marker groups. */
 								if ( ips.getSetting( 'membermap_onlyShowGroup' ).length > 0 )
 								{
-									if ( $.inArray( this.parent_name.toLowerCase(), ips.getSetting( 'membermap_onlyShowGroup' ) ) !== -1 )
+									if ( $.inArray( marker.parent_name.toLowerCase(), ips.getSetting( 'membermap_onlyShowGroup' ) ) !== -1 )
 									{
-										overlayMaps[ 'member-' + this.parent_id ].addTo( map );
+										overlayMaps[ 'member-' + marker.parent_id ].addToMap = 1;
 									}
 								}
 								else
 								{
-									overlayMaps[ 'member-' + this.parent_id ].addTo( map );
+									overlayMaps[ 'member-' + marker.parent_id ].addToMap = 1;
 								}
 							}
 
-							overlayMaps[ 'member-' + this.parent_id ].addLayer( mapMarker );
+
+							mapMarker.addTo( overlayMaps[ 'member-' + marker.parent_id ] );
 						}
 						/* Show all in one group/layer */
 						else
 						{
-							if ( typeof overlayMaps['members'] === "undefined" )
+							if ( _.isUndefined( overlayMaps['members'] ) )
 							{
 								overlayMaps['members'] = L.featureGroup.subGroup( mastergroup );
 								overlayControl.addOverlay( overlayMaps['members'], ips.getString( 'membermap_overlay_members' ) );
 
+								overlayMaps['members'].addToMap = 0;
+
+								/* This was a custom request. Add "&group=<groupname>,<groupname2>" to the URL to only show those marker groups. */
 								if ( ips.getSetting( 'membermap_onlyShowGroup' ).length > 0 )
 								{
 									if ( $.inArray( "members", ips.getSetting( 'membermap_onlyShowGroup' ) ) !== -1 )
 									{
-										overlayMaps['members'].addTo( map );
+										overlayMaps['members'].addToMap = 1;
 									}
 								}
 								else
 								{
-									overlayMaps['members'].addTo( map );
+									overlayMaps['members'].addToMap = 1;
 								}
 							}
+
 							
-							overlayMaps['members'].addLayer( mapMarker );
+							mapMarker.addTo( overlayMaps['members'] );
 						}
 					}
 					else
 					{
-						this.parent_id = this.appName || this.parent_id;
+						marker.parent_id = marker.appName || marker.parent_id;
 						
-						if ( typeof overlayMaps[ 'custom-' + this.parent_id ] === "undefined" )
+						if ( _.isUndefined( overlayMaps[ 'custom-' + marker.parent_id ] ) )
 						{
-							var layerName = ips.getString( 'membermap_marker_group_' + this.parent_id + '_JS' ) || ( this.parent_name ? this.parent_name : this.appName );
+							var layerName = ips.getString( 'membermap_marker_group_' + marker.parent_id + '_JS' ) || ( marker.parent_name ? marker.parent_name : marker.appName );
 
-							overlayMaps[ 'custom-' + this.parent_id ] = L.featureGroup.subGroup( mastergroup );
-							overlayControl.addOverlay( overlayMaps[ 'custom-' + this.parent_id  ], layerName );
+							overlayMaps[ 'custom-' + marker.parent_id ] = L.featureGroup.subGroup( mastergroup );
+							overlayControl.addOverlay( overlayMaps[ 'custom-' + marker.parent_id  ], layerName );
 
+							overlayMaps[ 'custom-' + marker.parent_id ].addToMap = 0;
+
+							/* This was a custom request. Add "&group=<groupname>,<groupname2>" to the URL to only show those marker groups. */
 							if ( ips.getSetting( 'membermap_onlyShowGroup' ).length > 0 )
 							{
 								if ( $.inArray( layerName.toLowerCase(), ips.getSetting( 'membermap_onlyShowGroup' ) ) !== -1 )
 								{
-									overlayMaps[ 'custom-' + this.parent_id ].addTo( map );
+									overlayMaps[ 'custom-' + marker.parent_id ].addToMap = 1;
 								}
 							}
 							else
 							{
-								overlayMaps[ 'custom-' + this.parent_id ].addTo( map );
+								overlayMaps[ 'custom-' + marker.parent_id ].addToMap = 1;
 							}
 						}
+
 						
-						overlayMaps[ 'custom-' + this.parent_id ].addLayer( mapMarker );
+						mapMarker.addTo( overlayMaps[ 'custom-' + marker.parent_id ] );
 					}
 
 					/* Count the number of markers we have on the map */
 					counter = counter + 1;
 
 					/* Pan directly to our home location, if that's what we wanted */
-					if ( getByUser && memberId > 0 && this.type == 'member' && this.member_id == memberId )
+					if ( getByUser && memberId > 0 && marker.type == 'member' && marker.member_id == memberId )
 					{
 						dontRepan = true;
 						map.flyTo( mapMarker.getLatLng(), flyToZoom );
 					}
-				});
+				}
 
 				/* Update the counter */
 				$( '#membermap_counter span' ).html( counter );
-			}
 
-			/* We don't want to move the map around if we're changing filters or reloading markers */
-			if ( dontRepan === false )
-			{
-				if ( initialCenter instanceof L.LatLng )
 
 				/* Show the sidebar blocks, if we have content in them */
 				if ( showStaffMembersBlock && $( '#memberList_staff' ).is( ':hidden' ) )
 				{
-					if ( zoomLevel )
-					{
-						map.flyTo( initialCenter, zoomLevel, { duration: 1.4 } );
-					}
-					else
-					{
-						map.flyTo( initialCenter );
-					}
 					$( '#memberList_staff' ).slideDown( 200 );
 				}
-				else
 				
 				if ( showFollowedUsersBlock && $( '#memberList_followers' ).is( ':hidden' ) )
 				{
-					map.fitBounds( mastergroup.getBounds(), { 
-						padding: [50, 50],
-						maxZoom: 11
-					});
 					$( '#memberList_followers' ).slideDown( 200 );
 				}
 				
