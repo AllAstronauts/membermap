@@ -127,6 +127,13 @@
 					options: {
 						attribution: '{attribution.OpenStreetMap}, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
 					}
+				},
+				BZH: {
+					url: 'http://tile.openstreetmap.bzh/br/{z}/{x}/{y}.png',
+					options: {
+						attribution: '{attribution.OpenStreetMap}, Tiles courtesy of <a href="http://www.openstreetmap.bzh/" target="_blank">Breton OpenStreetMap Team</a>',
+						bounds: [[46.2, -5.5], [50, 0.7]]
+					}
 				}
 			}
 		},
@@ -149,6 +156,7 @@
 				attribution:
 					'&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, {attribution.OpenStreetMap}',
 				variant: 'cycle',
+				apikey: '<insert your api key here>',
 				maxZoom: 22
 			},
 			variants: {
@@ -559,6 +567,23 @@
 						variant: 'bmaporthofoto30cm',
 						format: 'jpeg'
 					}
+				}
+			}
+		},
+		nlmaps: {
+			url: 'https://geodata.nationaalgeoregister.nl/tiles/service/wmts/{variant}/EPSG:3857/{z}/{x}/{y}.png',
+			options: {
+				minZoom: 6,
+				maxZoom: 19,
+				bounds: [[50.5, 3.25], [54, 7.6]],
+				attribution: 'Kaartgegevens &copy; <a href="kadaster.nl">Kadaster</a>'
+			},
+			variants: {
+				'standaard': 'brtachtergrondkaart',
+				'pastel': 'brtachtergrondkaartpastel',
+				'grijs': 'brtachtergrondkaartgrijs',
+				'luchtfoto': {
+					'url': 'https://geodata.nationaalgeoregister.nl/luchtfoto/rgb/wmts/1.0.0/2016_ortho25/EPSG:3857/{z}/{x}/{y}.png',
 				}
 			}
 		},
