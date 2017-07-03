@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="110016">
+ <app key="membermap" version="110017">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
   <word key="__indefart_membermap_marker" js="0">a Member Map Marker</word>
@@ -70,6 +70,7 @@
   <word key="membermap_bbox_zoom" js="0">Default Zoom Level</word>
   <word key="membermap_bbox_zoom_desc" js="0">Only affective when a bounding box is defined.</word>
   <word key="membermap_showNightAndDay" js="0">Show a 'night and day' overlay</word>
+  <word key="membermap_showMemberList" js="0">Show a list of markers in the sidebar?</word>
   <word key="membermap_groupByMemberGroup" js="0">Group member markers by member group?</word>
   <word key="membermap_autoUpdate" js="0">Profile location synchronisation</word>
   <word key="membermap_monitorLocationField" js="0">Enable profile sync?</word>
@@ -145,6 +146,9 @@
   <word key="membermap_rebuildBrowserCache" js="0">Rebuild Browser Cache</word>
   <word key="membermap_rebuildServerCache" js="0">Rebuild Server Cache (Last Update: %s)</word>
   <word key="membermap_rebuildServerCache_notSet" js="0">Rebuild Server Cache (Not created yet)</word>
+  <word key="block_memberList_staff" js="0">Staff members</word>
+  <word key="block_memberList_followers" js="0">Members you follow</word>
+  <word key="block_memberList_others" js="0">Other members</word>
   <word key="membermap_button_editLocation" js="1">Update Location</word>
   <word key="membermap_location_title" js="1">Update Location</word>
   <word key="membermap_no_results" js="1">Couldn't find what you were looking for. Showing all members instead.</word>
