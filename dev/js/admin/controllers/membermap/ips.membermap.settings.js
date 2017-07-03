@@ -16,7 +16,6 @@
 							format: 'json',
 							q: request.term,
 							extratags: 0,
-
 						},
 						success: function( data ) 
 						{

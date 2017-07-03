@@ -392,7 +392,7 @@
 							return;
 						}
 
-						showMarkers( false, data.data );
+						showMarkers( data.data );
 						allMarkers = allMarkers.concat( data.data );
 
 						loadNextFile( ++id, true );
@@ -428,7 +428,7 @@
 							}
 
 							/* Show marker layer */
-							showMarkers( false, res.markers );
+							showMarkers( res.markers );
 							allMarkers = allMarkers.concat( res.markers );
 
 							loadNextFile( nextId, false );
@@ -670,10 +670,8 @@
 							{
 								ips.getAjax()({ 
 									url: ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=ajax&do=mapquestSearch',
-									dataType: 'jsonp',
-									jsonp: 'json_callback',
-									data: 
-									{
+									dataType: 'json',
+									data: {
 										q: request.term,
 									},
 									success: function( data ) 
@@ -740,9 +738,8 @@
 			}
 		},
 	
-		showMarkers = function( dontRepan, markers )
+		showMarkers = function( markers )
 		{
-			dontRepan = typeof dontRepan !== 'undefined' ? dontRepan : false;
 			markers = typeof markers !== 'undefined' ? markers : false;
 
 			var getByUser 	= ips.utils.url.getParam( 'filter' ) == 'getByUser' ? true : false;
