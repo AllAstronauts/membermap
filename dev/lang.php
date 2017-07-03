@@ -88,6 +88,7 @@ $lang = array(
 	'membermap_bbox_zoom' 				=> "Default Zoom Level",
 	'membermap_bbox_zoom_desc' 			=> "Only affective when a bounding box is defined.",
 	'membermap_showNightAndDay'			=> "Show a 'night and day' overlay",
+	'membermap_showMemberList'			=> "Show a list of markers in the sidebar?",
 	'membermap_groupByMemberGroup'		=> "Group member markers by member group?",
 	'membermap_autoUpdate'				=> "Profile location synchronisation",
 	'membermap_monitorLocationField' 	=> "Enable profile sync?",
@@ -181,4 +182,9 @@ $lang = array(
 	'membermap_rebuildBrowserCache' 		=> "Rebuild Browser Cache",
 	'membermap_rebuildServerCache' 			=> "Rebuild Server Cache (Last Update: %s)",
 	'membermap_rebuildServerCache_notSet' 	=> "Rebuild Server Cache (Not created yet)",
+
+	/* Member List block */
+	'block_memberList_staff'				=> "Staff members",
+	'block_memberList_followers'			=> "Members you follow",
+	'block_memberList_others'				=> "Other members",
 );

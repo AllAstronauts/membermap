@@ -9,22 +9,19 @@
 				source: function( request, response ) 
 				{
 					ips.getAjax()({ 
-						url: 'https://open.mapquestapi.com/nominatim/v1/search.php',
+						url: '?app=membermap&module=membermap&controller=settings&do=mapquestSearch',
 						type: 'get',
 						dataType: 'json',
 						data: {
-							key: ips.getSetting( 'membermap_mapquestAPI' ),
 							format: 'json',
 							q: request.term,
 							extratags: 0,
-
 						},
 						success: function( data ) 
 						{
 							// MapQuest Nominatim
 							response( $.map( data, function( item )
 							{
-								Debug.log( item );
 								return {
 									value: item.display_name,
 									bbox: {

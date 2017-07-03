@@ -76,14 +76,12 @@ class _showmap extends \IPS\Dispatcher\Controller
 		/* Load JS and CSS */
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/leaflet.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/Control.FullScreen.js', 'membermap', 'interface' ) );
-		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/Control.Loading.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/leaflet-providers.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/leaflet.awesome-markers.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/leaflet.contextmenu-src.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/leaflet.markercluster-src.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/leaflet.terminator.js', 'membermap', 'interface' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/plugins/subgroup.js', 'membermap', 'interface' ) );
-		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/toGeoJSON.js', 'membermap', 'interface' ) );
 
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'front_main.js', 'membermap', 'front' ) );
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'jquery/jquery-ui.js', 'membermap', 'interface' ) );
@@ -92,14 +90,11 @@ class _showmap extends \IPS\Dispatcher\Controller
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.css', 'membermap', 'global' ) );
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'jquery-ui.css', 'membermap', 'global' ) );
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.control.fullscreen.css', 'membermap' ) );
-		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.control.loading.css', 'membermap' ) );
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.awesome-markers.css', 'membermap' ) );
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.contextmenu.css', 'membermap' ) );
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'leaflet.markercluster.css', 'membermap' ) );
-		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'jq.showloading.css', 'membermap' ) );
 
 		\IPS\Output::i()->title = \IPS\Member::loggedIn()->language()->addToStack( '__app_membermap' );
-		\IPS\Output::i()->sidebar['enabled'] = FALSE;
 
         /* Update session location */
         \IPS\Session::i()->setLocation( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=showmap', 'front', 'membermap' ), array(), 'loc_membermap_viewing_membermap' );
@@ -116,11 +111,11 @@ class _showmap extends \IPS\Dispatcher\Controller
 			'membermap_bbox'				=> json_decode( \IPS\Settings::i()->membermap_bbox ),
 			'membermap_bbox_zoom'			=> intval( \IPS\Settings::i()->membermap_bbox_zoom ),
 			'membermap_defaultMaps'			=> $defaultMaps,
-			'membermap_mapquestAPI'			=> \IPS\membermap\Application::getApiKeys( 'mapquest' ),
 			'membermap_enable_clustering' 	=> \IPS\Settings::i()->membermap_enable_clustering == 1 ? 1 : 0,
 			'membermap_groupByMemberGroup'	=> \IPS\Settings::i()->membermap_groupByMemberGroup == 1 ? 1 : 0,
 			'membermap_onlyShowGroup'		=> \IPS\Request::i()->group ? explode( ',', mb_strtolower( \IPS\Request::i()->group ) ) : array(),
 			'membermap_showNightAndDay'		=> \IPS\Settings::i()->membermap_showNightAndDay == 1 ?: 0,
+			'membermap_membersIFollow'		=> iterator_to_array( \IPS\Db::i()->select( 'follow_rel_id', 'core_follow', array( 'follow_app=? AND follow_area=? AND follow_member_id=?', 'core', 'member', \IPS\Member::loggedIn()->member_id ) ) )
         ));
 
 
@@ -130,36 +125,12 @@ class _showmap extends \IPS\Dispatcher\Controller
 		</script>
 EOF;
 
+		if ( \IPS\Settings::i()->membermap_showMemberList )
+		{
+			\IPS\Output::i()->sidebar['contextual'] = \IPS\Theme::i()->getTemplate( 'map' )->memberList();
+		}
+
         \IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'map' )->showMap( $markers, $cacheTime, $canAdd, $canEdit );
-	}
-
-	/**
-	 * Get the cache file
-	 * Proxying it through this instead of exposing the location to the end user, and to send a proper error code
-	 *
-	 * @return json
-	 */
-	protected function getCache()
-	{
-		$fileId = isset( \IPS\Request::i()->id ) ? (int) \IPS\Request::i()->id : NULL;
-
-		if ( $fileId >= 0 )
-		{
-			if ( file_exists( \IPS\ROOT_PATH . "/datastore/membermap_cache/membermap-{$fileId}.json" ) )
-			{
-				$output = \file_get_contents( \IPS\ROOT_PATH . "/datastore/membermap_cache/membermap-{$fileId}.json" );
-			}
-			else
-			{
-				$output = json_encode( array( 'error' => 'not_found' ) );
-			}
-		}
-		else
-		{
-			$output = json_encode( array( 'error' => 'invalid_id' ) );
-		}
-
-		\IPS\Output::i()->sendOutput( $output, 200, 'application/json' );
 	}
 
 	/**

@@ -1,31 +1,20 @@
 /**
- * Leaflet.FeatureGroup.SubGroup 1.0.0 (44a6572)
- * Creates a Feature Group that adds its child layers into a parent group when added to a map (e.g. through L.Control.Layers).
- * (c) 2015-2016 Boris Seang
- * BSD 2-Clause "Simplified" License
+ * Leaflet.FeatureGroup.SubGroup 1.0.2+00bb0d4
+ * Creates a Leaflet Feature Group that adds its child layers into a parent group when added to a map
+ * (c) 2015-2017 Boris Seang
+ * License BSD-2-Clause
  */
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["leaflet"], function (L) {
-            return (root.L.FeatureGroup.SubGroup = factory(L));
-        });
+        define(["leaflet"], factory);
     } else if (typeof module === "object" && module.exports) {
-        module.exports = factory(require("leaflet"));
+        factory(require("leaflet"));
     } else {
-        root.L.FeatureGroup.SubGroup = factory(root.L);
+        factory(root.L);
     }
 }(this, function (L) {
 
-var FG = L.FeatureGroup,
-    FGproto = FG.prototype,
-    LG = L.LayerGroup;
-
-
-var SubGroup = FG.extend({
-
-    statics: {
-        version: "1.0.0"
-    },
+L.FeatureGroup.SubGroup = L.FeatureGroup.extend({
 
     /**
      * Instantiates a SubGroup.
@@ -33,7 +22,7 @@ var SubGroup = FG.extend({
      * @param layersArray (L.Layer[]) (optional)
      */
     initialize: function (parentGroup, layersArray) {
-        FGproto.initialize.call(this, layersArray);
+        L.FeatureGroup.prototype.initialize.call(this, layersArray);
 
         this.setParentGroup(parentGroup);
     },
@@ -45,7 +34,7 @@ var SubGroup = FG.extend({
      * @returns {SubGroup} this
      */
     setParentGroup: function (parentGroup) {
-        var pgInstanceOfLG = parentGroup instanceof LG;
+        var pgInstanceOfLG = parentGroup instanceof L.LayerGroup;
 
         this._parentGroup = parentGroup;
 
@@ -148,8 +137,8 @@ var SubGroup = FG.extend({
 
     // Defaults to standard FeatureGroup behaviour when parent group is not
     // specified or is not a type of LayerGroup.
-    _onAddToMap: FGproto.onAdd,
-    _onRemoveFromMap: FGproto.onRemove,
+    _onAddToMap: L.FeatureGroup.prototype.onAdd,
+    _onRemoveFromMap: L.FeatureGroup.prototype.onRemove,
 
 
     _addLayerToGroup: function (layer) {
@@ -172,20 +161,23 @@ var SubGroup = FG.extend({
     },
 
     _removeLayerFromGroup: function (layer) {
+        // If unknown layer, skip.
         if (!this.hasLayer(layer)) {
             return this;
         }
-        if (layer in this._layers) {
-            layer = this._layers[layer];
-        }
 
-                    layer.removeEventParent(this);
-
+        // Retrieve the layer id.
         var id = layer in this._layers ? layer : this.getLayerId(layer);
 
-        if (this._map && this._layers[id]) {
+        // Retrieve the layer from this._layer.
+        layer = this._layers[id];
+
+        // Unregister from events parent.
+        layer.removeEventParent(this);
+
+        if (this._map && layer) {
             // Remove from parent group instead of directly from map.
-            this._parentGroup.removeLayer(id);
+            this._parentGroup.removeLayer(layer);
         }
 
         delete this._layers[id];
@@ -195,8 +187,8 @@ var SubGroup = FG.extend({
 
     // Defaults to standard FeatureGroup behaviour when parent group is not
     // specified or is not a type of LayerGroup.
-    _addLayerToMap: FGproto.addLayer,
-    _removeLayerFromMap: FGproto.removeLayer
+    _addLayerToMap: L.FeatureGroup.prototype.addLayer,
+    _removeLayerFromMap: L.FeatureGroup.prototype.removeLayer
 
 });
 
@@ -204,11 +196,9 @@ var SubGroup = FG.extend({
 
 // Supply with a factory for consistency with Leaflet.
 L.featureGroup.subGroup = function (parentGroup, options) {
-    return new FG.SubGroup(parentGroup, options);
+    return new L.FeatureGroup.SubGroup(parentGroup, options);
 };
 
 
-
-    return SubGroup; // Must be the same identifier as in src!
 
 }));

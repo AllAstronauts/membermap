@@ -119,7 +119,7 @@ class _membermap
 	 */
 	public function onProfileUpdate( $member, $changes )
 	{
-		/* An endless loop is formed when \Item::createItem() is saving \Member, which then fire this membersync, which then calls \Item::createItem, and so on, and so on */
+		/* An endless loop is formed when \Item::createItem() is saving \Member, which then fires this membersync, which then calls \Item::createItem, and so on, and so on */
 		static $wereDoneHere = false;
 
 		if ( $wereDoneHere )
@@ -146,12 +146,13 @@ class _membermap
 		{
 			if( \IPS\Settings::i()->membermap_monitorLocationField_groupPerm === '*' or \IPS\Member::loggedIn()->inGroup( explode( ',', \IPS\Settings::i()->membermap_monitorLocationField_groupPerm ) ) )
 			{
-				if ( isset( $changes['field_' . \IPS\Settings::i()->membermap_profileLocationField ] ) AND ! empty( $changes['field_' . \IPS\Settings::i()->membermap_profileLocationField ] ) )
+				$fieldValue = isset( $changes['field_' . \IPS\Settings::i()->membermap_profileLocationField ] ) ? $changes['field_' . \IPS\Settings::i()->membermap_profileLocationField ] : "";
+
+				if ( isset( $fieldValue ) AND ! empty( $fieldValue ) AND $fieldValue != "null" )
 				{
 					try
 					{
 						$lat = $lng = $location = NULL;
-						$fieldValue = $changes['field_' . \IPS\Settings::i()->membermap_profileLocationField ];
 
 						/* If it's an array, it might be from an address field, which already have the lat/lng data */
 						if( is_array( json_decode( $fieldValue, TRUE ) ) )
@@ -171,27 +172,31 @@ class _membermap
 								$location = implode( ', ', $addressData['addressLines'] );
 							}
 						}
-						/* It's a text field, or \IPS\Geolocation failed to get coordinates (in which case we won't bother either */
-						else
+						
+						/* If lat and lng is still null, \IPS\Geolocation was not able to find it.  */
+						if ( $lat === NULL AND $lng === NULL )
 						{
 							/* Remove HTML, newlines, tab, etc, etc */
-							$fieldValue = preg_replace( "/[\\x00-\\x20]|\\xc2|\\xa0+/", ' ', strip_tags( $fieldValue ) );
-							$fieldValue = trim( preg_replace( "/\s\s+/", ' ', $fieldValue ) );
+							if ( $location === NULL )
+							{
+								$fieldValue = preg_replace( "/[\\x00-\\x20]|\\xc2|\\xa0+/", ' ', strip_tags( $fieldValue ) );
+								$fieldValue = trim( preg_replace( "/\s\s+/", ' ', $fieldValue ) );
+							}
 
 							/* To my understanding we're not allowed to use \IPS\Geolocation, as that uses Google API, and we're not showing the info on a Google Map. */
-							$nominatim = \IPS\membermap\Map::i()->getLatLng( $fieldValue );
+							$nominatim = \IPS\membermap\Map::i()->getLatLng( $location ?: $fieldValue );
 
 							if( is_array( $nominatim ) AND count( $nominatim ) )
 							{
 								$lat 		= $nominatim['lat'];
 								$lng 		= $nominatim['lng'];
-								$location 	= $nominatim['location'];
+								$location 	= $location ?: $nominatim['location'];
 							}
 						}
 
 						if( $lat AND $lng )
 						{
-							$existingMarker = \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE );
+							$existingMarker = \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE, FALSE );
 
 							if( $existingMarker instanceof \IPS\membermap\Markers\Markers )
 							{
@@ -213,6 +218,7 @@ class _membermap
 
 							/* Save and add to search index */
 							$marker->save();
+
 							\IPS\Content\Search\Index::i()->index( $marker );
 						}
 					}

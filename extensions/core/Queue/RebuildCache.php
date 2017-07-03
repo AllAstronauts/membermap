@@ -64,6 +64,9 @@ class _RebuildCache
 	 */
 	public function run( $data, $offset )
 	{
+		/* https://bugs.php.net/bug.php?id=72567 */
+		ini_set('serialize_precision', 14);
+
 		$currentMemUsage = memory_get_usage( TRUE );
 
 		/* Wipe out the old files on the first run */
@@ -86,7 +89,7 @@ class _RebuildCache
 		}
 
 		/* Remember to update membermap\Map too */
-		$_markers = \IPS\Db::i()->select( implode( ',', $selectColumns ), array( 'membermap_markers', 'mm' ), array( 'marker_open=1' ), 'mg.group_position ASC, mm.marker_id DESC', array( $offset, $this->perCycle ) )
+		$_markers = \IPS\Db::i()->select( implode( ',', $selectColumns ), array( 'membermap_markers', 'mm' ), array( 'marker_open=1' ), 'mg.group_position ASC, mm.marker_name ASC', array( $offset, $this->perCycle ) )
 					->join( array( 'membermap_markers_groups', 'mg' ), 'mm.marker_parent_id=mg.group_id' )
 					->join( array( 'core_permission_index', 'pi' ), "( pi.perm_type_id=mg.group_id AND pi.app='membermap' AND pi.perm_type='membermap' )" )
 					->join( array( 'core_members', 'm' ), 'mm.marker_member_id=m.member_id' );

@@ -1,5 +1,3 @@
-
-
 #membermapWrapper {
 	position: relative;	
 }
@@ -25,6 +23,9 @@
 	min-height: 300px;	
 }
 
+#membermap_memberList {
+	overflow: auto;
+}
 
 #membermap_location > label {
 	display: none;
