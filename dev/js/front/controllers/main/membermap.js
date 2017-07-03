@@ -883,7 +883,7 @@
 						/* Add to member list sidebar */
 						if ( $( '#memberList_staff' ).length )
 						{
-							var title = $( '<li>' ).append( marker.member_name );
+							var title = $( '<li>' ).addClass( 'ipsCursor_pointer' ).append( marker.member_name );
 
 							if ( marker.isStaff )
 							{

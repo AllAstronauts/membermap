@@ -125,6 +125,11 @@ class _showmap extends \IPS\Dispatcher\Controller
 		</script>
 EOF;
 
+		if ( \IPS\Settings::i()->membermap_showMemberList )
+		{
+			\IPS\Output::i()->sidebar['contextual'] = \IPS\Theme::i()->getTemplate( 'map' )->memberList();
+		}
+
         \IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'map' )->showMap( $markers, $cacheTime, $canAdd, $canEdit );
 	}
 
