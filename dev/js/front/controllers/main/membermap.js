@@ -771,13 +771,13 @@
 					/* Don't show these, as they all end up in the middle of the South Atlantic Ocean. */
 					if ( marker.lat === 0 && marker.lon === 0 )
 					{
-						return;
+						continue;
 					}
 
 					/* Do we have permission to see marker marker? */
 					if (marker.viewPerms !== '*' && $.inArray( ips.getSetting( 'member_group' ), marker.viewPerms ) === -1 )
 					{
-						return;
+						continue;
 					}
 					
 					var bgColour 	= 'darkblue';
