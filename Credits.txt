@@ -1,0 +1,72 @@
+jQuery UI
+	Description: Javascript library for autocomplete
+	Location: interface/jquery/jquery-ui.js
+	Included version: 1.12.1
+	Website: http://jqueryui.com
+	License: http://jquery.org/license
+
+LeafletJS
+	Description: Map library
+	Location: interface/leaflet
+	Included version: 1.1.0
+	Website: http://leafletjs.com/
+	License: BSD 2-clause "Simplified" https://github.com/Leaflet/Leaflet/blob/master/LICENSE
+
+Leaflet.Awesome-Markers
+	Description: Use Font-Awesome icons in markers.
+	Location: interface/leaflet/plugins/leaflet.awesome-markers.js
+	Included version: 2.0.1
+	Website: https://github.com/sigma-geosistemas/Leaflet.awesome-markers
+	License: MIT https://github.com/sigma-geosistemas/Leaflet.awesome-markers/blob/master/LICENSE
+
+Leaflet.Contextmenu
+	Description: Context menu for Leaflet
+	Location: interface/leaflet/plugins/leaflet.contextmenu-src.js
+	Included version: -
+	Website: https://github.com/aratcliffe/Leaflet.contextmenu
+	License: MIT https://github.com/aratcliffe/Leaflet.contextmenu/blob/master/LICENSE.md
+
+Leaflet.Fullscreen
+	Description: Leaflet Fullscreen library
+	Location: interface/leaflet/plugins/Control.FullScreen.js
+	Included version: 1.4.3
+	Website: https://github.com/brunob/leaflet.fullscreen
+	License: MIT https://github.com/brunob/leaflet.fullscreen/blob/master/LICENSE
+
+Leaflet.markercluster
+	Description: Marker clustering library
+	Location: interface/leaflet/plugins/leaflet.markercluster-src.js
+	Included version: 1.0.6
+	Website: https://github.com/Leaflet/Leaflet.markercluster
+	License: MIT https://github.com/Leaflet/Leaflet.markercluster/blob/master/MIT-LICENCE.txt
+
+Leaflet-providers
+	Description: List of free-to-use map tile providers for Leaflet
+	Location: interface/leaflet/plugins/leaflet-providers.js
+	Included version: 1.1.17
+	Website: https://github.com/leaflet-extras/leaflet-providers
+	License: BSD 2-clause "Simplified" https://github.com/leaflet-extras/leaflet-providers/blob/master/license.md
+
+Leaflet.Subgroup
+	Description: Creates a Leaflet Feature Group that adds its child layers into a parent group when added to a map
+	Location: interface/leaflet/plugins/subgroup.js
+	Included version: 1.0.2
+	Website: https://github.com/ghybs/Leaflet.FeatureGroup.SubGroup
+	License: BSD 2-clause "Simplified" https://github.com/ghybs/Leaflet.FeatureGroup.SubGroup/blob/master/LICENSE
+
+Leaflet.Terminator
+	Description: Overlay day and night regions on Leaflet
+	Location: interface/leaflet/plugins/leaflet.terminator.js
+	Included version: -
+	Website: https://github.com/joergdietrich/Leaflet.Terminator
+	License: MIT https://github.com/joergdietrich/Leaflet.Terminator/blob/master/LICENSE
+
+lz-string
+	Description: LZ-based compression algorithm for JavaScript. Used to compress data before storing in localStorage
+	Location: interface/lz-string
+	Included version: -
+	Website: https://github.com/pieroxy/lz-string/
+	License: WTFPL https://github.com/pieroxy/lz-string/blob/master/LICENSE.txt
+
+stoo2000
+	Description: For being the developer of the IPB 3.x version of this app! :thumbsup:

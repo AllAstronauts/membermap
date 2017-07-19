@@ -359,7 +359,7 @@
 				if ( fromDb )
 				{
 					/* Get data from browser storage */
-					var data 		= ips.utils.db.get('membermap', localStoragePrefix + 'markers_' + id );
+					var data 		= localStorage.getItem( 'membermap.' + localStoragePrefix + 'markers_' + id );
 					var cacheTime 	= ips.utils.db.get('membermap', localStoragePrefix + 'cacheTime' );
 				
 					if ( ( id === 0 && data === null ) || cacheTime < ips.getSetting( 'membermap_cacheTime' ) )
@@ -378,6 +378,16 @@
 					if ( data === null )
 					{
 						finished( true );
+						return;
+					}
+
+					try
+					{
+						data = JSON.parse( LZString.decompressFromUTF16( data ) );
+					}
+					catch( e )
+					{
+						reloadMarkers();
 						return;
 					}
 
@@ -418,10 +428,7 @@
 
 							if ( dbEnabled )
 							{
-								ips.utils.db.set( 'membermap', localStoragePrefix + 'markers_' + id, { time: parseInt( ( new Date() ).getTime() / 1000, 10 ), data: res.markers } );
-
-								Debug.log( "Stored ID: " + id );
-								Debug.log( JSON.stringify( res.markers ).length );
+								localStorage.setItem( 'membermap.' + localStoragePrefix + 'markers_' + id, LZString.compressToUTF16( JSON.stringify( { time: parseInt( ( new Date() ).getTime() / 1000, 10 ), data: res.markers }  ) ) );
 
 								/* Delete the next localStorage. This one might be the last chunk */
 								ips.utils.db.remove('membermap', localStoragePrefix + 'markers_' + nextId );
