@@ -22,6 +22,13 @@
 				{{$count = \IPS\membermap\Markers\Markers::contentCount( $group );}}
 				<dt class="ipsDataItem_stats_number">{number="$count"}</dt>
 				<dd class="ipsDataItem_stats_type ipsType_light">{lang="group_markers_number_noCount" pluralize="$count"}</dd>
+
+				{{if \IPS\forums\Topic::modPermission( 'unhide', NULL, $group ) AND $group->_unapprovedItems > 0}}
+					<strong class='ipsType_warning ipsType_medium'>
+						<i class='fa fa-warning'></i>
+						<a href='{$group->url()->setQueryString( array( 'advanced_search_submitted' => 1, 'marker_type' => 'queued_markers' ) )->csrf()}' class='ipsType_blendLinks'>{$group->_unapprovedItems}</a>
+					</strong>
+				{{endif}}
 			</dl>
 			<ul class="ipsDataItem_lastPoster ipsDataItem_withPhoto">
 				{{if $lastPost = $group->lastMarker()}}

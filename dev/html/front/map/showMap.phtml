@@ -30,7 +30,10 @@
 				{{endif}}
 
 				<li>
-					<a href="{url='app=membermap&module=markers&controller=groups' seoTemplate='markers'}" title='{lang="membermap_browse_markers"}' class='ipsButton ipsButton_medium ipsButton_fullWidth ipsButton_link'><i class="icon-newspaper"></i> {lang="membermap_browse_markers"}</a>
+					{{$unapproved = \iPS\membermap\Markers\Groups::getTotalUnapprovedCount();}}
+					<a href="{url='app=membermap&module=markers&controller=groups' seoTemplate='markers'}" title='{lang="membermap_browse_markers"}' class='ipsButton ipsButton_medium ipsButton_fullWidth ipsButton_link'>
+						<i class="icon-newspaper"></i> {lang="membermap_browse_markers"} {{if $unapproved > 0}}&nbsp;<strong class='ipsType_warning ipsType_medium'><i class='fa fa-warning'></i> {$unapproved}</strong>{{endif}}
+					</a>
 				</li>
 
 				{{if \IPS\Member::loggedIn()->isAdmin()}}

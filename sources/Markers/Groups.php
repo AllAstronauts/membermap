@@ -256,6 +256,27 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 	{
 		$this->setlastMarker();
 	}
+
+	/**
+	 * [Node] Get number of unapproved content items
+	 *
+	 * @return	int
+	 */
+	protected function get__unapprovedItems()
+	{
+		return $this->queued_items;
+	}
+
+	/**
+	 * [Node] Get number of unapproved content items
+	 *
+	 * @param	int	$val	Unapproved Items
+	 * @return	void
+	 */
+	protected function set__unapprovedItems( $val )
+	{
+		$this->queued_items = $val;
+	}
 	
 	/**
 	 * [Node] Get buttons to display in tree
@@ -437,5 +458,22 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 		parent::delete();
 		
 		\IPS\membermap\Map::i()->invalidateJsonCache();
+	}
+
+	/**
+	 * Get the total amount of unapproved items
+	 *
+	 * @return 	int 	Number of unapproved items
+	 */
+	public static function getTotalUnapprovedCount()
+	{
+		$unapproved = 0;
+
+		foreach( static::roots() as $group )
+		{
+			$unapproved += $group->_unapprovedItems;
+		}
+
+		return $unapproved;
 	}
 }

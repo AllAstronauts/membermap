@@ -1,0 +1,22 @@
+[
+    {
+        "method": "addColumn",
+        "params": [
+            "membermap_markers_groups",
+            {
+                "name": "group_queued_items",
+                "type": "MEDIUMINT",
+                "length": 6,
+                "decimals": null,
+                "values": null,
+                "allow_null": false,
+                "default": "0",
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    }
+]

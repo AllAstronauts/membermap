@@ -5,8 +5,8 @@
 			<div class='ipsDataItem_main'>
 				<h4 class='ipsDataItem_title ipsType_sectionHead'>
 					<a href='{$marker->url()}' title='{lang="membermap_view_this_marker" sprintf="$marker->_title"}' {{if $marker->canEdit()}}data-role="editableTitle"{{endif}}>{wordbreak="$marker->_title"}</a>
-
-					<span class='ipsType_reset ipsType_light ipsType_blendLinks'>
+					<br>
+					<span class='ipsType_reset ipsType_normal ipsType_light ipsType_blendLinks'>
 						{{if $marker->member_id > 0}}
 							{lang="byline_nodate" htmlsprintf="$marker->author()->link()"}
 						{{else}}

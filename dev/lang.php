@@ -66,6 +66,10 @@ $lang = array(
 	'membermap_pending_approval'	=> "This marker is not yet approved and is currently only visible to staff.",
 	'membermap_delete_title'		=> "Delete this marker",
 	'membermap_approve_title'		=> "Approve this marker",
+	'marker_type'					=> "Filter",
+	'queued_markers'				=> "Unapproved markers",
+	'marker_time_frame'				=> "Last Update",
+	'all_markers'					=> "All",
 
 
 	/* Session Location */
