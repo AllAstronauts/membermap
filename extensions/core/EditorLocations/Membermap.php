@@ -21,7 +21,7 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 /**
  * Editor Extension: markers
  */
-class _markers
+class _Membermap
 {
 	/**
 	 * Can we use HTML in this editor?
@@ -72,6 +72,13 @@ class _markers
 	 */
 	public function attachmentLookup( $id1, $id2, $id3 )
 	{
-		return \IPS\membermap\Markers\Markers::load( $id1 )->url();
+		if ( $id2 AND $id3 === NULL )
+		{
+			return \IPS\membermap\Markers\Comment::load( $id2 );
+		}
+		else
+		{
+			return \IPS\membermap\Markers\Markers::load( $id1 );
+		}
 	}
 }

@@ -1,12 +1,18 @@
 <?php
 
 $lang = array(
+
 	/* Various strings */
-	'__app_membermap'			=> "Member Map",
-	'frontnavigation_membermap'	=> "Member Map",
-	'__indefart_membermap_marker'	=> "a Member Map Marker",
-	'__defart_membermap_marker'		=> "Member Map Marker",
-	'membermap_rebuilding_cache'	=> "Rebuilding Member Map Cache",
+	'__app_membermap'						=> "Member Map",
+	'frontnavigation_membermap'				=> "Member Map",
+	'__indefart_membermap_marker'			=> "a Member Map marker",
+	'__indefart_membermap_marker_comment'	=> "a comment on a  Member Map marker",
+	'__indefart_membermap_marker_review'	=> "a review on a Member Map event",
+	'__defart_membermap_marker'				=> "Member Map marker",
+	'__defart_membermap_marker_comment'		=> "comment on a Member Map marker",
+	'__defart_membermap_marker_review'		=> "review on a Member Map marker",
+
+	'membermap_rebuilding_cache'			=> "Rebuilding Member Map Cache",
 
 	/* ACP Module/Menu titles */
 	'menu__membermap_membermap' => "Member Map",
@@ -19,6 +25,7 @@ $lang = array(
 	'group__membermap_membermap' 	=> "Member Map",
 
 	'membermap_group'				=> "Marker Groups",
+
 
 	/* ACP Restrictions */
 	'r__mapmanager' 			=> "Map Manager",
@@ -35,13 +42,30 @@ $lang = array(
 
 	/* ACP Mod Permissions */
 	'modperms__core_Content_membermap_Markers_Markers' => "Member Map",
-	'membermap_markers_groups'			=> "Marker Groups",
-	'can_edit_membermap_marker'			=> "Can edit markers?",
-	'can_hide_membermap_marker'			=> "Can hide markers?",
-	'can_unhide_membermap_marker'		=> "Can unhide markers?",
-	'can_view_hidden_membermap_marker'	=> "Can view hidden markers?",
-	'can_move_membermap_marker'			=> "Can move markers?",
-	'can_delete_membermap_marker'		=> "Can delete markers?",
+	'membermap_markers_groups'						=> "Marker Groups",
+	'can_edit_membermap_marker'						=> "Can edit markers?",
+	'can_hide_membermap_marker'						=> "Can hide markers?",
+	'can_unhide_membermap_marker'					=> "Can unhide markers?",
+	'can_view_hidden_membermap_marker'				=> "Can view hidden markers?",
+	'can_move_membermap_marker'						=> "Can move markers?",
+	'can_delete_membermap_marker'					=> "Can delete markers?",
+	'can_feature_membermap_marker'					=> "Can feature markers?",
+	'can_unfeature_membermap_marker'				=> "Can unfeature markers?",
+	'can_edit_membermap_marker_comment'				=> "Can edit comments?",
+	'can_hide_membermap_marker_comment'				=> "Can hide comments?",
+	'can_unhide_membermap_marker_comment'			=> "Can unhide comments?",
+	'can_view_hidden_membermap_marker_comment'		=> "Can view hidden comments?",
+	'can_delete_membermap_marker_comment'			=> "Can delete comments?",
+	'can_edit_membermap_marker_review'				=> "Can edit reviews?",
+	'can_hide_membermap_marker_review'				=> "Can hide reviews?",
+	'can_unhide_membermap_marker_review'			=> "Can unhide reviews?",
+	'can_view_hidden_membermap_marker_review'		=> "Can view hidden reviews?",
+	'can_delete_membermap_marker_review'			=> "Can delete reviews?",
+	'can_feature_comments_membermap_marker'			=> "Can recommend comments on markers?",
+	'can_unfeature_comments_membermap_marker'		=> "Can remove comments recommendations on markers?",
+	'can_add_item_message_membermap_marker'			=> "Can add messages to markers?",
+	'can_edit_item_message_membermap_marker'		=> "Can edit messages on markers?",
+	'can_delete_item_message_membermap_marker'		=> "Can delete messages on markers?",
 
 	/* Front-end marker view */
 	'membermap_marker_info' 		=> "Marker Information",
@@ -58,6 +82,15 @@ $lang = array(
 	'membermap_marker_pl'			=> "Markers",
 	'membermap_marker_pl_lc'		=> "markers",
 	'membermap_markers_markers_pl' 	=> "Member Map",
+	'membermap_markers_comment'			=> "Marker Comment",
+	'membermap_markers_comment_pl'		=> "Marker Comments",
+	'membermap_markers_comment_pl_lc'	=> "marker comments",
+	'membermap_markers_review'			=> "Marker Review",
+	'membermap_markers_review_pl'		=> "Marker Reviews",
+	'membermap_markers_review_pl_lc'	=> "marker reviews",
+	'marker_comment_count'			=> "{# [1:Comment][?:Comments]}",
+	'marker_review_count'			=> "{# [1:Review][?:Reviews]}",
+	'marker_submit_comment'			=> "Submit Comment",
 	'membermap_view_this_marker' 	=> "View this marker: %s",
 	'membermap_submit_a_marker' 	=> "Add Marker",
 	'membermap_edit_a_marker' 		=> "Edit Marker",
@@ -70,12 +103,21 @@ $lang = array(
 	'queued_markers'				=> "Unapproved markers",
 	'marker_time_frame'				=> "Last Update",
 	'all_markers'					=> "All",
+	'marker_rating_value'			=> "Your Rating",
+	'marker_review_text'			=> "Your Review",
+	'marker__review_placeholder'	=> "Add a review...",
+	'marker__comment_placeholder'	=> "Add a comment...",
+	'feature_title_marker'			=> "Feature this marker",
+	'unfeature_title_marker'		=> "Unfeature this marker",
+
+	'no_marker_review'				=> "You do not have permission to review markers",
 
 
 	/* Session Location */
 	'loc_membermap_viewing_membermap' 	=> "Viewing Member Map",
 	'loc_membermap_viewing_group'		=> "Viewing Member Map marker group: %s",
 	'loc_membermap_browsing_groups'		=> "Viewing Member Map marker groups",
+	'loc_membermap_viewing_marker'		=> "Viewing Member Map marker: %s",
 
 
 	/* ACP Settings */	
@@ -132,6 +174,10 @@ $lang = array(
 	'import_creategroups_desc'		=> "Import markers to an existing group, or create a new group for each \"Folder\" in the .kml file",
 	'membermap_error_no_id_no_create'	=> "You have to either chose to create a new group, or select an existing group to import markers to",
 	'membermap_import_thumbup'			=> "Successfully imported %d markers",
+	'group_comment_moderate'			=> "Comments must be approved?",
+	'group_allow_comments'				=> "Allow comments?",
+	'group_allow_reviews'					=> "Allow reviews?",
+	'group_review_moderate'				=> "Reviews must be approved?",
 
 
 	/* ACP Map Manager */
@@ -146,6 +192,8 @@ $lang = array(
 	'perm_membermap_perm__view'			=> 'See Group',
 	'perm_membermap_perm__read'			=> "View Markers",
 	'perm_membermap_perm__add'			=> "Add Markers",
+	'perm_membermap_perm__reply'		=> "Comment",
+	'perm_membermap_perm__review'		=> "Review",
 
 
 	/* Front-end showmap */
@@ -191,4 +239,8 @@ $lang = array(
 	'block_memberList_staff'				=> "Staff members",
 	'block_memberList_followers'			=> "Members you follow",
 	'block_memberList_others'				=> "Other members",
+
+	/* Digests */
+	'x_created_marker_in'	=> "%s created a marker in %s",
+	'x_commented_marker'		=> "%s commented on a marker",
 );

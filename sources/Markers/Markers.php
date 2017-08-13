@@ -21,8 +21,18 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 /**
  * @brief Block Model
  */
-class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \IPS\Content\Searchable, \IPS\Content\ReportCenter, \IPS\Content\Hideable
+class _Markers extends \IPS\Content\Item implements 
+\IPS\Content\Permissions, 
+\IPS\Content\Searchable, 
+\IPS\Content\ReportCenter, 
+\IPS\Content\Hideable, 
+\IPS\Content\MetaData,
+\IPS\Content\Featurable,
+\IPS\Content\Embeddable,
+\IPS\Content\ReadMarkers
 {
+	use \IPS\Content\Reactable;
+
 	/**
 	 * @brief	Multiton Store
 	 */
@@ -55,21 +65,43 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	 * @brief       Database Column Map
 	 */
 	public static $databaseColumnMap = array(
-		'container'		=> 'parent_id',
-		'author'		=> 'member_id',
-		'title'			=> 'name',
-		'content'		=> 'description',
-		'date'			=> 'added',
-		'updated'		=> 'updated',
-		'approved'		=> 'open',
-		'approved_by'	=> 'approver',
-		'approved_date'	=> 'approvedon',
+		'container'				=> 'parent_id',
+		'author'				=> 'member_id',
+		'title'					=> 'name',
+		'content'				=> 'description',
+		'date'					=> 'added',
+		'updated'				=> 'updated',
+		'approved'				=> 'open',
+		'approved_by'			=> 'approver',
+		'approved_date'			=> 'approvedon',
+		'num_comments'			=> 'comments',
+		'unapproved_comments'	=> 'queued_comments',
+		'hidden_comments'		=> 'hidden_comments',
+		'num_reviews'			=> 'reviews',
+		'unapproved_reviews'	=> 'queued_reviews',
+		'hidden_reviews'		=> 'hidden_reviews',
+		'rating'				=> 'rating',
+		'last_comment'			=> 'last_comment',
+		'last_review'			=> 'last_review',
+		'meta_data'				=> 'meta_data',
+		'featured'				=> 'featured',
 	);
 
 	/**
 	 * @brief       Node Class
 	 */
 	public static $containerNodeClass = 'IPS\membermap\Markers\Groups';
+
+
+	/**
+	 * @brief	Comment Class
+	 */
+	public static $commentClass = 'IPS\membermap\Markers\Comment';
+
+	/**
+	 * @brief	Review Class
+	 */
+	public static $reviewClass = 'IPS\membermap\Markers\Review';
 
 	/**
 	 * @brief	Form Lang Prefix
@@ -283,7 +315,7 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 
 		$return['content'] = new \IPS\Helpers\Form\Editor( 'marker_description', $item ? $item->description : '', FALSE, array(
 				'app'         => 'membermap',
-				'key'         => 'markers',
+				'key'         => 'Membermap',
 				'autoSaveKey' => 'custom-markers-' . ( $item ? $item->id : 'new' ),
 				'attachIds'	  => ( $item ) ? array( $item->id ) : NULL ) );
 
@@ -406,6 +438,227 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 	}
 
 	/**
+	 * Should new comments be moderated?
+	 *
+	 * @param	\IPS\Member	$member	The member posting
+	 * @return	bool
+	 */
+	public function moderateNewComments( \IPS\Member $member )
+	{
+		$commentClass = static::$commentClass;
+		return ( $this->container()->comment_moderate and !$member->group['g_avoid_q'] ) or parent::moderateNewComments( $member );
+	}
+
+	/**
+	 * Should new reviews be moderated?
+	 *
+	 * @param	\IPS\Member	$member	The member posting
+	 * @return	bool
+	 */
+	public function moderateNewReviews( \IPS\Member $member )
+	{
+		$reviewClass = static::$reviewClass;
+		return ( $this->container()->review_moderate and !$member->group['g_avoid_q'] ) or parent::moderateNewReviews( $member );
+	}
+
+	/**
+	 * Are comments supported by this class?
+	 *
+	 * @param	\IPS\Member|NULL		$member		The member to check for or NULL to not check permission
+	 * @param	\IPS\Node\Model|NULL	$container	The container to check in, or NULL for any container
+	 * @return	bool
+	 */
+	public static function supportsComments( \IPS\Member $member = NULL, \IPS\Node\Model $container = NULL )
+	{
+		if( $container !== NULL )
+		{
+			return parent::supportsComments() and $container->allow_comments AND ( !$member or $container->can( 'read', $member ) );
+		}
+		else
+		{
+			return parent::supportsComments() and ( !$member or \IPS\membermap\Markers\Groups::countWhere( 'read', $member, array( 'group_allow_comments=1' ) ) );
+		}
+	}
+
+	/**
+	 * Are reviews supported by this class?
+	 *
+	 * @param	\IPS\Member|NULL		$member		The member to check for or NULL to not check permission
+	 * @param	\IPS\Node\Model|NULL	$container	The container to check in, or NULL for any container
+	 * @return	bool
+	 */
+	public static function supportsReviews( \IPS\Member $member = NULL, \IPS\Node\Model $container = NULL )
+	{
+		if( $container !== NULL )
+		{
+			return parent::supportsReviews() and $container->allow_reviews AND ( !$member or $container->can( 'read', $member ) );
+		}
+		else
+		{
+			return parent::supportsReviews() and ( !$member or \IPS\membermap\Markers\Groups::countWhere( 'read', $member, array( 'group_allow_reviews=1' ) ) );
+		}
+	}
+
+	/**
+	 * Can comment?
+	 *
+	 * @param	\IPS\Member\NULL	$member	The member (NULL for currently logged in member)
+	 * @return	bool
+	 */
+	public function canComment( $member=NULL )
+	{
+		$member = $member ?: \IPS\Member::loggedIn();
+		return parent::canComment( $member ) and $this->container()->allow_comments;
+	}
+
+	/**
+	 * Can review?
+	 *
+	 * @param	\IPS\Member\NULL	$member	The member (NULL for currently logged in member)
+	 * @return	bool
+	 */
+	public function canReview( $member = NULL )
+	{
+		$member = $member ?: \IPS\Member::loggedIn();
+		return parent::canReview( $member ) and $this->container()->allow_reviews;
+	}
+
+	/**
+	 * Get available comment/review tabs
+	 *
+	 * @return	array
+	 */
+	public function commentReviewTabs()
+	{
+		$tabs = array();
+		if ( $this->container()->allow_reviews )
+		{
+			$tabs['reviews'] = \IPS\Member::loggedIn()->language()->addToStack( 'marker_review_count', TRUE, array( 'pluralize' => array( $this->mapped('num_reviews') ) ) );
+		}
+		if ( $this->container()->allow_comments )
+		{
+			$tabs['comments'] = \IPS\Member::loggedIn()->language()->addToStack( 'marker_comment_count', TRUE, array( 'pluralize' => array( $this->mapped('num_comments') ) ) );
+		}
+
+		return $tabs;
+	}
+
+	/**
+	 * Get comment/review output
+	 *
+	 * @param	string	$tab	Active tab
+	 * @return	string
+	 */
+	public function commentReviews( $tab )
+	{
+		if ( $tab === 'reviews' and $this->container()->allow_reviews )
+		{
+			return \IPS\Theme::i()->getTemplate( 'markers', 'membermap' )->reviews( $this );
+		}
+		elseif( $tab === 'comments' and $this->container()->allow_comments )
+		{
+			return \IPS\Theme::i()->getTemplate( 'markers', 'membermap' )->comments( $this );
+		}
+		
+		return '';
+	}
+
+	/**
+	 * Get URL for last comment page
+	 *
+	 * @return	\IPS\Http\Url
+	 */
+	public function lastCommentPageUrl()
+	{
+		return parent::lastCommentPageUrl()->setQueryString( 'tab', 'comments' );
+	}
+	
+	/**
+	 * Get URL for last review page
+	 *
+	 * @return	\IPS\Http\Url
+	 */
+	public function lastReviewPageUrl()
+	{
+		return parent::lastCommentPageUrl()->setQueryString( 'tab', 'reviews' );
+	}
+
+	/**
+	 * Supported Meta Data Types
+	 *
+	 * @return	array
+	 */
+	public static function supportedMetaDataTypes()
+	{
+		return array( 'core_FeaturedComments', 'core_ContentMessages' );
+	}
+
+	/**
+	 * Reaction Type
+	 *
+	 * @return	string
+	 */
+	public static function reactionType()
+	{
+		return 'marker_id';
+	}
+
+	/** 
+	 * Get embed image
+	 *
+	 * @return  \IPS\File
+	 */
+	public function get_embedimage()
+	{
+		if ( ! $this->_data['embedimage'] )
+		{
+			$apiKey 	= \IPS\membermap\Application::getApiKeys( 'mapquest' );
+
+			$url 		= \IPS\Http\Url::external( "https://www.mapquestapi.com/staticmap/v5/map?key={$apiKey}&locations={$this->lat},{$this->lon}&size=1100,500" );
+			$response 	= $url->request()->get();
+
+			$image 		= \IPS\File::create( 'membermap_MarkerStaticMap', 'membermap-' . $this->id . '-' . md5( $url ) . '.png', $response, NULL, TRUE, NULL, FALSE );
+
+			$this->embedimage = $image;
+
+			$this->recacheJson = 0;
+			$this->save();
+			$this->recacheJson = 1;
+		}
+
+		return $this->_data['embedimage'];
+	}
+
+	/**
+	 * Returns the content images
+	 *
+	 * @param	int|null	$limit	Number of attachments to fetch, or NULL for all
+	 *
+	 * @return	array|NULL	If array, then array( 'core_Attachment' => 'month_x/foo.gif', ... );
+	 * @throws	\BadMethodCallException
+	 */
+	public function contentImages( $limit = NULL )
+	{
+		$attachments = parent::contentImages( $limit ) ?: array();
+
+		$attachments[] = array( 'membermap_MarkerStaticMap' => $this->embedimage );
+		
+		
+		return count( $attachments ) ? $attachments : NULL;
+	}
+
+	/**
+	 * Get content for embed
+	 *
+	 * @param	array	$params	Additional parameters to add to URL
+	 * @return	string
+	 */
+	public function embedContent( $params )
+	{
+		return \IPS\Theme::i()->getTemplate( 'global', 'membermap' )->embedMarker( $this, $this->url()->setQueryString( $params ) );
+	}
+
+	/**
 	 * Should posting this increment the poster's post count?
 	 *
 	 * @param	\IPS\Node\Model|NULL	$container	Container
@@ -433,6 +686,8 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 		return $children;
 	}
 
+	public $recacheJson = 1;
+
 	/**
 	 * Save data
 	 *
@@ -445,7 +700,10 @@ class _Markers extends \IPS\Content\Item implements \IPS\Content\Permissions, \I
 		$this->container()->setLastComment();
 		$this->container()->save();
 
-		\IPS\membermap\Map::i()->invalidateJsonCache();
+		if ( $this->recacheJson )
+		{
+			\IPS\membermap\Map::i()->invalidateJsonCache();
+		}
 	}
 
 	/**

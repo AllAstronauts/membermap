@@ -1,0 +1,47 @@
+<ips:template parameters="$marker" />
+<div class='' data-controller='core.front.core.commentFeed, core.front.core.ignoredComments' {{if settings.auto_polling_enabled}}data-autoPoll{{endif}} data-baseURL='{$marker->url()}' {{if $marker->isLastPage()}}data-lastPage{{endif}} data-feedID='marker-{$marker->id}' id='comments'>
+	{{if $marker->commentPageCount() > 1}}
+		{$marker->commentPagination( array( 'tab' ) )|raw}
+		<br><br>
+	{{endif}}
+
+	{template="featuredComments" group="global" app="core" params="$marker->featuredComments(), $marker->url()->setQueryString('tab', 'comments')->setQueryString('recommended', 'comments')"}
+
+	<div data-role='commentFeed' data-controller='core.front.core.moderation'>
+		{{if ( $comments = $marker->comments( NULL, NULL, 'date', 'asc', NULL, NULL, NULL, NULL, FALSE, isset( \IPS\Request::i()->showDeleted ) ) and count( $comments ) )}}
+			<form action="{$marker->url()->csrf()->setQueryString( 'do', 'multimodComment' )}" method="post" data-ipsPageAction data-role='moderationTools'>
+				{{$commentCount=0; $timeLastRead = $marker->timeLastRead(); $lined = FALSE;}}
+				{{foreach $comments as $comment}}
+					{{if !$lined and $timeLastRead and $timeLastRead->getTimestamp() < $comment->mapped('date')}}
+						{{if $lined = TRUE and $commentCount}}
+							<hr class="ipsCommentUnreadSeperator">
+						{{endif}}
+					{{endif}}
+					{{$commentCount++;}}
+					{$comment->html()|raw}
+				{{endforeach}}
+				{template="commentMultimod" app="core" group="global" params="$marker"}
+			</form>
+		{{else}}
+			<p class='ipsType_normal ipsType_light ipsType_center' data-role='noComments'>{lang="no_comments"}</p>
+		{{endif}}
+	</div>
+	{{if $marker->commentPageCount() > 1}}
+		<hr class='ipsHr'>
+		{$marker->commentPagination( array( 'tab' ) )|raw}
+	{{endif}}
+	{{if $marker->commentForm() || \IPS\Member::loggedIn()->restrict_post || \IPS\Member::loggedIn()->members_bitoptions['unacknowledged_warnings']}}
+		<a id='replyForm'></a>
+		<div data-role='replyArea' class='ipsBox ipsBox_transparent ipsAreaBackground ipsPad {{if !$marker->canComment()}}cTopicPostArea_noSize{{endif}} ipsSpacer_top'>
+			{{if $marker->commentForm()}}
+				{$marker->commentForm()|raw}
+			{{else}}
+				{{if \IPS\Member::loggedIn()->restrict_post}}
+					{template="commentUnavailable" group="forms" location="front" app="core" params="'restricted_cannot_comment', \IPS\Member::loggedIn()->warnings(5,NULL,'rpa'), \IPS\Member::loggedIn()->restrict_post"}
+				{{elseif \IPS\Member::loggedIn()->members_bitoptions['unacknowledged_warnings']}}
+					{template="commentUnavailable" group="forms" location="front" app="core" params="'unacknowledged_warning_cannot_post', \IPS\Member::loggedIn()->warnings( 1, FALSE )"}
+				{{endif}}
+			{{endif}}
+		</div>
+	{{endif}}
+</div>

@@ -1,0 +1,63 @@
+<ips:template parameters="$marker" />
+<div data-controller='core.front.core.commentFeed' {{if settings.auto_polling_enabled}}data-autoPoll{{endif}} data-commentsType='reviews' data-baseURL='{$marker->url()}' {{if $marker->isLastPage('reviews')}}data-lastPage{{endif}} data-feedID='marker-{$marker->id}-reviews' id='reviews'>
+	{{if $marker->reviewForm()}}
+		<div id='elmarkerReviewForm'>
+			{$marker->reviewForm()|raw}
+		</div>
+	{{else}}
+		{{if $marker->hasReviewed()}}
+			<!-- Already reviewed -->
+		{{elseif \IPS\Member::loggedin()->restrict_post}}
+			{{if \IPS\Member::loggedIn()->restrict_post == -1}}
+				{template="reviewUnavailable" group="forms" location="front" app="core" params="'restricted_cannot_comment'"}
+			{{else}}
+				{template="reviewUnavailable" group="forms" location="front" app="core" params="'restricted_cannot_comment', \IPS\Member::loggedIn()->warnings(5,NULL,'rpa'), \IPS\Member::loggedIn()->restrict_post"}
+			{{endif}}
+		{{elseif \IPS\Member::loggedIn()->members_bitoptions['unacknowledged_warnings']}}
+			{template="reviewUnavailable" group="forms" location="front" app="core" params="'unacknowledged_warning_cannot_post', \IPS\Member::loggedIn()->warnings( 1, FALSE )"}
+		{{endif}}
+	{{endif}}
+	{{if count( $marker->reviews( NULL, NULL, NULL, 'desc', NULL, NULL, NULL, NULL, isset( \IPS\Request::i()->showDeleted ) ) )}}
+		{{if !$marker->hasReviewed()}}<hr class='ipsHr'>{{endif}}
+		<div class="ipsClearfix ipsSpacer_bottom">
+			{{if $marker->reviewPageCount() > 1}}
+				<div class="ipsPos_left ipsResponsive_noFloat">
+					{$marker->reviewPagination( array( 'tab', 'sort' ) )|raw}
+				</div>
+			{{endif}}
+			<div class="ipsClearfix ipsPos_right ipsResponsive_hidePhone">
+				<ul class="ipsButtonRow ipsClearfix">
+					<li data-action="tableFilter">
+						<a href="{$marker->url()->setQueryString( array( 'tab' => 'reviews', 'page' => 1, 'sort' => 'helpful' ) )}" class="{{if !isset( request.sort ) or request.sort != 'newest'}}ipsButtonRow_active{{endif}}" data-action="filterClick">{lang="most_helpful"}</a>
+					</li>
+					<li data-action="tableFilter">
+						<a href="{$marker->url()->setQueryString( array( 'tab' => 'reviews', 'page' => 1, 'sort' => 'newest' ) )}" class="{{if isset( request.sort ) and request.sort == 'newest'}}ipsButtonRow_active{{endif}}" data-action="filterClick">{lang="newest"}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div data-role='commentFeed' data-controller='core.front.core.moderation'>
+			<form action="{$marker->url()->csrf()->setQueryString( 'do', 'multimodReview' )}" method="post" data-ipsPageAction data-role='moderationTools'>
+				{{$reviewCount=0; $timeLastRead = $marker->timeLastRead(); $lined = FALSE;}}
+				{{foreach $marker->reviews() as $review}}
+					{{if !$lined and $timeLastRead and $timeLastRead->getTimestamp() < $review->mapped('date')}}
+						{{if $lined = TRUE and $reviewCount}}
+							<hr class="ipsCommentUnreadSeperator">
+						{{endif}}
+					{{endif}}
+					{{$reviewCount++;}}
+					{$review->html()|raw}
+				{{endforeach}}
+				{template="commentMultimod" app="core" group="global" params="$marker, 'review'"}
+			</form>
+		</div>
+		{{if $marker->reviewPageCount() > 1}}
+			<div>
+				{$marker->reviewPagination( array( 'tab', 'sort' ) )|raw}
+			</div>
+		{{endif}}
+	{{elseif !$marker->canReview()}}
+		<p class="ipsType_normal ipsType_light ipsType_reset" data-role="noReviews">{lang="no_reviews"}</p>
+	{{endif}}
+</div>

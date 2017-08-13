@@ -1,7 +1,23 @@
 <ips:template parameters="$table, $headers, $markers" />
 {{if count( $markers )}}
 	{{foreach $markers as $marker}}
-		<li class='ipsDataItem {{if method_exists( $marker, 'tableClass' ) && $marker->tableClass()}}ipsDataItem_{$marker->tableClass()}{{endif}} {{if $marker->hidden()}}ipsModerated{{endif}}'>
+		{{$idField = $marker::$databaseColumnId;}}
+		<li class='ipsDataItem {{if $marker->unread()}}ipsDataItem_unread{{endif}} {{if method_exists( $marker, 'tableClass' ) && $marker->tableClass()}}ipsDataItem_{$marker->tableClass()}{{endif}} {{if $marker->hidden()}}ipsModerated{{endif}}'>
+			{{if member.member_id}}
+				<div class='ipsDataItem_icon ipsPos_top'>
+					{{if $marker->unread()}}
+						<a href='{$marker->url( 'getNewComment' )}' title='{lang="first_unread_post"}' data-ipsTooltip>
+							<span class='ipsItemStatus'><i class="fa {{if in_array( $marker->$idField, $table->contentPostedIn )}}fa-star{{else}}fa-circle{{endif}}"></i></span>
+						</a>
+					{{else}}
+						{{if in_array( $marker->$idField, $table->contentPostedIn )}}
+							<span class='ipsItemStatus ipsItemStatus_read ipsItemStatus_posted'><i class="fa fa-star"></i></span>
+						{{else}}
+							&nbsp;
+						{{endif}}
+					{{endif}}
+				</div>
+			{{endif}}
 			<div class='ipsDataItem_main'>
 				<h4 class='ipsDataItem_title ipsType_sectionHead'>
 					<a href='{$marker->url()}' title='{lang="membermap_view_this_marker" sprintf="$marker->_title"}' {{if $marker->canEdit()}}data-role="editableTitle"{{endif}}>{wordbreak="$marker->_title"}</a>
@@ -40,6 +56,16 @@
 				</ul>
 			</div>
 			<ul class='ipsDataItem_lastPoster'>
+				{{foreach $marker->stats() as $k => $v}}
+					<li {{if $k == 'num_views'}}class='ipsType_light'{{elseif in_array( $k, $marker->hotStats )}}class="ipsDataItem_stats_hot" data-text='{lang="hot_item"}' data-ipsTooltip title='{lang="hot_item_desc"}'{{endif}}>
+						<span class='ipsDataItem_stats_number'>{number="$v"}</span>
+						<span class='ipsDataItem_stats_type'>{lang="{$k}" pluralize="$v"}</span>
+						{{if  \IPS\membermap\Markers\Markers::modPermission( 'unhide', NULL, $marker->container() ) AND $unapprovedComments = $marker->mapped('unapproved_comments')}}
+							&nbsp;<a href='{$marker->url()->setQueryString( 'queued_comments', 1 )}' class='ipsType_warning ipsType_small ipsPos_right ipsResponsive_noFloat' data-ipsTooltip title='{lang="queued_posts_badge" pluralize="$marker->unapproved_comments"}'><i class='fa fa-warning'></i> <strong>{$unapprovedComments}</strong></a>
+						{{endif}}
+					</li>
+				{{endforeach}}
+
 				<li>
 					<p class='ipsType_normal ipsType_reset ipsType_light'>
 						{{if $marker->updated > 0 OR $marker->added > 0}}
@@ -52,6 +78,7 @@
 					</p>
 				</li>
 			</ul>
+			
 			{{if method_exists( $table, 'canModerate' ) AND $table->canModerate()}}
 				<div class='ipsDataItem_modCheck'>
 					<span class='ipsCustomInput'>

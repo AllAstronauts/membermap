@@ -1,4 +1,4 @@
-<ips:template parameters="$marker, $prevReport='', $nextReport=''" />
+<ips:template parameters="$marker, $comments, $prevReport='', $nextReport=''" />
 {{if $marker->hidden() === 1 and $marker->canUnhide()}}
 	<div class="ipsMessage ipsMessage_warning ipsSpacer_both">
 		<p class="ipsType_reset">{lang="membermap_pending_approval"}</p>
@@ -19,12 +19,14 @@
 		</ul>
 	</div>
 {{endif}}
+
+{template="contentItemMessages" group="global" app="core" params="$marker->getMessages(), $marker"}
+
 <article data-controller="membermap.front.markers.markerview" data-lon="{$marker->lon}" data-lat="{$marker->lat}" data-name="{$marker->_title}" class='ipsBox ipsPad'>
 	<div class='ipsColumns ipsColumns_collapsePhone ipsClear ipsClearfix'>
 		<div class='ipsColumn ipsColumn_fluid'>
 				<div class="ipsClearfix">
 					<h2 class="ipsType_pageTitle">
-						{$marker->_title}
 						{{if $marker->hidden() === -1 || $marker->hidden() === 1 || $marker->hidden() === -2}}
 							{{if $marker->hidden() === -1}}
 								<span><span class="ipsBadge ipsBadge_icon ipsBadge_warning" data-ipsTooltip title='{$marker->hiddenBlurb()}'><i class='fa fa-eye-slash'></i></span></span>
@@ -34,11 +36,22 @@
 								<span><span class="ipsBadge ipsBadge_icon ipsBadge_warning" data-ipsTooltip title='{lang="pending_approval"}'><i class='fa fa-warning'></i></span></span>
 							{{endif}}
 						{{endif}}
+						{{if $marker->mapped('featured')}}
+							<span><span class="ipsBadge ipsBadge_icon ipsBadge_positive" data-ipsTooltip title='{lang="featured"}'><i class='fa fa-star'></i></span></span>
+						{{endif}}
+
+						{$marker->_title}
 					</h2>
+					{{if $marker->container()->allow_reviews}}
+						<div>
+							{template="rating" group="global" location="front" app="core" params="'large', $marker->averageReviewRating(), \IPS\Settings::i()->reviews_rating_out_of, $marker->memberReviewRating()"}&nbsp;&nbsp; <span class='ipsType_medium ipsType_light'>({lang="num_reviews" pluralize="$marker->reviews"})</span>
+						</div>
+					{{endif}}
 					<span class='ipsType_normal ipsType_light'>
 						<i class='fa {$marker->container()->pin_icon}'></i> {$marker->container()->_title}
 					</span>
 					<br><br>
+
 					<div class='ipsPost' data-role='commentContent'>
 						<div data-ipsTruncate data-ipsTruncate-type="hide" data-ipsTruncate-size="#elMarkerInfo">
 							<div class='ipsType_richText ipsType_normal ipsContained' data-controller='core.front.core.lightboxedImages'>
@@ -46,72 +59,98 @@
 							</div>
 						</div>
 					</div>
-					<hr class='ipsHr'>
-					{{if $marker->canEdit() or $marker->canHide() or $marker->canUnhide() or $marker->canMove() or $marker->canDelete()}}
-						<a href='#elMarkerActions_menu' id='elMarkerActions' class='ipsButton ipsButton_light ipsButton_verySmall' data-ipsMenu>{lang="marker_actions"} <i class='fa fa-caret-down'></i></a>
-						<ul id='elMarkerActions_menu' class='ipsMenu ipsMenu_auto ipsHide'>
-							{{if \IPS\Member::loggedIn()->modPermission('can_manage_deleted_content') AND $marker->hidden() == -2}}
-								<li class='ipsMenu_item'>
-									<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'restore' ) )}' data-confirm data-confirmSubMessage='{lang="restore_as_visible_desc"}'>
-										{lang="restore_as_visible"}
-									</a>
-								</li>
-								<li class='ipsMenu_item'>
-									<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'restoreAsHidden' ) )}' data-confirm data-confirmSubMessage='{lang="restore_as_hidden_desc"}'>
-										{lang="restore_as_hidden"}
-									</a>
-								</li>
-								<li class='ipsMenu_item'>
-									<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'delete', 'immediate' => 1 ) )}' data-confirm data-confirmSubMessage='{lang="delete_immediately_desc"}'>
-										{lang="delete_immediately"}
-									</a>
-								</li>
-							{{else}}
-								{{if $marker->canEdit()}}
-									<li class='ipsMenu_item'>
-										<a href='{$marker->url()->setQueryString( array( 'do' => 'edit' ) )}' title='{lang="edit"}'>{lang="edit"}</a>
-									</li>
-								{{endif}}
-								{{if $marker->canHide()}}				
-									<li class='ipsMenu_item'>
-										<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'hide' ) )}' title='{lang="hide_title_file"}' data-ipsDialog data-ipsDialog-title="{lang="hide"}">{lang="hide"}</a>
-									</li>
-								{{endif}}
-								{{if $marker->canUnhide()}}				
-									<li class='ipsMenu_item'>
-										<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'unhide' ) )}' title='{{if $marker->hidden() === 1}}{lang="approve"}{{else}}{lang="unhide"}{{endif}}'>
-											{{if $marker->hidden() === 1}}{lang="approve"}{{else}}{lang="unhide"}{{endif}}
-										</a>
-									</li>
-								{{endif}}
-								{{if $marker->canMove()}}				
-									<li class='ipsMenu_item'>
-										<a href='{$marker->url()->setQueryString( array( 'do' => 'move' ) )}' data-ipsDialog data-ipsDialog-size='narrow' data-ipsDialog-title="{lang="move"}"  title='{lang="move"}'>{lang="move"}</a>
-									</li>
-								{{endif}}
-								{{if $marker->canDelete()}}				
-									<li class='ipsMenu_item'>
-										{{if \IPS\membermap\Map::i()->getMemberGroupId() == $marker->container()->id }}
-											<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'delete', 'immediate' => 1 ) )}' data-confirm data-confirmSubMessage='{lang="delete_immediately_desc"}'>
-												{lang="delete_immediately"}
-											</a>
+
+					<div class='ipsItemControls'>
+						{{if \IPS\IPS::classUsesTrait( $marker, 'IPS\Content\Reactable' ) and settings.reputation_enabled}}
+							{template="reputation" app="core" group="global" params="$marker"}
+						{{endif}}
+
+						<ul class='ipsToolList ipsToolList_horizontal ipsPos_left ipsClearfix ipsResponsive_noFloat ipsItemControls_left'>
+							{{if $marker->canEdit() or $marker->canFeature() or $marker->canUnfeature() or $marker->canHide() or $marker->canUnhide() or $marker->canMove() or $marker->canDelete()}}
+								<li>
+									<a href='#elMarkerActions_menu' id='elMarkerActions' class='ipsButton ipsButton_light ipsButton_verySmall' data-ipsMenu>{lang="marker_actions"} <i class='fa fa-caret-down'></i></a>
+									<ul id='elMarkerActions_menu' class='ipsMenu ipsMenu_auto ipsHide'>
+										{{if \IPS\Member::loggedIn()->modPermission('can_manage_deleted_content') AND $marker->hidden() == -2}}
+											<li class='ipsMenu_item'>
+												<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'restore' ) )}' data-confirm data-confirmSubMessage='{lang="restore_as_visible_desc"}'>
+													{lang="restore_as_visible"}
+												</a>
+											</li>
+											<li class='ipsMenu_item'>
+												<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'restoreAsHidden' ) )}' data-confirm data-confirmSubMessage='{lang="restore_as_hidden_desc"}'>
+													{lang="restore_as_hidden"}
+												</a>
+											</li>
+											<li class='ipsMenu_item'>
+												<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'delete', 'immediate' => 1 ) )}' data-confirm data-confirmSubMessage='{lang="delete_immediately_desc"}'>
+													{lang="delete_immediately"}
+												</a>
+											</li>
 										{{else}}
-											<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'delete' ) )}' data-confirm  title='{lang="delete"}'>{lang="delete"}</a>
+											{{if $marker->canEdit()}}
+												<li class='ipsMenu_item'>
+													<a href='{$marker->url()->setQueryString( array( 'do' => 'edit' ) )}' title='{lang="edit"}'>{lang="edit"}</a>
+												</li>
+											{{endif}}
+											{{if $marker->canFeature()}}				
+												<li class='ipsMenu_item'><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'feature' ) )}' title='{lang="feature_title_marker"}'>{lang="feature"}</a></li>
+											{{endif}}
+											{{if $marker->canUnfeature()}}				
+												<li class='ipsMenu_item'><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'unfeature' ) )}' title='{lang="unfeature_title_marker"}'>{lang="unfeature"}</a></li>
+											{{endif}}
+											{{if $marker->canHide()}}				
+												<li class='ipsMenu_item'>
+													<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'hide' ) )}' title='{lang="hide_title_file"}' data-ipsDialog data-ipsDialog-title="{lang="hide"}">{lang="hide"}</a>
+												</li>
+											{{endif}}
+											{{if $marker->canUnhide()}}				
+												<li class='ipsMenu_item'>
+													<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'unhide' ) )}' title='{{if $marker->hidden() === 1}}{lang="approve"}{{else}}{lang="unhide"}{{endif}}'>
+														{{if $marker->hidden() === 1}}{lang="approve"}{{else}}{lang="unhide"}{{endif}}
+													</a>
+												</li>
+											{{endif}}
+											{{if $marker->canMove()}}				
+												<li class='ipsMenu_item'>
+													<a href='{$marker->url()->setQueryString( array( 'do' => 'move' ) )}' data-ipsDialog data-ipsDialog-size='narrow' data-ipsDialog-title="{lang="move"}"  title='{lang="move"}'>{lang="move"}</a>
+												</li>
+											{{endif}}
+											{{if $marker->canDelete()}}				
+												<li class='ipsMenu_item'>
+													{{if \IPS\membermap\Map::i()->getMemberGroupId() == $marker->container()->id }}
+														<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'delete', 'immediate' => 1 ) )}' data-confirm data-confirmSubMessage='{lang="delete_immediately_desc"}'>
+															{lang="delete_immediately"}
+														</a>
+													{{else}}
+														<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'delete' ) )}' data-confirm  title='{lang="delete"}'>{lang="delete"}</a>
+													{{endif}}
+												</li>
+											{{endif}}
+											{{if $marker->canOnMessage( 'add' )}}
+												<li class='ipsMenu_item'><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'messageForm' ) )}' data-ipsDialog data-ipsDialog-title='{lang="add_message"}'>{lang="add_message"}</a></li>
+											{{endif}}
+											{{if \IPS\Member::loggedIn()->modPermission('can_view_moderation_log')}}
+												<li class='ipsMenu_sep'><hr></li>
+												<li class="ipsMenu_item">
+													<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'modLog' ) )}' data-ipsDialog data-ipsDialog-title='{lang="moderation_history"}'>{lang="moderation_history"}</a>
+												</li>
+											{{endif}}
 										{{endif}}
-									</li>
-								{{endif}}
-								{{if \IPS\Member::loggedIn()->modPermission('can_view_moderation_log')}}
-									<li class='ipsMenu_sep'><hr></li>
-									<li class="ipsMenu_item">
-										<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'modLog' ) )}' data-ipsDialog data-ipsDialog-title='{lang="moderation_history"}'>{lang="moderation_history"}</a>
-									</li>
-								{{endif}}
+									</ul>
+								</li>
 							{{endif}}
+
+							{{if $marker->canReport() }}
+								<li>
+									<a href='{$marker->url('report')}' data-ipsDialog data-ipsDialog-size='medium' data-ipsDialog-title="{lang="report_marker"}" data-ipsDialog-remoteSubmit data-ipsDialog-flashMessage="{lang="report_submit_success"}" title="{lang="report_marker"}" class='ipsButton ipsButton_link ipsButton_verySmall ipsButton_fullWidth'>{lang="report_marker"}</a>
+								</li>
+							{{endif}}
+
+							<li>
+								{template="promote" app="core" group="global" params="$marker"}
+							</li>
 						</ul>
-					{{endif}}
-					{{if $marker->canReport() }}
-						&nbsp;<a href='{$marker->url('report')}' data-ipsDialog data-ipsDialog-size='medium' data-ipsDialog-title="{lang="report_marker"}" data-ipsDialog-remoteSubmit data-ipsDialog-flashMessage="{lang="report_submit_success"}" title="{lang="report_marker"}" class='ipsType_medium'>{lang="report_marker"}</a>
-					{{endif}}
+					</div>
 				</div>
 		</div>
 		<aside id="elMarkerInfo" class='ipsColumn ipsColumn_veryWide'>
@@ -183,4 +222,12 @@
 		<div id='mapCanvas' style='height:400px;'>
 		</div>
 	</div>
+
+	{{if $comments}}
+		<a id="replies"></a>
+		<h2 class='ipsHide'>{lang="user_feedback"}</h2>
+		<div>
+			{$comments|raw}
+		</div>
+	{{endif}}
 </article>

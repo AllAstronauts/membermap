@@ -77,10 +77,34 @@ class _markers extends \IPS\Content\Controller
 	 */
 	protected function manage()
 	{
+		/* Sort out comments and reviews */
+		$tabs = $this->marker->commentReviewTabs();
+		$_tabs = array_keys( $tabs );
+		$tab = isset( \IPS\Request::i()->tab ) ? \IPS\Request::i()->tab : array_shift( $_tabs );
+		$activeTabContents = $this->marker->commentReviews( $tab );
+		
+		if ( count( $tabs ) > 1 )
+		{
+			$commentsAndReviews = count( $tabs ) ? \IPS\Theme::i()->getTemplate( 'global', 'core' )->tabs( $tabs, $tab, $activeTabContents, $this->marker->url(), 'tab', FALSE, TRUE ) : NULL;
+		}
+		else
+		{
+			$commentsAndReviews = $activeTabContents;
+		}
+
+		if ( \IPS\Request::i()->isAjax() )
+		{
+			\IPS\Output::i()->output = $activeTabContents;
+			return;
+		}
+
+
+		\IPS\Session::i()->setLocation( $this->marker->url(), $this->marker->onlineListPermissions(), 'loc_membermap_viewing_marker', array( $this->marker->title => FALSE ) );
+
 		/* Display */
 		\IPS\Output::i()->title		= $this->marker->_title . ' - ' . $this->marker->container()->_title;
 		\IPS\Output::i()->sidebar['sticky'] = TRUE;
-		\IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'markers' )->viewMarker( $this->marker );
+		\IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'markers' )->viewMarker( $this->marker, $commentsAndReviews );
 
 	}
 	
