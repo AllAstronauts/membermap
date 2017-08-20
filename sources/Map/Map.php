@@ -98,7 +98,8 @@ class _Map
 		             'perm_view'	=> '*', # view
 		             'perm_2'		=> '*', # read
 		             'perm_3'		=> $default, # add
-		             'perm_4'		=> $default, # edit
+		             'perm_4'		=> $default, # comment
+		             'perm_5'		=> $default, # review
 		        ) );
 
 				\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$memberGroup->id}", trim( $memberGroup->name ) );
