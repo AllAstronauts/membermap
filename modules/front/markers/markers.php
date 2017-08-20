@@ -77,6 +77,9 @@ class _markers extends \IPS\Content\Controller
 	 */
 	protected function manage()
 	{
+		/* Init */
+		parent::manage();
+
 		/* Sort out comments and reviews */
 		$tabs = $this->marker->commentReviewTabs();
 		$_tabs = array_keys( $tabs );
@@ -96,6 +99,33 @@ class _markers extends \IPS\Content\Controller
 		{
 			\IPS\Output::i()->output = $activeTabContents;
 			return;
+		}
+
+		if( $this->marker->container()->allow_reviews )
+		{
+			\IPS\Output::i()->jsonLd['marker']['aggregateRating'] = array(
+				'@type'			=> 'AggregateRating',
+				'reviewCount'	=> $this->marker->mapped( 'num_reviews' ),
+				'ratingValue'	=> $this->marker->averageReviewRating(),
+				'bestRating'	=> \IPS\Settings::i()->reviews_rating_out_of,
+			);
+
+			\IPS\Output::i()->jsonLd['marker']['interactionStatistic'][]	= array(
+				'@type'					=> 'InteractionCounter',
+				'interactionType'		=> "http://schema.org/ReviewAction",
+				'userInteractionCount'	=> $this->marker->mapped( 'num_reviews' ),
+			);
+		}
+
+		if( $this->marker->container()->allow_comments )
+		{
+			\IPS\Output::i()->jsonLd['marker']['interactionStatistic'][] = array(
+				'@type'					=> 'InteractionCounter',
+				'interactionType'		=> "http://schema.org/CommentAction",
+				'userInteractionCount'	=> $this->marker->mapped( 'num_comments' )
+			);
+
+			\IPS\Output::i()->jsonLd['marker']['commentCount'] = $this->marker->mapped( 'num_comments' );
 		}
 
 
