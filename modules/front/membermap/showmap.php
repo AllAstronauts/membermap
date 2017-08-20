@@ -126,7 +126,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 		</script>
 EOF;
 
-		if ( \IPS\Settings::i()->membermap_showMemberList )
+		if ( \IPS\Settings::i()->membermap_showMemberList AND count( $markers ) == 0 )
 		{
 			\IPS\Output::i()->sidebar['contextual'] = \IPS\Theme::i()->getTemplate( 'map' )->memberList();
 		}
