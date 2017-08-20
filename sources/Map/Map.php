@@ -493,7 +493,11 @@ class _Map
 				{
 					$isStaff = TRUE;
 				}
-				
+
+				$popup = \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker, $photo );
+				\IPS\Output::i()->parseFileObjectUrls( $popup );
+				\IPS\Member::loggedIn()->language()->parseOutputForDisplay( $popup );
+
 				$markersToKeep[] = array(
 					'type'			=> "member",
 					'lat' 			=> round( (float)$marker['marker_lat'], 5 ),
@@ -502,7 +506,7 @@ class _Map
 					'member_name'	=> $marker['marker_name'],
 					'parent_id'		=> $marker['member_group_id'],
 					'parent_name'	=> $groupName,
-					'popup' 		=> \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker, $photo ),
+					'popup' 		=> $popup,
 					'markerColour' 	=> $markerColour,
 					'viewPerms'		=> ( ! isset( $marker['viewPerms'] ) OR $marker['viewPerms'] === '*' OR $marker['viewPerms'] === NULL ) ? '*' : array_map( 'intval', explode( ',', $marker['viewPerms'] ) ),
 					'isStaff'		=> $isStaff,
