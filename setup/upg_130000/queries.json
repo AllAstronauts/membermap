@@ -1,5 +1,5 @@
-[
-    {
+{
+    "1": {
         "method": "createTable",
         "params": [
             {
@@ -207,7 +207,7 @@
             }
         ]
     },
-    {
+    "2": {
         "method": "addColumn",
         "params": [
             "membermap_markers_groups",
@@ -227,7 +227,7 @@
             }
         ]
     },
-    {
+    "3": {
         "method": "addColumn",
         "params": [
             "membermap_markers_groups",
@@ -247,7 +247,7 @@
             }
         ]
     },
-    {
+    "4": {
         "method": "addColumn",
         "params": [
             "membermap_markers_groups",
@@ -267,7 +267,7 @@
             }
         ]
     },
-    {
+    "5": {
         "method": "addColumn",
         "params": [
             "membermap_markers",
@@ -287,7 +287,7 @@
             }
         ]
     },
-    {
+    "6": {
         "method": "addColumn",
         "params": [
             "membermap_markers",
@@ -307,7 +307,7 @@
             }
         ]
     },
-    {
+    "7": {
         "method": "addColumn",
         "params": [
             "membermap_markers",
@@ -327,7 +327,7 @@
             }
         ]
     },
-    {
+    "8": {
         "method": "addColumn",
         "params": [
             "membermap_markers",
@@ -347,7 +347,7 @@
             }
         ]
     },
-    {
+    "9": {
         "method": "addColumn",
         "params": [
             "membermap_markers",
@@ -367,7 +367,7 @@
             }
         ]
     },
-    {
+    "10": {
         "method": "addColumn",
         "params": [
             "membermap_markers",
@@ -387,7 +387,7 @@
             }
         ]
     },
-    {
+    "11": {
         "method": "addIndex",
         "params": [
             "membermap_markers",
@@ -407,7 +407,7 @@
             }
         ]
     },
-    {
+    "12": {
         "method": "createTable",
         "params": [
             {
@@ -681,7 +681,7 @@
             }
         ]
     },
-    {
+    "13": {
         "method": "addColumn",
         "params": [
             "membermap_markers_groups",
@@ -701,7 +701,7 @@
             }
         ]
     },
-    {
+    "14": {
         "method": "addColumn",
         "params": [
             "membermap_markers_groups",
@@ -721,7 +721,7 @@
             }
         ]
     },
-    {
+    "15": {
         "method": "addColumn",
         "params": [
             "membermap_markers",
@@ -741,7 +741,7 @@
             }
         ]
     },
-    {
+    "16": {
         "method": "addColumn",
         "params": [
             "membermap_markers",
@@ -761,7 +761,7 @@
             }
         ]
     },
-    {
+    "17": {
         "method": "addColumn",
         "params": [
             "membermap_markers",
@@ -781,7 +781,7 @@
             }
         ]
     },
-    {
+    "18": {
         "method": "addColumn",
         "params": [
             "membermap_markers",
@@ -801,7 +801,7 @@
             }
         ]
     },
-    {
+    "19": {
         "method": "addColumn",
         "params": [
             "membermap_markers",
@@ -821,7 +821,7 @@
             }
         ]
     },
-    {
+    "20": {
         "method": "addColumn",
         "params": [
             "membermap_markers",
@@ -841,4 +841,4 @@
             }
         ]
     }
-]
+}
