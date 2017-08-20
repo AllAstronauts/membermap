@@ -78,11 +78,113 @@ class _groups extends \IPS\Content\Controller
 			$table = new \IPS\Helpers\Table\Content( '\IPS\membermap\Markers\Markers', $group->url(), NULL, $group );
 			$table->classes = array( 'ipsDataList_large' );
 			$table->title = \IPS\Member::loggedIn()->language()->pluralize(  \IPS\Member::loggedIn()->language()->get( 'group_markers_number' ), array( $_count ) );
+			
+			$filterOptions = array(
+				'all'	=> 'all_markers',
+			);
+
+			$timeFrameOptions = array(
+				'show_all'			=> 'show_all',
+				'today'				=> 'today',
+				'last_5_days'		=> 'last_5_days',
+				'last_7_days'		=> 'last_7_days',
+				'last_10_days'		=> 'last_10_days',
+				'last_15_days'		=> 'last_15_days',
+				'last_20_days'		=> 'last_20_days',
+				'last_25_days'		=> 'last_25_days',
+				'last_30_days'		=> 'last_30_days',
+				'last_60_days'		=> 'last_60_days',
+				'last_90_days'		=> 'last_90_days',
+			);
+
+			/* Are we a moderator? */
+			if( \IPS\membermap\Markers\Markers::modPermission( 'unhide', NULL, $group ) )
+			{
+				$filterOptions['queued_markers']	= 'queued_markers';
+			}
+
+			$table->advancedSearch = array(
+				'marker_type'	=> array( \IPS\Helpers\Table\SEARCH_SELECT, array( 'options' => $filterOptions ) ),
+				'sort_direction'=> array( \IPS\Helpers\Table\SEARCH_SELECT, array( 'options' => array(
+					'asc'			=> 'asc',
+					'desc'			=> 'desc',
+					) )
+				),
+				'marker_time_frame'	=> array( \IPS\Helpers\Table\SEARCH_SELECT, array( 'options' => $timeFrameOptions ) ),
+			);
+			$table->advancedSearchCallback = function( $table, $values )
+			{
+				/* Type */
+				switch ( $values['marker_type'] )
+				{
+					case 'starter':
+						$table->where[] = array( 'starter_id=?', \IPS\Member::loggedIn()->member_id );
+						break;
+					case 'queued_markers':
+						$table->where[] = array( '(marker_open=0 OR marker_open=-1)' );
+						break;
+				}
+
+				/* Cutoff */
+				$days = NULL;
+				
+				if ( isset( $values['marker_time_frame'] ) )
+				{
+					switch ( $values['marker_time_frame'] )
+					{
+						case 'today':
+							$days = 1;
+							break;
+						case 'last_5_days':
+							$days = 5;
+							break;
+						case 'last_7_days':
+							$days = 7;
+							break;
+						case 'last_10_days':
+							$days = 10;
+							break;
+						case 'last_15_days':
+							$days = 15;
+							break;
+						case 'last_20_days':
+							$days = 20;
+							break;
+						case 'last_25_days':
+							$days = 25;
+							break;
+						case 'last_30_days':
+							$days = 30;
+							break;
+						case 'last_60_days':
+							$days = 60;
+							break;
+						case 'last_90_days':
+							$days = 90;
+							break;
+						case 'since_last_visit':
+							$table->where[] = array( 'marker_updated>?', \IPS\Member::loggedIn()->last_visit );
+							break;
+					}
+				}
+
+				if ( $days !== NULL )
+				{
+					$table->where[] = array( 'marker_updated>?', \IPS\DateTime::create()->sub( new \DateInterval( 'P' . $days . 'D' ) )->getTimestamp() );
+				}
+			};
 		}
 
 		/* Online User Location */
 		$permissions = $group->permissions();
 		\IPS\Session::i()->setLocation( $group->url(), explode( ",", $permissions['perm_view'] ), 'loc_membermap_viewing_group', array( "membermap_marker_group_{$group->id}" => TRUE ) );
+
+		/* Show advanced search form */
+		if ( isset( \IPS\Request::i()->advancedSearchForm ) )
+		{
+			\IPS\Output::i()->output = (string) $table;
+			return;
+		}
 
 		/* Output */
 		\IPS\Output::i()->title		= $group->_title;

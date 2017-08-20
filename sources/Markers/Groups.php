@@ -126,6 +126,8 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 		'view'				=> 'view', /* This is actually the 'add' permission, since 'view' is required, and everyone can view any markers */
 		'read'				=> 2,
 		'add'				=> 3,
+		'reply'				=> 4,
+		'review'			=> 5,
 	);
 	
 	/**
@@ -256,6 +258,27 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 	{
 		$this->setlastMarker();
 	}
+
+	/**
+	 * [Node] Get number of unapproved content items
+	 *
+	 * @return	int
+	 */
+	protected function get__unapprovedItems()
+	{
+		return $this->queued_items;
+	}
+
+	/**
+	 * [Node] Get number of unapproved content items
+	 *
+	 * @param	int	$val	Unapproved Items
+	 * @return	void
+	 */
+	protected function set__unapprovedItems( $val )
+	{
+		$this->queued_items = $val;
+	}
 	
 	/**
 	 * [Node] Get buttons to display in tree
@@ -313,6 +336,10 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 		$form->add( new \IPS\Helpers\Form\Translatable( 'group_name', NULL, TRUE, array( 'app' => 'membermap', 'key' => ( $this->id ? "membermap_marker_group_{$this->id}" : NULL ) ) ) );
 
 		$form->add( new \IPS\Helpers\Form\YesNo( 'group_moderate', $this->id ? $this->moderate : FALSE, FALSE ) );
+		$form->add( new \IPS\Helpers\Form\YesNo( 'group_allow_comments', $this->id ? $this->allow_comments : TRUE, FALSE, array( 'togglesOn' => array( 'group_comment_moderate' ) ) ) );
+		$form->add( new \IPS\Helpers\Form\YesNo( 'group_comment_moderate', $this->id ? $this->comment_moderate : FALSE, FALSE, array(), NULL, NULL, NULL, 'group_comment_moderate' ) );
+		$form->add( new \IPS\Helpers\Form\YesNo( 'group_allow_reviews', $this->id ? $this->allow_reviews : FALSE, FALSE, array( 'togglesOn' => array( 'group_review_moderate' ) ) ) );
+		$form->add( new \IPS\Helpers\Form\YesNo( 'group_review_moderate', $this->id ? $this->review_moderate : FALSE, FALSE, array(), NULL, NULL, NULL, 'group_review_moderate' ) );
 
 		if( $this->type == 'custom' )
 		{
@@ -437,5 +464,22 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 		parent::delete();
 		
 		\IPS\membermap\Map::i()->invalidateJsonCache();
+	}
+
+	/**
+	 * Get the total amount of unapproved items
+	 *
+	 * @return 	int 	Number of unapproved items
+	 */
+	public static function getTotalUnapprovedCount()
+	{
+		$unapproved = 0;
+
+		foreach( static::roots() as $group )
+		{
+			$unapproved += $group->_unapprovedItems;
+		}
+
+		return $unapproved;
 	}
 }

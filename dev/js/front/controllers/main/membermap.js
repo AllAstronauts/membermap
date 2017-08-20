@@ -500,6 +500,7 @@
 			if ( allMarkers && allMarkers.length > 0 )
 			{
 				showMarkers();
+				updateOverlays();
 				return;
 			}
 
@@ -537,6 +538,7 @@
 			/* Add marker groups to the map.
 			 * If we do this on the showMarkers() function, MarkerCluster will not do it's "chunkedLoading" magic, 
 			 * and the cluster icon will be created/updated for every single marker */
+
 			$.each( overlayMaps, function( id, group )
 			{
 				if ( group.addToMap )
@@ -652,15 +654,11 @@
 						}
 
 						/* Chrom(e|ium) 50+ stops geolocation on unsecure protocols */
-						if ( L.Browser.chrome === true && document.location.protocol !== 'https:' )
+						/* Other browsers are following this standard. */
+						/* Will disallow geolocation on unsecure connections instead of keeping track of when the various browsers aren't supporting unsecured geolocation */
+						if ( document.location.protocol !== 'https:' )
 						{
-							var chromeVersion = navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
-							chromeVersion = chromeVersion ? parseInt( chromeVersion[2], 10 ) : false;
-
-							if ( chromeVersion >= 50 )
-							{
-								geolocationSupported = false;
-							}
+							geolocationSupported = false;
 						}
 
 						if( ! navigator.geolocation || ! geolocationSupported )

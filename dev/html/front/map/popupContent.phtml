@@ -13,3 +13,7 @@
 {{if $marker['marker_location']}}
 	<p>{$marker['marker_location']}</p>
 {{endif}}
+
+{{if $marker['marker_comments'] > 0 OR $marker['marker_reviews'] > 0}}
+	<p class='ipsType_light ipsType_small'><i class='fa fa-comment'></i> {lang="marker_comment_count" pluralize="$marker['marker_comments']"} &middot; {lang="marker_review_count" pluralize="$marker['marker_reviews']"}</p>
+{{endif}}

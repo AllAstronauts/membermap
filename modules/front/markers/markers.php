@@ -77,10 +77,64 @@ class _markers extends \IPS\Content\Controller
 	 */
 	protected function manage()
 	{
+		/* Init */
+		parent::manage();
+
+		/* Sort out comments and reviews */
+		$tabs = $this->marker->commentReviewTabs();
+		$_tabs = array_keys( $tabs );
+		$tab = isset( \IPS\Request::i()->tab ) ? \IPS\Request::i()->tab : array_shift( $_tabs );
+		$activeTabContents = $this->marker->commentReviews( $tab );
+		
+		if ( count( $tabs ) > 1 )
+		{
+			$commentsAndReviews = count( $tabs ) ? \IPS\Theme::i()->getTemplate( 'global', 'core' )->tabs( $tabs, $tab, $activeTabContents, $this->marker->url(), 'tab', FALSE, TRUE ) : NULL;
+		}
+		else
+		{
+			$commentsAndReviews = $activeTabContents;
+		}
+
+		if ( \IPS\Request::i()->isAjax() )
+		{
+			\IPS\Output::i()->output = $activeTabContents;
+			return;
+		}
+
+		if( $this->marker->container()->allow_reviews )
+		{
+			\IPS\Output::i()->jsonLd['marker']['aggregateRating'] = array(
+				'@type'			=> 'AggregateRating',
+				'reviewCount'	=> $this->marker->mapped( 'num_reviews' ),
+				'ratingValue'	=> $this->marker->averageReviewRating(),
+				'bestRating'	=> \IPS\Settings::i()->reviews_rating_out_of,
+			);
+
+			\IPS\Output::i()->jsonLd['marker']['interactionStatistic'][]	= array(
+				'@type'					=> 'InteractionCounter',
+				'interactionType'		=> "http://schema.org/ReviewAction",
+				'userInteractionCount'	=> $this->marker->mapped( 'num_reviews' ),
+			);
+		}
+
+		if( $this->marker->container()->allow_comments )
+		{
+			\IPS\Output::i()->jsonLd['marker']['interactionStatistic'][] = array(
+				'@type'					=> 'InteractionCounter',
+				'interactionType'		=> "http://schema.org/CommentAction",
+				'userInteractionCount'	=> $this->marker->mapped( 'num_comments' )
+			);
+
+			\IPS\Output::i()->jsonLd['marker']['commentCount'] = $this->marker->mapped( 'num_comments' );
+		}
+
+
+		\IPS\Session::i()->setLocation( $this->marker->url(), $this->marker->onlineListPermissions(), 'loc_membermap_viewing_marker', array( $this->marker->title => FALSE ) );
+
 		/* Display */
 		\IPS\Output::i()->title		= $this->marker->_title . ' - ' . $this->marker->container()->_title;
 		\IPS\Output::i()->sidebar['sticky'] = TRUE;
-		\IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'markers' )->viewMarker( $this->marker );
+		\IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'markers' )->viewMarker( $this->marker, $commentsAndReviews );
 
 	}
 	

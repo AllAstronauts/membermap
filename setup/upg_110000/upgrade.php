@@ -134,7 +134,8 @@ class _Upgrade
 				'perm_view'	 => '*',
 				'perm_2'	 => '*',  #read
 				'perm_3'     => \IPS\Settings::i()->admin_group,  #add
-			    'perm_4'     => \IPS\Settings::i()->admin_group,  #edit
+			    'perm_4'     => \IPS\Settings::i()->admin_group,  #comment
+			    'perm_5'     => \IPS\Settings::i()->admin_group,  #review
 			), array( 'perm_id=?', $perms['perm_id'] ) );
 		}
 
