@@ -205,7 +205,7 @@
                 "decimals": null,
                 "values": null,
                 "allow_null": true,
-                "default": "1",
+                "default": "0",
                 "comment": "",
                 "unsigned": false,
                 "zerofill": false,
