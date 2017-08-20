@@ -504,7 +504,7 @@ class _Map
 					'parent_name'	=> $groupName,
 					'popup' 		=> \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker, $photo ),
 					'markerColour' 	=> $markerColour,
-					'viewPerms'		=> ( $marker['viewPerms'] === '*' OR $marker['viewPerms'] === NULL ) ? '*' : array_map( 'intval', explode( ',', $marker['viewPerms'] ) ),
+					'viewPerms'		=> ( ! isset( $marker['viewPerms'] ) OR $marker['viewPerms'] === '*' OR $marker['viewPerms'] === NULL ) ? '*' : array_map( 'intval', explode( ',', $marker['viewPerms'] ) ),
 					'isStaff'		=> $isStaff,
 				);
 			}

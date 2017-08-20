@@ -500,6 +500,7 @@
 			if ( allMarkers && allMarkers.length > 0 )
 			{
 				showMarkers();
+				updateOverlays();
 				return;
 			}
 
@@ -537,6 +538,7 @@
 			/* Add marker groups to the map.
 			 * If we do this on the showMarkers() function, MarkerCluster will not do it's "chunkedLoading" magic, 
 			 * and the cluster icon will be created/updated for every single marker */
+
 			$.each( overlayMaps, function( id, group )
 			{
 				if ( group.addToMap )
