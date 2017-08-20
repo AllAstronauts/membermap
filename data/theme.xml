@@ -1,5 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <theme name="Default" author_name="Invision Power Services, Inc" author_url="https://www.invisioncommunity.com">
+ <template template_group="global" template_name="embedComment" template_data="$comment, $item, $url" template_location="front" template_app="membermap"><![CDATA[
+<div data-embedInfo-maxSize='500' class='ipsRichEmbed'>
+	{template="embedHeader" group="embed" app="core" params="$comment, \IPS\Member::loggedIn()->language()->addToStack( 'x_commented_marker', FALSE, array( 'sprintf' => array( $comment->author()->name ) ) ), $comment->mapped('date'), $url"}
+	<div class='ipsPad'>
+		<div class='ipsRichEmbed_originalItem ipsAreaBackground_reset ipsPad ipsSpacer_bottom ipsType_blendLinks'>
+			<div>
+				{{if count( $item->contentImages() )}}
+					{{$attachType = key( $item->contentImages()[0] );}}
+					{{$image = \IPS\File::get( $attachType, $item->contentImages()[0][ $attachType ] );}}
+
+					<div class='ipsRichEmbed_masthead ipsRichEmbed_mastheadBg ipsType_center'>
+						<a href='{$url}' style='background-image: url( "{expression="str_replace( array( '(', ')' ), array( '\(', '\)' ), $image->url )"}" )'>
+							<img src='{$image->url}' class='ipsHide' alt=''>
+						</a>
+					</div>
+				{{endif}}
+				{template="embedOriginalItem" group="embed" app="core" params="$item, TRUE"}
+			</div>
+		</div>
+
+		<div class='ipsType_richText ipsType_medium' data-truncate='3'>
+			{$comment->truncated(TRUE)|raw}
+		</div>
+
+		{{if \IPS\IPS::classUsesTrait( $comment, 'IPS\Content\Reactable' ) and count( $comment->reactions() ) and settings.reputation_enabled}}
+			<ul class='ipsList_inline ipsSpacer_top ipsSpacer_half'>
+				<li>
+					{template="reactionOverview" app="core" group="global" params="$comment, TRUE, 'small'"}
+				</li>
+			</ul>
+		{{endif}}		
+	</div>
+</div>]]></template>
+ <template template_group="global" template_name="embedMarker" template_data="$item, $url" template_location="front" template_app="membermap"><![CDATA[
+<div data-embedInfo-maxSize='500' class='ipsRichEmbed'>
+	{template="embedHeader" group="embed" app="core" params="$item, \IPS\Member::loggedIn()->language()->addToStack( 'x_created_marker_in', FALSE, array( 'sprintf' => array( $item->author()->name, $item->container()->_title ) ) ), $item->mapped('date'), $url"}
+	{{if count( $item->contentImages() )}}
+		{{$attachType = key( $item->contentImages()[0] );}}
+		{{$firstPhoto = \IPS\File::get( $attachType, $item->contentImages()[0][ $attachType ] );}}
+		<div class='ipsRichEmbed_masthead ipsRichEmbed_mastheadBg ipsType_center'>
+			<a href='{$url}' style='background-image: url( "{expression="str_replace( array( '(', ')' ), array( '\(', '\)' ), $firstPhoto->url )"}" )'>
+				<img src='{$firstPhoto->url}' class='ipsHide' alt=''>
+			</a>
+		</div>
+	{{endif}}
+	<div class='ipsPad'>
+		<h3 class='ipsRichEmbed_itemTitle ipsTruncate ipsTruncate_line ipsType_blendLinks'>
+			<a href='{$url}' title="{$item->mapped('title')}">{$item->mapped('title')}</a>
+		</h3>
+		<div class='ipsType_richText ipsType_medium ipsSpacer_top ipsSpacer_half' data-truncate='3'>
+			{$item->truncated(TRUE)|raw}
+		</div>
+
+		{template="embedItemStats" group="embed" app="core" params="$item"}
+	</div>
+</div>]]></template>
+ <template template_group="global" template_name="embedReview" template_data="$review, $item, $url" template_location="front" template_app="membermap"><![CDATA[
+{{$useImage = NULL;}}
+<div data-embedInfo-maxSize='500' class='ipsRichEmbed'>
+	{template="embedHeader" group="embed" app="core" params="$comment, \IPS\Member::loggedIn()->language()->addToStack( 'embed_review_of', FALSE, array( 'sprintf' => array( $comment->author()->name ) ) ), $comment->mapped('date'), $url"}
+	<div class='ipsPad'>
+		<div class='ipsRichEmbed_originalItem ipsAreaBackground_reset ipsSpacer_bottom ipsType_blendLinks'>
+			<div>
+				{{if count( $item->contentImages() )}}
+					{{$attachType = key( $item->contentImages()[0] );}}
+					{{$image = \IPS\File::get( $attachType, $item->contentImages()[0][ $attachType ] );}}
+
+					<div class='ipsRichEmbed_masthead ipsRichEmbed_mastheadBg ipsType_center'>
+						<a href='{$url}' style='background-image: url( "{expression="str_replace( array( '(', ')' ), array( '\(', '\)' ), $image->url )"}" )'>
+							<img src='{$image->url}' class='ipsHide' alt=''>
+						</a>
+					</div>
+				{{endif}}
+				
+				<div class='ipsPad'>
+					{template="embedOriginalItem" group="embed" app="core" params="$item"}
+				</div>
+			</div>
+		</div>
+
+		{template="rating" app="core" params="'veryLarge', $comment->mapped('rating')" group="global"} 
+		{{if $comment->mapped('votes_total')}}
+			<p class='ipsType_reset ipsType_medium'>{$comment->helpfulLine()|raw}</p>
+		{{endif}}
+		<hr class='ipsHr'>
+		<div class='ipsType_richText ipsType_medium ipsSpacer_top ipsSpacer_half' data-truncate='3'>
+			{$comment->truncated(TRUE)|raw}
+		</div>
+
+		{{if \IPS\IPS::classUsesTrait( $comment, 'IPS\Content\Reactable' ) and count( $comment->reactions() ) and settings.reputation_enabled}}
+			<ul class='ipsList_inline ipsSpacer_top ipsSpacer_half'>
+				<li>
+					{template="reactionOverview" app="core" group="global" params="$comment, TRUE, 'small'"}
+				</li>
+			</ul>
+		{{endif}}
+	</div>
+</div>]]></template>
  <template template_group="map" template_name="addLocation" template_data="$form1, $form2" template_location="front" template_app="membermap"><![CDATA[<div class='ipsMessage ipsMessage_error' style='display: none' id='membermap_addLocation_error'></div>
 <div class='ipsColumns ipsColumns_bothSpacing ipsColumns_halfSpacing'>
 	<div id='membermap_geolocation_wrapper' class='ipsColumn ipsColumn_medium'>{$form1|raw}</div>
@@ -52,6 +150,10 @@
 <div class='membermap_popupContent'>{$marker['marker_description']|raw}</div>
 {{if $marker['marker_location']}}
 	<p>{$marker['marker_location']}</p>
+{{endif}}
+
+{{if $marker['marker_comments'] > 0 OR $marker['marker_reviews'] > 0}}
+	<p class='ipsType_light ipsType_small'><i class='fa fa-comment'></i> {lang="marker_comment_count" pluralize="$marker['marker_comments']"} &middot; {lang="marker_review_count" pluralize="$marker['marker_reviews']"}</p>
 {{endif}}]]></template>
  <template template_group="map" template_name="memberList" template_data="$orientation='vertical'" template_location="front" template_app="membermap"><![CDATA[<div class='ipsWidget ipsWidget_vertical ipsBox'>
 	<div id="membermap_memberList">
@@ -102,6 +204,10 @@
 </div>
 {{if $marker['marker_location']}}
 	<p>{$marker['marker_location']}</p>
+{{endif}}
+
+{{if $marker['marker_comments'] > 0 OR $marker['marker_reviews'] > 0}}
+	<p class='ipsType_light ipsType_small'><i class='fa fa-comment'></i> {lang="marker_comment_count" pluralize="$marker['marker_comments']"} &middot; {lang="marker_review_count" pluralize="$marker['marker_reviews']"}</p>
 {{endif}}]]></template>
  <template template_group="map" template_name="profileMap" template_data="$member" template_location="front" template_app="membermap"><![CDATA[<div class='ipsWidget ipsWidget_vertical cProfileSidebarBlock ipsBox ipsSpacer_bottom'>
 	<a href='{url="app=membermap&module=membermap&controller=showmap&filter=getByUser&member_id={$member->member_id}" seoTemplate="membermap"}'><h2 class='ipsWidget_title ipsType_reset'>{lang="frontnavigation_membermap"}</h2></a>
@@ -141,7 +247,10 @@
 				{{endif}}
 
 				<li>
-					<a href="{url='app=membermap&module=markers&controller=groups' seoTemplate='markers'}" title='{lang="membermap_browse_markers"}' class='ipsButton ipsButton_medium ipsButton_fullWidth ipsButton_link'><i class="icon-newspaper"></i> {lang="membermap_browse_markers"}</a>
+					{{$unapproved = \iPS\membermap\Markers\Groups::getTotalUnapprovedCount();}}
+					<a href="{url='app=membermap&module=markers&controller=groups' seoTemplate='markers'}" title='{lang="membermap_browse_markers"}' class='ipsButton ipsButton_medium ipsButton_fullWidth ipsButton_link'>
+						<i class="icon-newspaper"></i> {lang="membermap_browse_markers"} {{if $unapproved > 0}}&nbsp;<strong class='ipsType_warning ipsType_medium'><i class='fa fa-warning'></i> {$unapproved}</strong>{{endif}}
+					</a>
 				</li>
 
 				{{if \IPS\Member::loggedIn()->isAdmin()}}
@@ -253,6 +362,52 @@
 		</div>
 	</div>
 </div>]]></template>
+ <template template_group="markers" template_name="comments" template_data="$marker" template_location="front" template_app="membermap"><![CDATA[<div class='' data-controller='core.front.core.commentFeed, core.front.core.ignoredComments' {{if settings.auto_polling_enabled}}data-autoPoll{{endif}} data-baseURL='{$marker->url()}' {{if $marker->isLastPage()}}data-lastPage{{endif}} data-feedID='marker-{$marker->id}' id='comments'>
+	{{if $marker->commentPageCount() > 1}}
+		{$marker->commentPagination( array( 'tab' ) )|raw}
+		<br><br>
+	{{endif}}
+
+	{template="featuredComments" group="global" app="core" params="$marker->featuredComments(), $marker->url()->setQueryString('tab', 'comments')->setQueryString('recommended', 'comments')"}
+
+	<div data-role='commentFeed' data-controller='core.front.core.moderation'>
+		{{if ( $comments = $marker->comments( NULL, NULL, 'date', 'asc', NULL, NULL, NULL, NULL, FALSE, isset( \IPS\Request::i()->showDeleted ) ) and count( $comments ) )}}
+			<form action="{$marker->url()->csrf()->setQueryString( 'do', 'multimodComment' )}" method="post" data-ipsPageAction data-role='moderationTools'>
+				{{$commentCount=0; $timeLastRead = $marker->timeLastRead(); $lined = FALSE;}}
+				{{foreach $comments as $comment}}
+					{{if !$lined and $timeLastRead and $timeLastRead->getTimestamp() < $comment->mapped('date')}}
+						{{if $lined = TRUE and $commentCount}}
+							<hr class="ipsCommentUnreadSeperator">
+						{{endif}}
+					{{endif}}
+					{{$commentCount++;}}
+					{$comment->html()|raw}
+				{{endforeach}}
+				{template="commentMultimod" app="core" group="global" params="$marker"}
+			</form>
+		{{else}}
+			<p class='ipsType_normal ipsType_light ipsType_center' data-role='noComments'>{lang="no_comments"}</p>
+		{{endif}}
+	</div>
+	{{if $marker->commentPageCount() > 1}}
+		<hr class='ipsHr'>
+		{$marker->commentPagination( array( 'tab' ) )|raw}
+	{{endif}}
+	{{if $marker->commentForm() || \IPS\Member::loggedIn()->restrict_post || \IPS\Member::loggedIn()->members_bitoptions['unacknowledged_warnings']}}
+		<a id='replyForm'></a>
+		<div data-role='replyArea' class='ipsBox ipsBox_transparent ipsAreaBackground ipsPad {{if !$marker->canComment()}}cTopicPostArea_noSize{{endif}} ipsSpacer_top'>
+			{{if $marker->commentForm()}}
+				{$marker->commentForm()|raw}
+			{{else}}
+				{{if \IPS\Member::loggedIn()->restrict_post}}
+					{template="commentUnavailable" group="forms" location="front" app="core" params="'restricted_cannot_comment', \IPS\Member::loggedIn()->warnings(5,NULL,'rpa'), \IPS\Member::loggedIn()->restrict_post"}
+				{{elseif \IPS\Member::loggedIn()->members_bitoptions['unacknowledged_warnings']}}
+					{template="commentUnavailable" group="forms" location="front" app="core" params="'unacknowledged_warning_cannot_post', \IPS\Member::loggedIn()->warnings( 1, FALSE )"}
+				{{endif}}
+			{{endif}}
+		</div>
+	{{endif}}
+</div>]]></template>
  <template template_group="markers" template_name="group" template_data="$group, $table" template_location="front" template_app="membermap"><![CDATA[<div class="ipsPageHeader ipsClearfix ipsSpacer_bottom">
 	<h1 class="ipsType_pageTitle">{$group->_title}</h1>
 	{{if $group->description}}
@@ -322,6 +477,13 @@
 				{{$count = \IPS\membermap\Markers\Markers::contentCount( $group );}}
 				<dt class="ipsDataItem_stats_number">{number="$count"}</dt>
 				<dd class="ipsDataItem_stats_type ipsType_light">{lang="group_markers_number_noCount" pluralize="$count"}</dd>
+
+				{{if \IPS\forums\Topic::modPermission( 'unhide', NULL, $group ) AND $group->_unapprovedItems > 0}}
+					<strong class='ipsType_warning ipsType_medium'>
+						<i class='fa fa-warning'></i>
+						<a href='{$group->url()->setQueryString( array( 'advanced_search_submitted' => 1, 'marker_type' => 'queued_markers' ) )->csrf()}' class='ipsType_blendLinks'>{$group->_unapprovedItems}</a>
+					</strong>
+				{{endif}}
 			</dl>
 			<ul class="ipsDataItem_lastPoster ipsDataItem_withPhoto">
 				{{if $lastPost = $group->lastMarker()}}
@@ -363,14 +525,92 @@
 		<a href='{url="app=membermap&module=markers&controller=submit&_new=1&group={$group->id}" seoTemplate="membermap_submit"}' class='ipsButton ipsButton_primary ipsButton_medium'>{lang="membermap_submit_first_marker"}</a>
 	{{endif}}
 </div>]]></template>
+ <template template_group="markers" template_name="reviews" template_data="$marker" template_location="front" template_app="membermap"><![CDATA[<div data-controller='core.front.core.commentFeed' {{if settings.auto_polling_enabled}}data-autoPoll{{endif}} data-commentsType='reviews' data-baseURL='{$marker->url()}' {{if $marker->isLastPage('reviews')}}data-lastPage{{endif}} data-feedID='marker-{$marker->id}-reviews' id='reviews'>
+	{{if $marker->reviewForm()}}
+		<div id='elmarkerReviewForm'>
+			{$marker->reviewForm()|raw}
+		</div>
+	{{else}}
+		{{if $marker->hasReviewed()}}
+			<!-- Already reviewed -->
+		{{elseif \IPS\Member::loggedin()->restrict_post}}
+			{{if \IPS\Member::loggedIn()->restrict_post == -1}}
+				{template="reviewUnavailable" group="forms" location="front" app="core" params="'restricted_cannot_comment'"}
+			{{else}}
+				{template="reviewUnavailable" group="forms" location="front" app="core" params="'restricted_cannot_comment', \IPS\Member::loggedIn()->warnings(5,NULL,'rpa'), \IPS\Member::loggedIn()->restrict_post"}
+			{{endif}}
+		{{elseif \IPS\Member::loggedIn()->members_bitoptions['unacknowledged_warnings']}}
+			{template="reviewUnavailable" group="forms" location="front" app="core" params="'unacknowledged_warning_cannot_post', \IPS\Member::loggedIn()->warnings( 1, FALSE )"}
+		{{endif}}
+	{{endif}}
+	{{if count( $marker->reviews( NULL, NULL, NULL, 'desc', NULL, NULL, NULL, NULL, isset( \IPS\Request::i()->showDeleted ) ) )}}
+		{{if !$marker->hasReviewed()}}<hr class='ipsHr'>{{endif}}
+		<div class="ipsClearfix ipsSpacer_bottom">
+			{{if $marker->reviewPageCount() > 1}}
+				<div class="ipsPos_left ipsResponsive_noFloat">
+					{$marker->reviewPagination( array( 'tab', 'sort' ) )|raw}
+				</div>
+			{{endif}}
+			<div class="ipsClearfix ipsPos_right ipsResponsive_hidePhone">
+				<ul class="ipsButtonRow ipsClearfix">
+					<li data-action="tableFilter">
+						<a href="{$marker->url()->setQueryString( array( 'tab' => 'reviews', 'page' => 1, 'sort' => 'helpful' ) )}" class="{{if !isset( request.sort ) or request.sort != 'newest'}}ipsButtonRow_active{{endif}}" data-action="filterClick">{lang="most_helpful"}</a>
+					</li>
+					<li data-action="tableFilter">
+						<a href="{$marker->url()->setQueryString( array( 'tab' => 'reviews', 'page' => 1, 'sort' => 'newest' ) )}" class="{{if isset( request.sort ) and request.sort == 'newest'}}ipsButtonRow_active{{endif}}" data-action="filterClick">{lang="newest"}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div data-role='commentFeed' data-controller='core.front.core.moderation'>
+			<form action="{$marker->url()->csrf()->setQueryString( 'do', 'multimodReview' )}" method="post" data-ipsPageAction data-role='moderationTools'>
+				{{$reviewCount=0; $timeLastRead = $marker->timeLastRead(); $lined = FALSE;}}
+				{{foreach $marker->reviews() as $review}}
+					{{if !$lined and $timeLastRead and $timeLastRead->getTimestamp() < $review->mapped('date')}}
+						{{if $lined = TRUE and $reviewCount}}
+							<hr class="ipsCommentUnreadSeperator">
+						{{endif}}
+					{{endif}}
+					{{$reviewCount++;}}
+					{$review->html()|raw}
+				{{endforeach}}
+				{template="commentMultimod" app="core" group="global" params="$marker, 'review'"}
+			</form>
+		</div>
+		{{if $marker->reviewPageCount() > 1}}
+			<div>
+				{$marker->reviewPagination( array( 'tab', 'sort' ) )|raw}
+			</div>
+		{{endif}}
+	{{elseif !$marker->canReview()}}
+		<p class="ipsType_normal ipsType_light ipsType_reset" data-role="noReviews">{lang="no_reviews"}</p>
+	{{endif}}
+</div>]]></template>
  <template template_group="markers" template_name="rows" template_data="$table, $headers, $markers" template_location="front" template_app="membermap"><![CDATA[{{if count( $markers )}}
 	{{foreach $markers as $marker}}
-		<li class='ipsDataItem {{if method_exists( $marker, 'tableClass' ) && $marker->tableClass()}}ipsDataItem_{$marker->tableClass()}{{endif}} {{if $marker->hidden()}}ipsModerated{{endif}}'>
+		{{$idField = $marker::$databaseColumnId;}}
+		<li class='ipsDataItem {{if $marker->unread()}}ipsDataItem_unread{{endif}} {{if method_exists( $marker, 'tableClass' ) && $marker->tableClass()}}ipsDataItem_{$marker->tableClass()}{{endif}} {{if $marker->hidden()}}ipsModerated{{endif}}'>
+			{{if member.member_id}}
+				<div class='ipsDataItem_icon ipsPos_top'>
+					{{if $marker->unread()}}
+						<a href='{$marker->url( 'getNewComment' )}' title='{lang="first_unread_post"}' data-ipsTooltip>
+							<span class='ipsItemStatus'><i class="fa {{if in_array( $marker->$idField, $table->contentPostedIn )}}fa-star{{else}}fa-circle{{endif}}"></i></span>
+						</a>
+					{{else}}
+						{{if in_array( $marker->$idField, $table->contentPostedIn )}}
+							<span class='ipsItemStatus ipsItemStatus_read ipsItemStatus_posted'><i class="fa fa-star"></i></span>
+						{{else}}
+							&nbsp;
+						{{endif}}
+					{{endif}}
+				</div>
+			{{endif}}
 			<div class='ipsDataItem_main'>
 				<h4 class='ipsDataItem_title ipsType_sectionHead'>
 					<a href='{$marker->url()}' title='{lang="membermap_view_this_marker" sprintf="$marker->_title"}' {{if $marker->canEdit()}}data-role="editableTitle"{{endif}}>{wordbreak="$marker->_title"}</a>
-
-					<span class='ipsType_reset ipsType_light ipsType_blendLinks'>
+					<br>
+					<span class='ipsType_reset ipsType_normal ipsType_light ipsType_blendLinks'>
 						{{if $marker->member_id > 0}}
 							{lang="byline_nodate" htmlsprintf="$marker->author()->link()"}
 						{{else}}
@@ -404,6 +644,16 @@
 				</ul>
 			</div>
 			<ul class='ipsDataItem_lastPoster'>
+				{{foreach $marker->stats() as $k => $v}}
+					<li {{if $k == 'num_views'}}class='ipsType_light'{{elseif in_array( $k, $marker->hotStats )}}class="ipsDataItem_stats_hot" data-text='{lang="hot_item"}' data-ipsTooltip title='{lang="hot_item_desc"}'{{endif}}>
+						<span class='ipsDataItem_stats_number'>{number="$v"}</span>
+						<span class='ipsDataItem_stats_type'>{lang="{$k}" pluralize="$v"}</span>
+						{{if  \IPS\membermap\Markers\Markers::modPermission( 'unhide', NULL, $marker->container() ) AND $unapprovedComments = $marker->mapped('unapproved_comments')}}
+							&nbsp;<a href='{$marker->url()->setQueryString( 'queued_comments', 1 )}' class='ipsType_warning ipsType_small ipsPos_right ipsResponsive_noFloat' data-ipsTooltip title='{lang="queued_posts_badge" pluralize="$marker->unapproved_comments"}'><i class='fa fa-warning'></i> <strong>{$unapprovedComments}</strong></a>
+						{{endif}}
+					</li>
+				{{endforeach}}
+
 				<li>
 					<p class='ipsType_normal ipsType_reset ipsType_light'>
 						{{if $marker->updated > 0 OR $marker->added > 0}}
@@ -416,6 +666,7 @@
 					</p>
 				</li>
 			</ul>
+			
 			{{if method_exists( $table, 'canModerate' ) AND $table->canModerate()}}
 				<div class='ipsDataItem_modCheck'>
 					<span class='ipsCustomInput'>
@@ -427,7 +678,278 @@
 		</li>
 	{{endforeach}}
 {{endif}}]]></template>
- <template template_group="markers" template_name="viewMarker" template_data="$marker, $prevReport='', $nextReport=''" template_location="front" template_app="membermap"><![CDATA[{{if $marker->hidden() === 1 and $marker->canUnhide()}}
+ <template template_group="markers" template_name="searchResult" template_data="$indexData, $articles, $authorData, $itemData, $unread, $objectUrl, $itemUrl, $containerUrl, $containerTitle, $repCount, $showRepUrl, $snippet, $iPostedIn, $view, $canIgnoreComments=FALSE" template_location="front" template_app="membermap"><![CDATA[<li class='ipsStreamItem ipsStreamItem_contentBlock ipsStreamItem_{$view} ipsAreaBackground_reset ipsPad {{if $indexData['index_hidden']}}ipsModerated{{endif}}' data-role='activityItem' data-timestamp='{$indexData['index_date_created']}'>
+	<div class='ipsStreamItem_container ipsClearfix'>
+		{{if in_array( 'IPS\Content\Comment', class_parents( $indexData['index_class'] ) )}}
+			{{$itemClass = $indexData['index_class']::$itemClass;}}
+			<div class='ipsStreamItem_header ipsPhotoPanel ipsPhotoPanel_mini'>
+				{{if $indexData['index_title']}}
+					<span class='ipsStreamItem_contentType' data-ipsTooltip title='{lang="$itemClass::$title"}'><i class='fa fa-{$itemClass::$icon}'></i></span>
+				{{else}}				
+					<span class='ipsStreamItem_contentType' data-ipsTooltip title='{lang="$indexData['index_class']::$title"}'><i class='fa fa-{$indexData['index_class']::$icon}'></i></span>
+				{{endif}}
+				{template="userPhotoFromData" group="global" app="core" params="$authorData['member_id'], $authorData['name'], $authorData['members_seo_name'], \IPS\Member::photoUrl( $authorData ), ( $view !== 'condensed' ) ? 'mini' : 'tiny'"}
+				<div class='{{if $unread}}ipsStreamItem_unread{{endif}}'>
+					{{if $view == 'condensed' && $snippet}}
+						<div class='ipsPhotoPanel ipsPhotoPanel_small'>
+							{$snippet|raw}
+							<div>
+					{{endif}}
+					<h2 class='ipsType_reset ipsStreamItem_title ipsContained_container {{if !$indexData['index_title'] or $view == 'condensed'}}ipsStreamItem_titleSmall{{endif}}'>
+						{{if $unread}}
+							<span>
+								<a href='{$objectUrl->stripQueryString( array( 'comment' => 'comment', 'review' => 'review' ) )->setQueryString( 'do', 'getNewComment' )}' data-linkType="star" {{if $iPostedIn}}data-iPostedIn{{endif}} title='{lang="first_unread_post"}' data-ipsTooltip>
+									<span class='ipsItemStatus'><i class="fa fa-{{if $iPostedIn}}star{{else}}circle{{endif}}"></i></span>
+								</a>
+							</span>
+						{{elseif $iPostedIn}}
+							<span><span class='ipsItemStatus ipsItemStatus_read ipsItemStatus_posted'><i class="fa fa-star"></i></span></span>
+						{{endif}}
+						{{if isset( $indexData['index_prefix'] )}}
+								<span>{template="prefix" group="global" app="core" params="rawurlencode($indexData['index_prefix']), $indexData['index_prefix']"}</span>
+						{{endif}}
+						<div class='ipsType_break ipsContained'>
+							<a href='{$objectUrl}' data-linkType="link" data-searchable>{$itemData[ $itemClass::$databasePrefix . $itemClass::$databaseColumnMap['title'] ]}</a>
+						</div>
+						{{if $indexData['index_hidden']}}
+								{{if $indexData['index_hidden'] === -1}}
+								<span><span class="ipsBadge ipsBadge_icon ipsBadge_small ipsBadge_warning" data-ipsTooltip title='{lang="hidden"}'><i class='fa fa-eye-slash'></i></span></span>
+								{{elseif $indexData['index_hidden'] === 1}}
+								<span><span class="ipsBadge ipsBadge_icon ipsBadge_small ipsBadge_warning" data-ipsTooltip title='{lang="pending_approval"}'><i class='fa fa-warning'></i></span></span>
+								{{endif}}
+						{{endif}}
+					</h2>
+					{{if $view != 'condensed'}}
+						<p class='ipsType_reset ipsStreamItem_status ipsType_light ipsType_blendLinks'>
+							{{if in_array( 'IPS\Content\Review', class_parents( $indexData['index_class'] ) )}}
+								{{if isset( $itemData['author'] )}}
+									{lang="ft_user_other_activity_review" sprintf="$authorData['name'], $itemData['author']['name'], $articles['definite']"}
+								{{else}}
+									{lang="ft_user_own_activity_review" sprintf="$authorData['name'], $articles['indefinite']"}
+								{{endif}}
+							{{else}}
+								{{if $itemClass::$firstCommentRequired}}
+									{{if $indexData['index_title']}}
+										{lang="ft_user_own_activity_item" sprintf="$authorData['name'], $articles['indefinite']"}
+									{{else}}
+										{{if isset( $itemData['author'] )}}
+											{lang="ft_user_other_activity_reply" sprintf="$authorData['name'], $articles['definite']"} 
+										{{else}}
+											{lang="ft_user_own_activity_reply" sprintf="$authorData['name'], $articles['indefinite']"}
+										{{endif}}
+									{{endif}}
+								{{else}}
+									{{if isset( $itemData['author'] )}}
+										{lang="ft_user_other_activity_comment" sprintf="$authorData['name'], $articles['definite']"} 
+									{{else}}
+										{lang="ft_user_own_activity_comment" sprintf="$authorData['name'], $articles['indefinite']"}
+									{{endif}}
+								{{endif}}
+							{{endif}}							
+						</p>
+					{{else}}
+						<ul class='ipsList_inline ipsStreamItem_stats ipsType_light ipsType_blendLinks'>
+							<li>
+								<a href='{{if $indexData['index_title']}}{$objectUrl}{{else}}{{if in_array( 'IPS\Content\Review', class_parents( $indexData['index_class'] ) )}}{$objectUrl->setQueryString( array( 'do' => 'findReview', 'review' => $indexData['index_object_id'] ) )}{{else}}{$objectUrl->setQueryString( array( 'do' => 'findComment', 'comment' => $indexData['index_object_id'] ) )}{{endif}}{{endif}}' class='ipsType_blendLinks'><i class='fa fa-clock-o'></i> {datetime="$indexData['index_date_created']"}</a>
+							</li>
+							{{if isset( $itemClass::$databaseColumnMap['num_comments'] ) and isset( $itemData[ $itemClass::$databasePrefix . $itemClass::$databaseColumnMap['num_comments'] ] ) and $itemData[ $itemClass::$databasePrefix . $itemClass::$databaseColumnMap['num_comments'] ] > ( $itemClass::$firstCommentRequired ? 1 : 0 )}}
+								<li>
+									<a href='{$itemUrl->setQueryString( 'do', 'getFirstComment' )}' class='ipsType_blendLinks'>
+										{{if $itemClass::$firstCommentRequired}}
+											<i class='fa fa-comment'></i> {expression="$itemData[ $itemClass::$databasePrefix . $itemClass::$databaseColumnMap['num_comments'] ]-1"}
+										{{else}}
+											<i class='fa fa-comment'></i> {expression="$itemData[ $itemClass::$databasePrefix . $itemClass::$databaseColumnMap['num_comments'] ]"}
+										{{endif}}
+									</a>
+								</li>
+							{{endif}}
+							{{if isset( $itemClass::$databaseColumnMap['num_reviews'] ) and isset( $itemData[ $itemClass::$databasePrefix . $itemClass::$databaseColumnMap['num_reviews'] ] ) and $itemData[ $itemClass::$databasePrefix . $itemClass::$databaseColumnMap['num_reviews'] ]}}
+								<li>
+									<a href='{$itemUrl}#reviews' class='ipsType_blendLinks'><i class='fa fa-star-half-o'></i> {$itemData[ $itemClass::$databasePrefix . $itemClass::$databaseColumnMap['num_reviews'] ]}</a>
+								</li>
+							{{endif}}
+						</ul>
+
+						<p class='ipsStreamItem_status ipsType_reset ipsType_blendLinks'>
+							{{if in_array( 'IPS\Content\Review', class_parents( $indexData['index_class'] ) )}}
+								{{if isset( $itemData['author'] )}}
+									{lang="ft_user_other_activity_review" sprintf="$authorData['name'], $itemData['author']['name'], $articles['definite']"} 
+								{{else}}
+									{lang="ft_user_own_activity_review" sprintf="$authorData['name'], $articles['indefinite']"} 
+								{{endif}}
+							{{else}}
+								{{if $itemClass::$firstCommentRequired}}
+									{{if $indexData['index_title']}}
+										{lang="ft_user_own_activity_item" sprintf="$authorData['name'], $articles['indefinite']"} 
+									{{else}}
+										{{if isset( $itemData['author'] )}}
+											{lang="ft_user_other_activity_reply" sprintf="$authorData['name'], $articles['definite']"} 
+										{{else}}
+											{lang="ft_user_own_activity_reply" sprintf="$authorData['name'], $articles['indefinite']"} 
+										{{endif}}
+									{{endif}}
+								{{else}}
+									{{if isset( $itemData['author'] )}}
+										{lang="ft_user_other_activity_comment" sprintf="$authorData['name'], $articles['definite']"} 
+									{{else}}
+										{lang="ft_user_own_activity_comment" sprintf="$authorData['name'], $articles['indefinite']"} 
+									{{endif}}
+								{{endif}}
+							{{endif}}
+						</p>
+					{{endif}}
+					{{if isset( $indexData['index_tags'] ) and $view == 'condensed'}}
+						<span>{template="tags" group="global" app="core" params="explode( ',', $indexData['index_tags'] ), true, true"}</span>
+					{{endif}}
+						
+					{{if $view == 'condensed' && $snippet}}
+							</div>
+						</div>
+					{{endif}}
+				</div>
+			</div>
+			{{if $view !== 'condensed'}}
+				<div class='ipsStreamItem_snippet ipsType_break'>
+					{{if $canIgnoreComments and isset( $itemData['author'] ) and \IPS\Member::loggedIn()->member_id and isset( $authorData['member_id'] ) and isset ( $authorData['member_group_id'] ) and \IPS\Member::loggedIn()->isIgnoring( $authorData, 'topics' )}}
+					<div class='ipsComment_ignored ipsType_light' id='elIgnoreComment_{$indexData['index_object_id']}' data-ignoreCommentID='elComment_{$indexData['index_object_id']}' data-ignoreUserID='{$authorData['member_id']}'>
+						{lang="ignoring_content" sprintf="$authorData['name']"} <a href='#elIgnoreComment_{$indexData['index_object_id']}_menu' data-ipsMenu data-ipsMenu-menuID='elIgnoreComment_{$indexData['index_object_id']}_menu' data-ipsMenu-appendTo='#elIgnoreComment_{$indexData['index_object_id']}' data-action="ignoreOptions" title='{lang="see_post_ignore_options"}' class='ipsType_blendLinks'>{lang="options"} <i class='fa fa-caret-down'></i></a>
+						<ul class='ipsMenu ipsHide' id='elIgnoreComment_{$indexData['index_object_id']}_menu'>
+							<li class='ipsMenu_item ipsJS_show' data-ipsMenuValue='showPost'><a href='#'>{lang="show_this_post"}</a></li>
+							<li class='ipsMenu_sep ipsJS_show'><hr></li>
+							<li class='ipsMenu_item' data-ipsMenuValue='stopIgnoring'><a href='{url="app=core&module=system&controller=ignore&do=remove&id={$authorData['member_id']}" seoTemplate="ignore"}'>{lang="stop_ignoring_posts_by" sprintf="$authorData['name']"}</a></li>
+							<li class='ipsMenu_item'><a href='{url="app=core&module=system&controller=ignore" seoTemplate="ignore"}'>{lang="change_ignore_preferences"}</a></li>
+						</ul>
+					</div>
+					<div id='elComment_{$indexData['index_object_id']}' class="ipsHide">
+						{$snippet|raw}
+					</div>
+					{{else}}
+					 	{$snippet|raw}
+					{{endif}}
+				</div>
+				<ul class='ipsList_inline ipsStreamItem_meta'>
+					<li class='ipsType_light ipsType_medium'>
+						<a href='{{if $indexData['index_title']}}{$objectUrl}{{else}}{{if in_array( 'IPS\Content\Review', class_parents( $indexData['index_class'] ) )}}{$objectUrl->setQueryString( array( 'do' => 'findReview', 'review' => $indexData['index_object_id'] ) )}{{else}}{$objectUrl->setQueryString( array( 'do' => 'findComment', 'comment' => $indexData['index_object_id'] ) )}{{endif}}{{endif}}' class='ipsType_blendLinks'><i class='fa fa-clock-o'></i> {datetime="$indexData['index_date_created']"}</a>
+					</li>
+					{{if isset( $itemClass::$databaseColumnMap['num_comments'] ) and isset( $itemData[ $itemClass::$databasePrefix . $itemClass::$databaseColumnMap['num_comments'] ] ) and $itemData[ $itemClass::$databasePrefix . $itemClass::$databaseColumnMap['num_comments'] ] > ( $itemClass::$firstCommentRequired ? 1 : 0 )}}
+						<li class='ipsType_light ipsType_medium'>
+							<a href='{$itemUrl->setQueryString( 'do', 'getFirstComment' )}' class='ipsType_blendLinks'>
+								{{if $itemClass::$firstCommentRequired}}
+									<i class='fa fa-comment'></i> {lang="num_replies" pluralize="$itemData[ $itemClass::$databasePrefix . $itemClass::$databaseColumnMap['num_comments'] ] - 1"}
+								{{else}}
+									<i class='fa fa-comment'></i> {lang="num_comments" pluralize="$itemData[ $itemClass::$databasePrefix . $itemClass::$databaseColumnMap['num_comments'] ]"}
+								{{endif}}
+							</a>
+						</li>
+					{{endif}}
+					{{if in_array( 'IPS\Content\Reputation', class_implements( $indexData['index_class'] ) ) and settings.reputation_enabled && $repCount}}
+						<li class='ipsType_light ipsType_medium'>{template="reputationMini" group="global" app="core" params="$repCount, FALSE, FALSE, $showRepUrl, NULL"}</li>
+					{{endif}}
+					{{if isset( $indexData['index_tags'] )}}
+						<li>{template="tags" group="global" app="core" params="explode( ',', $indexData['index_tags'] ), true, true"}</li>
+					{{endif}}
+				</ul>
+			{{endif}}
+		{{else}}
+			<div class='ipsStreamItem_header ipsPhotoPanel ipsPhotoPanel_mini'>
+				<span class='ipsStreamItem_contentType' data-ipsTooltip title='{lang="$indexData['index_class']::$title" ucfirst="true"}'><i class='fa fa-{$indexData['index_class']::$icon}'></i></span>
+				{template="userPhotoFromData" group="global" app="core" params="$authorData['member_id'], $authorData['name'], $authorData['members_seo_name'], \IPS\Member::photoUrl( $authorData ), ( $view !== 'condensed' ) ? 'mini' : 'tiny'"}
+				<div class='{{if $unread}}ipsStreamItem_unread{{endif}}'>
+					{{if $view == 'condensed' && $snippet}}
+						<div class='ipsPhotoPanel ipsPhotoPanel_small'>
+							{$snippet|raw}
+							<div>
+					{{endif}}
+					<h2 class='ipsType_reset ipsContained_container ipsStreamItem_title ipsType_break {{if $view == 'condensed'}}ipsStreamItem_titleSmall{{endif}}'>
+						{{if $unread}}
+							<span><a href='{$objectUrl->setQueryString( 'do', 'getNewComment' )}' title='{lang="first_unread_post"}' data-linkType="star" {{if $iPostedIn}}data-iPostedIn{{endif}} data-ipsTooltip>
+								<span class='ipsItemStatus'><i class="fa fa-{{if $iPostedIn}}star{{else}}circle{{endif}}"></i></span>
+							</a></span>
+						{{elseif $iPostedIn}}
+							<span class='ipsItemStatus ipsItemStatus_read ipsItemStatus_posted'><i class="fa fa-star"></i></span>
+						{{endif}}
+						{{if isset( $indexData['index_prefix'] )}}
+							<span>{template="prefix" group="global" app="core" params="rawurlencode($indexData['index_prefix']), $indexData['index_prefix']"}</span>
+						{{endif}}
+						<div class='ipsContained ipsType_break'><a href='{$itemUrl}' data-linkType="link" data-searchable>{$indexData['index_title']}</a></div>
+						{{if $indexData['index_hidden']}}
+							<span class="ipsBadge ipsBadge_icon ipsBadge_warning ipsBadge_small" data-ipsTooltip title='{lang="hidden"}'><i class='fa fa-eye-slash'></i></span>
+						{{endif}}	
+						{{if isset( $indexData['index_tags'] ) and $view == 'condensed'}}
+							{template="tags" group="global" app="core" params="explode( ',', $indexData['index_tags'] ), true, true"}
+						{{endif}}
+					</h2>
+					{{if $view != 'condensed'}}
+						<p class='ipsType_reset ipsStreamItem_status ipsType_light ipsType_blendLinks'>{lang="ft_user_own_activity_item" sprintf="$authorData['name'], $articles['indefinite']"} </p>
+					{{else}}
+						<ul class='ipsList_inline ipsStreamItem_stats ipsType_light ipsType_blendLinks'>
+							<li>
+								<a href='{$objectUrl}' class='ipsType_blendLinks'><i class='fa fa-clock-o'></i> {datetime="$indexData['index_date_created']"}</a>
+							</li>
+							{{if isset( $indexData['index_class']::$databaseColumnMap['num_comments'] ) and isset( $itemData[ $indexData['index_class']::$databasePrefix . $indexData['index_class']::$databaseColumnMap['num_comments'] ] ) and $itemData[ $indexData['index_class']::$databasePrefix . $indexData['index_class']::$databaseColumnMap['num_comments'] ] > ( $indexData['index_class']::$firstCommentRequired ? 1 : 0 )}}
+								<li>
+									<a href='{$itemUrl->setQueryString( 'do', 'getFirstComment' )}' class='ipsType_blendLinks'>
+										{{if $indexData['index_class']::$firstCommentRequired}}
+											<i class='fa fa-comment'></i> {expression="$itemData[ $indexData['index_class']::$databasePrefix . $indexData['index_class']::$databaseColumnMap['num_comments'] ] - 1"}
+										{{else}}
+											<i class='fa fa-comment'></i> {expression="$itemData[ $indexData['index_class']::$databasePrefix . $indexData['index_class']::$databaseColumnMap['num_comments'] ]"}
+										{{endif}}
+									</a>
+								</li>
+							{{endif}}
+							{{if isset( $indexData['index_class']::$databaseColumnMap['num_reviews'] ) and isset( $itemData[ $indexData['index_class']::$databasePrefix . $indexData['index_class']::$databaseColumnMap['num_reviews'] ] ) and $itemData[ $indexData['index_class']::$databasePrefix . $indexData['index_class']::$databaseColumnMap['num_reviews'] ]}}
+								<li>
+									<a href='{$itemUrl}#reviews' class='ipsType_blendLinks'><i class='fa fa-star-half-o'></i> {expression="$itemData[ $indexData['index_class']::$databasePrefix . $indexData['index_class']::$databaseColumnMap['num_reviews'] ]"}</a>
+								</li>
+							{{endif}}
+						</ul>
+						<p class='ipsStreamItem_status ipsType_reset ipsType_blendLinks'>
+							{lang="ft_user_own_activity_item" sprintf="$authorData['name'], $articles['indefinite']"} 
+						</p>
+					{{endif}}
+					
+					{{if $view == 'condensed' && $snippet}}
+							</div>
+						</div>
+					{{endif}}
+				</div>
+			</div>
+			{{if $view !== 'condensed'}}
+				<div class='ipsStreamItem_snippet ipsType_break'>
+					{$snippet|raw}
+				</div>
+				<ul class='ipsList_inline ipsStreamItem_meta'>
+					<li class='ipsType_light ipsType_medium'>
+						<a href='{$objectUrl}' class='ipsType_blendLinks'><i class='fa fa-clock-o'></i> {datetime="$indexData['index_date_created']"}</a>
+					</li>
+					{{if isset( $indexData['index_class']::$databaseColumnMap['num_comments'] ) and isset( $itemData[ $indexData['index_class']::$databasePrefix . $indexData['index_class']::$databaseColumnMap['num_comments'] ] ) and $itemData[ $indexData['index_class']::$databasePrefix . $indexData['index_class']::$databaseColumnMap['num_comments'] ] > ( $indexData['index_class']::$firstCommentRequired ? 1 : 0 )}}
+						<li class='ipsType_light ipsType_medium'>
+							<a href='{$itemUrl->setQueryString( 'do', 'getFirstComment' )}' class='ipsType_blendLinks'>
+								{{if $indexData['index_class']::$firstCommentRequired}}
+									<i class='fa fa-comment'></i> {lang="num_replies" pluralize="$itemData[ $indexData['index_class']::$databasePrefix . $indexData['index_class']::$databaseColumnMap['num_comments'] ] - 1"}
+								{{else}}
+									<i class='fa fa-comment'></i> {lang="num_comments" pluralize="$itemData[ $indexData['index_class']::$databasePrefix . $indexData['index_class']::$databaseColumnMap['num_comments'] ]"}
+								{{endif}}
+							</a>
+						</li>
+					{{endif}}
+					{{if isset( $indexData['index_class']::$databaseColumnMap['num_reviews'] ) and isset( $itemData[ $indexData['index_class']::$databasePrefix . $indexData['index_class']::$databaseColumnMap['num_reviews'] ] ) and $itemData[ $indexData['index_class']::$databasePrefix . $indexData['index_class']::$databaseColumnMap['num_reviews'] ]}}
+						<li class='ipsType_light ipsType_medium'>
+							<a href='{$itemUrl}#reviews' class='ipsType_blendLinks'><i class='fa fa-star-half-o'></i> {lang="num_reviews" pluralize="$itemData[ $indexData['index_class']::$databasePrefix . $indexData['index_class']::$databaseColumnMap['num_reviews'] ]"}</a>
+						</li>
+					{{endif}}
+					{{if in_array( 'IPS\Content\Reputation', class_implements( $indexData['index_class'] ) ) and settings.reputation_enabled and $repCount}}
+						<li class='ipsType_light ipsType_medium'>{template="reputationMini" group="global" app="core" params="$repCount, FALSE, FALSE, $showRepUrl, NULL"}</li>
+					{{endif}}
+					{{if isset( $indexData['index_tags'] )}}
+						<li>{template="tags" group="global" app="core" params="explode( ',', $indexData['index_tags'] ), true, true"}</li>
+					{{endif}}
+				</ul>
+			{{endif}}
+		{{endif}}
+	</div>
+</li>]]></template>
+ <template template_group="markers" template_name="viewMarker" template_data="$marker, $comments, $prevReport='', $nextReport=''" template_location="front" template_app="membermap"><![CDATA[{{if $marker->hidden() === 1 and $marker->canUnhide()}}
 	<div class="ipsMessage ipsMessage_warning ipsSpacer_both">
 		<p class="ipsType_reset">{lang="membermap_pending_approval"}</p>
 		<br>
@@ -447,21 +969,39 @@
 		</ul>
 	</div>
 {{endif}}
+
+{template="contentItemMessages" group="global" app="core" params="$marker->getMessages(), $marker"}
+
 <article data-controller="membermap.front.markers.markerview" data-lon="{$marker->lon}" data-lat="{$marker->lat}" data-name="{$marker->_title}" class='ipsBox ipsPad'>
 	<div class='ipsColumns ipsColumns_collapsePhone ipsClear ipsClearfix'>
 		<div class='ipsColumn ipsColumn_fluid'>
 				<div class="ipsClearfix">
 					<h2 class="ipsType_pageTitle">
-						{$marker->_title}{{if $marker->hidden() === 1}}
-						<span class="ipsBadge ipsBadge_icon ipsBadge_warning" data-ipsTooltip title='{lang="pending_approval"}'><i class='fa fa-warning'></i></span>
-						{{elseif $marker->hidden() === -1}}
-							<span class="ipsBadge ipsBadge_icon ipsBadge_warning" data-ipsTooltip title='{$marker->hiddenBlurb()}'><i class='fa fa-eye-slash'></i></span>
+						{{if $marker->hidden() === -1 || $marker->hidden() === 1 || $marker->hidden() === -2}}
+							{{if $marker->hidden() === -1}}
+								<span><span class="ipsBadge ipsBadge_icon ipsBadge_warning" data-ipsTooltip title='{$marker->hiddenBlurb()}'><i class='fa fa-eye-slash'></i></span></span>
+							{{elseif $marker->hidden() === -2}}
+								<span><span class="ipsBadge ipsBadge_icon ipsBadge_warning" data-ipsTooltip title='{$marker->deletedBlurb()}'><i class='fa fa-trash'></i></span></span>
+							{{elseif $marker->hidden() === 1}}
+								<span><span class="ipsBadge ipsBadge_icon ipsBadge_warning" data-ipsTooltip title='{lang="pending_approval"}'><i class='fa fa-warning'></i></span></span>
+							{{endif}}
 						{{endif}}
+						{{if $marker->mapped('featured')}}
+							<span><span class="ipsBadge ipsBadge_icon ipsBadge_positive" data-ipsTooltip title='{lang="featured"}'><i class='fa fa-star'></i></span></span>
+						{{endif}}
+
+						{$marker->_title}
 					</h2>
+					{{if $marker->container()->allow_reviews}}
+						<div>
+							{template="rating" group="global" location="front" app="core" params="'large', $marker->averageReviewRating(), \IPS\Settings::i()->reviews_rating_out_of, $marker->memberReviewRating()"}&nbsp;&nbsp; <span class='ipsType_medium ipsType_light'>({lang="num_reviews" pluralize="$marker->reviews"})</span>
+						</div>
+					{{endif}}
 					<span class='ipsType_normal ipsType_light'>
 						<i class='fa {$marker->container()->pin_icon}'></i> {$marker->container()->_title}
 					</span>
 					<br><br>
+
 					<div class='ipsPost' data-role='commentContent'>
 						<div data-ipsTruncate data-ipsTruncate-type="hide" data-ipsTruncate-size="#elMarkerInfo">
 							<div class='ipsType_richText ipsType_normal ipsContained' data-controller='core.front.core.lightboxedImages'>
@@ -469,34 +1009,98 @@
 							</div>
 						</div>
 					</div>
-					<hr class='ipsHr'>
-					{{if $marker->canEdit() or $marker->canHide() or $marker->canUnhide() or $marker->canMove() or $marker->canDelete()}}
-						<a href='#elFileActions_menu' id='elFileActions' class='ipsButton ipsButton_light ipsButton_verySmall' data-ipsMenu>{lang="marker_actions"} <i class='fa fa-caret-down'></i></a>
-						<ul id='elFileActions_menu' class='ipsMenu ipsMenu_auto ipsHide'>
-							{{if $marker->canEdit()}}
-								<li class='ipsMenu_item'><a href='{$marker->url()->setQueryString( array( 'do' => 'edit' ) )}' title='{lang="edit"}'>{lang="edit"}</a></li>
+
+					<div class='ipsItemControls'>
+						{{if \IPS\IPS::classUsesTrait( $marker, 'IPS\Content\Reactable' ) and settings.reputation_enabled}}
+							{template="reputation" app="core" group="global" params="$marker"}
+						{{endif}}
+
+						<ul class='ipsToolList ipsToolList_horizontal ipsPos_left ipsClearfix ipsResponsive_noFloat ipsItemControls_left'>
+							{{if $marker->canEdit() or $marker->canFeature() or $marker->canUnfeature() or $marker->canHide() or $marker->canUnhide() or $marker->canMove() or $marker->canDelete()}}
+								<li>
+									<a href='#elMarkerActions_menu' id='elMarkerActions' class='ipsButton ipsButton_light ipsButton_verySmall' data-ipsMenu>{lang="marker_actions"} <i class='fa fa-caret-down'></i></a>
+									<ul id='elMarkerActions_menu' class='ipsMenu ipsMenu_auto ipsHide'>
+										{{if \IPS\Member::loggedIn()->modPermission('can_manage_deleted_content') AND $marker->hidden() == -2}}
+											<li class='ipsMenu_item'>
+												<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'restore' ) )}' data-confirm data-confirmSubMessage='{lang="restore_as_visible_desc"}'>
+													{lang="restore_as_visible"}
+												</a>
+											</li>
+											<li class='ipsMenu_item'>
+												<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'restoreAsHidden' ) )}' data-confirm data-confirmSubMessage='{lang="restore_as_hidden_desc"}'>
+													{lang="restore_as_hidden"}
+												</a>
+											</li>
+											<li class='ipsMenu_item'>
+												<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'delete', 'immediate' => 1 ) )}' data-confirm data-confirmSubMessage='{lang="delete_immediately_desc"}'>
+													{lang="delete_immediately"}
+												</a>
+											</li>
+										{{else}}
+											{{if $marker->canEdit()}}
+												<li class='ipsMenu_item'>
+													<a href='{$marker->url()->setQueryString( array( 'do' => 'edit' ) )}' title='{lang="edit"}'>{lang="edit"}</a>
+												</li>
+											{{endif}}
+											{{if $marker->canFeature()}}				
+												<li class='ipsMenu_item'><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'feature' ) )}' title='{lang="feature_title_marker"}'>{lang="feature"}</a></li>
+											{{endif}}
+											{{if $marker->canUnfeature()}}				
+												<li class='ipsMenu_item'><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'unfeature' ) )}' title='{lang="unfeature_title_marker"}'>{lang="unfeature"}</a></li>
+											{{endif}}
+											{{if $marker->canHide()}}				
+												<li class='ipsMenu_item'>
+													<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'hide' ) )}' title='{lang="hide_title_file"}' data-ipsDialog data-ipsDialog-title="{lang="hide"}">{lang="hide"}</a>
+												</li>
+											{{endif}}
+											{{if $marker->canUnhide()}}				
+												<li class='ipsMenu_item'>
+													<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'unhide' ) )}' title='{{if $marker->hidden() === 1}}{lang="approve"}{{else}}{lang="unhide"}{{endif}}'>
+														{{if $marker->hidden() === 1}}{lang="approve"}{{else}}{lang="unhide"}{{endif}}
+													</a>
+												</li>
+											{{endif}}
+											{{if $marker->canMove()}}				
+												<li class='ipsMenu_item'>
+													<a href='{$marker->url()->setQueryString( array( 'do' => 'move' ) )}' data-ipsDialog data-ipsDialog-size='narrow' data-ipsDialog-title="{lang="move"}"  title='{lang="move"}'>{lang="move"}</a>
+												</li>
+											{{endif}}
+											{{if $marker->canDelete()}}				
+												<li class='ipsMenu_item'>
+													{{if \IPS\membermap\Map::i()->getMemberGroupId() == $marker->container()->id }}
+														<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'delete', 'immediate' => 1 ) )}' data-confirm data-confirmSubMessage='{lang="delete_immediately_desc"}'>
+															{lang="delete_immediately"}
+														</a>
+													{{else}}
+														<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'delete' ) )}' data-confirm  title='{lang="delete"}'>{lang="delete"}</a>
+													{{endif}}
+												</li>
+											{{endif}}
+											{{if $marker->canOnMessage( 'add' )}}
+												<li class='ipsMenu_item'><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'messageForm' ) )}' data-ipsDialog data-ipsDialog-title='{lang="add_message"}'>{lang="add_message"}</a></li>
+											{{endif}}
+											{{if \IPS\Member::loggedIn()->modPermission('can_view_moderation_log')}}
+												<li class='ipsMenu_sep'><hr></li>
+												<li class="ipsMenu_item">
+													<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'modLog' ) )}' data-ipsDialog data-ipsDialog-title='{lang="moderation_history"}'>{lang="moderation_history"}</a>
+												</li>
+											{{endif}}
+										{{endif}}
+									</ul>
+								</li>
 							{{endif}}
-							{{if $marker->canHide()}}				
-								<li class='ipsMenu_item'><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'hide' ) )}' title='{lang="hide_title_file"}' data-ipsDialog data-ipsDialog-title="{lang="hide"}">{lang="hide"}</a></li>
+
+							{{if $marker->canReport() }}
+								<li>
+									<a href='{$marker->url('report')}' data-ipsDialog data-ipsDialog-size='medium' data-ipsDialog-title="{lang="report_marker"}" data-ipsDialog-remoteSubmit data-ipsDialog-flashMessage="{lang="report_submit_success"}" title="{lang="report_marker"}" class='ipsButton ipsButton_link ipsButton_verySmall ipsButton_fullWidth'>{lang="report_marker"}</a>
+								</li>
 							{{endif}}
-							{{if $marker->canUnhide()}}				
-								<li class='ipsMenu_item'><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'unhide' ) )}' title='{{if $marker->hidden() === 1}}{lang="approve"}{{else}}{lang="unhide"}{{endif}}'>{{if $marker->hidden() === 1}}{lang="approve"}{{else}}{lang="unhide"}{{endif}}</a></li>
-							{{endif}}
-							{{if $marker->canMove()}}				
-								<li class='ipsMenu_item'><a href='{$marker->url()->setQueryString( array( 'do' => 'move' ) )}' data-ipsDialog data-ipsDialog-size='narrow' data-ipsDialog-title="{lang="move"}"  title='{lang="move"}'>{lang="move"}</a></li>
-							{{endif}}
-							{{if $marker->canDelete()}}				
-								<li class='ipsMenu_item'><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'delete' ) )}' data-confirm  title='{lang="delete"}'>{lang="delete"}</a></li>
-							{{endif}}
-							{{if \IPS\Member::loggedIn()->modPermission('can_view_moderation_log')}}
-								<li class='ipsMenu_sep'><hr></li>
-								<li class="ipsMenu_item"><a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'modLog' ) )}' data-ipsDialog data-ipsDialog-title='{lang="moderation_history"}'>{lang="moderation_history"}</a></li>
-							{{endif}}
+
+							<li>
+								{template="promote" app="core" group="global" params="$marker"}
+							</li>
 						</ul>
-					{{endif}}
-					{{if !\IPS\Member::loggedIn()->group['gbw_no_report'] }}
-						&nbsp;<a href='{$marker->url('report')}' data-ipsDialog data-ipsDialog-size='medium' data-ipsDialog-title="{lang="report_marker"}" data-ipsDialog-remoteSubmit data-ipsDialog-flashMessage="{lang="report_submit_success"}" title="{lang="report_marker"}" class='ipsType_medium'>{lang="report_marker"}</a>
-					{{endif}}
+					</div>
 				</div>
 		</div>
 		<aside id="elMarkerInfo" class='ipsColumn ipsColumn_veryWide'>
@@ -568,6 +1172,14 @@
 		<div id='mapCanvas' style='height:400px;'>
 		</div>
 	</div>
+
+	{{if $comments}}
+		<a id="replies"></a>
+		<h2 class='ipsHide'>{lang="user_feedback"}</h2>
+		<div>
+			{$comments|raw}
+		</div>
+	{{endif}}
 </article>]]></template>
  <template template_group="submit" template_name="submitForm" template_data="$id, $action, $elements, $hiddenValues, $actionButtons, $uploadField, $class=''" template_location="front" template_app="membermap"><![CDATA[<form accept-charset='utf-8' id='membermap_marker_form' class="ipsForm {$class}" action="{$action}" method="post" {{if $uploadField}}enctype="multipart/form-data"{{endif}} data-ipsForm data-controller="membermap.front.markers.markerform">
 	<input type="hidden" name="{$id}_submitted" value="1">
@@ -1749,6 +2361,7 @@ Version: 1.0
 	}
 .leaflet-control-layers-scrollbar {
 	overflow-y: scroll;
+	overflow-x: hidden;
 	padding-right: 5px;
 	}
 .leaflet-control-layers-selector {

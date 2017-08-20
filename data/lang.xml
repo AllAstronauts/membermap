@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="110019">
+ <app key="membermap" version="130000">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
-  <word key="__indefart_membermap_marker" js="0">a Member Map Marker</word>
-  <word key="__defart_membermap_marker" js="0">Member Map Marker</word>
+  <word key="__indefart_membermap_marker" js="0">a Member Map marker</word>
+  <word key="__indefart_membermap_marker_comment" js="0">a comment on a  Member Map marker</word>
+  <word key="__indefart_membermap_marker_review" js="0">a review on a Member Map event</word>
+  <word key="__defart_membermap_marker" js="0">Member Map marker</word>
+  <word key="__defart_membermap_marker_comment" js="0">comment on a Member Map marker</word>
+  <word key="__defart_membermap_marker_review" js="0">review on a Member Map marker</word>
   <word key="membermap_rebuilding_cache" js="0">Rebuilding Member Map Cache</word>
   <word key="menu__membermap_membermap" js="0">Member Map</word>
   <word key="menu__membermap_membermap_markers" js="0">Markers Groups</word>
@@ -32,6 +36,23 @@
   <word key="can_view_hidden_membermap_marker" js="0">Can view hidden markers?</word>
   <word key="can_move_membermap_marker" js="0">Can move markers?</word>
   <word key="can_delete_membermap_marker" js="0">Can delete markers?</word>
+  <word key="can_feature_membermap_marker" js="0">Can feature markers?</word>
+  <word key="can_unfeature_membermap_marker" js="0">Can unfeature markers?</word>
+  <word key="can_edit_membermap_marker_comment" js="0">Can edit comments?</word>
+  <word key="can_hide_membermap_marker_comment" js="0">Can hide comments?</word>
+  <word key="can_unhide_membermap_marker_comment" js="0">Can unhide comments?</word>
+  <word key="can_view_hidden_membermap_marker_comment" js="0">Can view hidden comments?</word>
+  <word key="can_delete_membermap_marker_comment" js="0">Can delete comments?</word>
+  <word key="can_edit_membermap_marker_review" js="0">Can edit reviews?</word>
+  <word key="can_hide_membermap_marker_review" js="0">Can hide reviews?</word>
+  <word key="can_unhide_membermap_marker_review" js="0">Can unhide reviews?</word>
+  <word key="can_view_hidden_membermap_marker_review" js="0">Can view hidden reviews?</word>
+  <word key="can_delete_membermap_marker_review" js="0">Can delete reviews?</word>
+  <word key="can_feature_comments_membermap_marker" js="0">Can recommend comments on markers?</word>
+  <word key="can_unfeature_comments_membermap_marker" js="0">Can remove comments recommendations on markers?</word>
+  <word key="can_add_item_message_membermap_marker" js="0">Can add messages to markers?</word>
+  <word key="can_edit_item_message_membermap_marker" js="0">Can edit messages on markers?</word>
+  <word key="can_delete_item_message_membermap_marker" js="0">Can delete messages on markers?</word>
   <word key="membermap_marker_info" js="0">Marker Information</word>
   <word key="membermap_marker_author" js="0">Added by</word>
   <word key="membermap_marker_date" js="0">Submitted</word>
@@ -46,6 +67,15 @@
   <word key="membermap_marker_pl" js="0">Markers</word>
   <word key="membermap_marker_pl_lc" js="0">markers</word>
   <word key="membermap_markers_markers_pl" js="0">Member Map</word>
+  <word key="membermap_markers_comment" js="0">Marker Comment</word>
+  <word key="membermap_markers_comment_pl" js="0">Marker Comments</word>
+  <word key="membermap_markers_comment_pl_lc" js="0">marker comments</word>
+  <word key="membermap_markers_review" js="0">Marker Review</word>
+  <word key="membermap_markers_review_pl" js="0">Marker Reviews</word>
+  <word key="membermap_markers_review_pl_lc" js="0">marker reviews</word>
+  <word key="marker_comment_count" js="0">{# [1:Comment][?:Comments]}</word>
+  <word key="marker_review_count" js="0">{# [1:Review][?:Reviews]}</word>
+  <word key="marker_submit_comment" js="0">Submit Comment</word>
   <word key="membermap_view_this_marker" js="0">View this marker: %s</word>
   <word key="membermap_submit_a_marker" js="0">Add Marker</word>
   <word key="membermap_edit_a_marker" js="0">Edit Marker</word>
@@ -54,9 +84,21 @@
   <word key="membermap_pending_approval" js="0">This marker is not yet approved and is currently only visible to staff.</word>
   <word key="membermap_delete_title" js="0">Delete this marker</word>
   <word key="membermap_approve_title" js="0">Approve this marker</word>
+  <word key="marker_type" js="0">Filter</word>
+  <word key="queued_markers" js="0">Unapproved markers</word>
+  <word key="marker_time_frame" js="0">Last Update</word>
+  <word key="all_markers" js="0">All</word>
+  <word key="marker_rating_value" js="0">Your Rating</word>
+  <word key="marker_review_text" js="0">Your Review</word>
+  <word key="marker__review_placeholder" js="0">Add a review...</word>
+  <word key="marker__comment_placeholder" js="0">Add a comment...</word>
+  <word key="feature_title_marker" js="0">Feature this marker</word>
+  <word key="unfeature_title_marker" js="0">Unfeature this marker</word>
+  <word key="no_marker_review" js="0">You do not have permission to review markers</word>
   <word key="loc_membermap_viewing_membermap" js="0">Viewing Member Map</word>
   <word key="loc_membermap_viewing_group" js="0">Viewing Member Map marker group: %s</word>
   <word key="loc_membermap_browsing_groups" js="0">Viewing Member Map marker groups</word>
+  <word key="loc_membermap_viewing_marker" js="0">Viewing Member Map marker: %s</word>
   <word key="map_settings" js="0">Map Settings</word>
   <word key="api_settings" js="0">API Keys</word>
   <word key="membermap_settings_tab_general" js="0">General</word>
@@ -107,6 +149,10 @@
   <word key="import_creategroups_desc" js="0">Import markers to an existing group, or create a new group for each &quot;Folder&quot; in the .kml file</word>
   <word key="membermap_error_no_id_no_create" js="0">You have to either chose to create a new group, or select an existing group to import markers to</word>
   <word key="membermap_import_thumbup" js="0">Successfully imported %d markers</word>
+  <word key="group_comment_moderate" js="0">Comments must be approved?</word>
+  <word key="group_allow_comments" js="0">Allow comments?</word>
+  <word key="group_allow_reviews" js="0">Allow reviews?</word>
+  <word key="group_review_moderate" js="0">Reviews must be approved?</word>
   <word key="membermap_mapmanager_activeMaps" js="0">Active Maps</word>
   <word key="membermap_mapmanager_availMaps" js="0">Available Maps</word>
   <word key="membermap_mapmanager_activeOverlays" js="0">Active Overlays</word>
@@ -116,6 +162,8 @@
   <word key="perm_membermap_perm__view" js="0">See Group</word>
   <word key="perm_membermap_perm__read" js="0">View Markers</word>
   <word key="perm_membermap_perm__add" js="0">Add Markers</word>
+  <word key="perm_membermap_perm__reply" js="0">Comment</word>
+  <word key="perm_membermap_perm__review" js="0">Review</word>
   <word key="membermap_adminTools" js="0">Admin Tools</word>
   <word key="membermap_button_addLocation" js="0">Add Location</word>
   <word key="membermap_button_editLocation" js="0">Update Location</word>
@@ -149,6 +197,8 @@
   <word key="block_memberList_staff" js="0">Staff members</word>
   <word key="block_memberList_followers" js="0">Members you follow</word>
   <word key="block_memberList_others" js="0">Other members</word>
+  <word key="x_created_marker_in" js="0">%s created a marker in %s</word>
+  <word key="x_commented_marker" js="0">%s commented on a marker</word>
   <word key="membermap_button_editLocation" js="1">Update Location</word>
   <word key="membermap_location_title" js="1">Update Location</word>
   <word key="membermap_no_results" js="1">Couldn't find what you were looking for. Showing all members instead.</word>
