@@ -36,7 +36,7 @@ Leaflet.Fullscreen
 Leaflet.markercluster
 	Description: Marker clustering library
 	Location: interface/leaflet/plugins/leaflet.markercluster-src.js
-	Included version: 1.0.6
+	Included version: 1.1.0
 	Website: https://github.com/Leaflet/Leaflet.markercluster
 	License: MIT https://github.com/Leaflet/Leaflet.markercluster/blob/master/MIT-LICENCE.txt
 
