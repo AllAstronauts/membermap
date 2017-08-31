@@ -81,26 +81,17 @@
 
 
 			/* Showing a single user or online user, get the markers from DOM */
-			var getByUser = ips.utils.url.getParam( 'filter' ) == 'getByUser' ? true : false;
-
-			if ( getByUser )
+			if ( !!$( '#mapMarkers' ).attr( 'data-markers' ) )
 			{
-				if ( !!$( '#mapMarkers' ).attr( 'data-markers' ) )
-				{
-					try {
-						var markersJSON = $.parseJSON( $( '#mapMarkers' ).attr( 'data-markers' ) );
-						if ( markersJSON.length > 0 )
-						{
-							setMarkers( markersJSON );
-						}
-						else
-						{
-							ips.ui.flashMsg.show( ips.getString( 'membermap_no_results' ), { timeout: 3, position: 'bottom' } );
-						}
+				try {
+					var markersJSON = $.parseJSON( $( '#mapMarkers' ).attr( 'data-markers' ) );
+					if ( markersJSON.length > 0 )
+					{
+						setMarkers( markersJSON );
 					}
-					catch(err) {
-						Debug.log( err );
-					}
+				}
+				catch(err) {
+					Debug.log( err );
 				}
 			}
 
@@ -174,14 +165,31 @@
 			if ( $( '#mapWrapper' ).height() !== leftForMe )
 			{
 				$( '#mapWrapper' ).css( { height: leftForMe } );
-				$( '#membermap_memberList' ).css( { height: ( leftForMe + $( '.ipsPageHeader' ).height() ) } );
+
+				var memberListHeight = leftForMe + $( '.ipsPageHeader' ).height();
+
+				/* Subtract the height of the club header if it's in the sidebar */
+				if ( $( '#elClubHeader_small' ).length > 0 )
+				{
+					memberListHeight = memberListHeight - $( '#elClubHeader_small' ).height();
+				}
+
+				/* Add the height if the club header is on top */
+				if ( $( '#elClubHeader' ).length > 0 )
+				{
+					memberListHeight = memberListHeight + $( '#elClubHeader' ).outerHeight();
+				}
+
+				memberListHeight = memberListHeight > 300 ? memberListHeight : 300;
+
+				$( '#membermap_memberList' ).css( { height: memberListHeight } );
 				return true;
 			}
 			
 			return false;
 		},
 		
-		clear =function()
+		clear = function()
 		{
 			mastergroup.clearLayers();
 
@@ -300,7 +308,7 @@
 
 			map.fitBounds( bounds, { maxZoom: ( zoomLevel || 7 ) } );
 			
-			if ( ips.getSetting( 'membermap_enable_clustering' ) == 1 )
+			if ( ips.getSetting( 'membermap_enable_clustering' ) == 1 && ips.utils.url.getParam( 'filter' ) != 'getByUser' )
 			{
 				mastergroup = L.markerClusterGroup({ chunkedLoading: true, zoomToBoundsOnClick: true });
 			}
@@ -334,7 +342,7 @@
 			});
 
 			/* Add 'night and day' overlay */
-			if ( ips.getSetting( 'membermap_showNightAndDay' ) )
+			if ( ips.getSetting( 'membermap_showNightAndDay' ) && ips.utils.url.getParam( 'filter' ) != 'getByUser' )
 			{
 				var terminator = L.terminator();
 				terminator.addTo(map);

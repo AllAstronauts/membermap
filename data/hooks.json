@@ -10,5 +10,9 @@
     "calendarEvent": {
         "type": "C",
         "class": "\\IPS\\calendar\\Event"
+    },
+    "memberClub": {
+        "type": "C",
+        "class": "\\IPS\\Member\\Club"
     }
 }

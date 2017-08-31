@@ -617,9 +617,9 @@ class _Markers extends \IPS\Content\Item implements
 			$url 		= \IPS\Http\Url::external( "https://www.mapquestapi.com/staticmap/v5/map?key={$apiKey}&locations={$this->lat},{$this->lon}&size=1100,500" );
 			$response 	= $url->request()->get();
 
-			$image 		= \IPS\File::create( 'membermap_MarkerStaticMap', 'membermap-' . $this->id . '-' . md5( $url ) . '.png', $response, NULL, TRUE, NULL, FALSE );
+			$image 		= \IPS\File::create( 'membermap_MarkerStaticMap', 'membermap-' . $this->id . '-staticmap.png', $response, NULL, TRUE, NULL, FALSE );
 
-			$this->embedimage = $image;
+			$this->embedimage = (string) $image;
 
 			$this->recacheJson = 0;
 			$this->save();
@@ -695,6 +695,14 @@ class _Markers extends \IPS\Content\Item implements
 	 */
 	public function save()
 	{
+		/* Clear the cached static map image */
+		if ( isset( $this->_data['embedimage'] ) AND $this->_data['embedimage'] != "" AND ( isset( $this->changed['lat'] ) OR isset( $this->changed['lon'] ) ) )
+		{
+			\IPS\File::get( 'membermap_MarkerStaticMap', $this->_data['embedimage'] )->delete();
+
+			$this->embedimage = NULL;
+		}
+
 		parent::save();
 
 		$this->container()->setLastComment();

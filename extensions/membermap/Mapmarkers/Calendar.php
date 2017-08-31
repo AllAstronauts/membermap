@@ -30,7 +30,7 @@ class _Calendar
 		$form->addTab( 'membermap_settings_tab_calendar' );
 		$form->addHeader( 'membermap_calendarExt_header' );
 		$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_calendarExt', \IPS\Settings::i()->membermap_calendarExt, FALSE, 
-			array( 'togglesOn' => array( 'membermap_calendars', 'membermap_calendar_days_ahead', 'membermap_calendar_icon', 'membermap_calendar_colour', 'membermap_calendar_bgcolour', 'membermap_calendar_marker_example' ) ) 
+			array( 'togglesOn' => array( 'membermap_calendars', 'membermap_calendar_days_ahead', 'form_header_membermap_calendar_icon', 'membermap_calendar_icon', 'membermap_calendar_colour', 'membermap_calendar_bgcolour', 'membermap_calendar_marker_example' ) ) 
 		) );
 
 
@@ -49,6 +49,8 @@ class _Calendar
 
 
 		$form->add( new \IPS\Helpers\Form\Number( 'membermap_calendar_days_ahead', \IPS\Settings::i()->membermap_calendar_days_ahead, TRUE, array( 'min' => 7 ), NULL, NULL, NULL, 'membermap_calendar_days_ahead' ) );
+
+		$form->addHeader( 'membermap_calendar_icon');
 
 		$colours = array( 
 			'red', 'darkred', 'lightred', 'orange', 'beige', 'green', 'darkgreen', 'lightgreen', 'blue', 'darkblue', 'lightblue',
@@ -239,6 +241,8 @@ class _Calendar
 		$return = array();
 		if ( is_array( $formattedEvents ) AND count( $formattedEvents ) )
 		{
+			$appName = \IPS\Lang::load( \IPS\Lang::defaultLanguage() )->get( 'frontnavigation_calendar' );
+			
 			foreach( $formattedEvents as $event )
 			{
 				$location = json_decode( $event->location, TRUE );
@@ -300,7 +304,7 @@ class _Calendar
 				$viewPerms = $viewPerms['perm_2'];
 
 				$return[] = array(
-					'appName'				=> 'Calendar',
+					'appName'				=> $appName,
 					'expiryDate'			=> $nextDate->getTimestamp(),
 					'popup' 				=> \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->calendarPopup( $event, $startDate ),
 					'marker_lat'			=> $location['lat'],
