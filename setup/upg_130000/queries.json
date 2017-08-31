@@ -13,7 +13,7 @@
                         "values": null,
                         "allow_null": false,
                         "default": null,
-                        "comment": "ID Number",
+                        "comment": "",
                         "unsigned": true,
                         "zerofill": false,
                         "auto_increment": true,

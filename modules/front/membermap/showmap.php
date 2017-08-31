@@ -42,6 +42,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 	protected function manage()
 	{
 		$markers 	= array();
+		$club 		= NULL;
 
 		/* Rebuild JSON cache if needed */
 		if ( ! \IPS\membermap\Map::i()->checkForCache() )
@@ -51,15 +52,6 @@ class _showmap extends \IPS\Dispatcher\Controller
 			{
 				\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=showmap', NULL, 'membermap' ) );
 			}
-		}
-
-		$cacheTime 	= isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
-
-		$getByUser = intval( \IPS\Request::i()->member_id );
-
-		if ( \IPS\Request::i()->filter == 'getByUser' AND $getByUser )
-		{
-			$markers = \IPS\membermap\Map::i()->getMarkerByMember( $getByUser );
 		}
 
 		/* Get enabled maps */
@@ -72,6 +64,48 @@ class _showmap extends \IPS\Dispatcher\Controller
 		$canAdd 	= \IPS\membermap\Markers\Groups::load( $groupId )->can( 'add' );
 		$canEdit 	= $existing ? $existing->canEdit() : false;
 		$canDelete 	= $existing ? $existing->canDelete() : false;
+
+		$cacheTime 	= isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
+
+		/* Get by user */
+		if ( \IPS\Request::i()->filter == 'getByUser' AND intval( \IPS\Request::i()->member_id ) )
+		{
+			$markers = \IPS\membermap\Map::i()->getMarkerByMember( intval( \IPS\Request::i()->member_id ) );
+		}
+		/* Get club member markers */
+		else if ( \IPS\Settings::i()->clubs AND \IPS\Request::i()->filter == 'showClub' AND $clubId = intval( \IPS\Request::i()->clubId ) )
+		{
+			if ( \IPS\Settings::i()->membermap_clubs_showInClubHeader )
+			{
+				if( \IPS\Settings::i()->membermap_clubs == '*' OR \strstr( ','.\IPS\Settings::i()->membermap_clubs.',', ",{$clubId}," ) )
+				{
+					try
+					{
+						$club = \IPS\Member\Club::load( $clubId );
+						$markers = \IPS\membermap\Map::i()->getClubMemberMarkers( $club );
+
+						if ( count( $markers ) > 0 )
+						{
+							\IPS\core\FrontNavigation::$clubTabActive = TRUE;
+							\IPS\Output::i()->breadcrumb = array();
+							\IPS\Output::i()->breadcrumb[] = array( \IPS\Http\Url::internal( 'app=core&module=clubs&controller=directory', 'front', 'clubs_list' ), \IPS\Member::loggedIn()->language()->addToStack('module__core_clubs') );
+							\IPS\Output::i()->breadcrumb[] = array( $club->url(), $club->name );
+							\IPS\Output::i()->breadcrumb[] = array( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=showmap', 'front', 'membermap' ), \IPS\Member::loggedIn()->language()->addToStack( 'module__membermap_membermap' ) );
+
+							if ( \IPS\Settings::i()->clubs_header == 'sidebar' )
+							{
+								\IPS\Output::i()->sidebar['contextual'] = \IPS\Theme::i()->getTemplate( 'clubs', 'core' )->header( $club, \IPS\membermap\Markers\Groups::load( $groupId ), 'sidebar' );
+							}
+						}
+					}
+					catch ( \Exception $e ) 
+					{
+						\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=showmap', NULL, 'membermap' ), 'membermap_no_club' );
+					}
+				}
+			}
+		}
+
 
 		/* Load JS and CSS */
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'leaflet/leaflet.js', 'membermap', 'interface' ) );
@@ -126,12 +160,12 @@ class _showmap extends \IPS\Dispatcher\Controller
 		</script>
 EOF;
 
-		if ( \IPS\Settings::i()->membermap_showMemberList AND count( $markers ) == 0 )
+		if ( \IPS\Settings::i()->membermap_showMemberList AND count( $markers ) !== 1 )
 		{
-			\IPS\Output::i()->sidebar['contextual'] = \IPS\Theme::i()->getTemplate( 'map' )->memberList();
+			\IPS\Output::i()->sidebar['contextual'] = ( isset( \IPS\Output::i()->sidebar['contextual'] ) ? \IPS\Output::i()->sidebar['contextual'] : "" ) . \IPS\Theme::i()->getTemplate( 'map' )->memberList();
 		}
 
-        \IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'map' )->showMap( $markers, $cacheTime, $canAdd, $canEdit );
+        \IPS\Output::i()->output = \IPS\Theme::i()->getTemplate( 'map' )->showMap( $markers, $cacheTime, $canAdd, $canEdit, $club );
 	}
 
 	/**

@@ -40,6 +40,34 @@
         "default": "*"
     },
     {
+        "key": "membermap_clubs",
+        "default": "*"
+    },
+    {
+        "key": "membermap_clubsExt",
+        "default": "1"
+    },
+    {
+        "key": "membermap_clubs_bgcolour",
+        "default": "orange"
+    },
+    {
+        "key": "membermap_clubs_colour",
+        "default": "#ffffff"
+    },
+    {
+        "key": "membermap_clubs_icon",
+        "default": "fa-users"
+    },
+    {
+        "key": "membermap_clubs_showClubLocations",
+        "default": "1"
+    },
+    {
+        "key": "membermap_clubs_showInClubHeader",
+        "default": "1"
+    },
+    {
         "key": "membermap_enable_clustering",
         "default": "1"
     },

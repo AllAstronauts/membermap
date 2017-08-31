@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="130000">
+ <app key="membermap" version="140000">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
   <word key="__indefart_membermap_marker" js="0">a Member Map marker</word>
@@ -10,6 +10,7 @@
   <word key="__defart_membermap_marker_comment" js="0">comment on a Member Map marker</word>
   <word key="__defart_membermap_marker_review" js="0">review on a Member Map marker</word>
   <word key="membermap_rebuilding_cache" js="0">Rebuilding Member Map Cache</word>
+  <word key="membermap_group_sg" js="0">feature (NOT WORKING)</word>
   <word key="menu__membermap_membermap" js="0">Member Map</word>
   <word key="menu__membermap_membermap_markers" js="0">Markers Groups</word>
   <word key="menu__membermap_membermap_mapmanager" js="0">Map Manager</word>
@@ -104,6 +105,7 @@
   <word key="membermap_settings_tab_general" js="0">General</word>
   <word key="membermap_settings_tab_profile" js="0">Profile sync</word>
   <word key="membermap_settings_tab_calendar" js="0">Calendar ext.</word>
+  <word key="membermap_settings_tab_clubs" js="0">Clubs ext.</word>
   <word key="membermap_enable_clustering" js="0">Enable Marker Clustering?</word>
   <word key="membermap_bbox_location" js="0">Define Forced Bounding Box</word>
   <word key="membermap_bbox_location_desc" js="0">Use the field above to search for a location that will always be in center of your map. The map will only focus on this area, regardless of markers outside of it. Try a few of the results from the search untill you find one that suits your needs.</word>
@@ -131,6 +133,18 @@
   <word key="membermap_calendar_colour" js="0">Marker Icon Colour</word>
   <word key="membermap_calendar_bgcolour" js="0">Marker Pin Colour</word>
   <word key="membermap_calendar_marker_example" js="0">Marker Preview</word>
+  <word key="membermap_clubsExt_header" js="0">Clubs Extension</word>
+  <word key="membermap_clubsExt" js="0">Enable Clubs Extension?</word>
+  <word key="membermap_clubs" js="0">Enabled Clubs</word>
+  <word key="membermap_clubs_icon" js="0">Marker Icon</word>
+  <word key="membermap_clubs_icon_desc" js="0"><![CDATA[Choose any icon from the <a href='http://fontawesome.io/icons/' target='_blank'>Font Awesome icon set</a>, input the full name in the box above, i.e. `fa-users`]]></word>
+  <word key="membermap_clubs_colour" js="0">Marker Icon Colour</word>
+  <word key="membermap_clubs_bgcolour" js="0">Marker Pin Colour</word>
+  <word key="membermap_clubs_marker_example" js="0">Marker Preview</word>
+  <word key="membermap_clubs_showClubLocations" js="0">If a club have a physical location, show this on the map?</word>
+  <word key="membermap_clubs_showClubLocations_desc" js="0"><![CDATA[<a href='{internal.app=core&module=applications&controller=enhancements&do=edit&id=core_GoogleMaps}' target='_blank'>Google Maps integration</a> and <a href='{internal.app=core&module=clubs&controller=settings&searchResult=clubs_locations}' target='_blank'>'Clubs have physical locations?'</a> needs to be enabled for this to work.]]></word>
+  <word key="membermap_clubs_showInClubHeader" js="0">Show a link to &quot;Member Map&quot; in the clubs header</word>
+  <word key="membermap_clubs_showInClubHeader_desc" js="0">This will open a map that shows the location of the club members that also have a Member Map marker</word>
   <word key="g_membermap_markerColour" js="0">Marker Colour</word>
   <word key="g_membermap_markerColour_desc" js="0">The members own marker will always be green</word>
   <word key="g_membermap_delete_own" js="0">Can delete own markers?</word>
@@ -178,11 +192,13 @@
   <word key="membermap_view_fullsize" js="0">View fullsize map</word>
   <word key="membermap_goHome" js="0">Go to my location</word>
   <word key="membermap_browse_markers" js="0">Browse Markers</word>
+  <word key="membermap_marker_group_Clubs" js="0">Club Locations</word>
   <word key="membermap_error_cantEdit" js="0">You are not allowed to edit your location.</word>
   <word key="membermap_error_cantAdd" js="0">You are not allowed to add a location.</word>
   <word key="membermap_error_noGroups" js="0">You need to create a Custom Marker Group first.</word>
   <word key="membermap_only_one_marker" js="0"><![CDATA[You can only have one member marker. <a href='%s'>Edit your existing one.</a>]]></word>
   <word key="membermap_noAPI_admin" js="0"><![CDATA[As of Member Map v3.1 a personal <a href='https://developer.mapquest.com/' target='_blank'>MapQuest API key</a> is required. Go to ACP > Community > Member Map > Settings to add yours. (This message is only visible to administrators)]]></word>
+  <word key="membermap_no_club" js="0">Couldn't find what you were looking for. Showing all members.</word>
   <word key="marker_title" js="0">Marker Title</word>
   <word key="marker_description" js="0">Marker Description</word>
   <word key="marker_lat" js="0">Latitude (N)</word>

@@ -39,9 +39,6 @@ class _markers extends \IPS\Content\Controller
 		\IPS\Output::i()->breadcrumb[] = array( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=showmap', 'front', 'membermap' ), \IPS\Member::loggedIn()->language()->addToStack( 'module__membermap_membermap' ) );
 		\IPS\Output::i()->breadcrumb = array_reverse( \IPS\Output::i()->breadcrumb );
 
-		\IPS\Output::i()->breadcrumb[] = array( $this->marker->container()->url(), $this->marker->container()->_title );
-
-		\IPS\Output::i()->breadcrumb[] = array( '', $this->marker->_title );
 
 		/* Get enabled maps */
 		$defaultMaps = \IPS\membermap\Application::getEnabledMaps();

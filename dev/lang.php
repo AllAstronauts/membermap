@@ -14,6 +14,8 @@ $lang = array(
 
 	'membermap_rebuilding_cache'			=> "Rebuilding Member Map Cache",
 
+	'membermap_group_sg'					=> "feature (NOT WORKING)",
+
 	/* ACP Module/Menu titles */
 	'menu__membermap_membermap' => "Member Map",
 	'menu__membermap_membermap_markers' 	=> 'Markers Groups',
@@ -126,6 +128,7 @@ $lang = array(
 	'membermap_settings_tab_general' 	=> 'General',
 	'membermap_settings_tab_profile' 	=> 'Profile sync',
 	'membermap_settings_tab_calendar' 	=> 'Calendar ext.',
+	'membermap_settings_tab_clubs' 		=> 'Clubs ext.',
 	'membermap_enable_clustering' 		=> "Enable Marker Clustering?",
 	'membermap_bbox_location' 			=> "Define Forced Bounding Box",
 	'membermap_bbox_location_desc' 		=> "Use the field above to search for a location that will always be in center of your map. The map will only focus on this area, regardless of markers outside of it. Try a few of the results from the search untill you find one that suits your needs.",
@@ -153,6 +156,18 @@ $lang = array(
 	'membermap_calendar_colour'			=> "Marker Icon Colour",
 	'membermap_calendar_bgcolour'		=> "Marker Pin Colour",
 	'membermap_calendar_marker_example'	=> "Marker Preview",
+	'membermap_clubsExt_header'			=> "Clubs Extension",
+	'membermap_clubsExt'				=> "Enable Clubs Extension?",
+	'membermap_clubs'					=> "Enabled Clubs",
+	'membermap_clubs_icon'				=> "Marker Icon",
+	'membermap_clubs_icon_desc'			=> "Choose any icon from the <a href='http://fontawesome.io/icons/' target='_blank'>Font Awesome icon set</a>, input the full name in the box above, i.e. `fa-users`",
+	'membermap_clubs_colour'			=> "Marker Icon Colour",
+	'membermap_clubs_bgcolour'			=> "Marker Pin Colour",
+	'membermap_clubs_marker_example'	=> "Marker Preview",
+	'membermap_clubs_showClubLocations' => "If a club have a physical location, show this on the map?",
+	'membermap_clubs_showClubLocations_desc'	=> "<a href='{internal.app=core&module=applications&controller=enhancements&do=edit&id=core_GoogleMaps}' target='_blank'>Google Maps integration</a> and <a href='{internal.app=core&module=clubs&controller=settings&searchResult=clubs_locations}' target='_blank'>'Clubs have physical locations?'</a> needs to be enabled for this to work.",
+	'membermap_clubs_showInClubHeader' 	=> "Show a link to \"Member Map\" in the clubs header",
+	'membermap_clubs_showInClubHeader_desc' => "This will open a map that shows the location of the club members that also have a Member Map marker",
 
 
 	/* ACP Marker Group Settings */
@@ -211,6 +226,7 @@ $lang = array(
 	'membermap_view_fullsize' 			=> "View fullsize map",
 	'membermap_goHome' 					=> "Go to my location",
 	'membermap_browse_markers'			=> "Browse Markers",
+	'membermap_marker_group_Clubs'		=> "Club Locations",
 
 
 	/* Front-end errors */
@@ -219,6 +235,7 @@ $lang = array(
 	'membermap_error_noGroups' 	=> "You need to create a Custom Marker Group first.",
 	'membermap_only_one_marker' => "You can only have one member marker. <a href='%s'>Edit your existing one.</a>",
 	'membermap_noAPI_admin'		=> "As of Member Map v3.1 a personal <a href='https://developer.mapquest.com/' target='_blank'>MapQuest API key</a> is required. Go to ACP > Community > Member Map > Settings to add yours. (This message is only visible to administrators)",
+	'membermap_no_club' 		=> "Couldn't find what you were looking for. Showing all members.",
 
 	/* Front-end marker form */
 	'marker_title' 				=> "Marker Title",
@@ -241,6 +258,6 @@ $lang = array(
 	'block_memberList_others'				=> "Other members",
 
 	/* Digests */
-	'x_created_marker_in'	=> "%s created a marker in %s",
+	'x_created_marker_in'		=> "%s created a marker in %s",
 	'x_commented_marker'		=> "%s commented on a marker",
 );

@@ -168,6 +168,75 @@ class _Map
 	}
 
 	/**
+	 * Get Club member markers 
+	 * 
+	 * @param 		object 	Club
+	 * @return		mixed 	Member markers, or false
+	 */
+	public function getClubMemberMarkers( $club )
+	{
+		try
+		{
+			$groupId = $this->getMemberGroupId();
+
+			$clubMembers = iterator_to_array( \IPS\Db::i()->select( 'member_id', 'core_clubs_memberships', array( array( 'club_id=?', $club->id ), array( \IPS\Db::i()->in( 'status', array( 'member', 'moderator', 'leader' ) ) ) ) ) );
+
+			$db = \IPS\Db::i()->select( '*', array( 'membermap_markers', 'mm' ), array( array( 'mm.marker_parent_id=?', $groupId ), array( \IPS\Db::i()->in( 'mm.marker_member_id', $clubMembers ) ) ) );
+
+			$db->join( array( 'core_members', 'm' ), 'mm.marker_member_id=m.member_id' );
+			$db->join( array( 'core_groups', 'g' ), 'm.member_group_id=g.g_id' );
+			
+			
+			$_markers = $this->formatMemberMarkers( iterator_to_array( $db ) );
+
+			/* Get the club's location */
+			if ( $club->location_lat !== NULL )
+			{
+				$clubMarker =  array( array(
+					'appName'				=> \IPS\Lang::load( \IPS\Lang::defaultLanguage() )->get( 'membermap_marker_group_Clubs' ),
+					'popup' 				=> \IPS\Theme::i()->getTemplate( 'clubs', 'core', 'front' )->mapPopup( $club ),
+					'marker_lat'			=> $club->location_lat,
+					'marker_lon'			=> $club->location_long,
+					'group_pin_bg_colour'	=> \IPS\Settings::i()->membermap_clubs_bgcolour ?: "orange",
+					'group_pin_colour'		=> \IPS\Settings::i()->membermap_clubs_colour ?: "#ffffff",
+					'group_pin_icon'		=> \IPS\Settings::i()->membermap_clubs_icon ?: 'fa-users',
+				) );
+
+				$_markers = array_merge( $this->formatCustomMarkers( $clubMarker ), $_markers );
+			}
+
+			return $_markers;
+					
+		}
+		catch( \UnderflowException $e )
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * Get the associated club
+	 *
+	 * @return	\IPS\Member\Club|NULL
+	 */
+	public function club()
+	{
+		if ( \IPS\Settings::i()->clubs )
+		{
+			if ( isset( \IPS\Request::i()->clubId ) AND intval( \IPS\Request::i()->clubId ) )
+			{
+				try
+				{
+					return \IPS\Member\Club::load( intval( \IPS\Request::i()->clubId ) );
+				}
+				catch ( \OutOfRangeException $e ) { }
+			}
+		}
+
+		return NULL;
+	}
+
+	/**
 	 * Geocode, get lat/lng by location
 	 *
 	 * @param 	string 	Location
@@ -552,7 +621,7 @@ class _Map
 					'from_app'		=> isset( $marker['appName'] ) ? TRUE : FALSE,
 					'appName'		=> isset( $marker['appName'] ) ? $marker['appName'] : NULL,
 					'expiryDate'	=> isset( $marker['expiryDate'] ) ? $marker['expiryDate'] : NULL,
-					'viewPerms'		=> ( $marker['viewPerms'] === '*' OR $marker['viewPerms'] === NULL ) ? '*' : array_map( 'intval', explode( ',', $marker['viewPerms'] ) ),
+					'viewPerms'		=> ( ! isset( $marker['viewPerms'] ) OR $marker['viewPerms'] === '*' OR $marker['viewPerms'] === NULL ) ? '*' : array_map( 'intval', explode( ',', $marker['viewPerms'] ) ),
 				);
 			}
 		}

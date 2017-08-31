@@ -1,69 +1,75 @@
-<ips:template parameters="$markers='', $cacheTime=0, $canAdd=false, $canEdit=false" />
+<ips:template parameters="$markers='', $cacheTime=0, $canAdd=false, $canEdit=false, $club=null" />
 {{if request.do != 'embed'}}
-<div class="ipsPageHeader ipsClearfix">
-	<header class='ipsSpacer_bottom'>
-		<h1 class="ipsType_pageTitle">{lang="frontnavigation_membermap"}</h1>
-		<div class='ipsPos_right ipsResponsive_noFloat'>
-			<ul class="ipsToolList ipsToolList_horizontal ipsClearfix">
-				{{if $canAdd OR $canEdit}}
-					<li id='membermap_addLocation_wrapper' class='ipsToolList_primaryAction'>
-						<a class="ipsButton ipsButton_medium ipsButton_important ipsButton_fullWidth" href="#" title='' id="membermap_button_addLocation">{lang="membermap_button_addLocation"}</a>
-					</li>
-					<li id='membermap_myLocation_wrapper' class='ipsToolList_primaryAction' style='display:none;'>
-						<a class="ipsButton ipsButton_medium ipsButton_important ipsButton_fullWidth" data-ipsmenu href='#elMyLocationMenu' id='elMyLocationMenu' title=''>
-							{lang="membermap_button_myLocation"} <i class='fa fa-caret-down'></i>
+	{{if request.clubId > 0 AND $club instanceof \IPS\Member\Club }}
+		{{if settings.clubs and settings.clubs_header == 'full'}}
+			{template="header" app="core" group="clubs" params="$club, \IPS\membermap\Markers\Groups::load( \IPS\membermap\Map::i()->getMemberGroupId() )"}
+		{{endif}}
+	{{endif}}
+
+	<div class="ipsPageHeader ipsClearfix">
+		<header class='ipsSpacer_bottom'>
+			<h1 class="ipsType_pageTitle">{lang="frontnavigation_membermap"}</h1>
+			<div class='ipsPos_right ipsResponsive_noFloat'>
+				<ul class="ipsToolList ipsToolList_horizontal ipsClearfix">
+					{{if $canAdd OR $canEdit}}
+						<li id='membermap_addLocation_wrapper' class='ipsToolList_primaryAction'>
+							<a class="ipsButton ipsButton_medium ipsButton_important ipsButton_fullWidth" href="#" title='' id="membermap_button_addLocation">{lang="membermap_button_addLocation"}</a>
+						</li>
+						<li id='membermap_myLocation_wrapper' class='ipsToolList_primaryAction' style='display:none;'>
+							<a class="ipsButton ipsButton_medium ipsButton_important ipsButton_fullWidth" data-ipsmenu href='#elMyLocationMenu' id='elMyLocationMenu' title=''>
+								{lang="membermap_button_myLocation"} <i class='fa fa-caret-down'></i>
+							</a>
+							<div id='elMyLocationMenu_menu' class='ipsMenu ipsMenu_auto ipsHide'>
+								<ul>
+									<li class="ipsMenu_item" id="membermap_button_editLocation">
+										<a href="#">{lang="membermap_button_editLocation"}</a>
+									</li>
+
+									<li class='ipsMenu_sep'><hr></li>
+
+									<li class="ipsMenu_item" id="elMyLocationMenuGoHome">
+										<a href="{url='app=membermap&module=membermap&controller=showmap&goHome=1' seoTemplate='membermap'}">{lang="membermap_goHome"}</a>
+									</li>
+								</ul>
+							</div>
+						</li>
+					{{endif}}
+
+					<li>
+						{{$unapproved = \iPS\membermap\Markers\Groups::getTotalUnapprovedCount();}}
+						<a href="{url='app=membermap&module=markers&controller=groups' seoTemplate='markers'}" title='{lang="membermap_browse_markers"}' class='ipsButton ipsButton_medium ipsButton_fullWidth ipsButton_link'>
+							<i class="icon-newspaper"></i> {lang="membermap_browse_markers"} {{if $unapproved > 0}}&nbsp;<strong class='ipsType_warning ipsType_medium'><i class='fa fa-warning'></i> {$unapproved}</strong>{{endif}}
 						</a>
-						<div id='elMyLocationMenu_menu' class='ipsMenu ipsMenu_auto ipsHide'>
+					</li>
+
+					{{if \IPS\Member::loggedIn()->isAdmin()}}
+					<li class='ipsToolList_primaryAction ipsResponsive_hidePhone'>
+						<a href='#elToolsMenu' id='elToolsMenu' data-ipsmenu class='ipsButton ipsButton_normal ipsButton_link'>
+							 &nbsp;{lang="membermap_adminTools"} <i class='fa fa-caret-down'></i>
+						</a>
+						<div id='elToolsMenu_menu' class='ipsMenu ipsMenu_auto ipsHide'>
 							<ul>
-								<li class="ipsMenu_item" id="membermap_button_editLocation">
-									<a href="#">{lang="membermap_button_editLocation"}</a>
+								<li class="ipsMenu_item" id='elToolsMenuBrowserCache'>
+									<a href="{url='app=membermap&module=membermap&controller=showmap&dropBrowserCache=1' seoTemplate='membermap'}">{lang="membermap_rebuildBrowserCache"} <time></time></a>
 								</li>
 
-								<li class='ipsMenu_sep'><hr></li>
-
-								<li class="ipsMenu_item" id="elMyLocationMenuGoHome">
-									<a href="{url='app=membermap&module=membermap&controller=showmap&goHome=1' seoTemplate='membermap'}">{lang="membermap_goHome"}</a>
+								<li class="ipsMenu_item" >
+									<a href="{url='app=membermap&module=membermap&controller=showmap&rebuildCache=1' seoTemplate='membermap'}" data-action='ipsMenu_ping'>
+										{{if $cacheTime > 0}}
+											{lang="membermap_rebuildServerCache" htmlsprintf="\IPS\DateTime::ts( $cacheTime )->html( true, true )"}
+										{{else}}
+											{lang="membermap_rebuildServerCache_notSet"}
+										{{endif}}
+									</a>
 								</li>
 							</ul>
 						</div>
 					</li>
-				{{endif}}
-
-				<li>
-					{{$unapproved = \iPS\membermap\Markers\Groups::getTotalUnapprovedCount();}}
-					<a href="{url='app=membermap&module=markers&controller=groups' seoTemplate='markers'}" title='{lang="membermap_browse_markers"}' class='ipsButton ipsButton_medium ipsButton_fullWidth ipsButton_link'>
-						<i class="icon-newspaper"></i> {lang="membermap_browse_markers"} {{if $unapproved > 0}}&nbsp;<strong class='ipsType_warning ipsType_medium'><i class='fa fa-warning'></i> {$unapproved}</strong>{{endif}}
-					</a>
-				</li>
-
-				{{if \IPS\Member::loggedIn()->isAdmin()}}
-				<li class='ipsToolList_primaryAction ipsResponsive_hidePhone'>
-					<a href='#elToolsMenu' id='elToolsMenu' data-ipsmenu class='ipsButton ipsButton_normal ipsButton_link'>
-						 &nbsp;{lang="membermap_adminTools"} <i class='fa fa-caret-down'></i>
-					</a>
-					<div id='elToolsMenu_menu' class='ipsMenu ipsMenu_auto ipsHide'>
-						<ul>
-							<li class="ipsMenu_item" id='elToolsMenuBrowserCache'>
-								<a href="{url='app=membermap&module=membermap&controller=showmap&dropBrowserCache=1' seoTemplate='membermap'}">{lang="membermap_rebuildBrowserCache"} <time></time></a>
-							</li>
-
-							<li class="ipsMenu_item" >
-								<a href="{url='app=membermap&module=membermap&controller=showmap&rebuildCache=1' seoTemplate='membermap'}" data-action='ipsMenu_ping'>
-									{{if $cacheTime > 0}}
-										{lang="membermap_rebuildServerCache" htmlsprintf="\IPS\DateTime::ts( $cacheTime )->html( true, true )"}
-									{{else}}
-										{lang="membermap_rebuildServerCache_notSet"}
-									{{endif}}
-								</a>
-							</li>
-						</ul>
-					</div>
-				</li>
-				{{endif}}
-			</ul>
-		</div>
-	</header>
-</div>
+					{{endif}}
+				</ul>
+			</div>
+		</header>
+	</div>
 {{endif}}
 
 <section>
