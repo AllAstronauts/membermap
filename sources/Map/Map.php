@@ -498,6 +498,10 @@ class _Map
 			$fileCount++;
 		}
 
+
+		/* IPS Cloud Sync */
+		\IPS\IPS::resyncIPSCloud( 'Wrote Member Map cache files to disk' );
+
 		/* Store the timestamp of the cache to force the browser to purge its local storage */
 		\IPS\Data\Store::i()->membermap_cacheTime = time();
 	}
