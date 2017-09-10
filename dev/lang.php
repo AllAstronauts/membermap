@@ -5,6 +5,7 @@ $lang = array(
 	/* Various strings */
 	'__app_membermap'						=> "Member Map",
 	'frontnavigation_membermap'				=> "Member Map",
+	'membermap_clubnavtitle'				=> "Member Map",
 	'__indefart_membermap_marker'			=> "a Member Map marker",
 	'__indefart_membermap_marker_comment'	=> "a comment on a  Member Map marker",
 	'__indefart_membermap_marker_review'	=> "a review on a Member Map event",

@@ -1,0 +1,86 @@
+[
+    {
+        "method": "changeColumn",
+        "params": [
+            "membermap_comments",
+            "comment_id",
+            {
+                "name": "comment_id",
+                "type": "INT",
+                "length": 10,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": null,
+                "comment": "Comment ID",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": true,
+                "binary": false
+            }
+        ]
+    },
+    {
+        "method": "changeColumn",
+        "params": [
+            "membermap_comments",
+            "comment_marker_id",
+            {
+                "name": "comment_marker_id",
+                "type": "INT",
+                "length": 10,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "Marker ID",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    {
+        "method": "changeColumn",
+        "params": [
+            "membermap_comments",
+            "comment_mid",
+            {
+                "name": "comment_mid",
+                "type": "MEDIUMINT",
+                "length": 8,
+                "decimals": null,
+                "values": [],
+                "allow_null": false,
+                "default": "0",
+                "comment": "Member ID",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    },
+    {
+        "method": "changeColumn",
+        "params": [
+            "membermap_comments",
+            "comment_author",
+            {
+                "name": "comment_author",
+                "type": "VARCHAR",
+                "length": 255,
+                "decimals": null,
+                "values": [],
+                "allow_null": true,
+                "default": null,
+                "comment": "Member name",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        ]
+    }
+]
