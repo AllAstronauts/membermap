@@ -247,8 +247,8 @@ class _Calendar
 			{
 				$location = json_decode( $event->location, TRUE );
 
-				$location['lat']  = $location['mm_lat']  ?: $location['lat'];
-				$location['long'] = $location['mm_long'] ?: $location['long'];
+				$location['lat']  = isset( $location['mm_lat'] ) ? $location['mm_lat'] : $location['lat'];
+				$location['long'] = isset( $location['mm_long'] ) ? $location['mm_long'] : $location['long'];
 
 				if ( ! $location['lat'] OR ! $location['long'] )
 				{
@@ -304,9 +304,11 @@ class _Calendar
 				$viewPerms = $viewPerms['perm_2'];
 
 				$return[] = array(
+					'marker_id'				=> $event->id,
+					'ext'					=> 'membermap_Calendar',
 					'appName'				=> $appName,
 					'expiryDate'			=> $nextDate->getTimestamp(),
-					'popup' 				=> \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->calendarPopup( $event, $startDate ),
+					'popup' 				=> '',
 					'marker_lat'			=> $location['lat'],
 					'marker_lon'			=> $location['long'],
 					'group_pin_bg_colour'	=> \IPS\Settings::i()->membermap_calendar_bgcolour ?: "white",
@@ -318,5 +320,26 @@ class _Calendar
 		}
 
 		return $return;
+	}
+
+	/**
+	 * Get popup HTML
+	 * @param  	int 	$id 	Marker ID
+	 * @return html
+	 */
+	public function getPopup( $id )
+	{
+		try
+		{
+			$event = \IPS\calendar\Event::load( intval( $id ) );
+
+			$startDate	= new \IPS\calendar\Date( "now",  NULL );
+
+			return \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->calendarPopup( $event, $startDate );
+		}
+		catch( \Exception $e )
+		{
+			return 'invalid_id';
+		}
 	}
 }

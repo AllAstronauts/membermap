@@ -564,11 +564,9 @@ class _Map
 					$isStaff = TRUE;
 				}
 
-				$popup = \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker, $photo );
-				\IPS\Output::i()->parseFileObjectUrls( $popup );
-				\IPS\Member::loggedIn()->language()->parseOutputForDisplay( $popup );
-
 				$markersToKeep[] = array(
+					'id'			=> $marker['marker_id'],
+					'ext'			=> '',
 					'type'			=> "member",
 					'lat' 			=> round( (float)$marker['marker_lat'], 5 ),
 					'lon' 			=> round( (float)$marker['marker_lon'], 5 ),
@@ -576,7 +574,7 @@ class _Map
 					'member_name'	=> $marker['marker_name'],
 					'parent_id'		=> $marker['member_group_id'],
 					'parent_name'	=> $groupName,
-					'popup' 		=> $popup,
+					'popup' 		=> '',
 					'markerColour' 	=> $markerColour,
 					'viewPerms'		=> ( ! isset( $marker['viewPerms'] ) OR $marker['viewPerms'] === '*' OR $marker['viewPerms'] === NULL ) ? '*' : array_map( 'intval', explode( ',', $marker['viewPerms'] ) ),
 					'isStaff'		=> $isStaff,
@@ -605,11 +603,18 @@ class _Map
 		{
 			foreach( $markers as $marker )
 			{
-				$popup = isset( $marker['popup'] ) ? $marker['popup'] : \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->customMarkerPopup( $marker );
-				\IPS\Output::i()->parseFileObjectUrls( $popup );
-				\IPS\Member::loggedIn()->language()->parseOutputForDisplay( $popup );
+				$popup = "";
+				if(  isset( $marker['popup'] ) )
+				{
+					$popup = $marker['popup'];
+					\IPS\Output::i()->parseFileObjectUrls( $popup );
+					\IPS\Member::loggedIn()->language()->parseOutputForDisplay( $popup );
+				}
+
 
 				$markersToKeep[] = array(
+					'id'			=> $marker['marker_id'],
+					'ext'			=> isset( $marker['ext'] ) ? $marker['ext'] : '',
 					'type'			=> "custom",
 					'lat' 			=> round( (float)$marker['marker_lat'], 5 ),
 					'lon' 			=> round( (float)$marker['marker_lon'], 5 ),

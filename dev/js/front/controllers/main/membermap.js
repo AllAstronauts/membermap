@@ -327,7 +327,7 @@
 			});
 
 			/* Truncate popup content and format local time */
-			map.on( 'popupopen', function( e ) 
+			map.on( 'contentupdate popupopen', function( e ) 
 			{
 				ips.ui.truncate.respond( $( '.membermap_popupContent' ), { type: 'hide', size: '3 lines' } );
 
@@ -753,7 +753,7 @@
 	
 		showMarkers = function( markers )
 		{
-			markers = typeof markers !== 'undefined' ? markers : false;
+			markers = typeof markers !== 'undefined' ? markers : false;		
 
 			var getByUser 	= ips.utils.url.getParam( 'filter' ) == 'getByUser' ? true : false;
 			var memberId 	= parseInt( ips.utils.url.getParam( 'member_id' ) );
@@ -886,7 +886,37 @@
 						}
 					);
 
-					mapMarker.bindPopup( marker.popup, ( popupOptions || {} ) );
+					mapMarker.marker_id = marker.id;
+					mapMarker.marker_ext = marker.ext;
+					mapMarker.popupAjaxed = 0;
+
+					if ( marker.popup.length > 0 )
+					{
+						mapMarker.bindPopup( marker.popup, ( popupOptions || {} ) );
+					}
+					else
+					{
+						mapMarker.bindPopup( ips.getString('loading'), ( popupOptions || {} ) );
+
+						mapMarker.on( 'click', (e) => {
+							var popup = e.target.getPopup();
+							var url = ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=ajax&do=getPopup&id=' + e.target.marker_id + '&ext=' + e.target.marker_ext;
+
+							if ( ! e.target.popupAjaxed )
+							{
+								ips.getAjax()( url )
+									.done( function( res )
+									{
+										e.target.popupAjaxed = 1;
+										popup.setContent( res );
+										popup.update();
+
+										map.fire( 'popupopen', {popup: popup} );
+									});
+							}
+
+						});
+					}
 
 					if ( marker.type == 'member' )
 					{
@@ -918,13 +948,13 @@
 									mastergroup.zoomToShowLayer( mapMarker, function()
 									{
 										map.panTo( mapMarker.getLatLng() );
-										mapMarker.openPopup(); 
+										mapMarker.fireEvent( 'click' ); 
 									});
 								}
 								else
 								{
 									map.flyTo( mapMarker.getLatLng(), 8 );
-									mapMarker.openPopup(); 
+									mapMarker.fireEvent( 'click' ); 
 								}
 							});
 						}

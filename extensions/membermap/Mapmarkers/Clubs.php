@@ -134,8 +134,10 @@ class _Clubs
 		foreach( new \IPS\Patterns\ActiveRecordIterator( \IPS\Db::i()->select( '*', 'core_clubs', $where ), 'IPS\Member\Club' ) as $club )
 		{
 			$return[] = array(
+				'marker_id'				=> $club->id,
+				'ext'					=> 'membermap_Clubs',
 				'appName'				=> $appName,
-				'popup' 				=> \IPS\Theme::i()->getTemplate( 'clubs', 'core', 'front' )->mapPopup( $club ),
+				'popup' 				=> '',
 				'marker_lat'			=> $club->location_lat,
 				'marker_lon'			=> $club->location_long,
 				'group_pin_bg_colour'	=> \IPS\Settings::i()->membermap_clubs_bgcolour ?: "orange",
@@ -145,5 +147,24 @@ class _Clubs
 		}
 
 		return $return;
+	}
+
+	/**
+	 * Get popup HTML
+	 * @param  	int 	$id 	Marker ID
+	 * @return html
+	 */
+	public function getPopup( $id )
+	{
+		try
+		{
+			$club = \IPS\Member\Club::load( intval( $id ) );
+
+			return \IPS\Theme::i()->getTemplate( 'clubs', 'core', 'front' )->mapPopup( $club );
+		}
+		catch( \Exception $e )
+		{
+			return 'invalid_id';
+		}
 	}
 }

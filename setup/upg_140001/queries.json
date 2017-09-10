@@ -1,5 +1,5 @@
-[
-    {
+{
+    "1": {
         "method": "changeColumn",
         "params": [
             "membermap_comments",
@@ -20,7 +20,7 @@
             }
         ]
     },
-    {
+    "2": {
         "method": "changeColumn",
         "params": [
             "membermap_comments",
@@ -41,7 +41,7 @@
             }
         ]
     },
-    {
+    "3": {
         "method": "changeColumn",
         "params": [
             "membermap_comments",
@@ -62,7 +62,7 @@
             }
         ]
     },
-    {
+    "4": {
         "method": "changeColumn",
         "params": [
             "membermap_comments",
@@ -83,4 +83,4 @@
             }
         ]
     }
-]
+}

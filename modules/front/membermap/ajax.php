@@ -53,6 +53,73 @@ class _ajax extends \IPS\Dispatcher\Controller
 		\IPS\Output::i()->sendOutput( $output, 200, 'application/json' );
 	}
 
+	/**
+	 * Get popup HTML
+	 * 
+	 * @return html
+	 */
+	protected function getPopup()
+	{
+		$markerId 	= intval( \IPS\Request::i()->id );
+		$markerExt 	= \IPS\Request::i()->ext ?: '';
+		$output 	= '';
+
+		if ( ! $markerId )
+		{
+			$output = 'invalid_id';
+		}
+		else
+		{
+			/* Get a regular member/custom marker */
+			if ( ! $markerExt )
+			{
+				$selectColumns = array( 'mm.*', 'mg.*', 'm.member_id', 'm.name', 'm.members_seo_name', 'm.member_group_id', 'm.pp_photo_type', 'm.pp_main_photo', 'm.pp_thumb_photo', 'm.timezone' );
+		
+				if ( \IPS\Settings::i()->allow_gravatars )
+				{
+					$selectColumns[] = 'm.pp_gravatar';
+					$selectColumns[] = 'm.email';
+					$selectColumns[] = 'm.members_bitoptions';
+				}
+
+				/* Remember to update the queue too */
+				$marker = \IPS\Db::i()->select( implode( ',', $selectColumns ), array( 'membermap_markers', 'mm' ), array( 'mm.marker_id=?', $markerId ) )
+							->join( array( 'membermap_markers_groups', 'mg' ), 'mm.marker_parent_id=mg.group_id' )
+							->join( array( 'core_members', 'm' ), 'mm.marker_member_id=m.member_id' )
+							->first();
+
+				if ( $marker['group_type'] == 'member' )
+				{
+					$photo = \IPS\Member::photoUrl( $marker );
+
+					$output = \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker, $photo );
+
+				}
+				else
+				{
+					$output = isset( $marker['popup'] ) ? $marker['popup'] : \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->customMarkerPopup( $marker );
+				}
+
+			}
+			else
+			{
+				list( $app, $ext ) = explode( '_', $markerExt );
+
+				if ( $app AND $ext )
+				{
+					$output = \IPS\Application::load( $app )->extensions( 'membermap', 'Mapmarkers' )[ $ext ]->getPopup( $markerId );
+				}
+			}
+		}
+
+		\IPS\Output::i()->sendOutput( $output );
+	}
+
+	/**
+	 * Search for locations usign MapQuest Nominatim
+	 * 
+	 * @return json
+	 */
 	protected function mapquestSearch()
 	{
 		$location 	= \IPS\Request::i()->q;
@@ -63,7 +130,13 @@ class _ajax extends \IPS\Dispatcher\Controller
 			$apiKey = \IPS\membermap\Application::getApiKeys( 'mapquest' );
 			try
 			{
-				$data = \IPS\Http\Url::external( "https://open.mapquestapi.com/nominatim/v1/search.php?key={$apiKey}&format=json&q=" . urlencode( $location ) )->request( 15 )->get()->decodeJson();
+				$data = \IPS\Http\Url::external( "https://open.mapquestapi.com/nominatim/v1/search.php" )->setQueryString( 
+					array(
+						'key' => $apiKey, 
+						'format' => 'json', 
+						'q' => urlencode( $location ),
+						'accept-language' => isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : NULL,
+					) )->request( 15 )->get()->decodeJson();
 			}
 			catch( \Exception $e ) 
 			{
@@ -74,6 +147,11 @@ class _ajax extends \IPS\Dispatcher\Controller
 		\IPS\Output::i()->json( $data );	
 	}
 
+	/**
+	 * MapQuest reverse lookup. Takes coordinates, return an address/location
+	 * 
+	 * @return json
+	 */
 	protected function mapquestReverseLookup()
 	{
 		$lat 	= floatval( \IPS\Request::i()->lat );
