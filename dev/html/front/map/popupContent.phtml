@@ -1,19 +1,38 @@
-<ips:template parameters="$marker, $photo" />
+<ips:template parameters="$marker" />
 <div class="ipsPhotoPanel ipsPhotoPanel_tiny ipsClearfix">
-	<a class='ipsUserPhoto ipsUserPhoto_mini' href='{url="app=core&module=members&controller=profile&id={$marker['member_id']}" seoTemplate="profile" seoTitle="$marker['members_seo_name']"}' target='_blank' rel="nooptimize">
-		<img src='{$photo}' itemprop='image' alt=''>
+	<a class='ipsUserPhoto ipsUserPhoto_mini' href='{$marker->author()->url()}' target='_blank' rel="nooptimize">
+		<img src='{$marker->author()->photo}' itemprop='image' alt=''>
 	</a>
 	<div>
 		<p class='ipsType_large'>
-			<a href='{url="app=core&module=members&controller=profile&id={$marker['member_id']}" seoTemplate="profile" seoTitle="$marker['members_seo_name']"}' target='_blank' rel="nooptimize">{$marker['marker_name']}</a>
+			<a href='{$marker->author()->url()}' target='_blank' rel="nooptimize">{$marker->author()->name}</a>
 		</p>
-		<span class='localTime ipsHide ipsType_light ipsType_small' data-timezone="{$marker['timezone']}"></span>
+		{{if $marker->container()->allow_reviews AND $marker->mapped( 'num_reviews' ) > 0 }}
+			{template="rating" group="global" location="front" app="core" params="'large', $marker->averageReviewRating(), \IPS\Settings::i()->reviews_rating_out_of, $marker->memberReviewRating()"}
+		{{endif}}
+		<p class='localTime ipsHide ipsType_light ipsType_small' data-timezone="{$marker->author()->timezone}"></p>
 	</div>
 </div>
-{{if $marker['marker_location']}}
-	<p>{$marker['marker_location']}</p>
+{{if $marker->location}}
+	<p>{$marker->location}</p>
 {{endif}}
 
-{{if $marker['marker_comments'] > 0 OR $marker['marker_reviews'] > 0}}
-	<p class='ipsType_light ipsType_small'><i class='fa fa-comment'></i> {lang="marker_comment_count" pluralize="$marker['marker_comments']"} &middot; {lang="marker_review_count" pluralize="$marker['marker_reviews']"}</p>
+{{if $marker->container()->allow_comments OR $marker->container()->allow_reviews}}
+	<ul class="ipsList_inline">
+		{{if $marker->container()->allow_comments }}
+			<li class='ipsType_light ipsType_small'>
+				<a href="{$marker->lastCommentPageUrl()}" target='_blank' rel="nooptimize">
+					<i class='fa fa-comment'></i> {lang="marker_comment_count" pluralize="$marker->mapped('num_comments')"}
+				</a>
+			</li>
+		{{endif}}
+		{{if $marker->container()->allow_reviews}}
+			<li class='ipsType_light ipsType_small'>
+				<a href="{$marker->lastReviewPageUrl()}" target='_blank' rel="nooptimize">
+					{lang="marker_review_count" pluralize="$marker->mapped('num_reviews')"}
+
+				</a>
+			</li>
+		{{endif}}
+	</ul>
 {{endif}}

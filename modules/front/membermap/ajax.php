@@ -73,31 +73,18 @@ class _ajax extends \IPS\Dispatcher\Controller
 			/* Get a regular member/custom marker */
 			if ( ! $markerExt )
 			{
-				$selectColumns = array( 'mm.*', 'mg.*', 'm.member_id', 'm.name', 'm.members_seo_name', 'm.member_group_id', 'm.pp_photo_type', 'm.pp_main_photo', 'm.pp_thumb_photo', 'm.timezone' );
-		
-				if ( \IPS\Settings::i()->allow_gravatars )
-				{
-					$selectColumns[] = 'm.pp_gravatar';
-					$selectColumns[] = 'm.email';
-					$selectColumns[] = 'm.members_bitoptions';
-				}
-
 				/* Remember to update the queue too */
-				$marker = \IPS\Db::i()->select( implode( ',', $selectColumns ), array( 'membermap_markers', 'mm' ), array( 'mm.marker_id=?', $markerId ) )
-							->join( array( 'membermap_markers_groups', 'mg' ), 'mm.marker_parent_id=mg.group_id' )
-							->join( array( 'core_members', 'm' ), 'mm.marker_member_id=m.member_id' )
-							->first();
+				$marker = \IPS\membermap\Markers\Markers::load( $markerId );
 
-				if ( $marker['group_type'] == 'member' )
+				if ( $marker->container()->type == 'member' )
 				{
-					$photo = \IPS\Member::photoUrl( $marker );
 
-					$output = \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker, $photo );
+					$output = \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->popupContent( $marker );
 
 				}
 				else
 				{
-					$output = isset( $marker['popup'] ) ? $marker['popup'] : \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->customMarkerPopup( $marker );
+					$output = \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->customMarkerPopup( $marker );
 				}
 
 			}

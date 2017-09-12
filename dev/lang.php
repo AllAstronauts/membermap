@@ -93,6 +93,7 @@ $lang = array(
 	'membermap_markers_review_pl_lc'	=> "marker reviews",
 	'marker_comment_count'			=> "{# [1:Comment][?:Comments]}",
 	'marker_review_count'			=> "{# [1:Review][?:Reviews]}",
+	'reviews'						=> "{!#[1:review][?:reviews]}",
 	'marker_submit_comment'			=> "Submit Comment",
 	'membermap_view_this_marker' 	=> "View this marker: %s",
 	'membermap_submit_a_marker' 	=> "Add Marker",
