@@ -43,7 +43,6 @@ class _{class}
      * 
      * @return  array(
                     'appName'               => '', // Application name. Will be used as the name of the group in the map
-                    'popup'                 => '', // Popup content
                     'marker_lat'            => 0,  // Latitude
                     'marker_lon'            => 0,  // Longitude
                     'group_pin_bg_colour'   => "", // Marker pin colour. +
@@ -57,5 +56,24 @@ class _{class}
     public function getLocations()
     {
         return array();
+    }
+
+    /**
+     * Get popup HTML
+     * @param   int     $id     Marker ID
+     * @return html
+     */
+    public function getPopup( $id )
+    {
+        try
+        {
+            $content = \IPS\....\::load( intval( $id ) );
+
+            return \IPS\Theme::i()->getTemplate( )->popup( $content );
+        }
+        catch( \Exception $e )
+        {
+            return 'invalid_id';
+        }
     }
 }

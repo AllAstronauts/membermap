@@ -90,7 +90,6 @@ class _Calendar
 	 * @return  array(
 					'appName'				=> '', // Application name. Will be used as the name of the group in the map
 					'expiryDate'			=> 0,  // Unix timestamp for when the cache would need to be re-done.
-					'popup' 				=> '', // Popup content
 					'marker_lat'			=> 0,  // Latitude
 					'marker_lon'			=> 0,  // Longitude
 					'group_pin_bg_colour'	=> "", // Marker pin colour. +
@@ -308,7 +307,6 @@ class _Calendar
 					'ext'					=> 'membermap_Calendar',
 					'appName'				=> $appName,
 					'expiryDate'			=> $nextDate->getTimestamp(),
-					'popup' 				=> '',
 					'marker_lat'			=> $location['lat'],
 					'marker_lon'			=> $location['long'],
 					'group_pin_bg_colour'	=> \IPS\Settings::i()->membermap_calendar_bgcolour ?: "white",
