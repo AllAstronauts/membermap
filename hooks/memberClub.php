@@ -18,7 +18,7 @@ class membermap_hook_memberClub extends _HOOK_CLASS_
 	{
 		$return = call_user_func_array( 'parent::nodes', func_get_args() );
 
-		if ( \IPS\Dispatcher::hasInstance() AND \IPS\Dispatcher::i()->controllerLocation == 'front' )
+		if ( \IPS\Dispatcher::hasInstance() AND \IPS\Dispatcher::i()->controllerLocation == 'front' AND \IPS\Settings::i()->membermap_clubsExt )
 		{
 			if ( \IPS\Settings::i()->membermap_clubs_showInClubHeader )
 			{
@@ -35,5 +35,20 @@ class membermap_hook_memberClub extends _HOOK_CLASS_
 		}
 
 		return $return;
+	}
+
+	/**
+	 * Save data
+	 *
+	 * @return void
+	 */
+	public function save()
+	{
+		parent::save();
+
+		if ( \IPS\Settings::i()->membermap_clubsExt AND \IPS\Settings::i()->clubs_locations AND \IPS\Dispatcher::i()->controllerLocation == 'admin' )
+		{
+			\IPS\membermap\Map::i()->invalidateJsonCache();
+		}
 	}
 }
