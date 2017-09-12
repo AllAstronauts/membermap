@@ -56,16 +56,24 @@
 				</ul>
 			</div>
 			<ul class='ipsDataItem_lastPoster'>
-				{{foreach $marker->stats() as $k => $v}}
-					<li {{if $k == 'num_views'}}class='ipsType_light'{{elseif in_array( $k, $marker->hotStats )}}class="ipsDataItem_stats_hot" data-text='{lang="hot_item"}' data-ipsTooltip title='{lang="hot_item_desc"}'{{endif}}>
-						<span class='ipsDataItem_stats_number'>{number="$v"}</span>
-						<span class='ipsDataItem_stats_type'>{lang="{$k}" pluralize="$v"}</span>
+				{{if $marker->container()->allow_comments}}
+					<li>
+						<span class='ipsDataItem_stats_number'>{number="$marker->mapped('num_comments')"}</span>
+						<span class='ipsDataItem_stats_type'>{lang="comments" pluralize="$marker->mapped('num_comments')"}</span>
 						{{if  \IPS\membermap\Markers\Markers::modPermission( 'unhide', NULL, $marker->container() ) AND $unapprovedComments = $marker->mapped('unapproved_comments')}}
 							&nbsp;<a href='{$marker->url()->setQueryString( 'queued_comments', 1 )}' class='ipsType_warning ipsType_small ipsPos_right ipsResponsive_noFloat' data-ipsTooltip title='{lang="queued_posts_badge" pluralize="$marker->unapproved_comments"}'><i class='fa fa-warning'></i> <strong>{$unapprovedComments}</strong></a>
 						{{endif}}
 					</li>
-				{{endforeach}}
-
+				{{endif}}
+				{{if $marker->container()->allow_reviews}}
+					<li>
+						<span class='ipsDataItem_stats_number'>{number="$marker->mapped('num_reviews')"}</span>
+						<span class='ipsDataItem_stats_type'>
+							{lang="reviews" pluralize="$marker->mapped('num_reviews')"}
+							&nbsp;&nbsp;{template="rating" group="global" location="front" app="core" params="'large', $marker->averageReviewRating(), \IPS\Settings::i()->reviews_rating_out_of, $marker->memberReviewRating()"}
+						</span>
+					</li>
+				{{endif}}
 				<li>
 					<p class='ipsType_normal ipsType_reset ipsType_light'>
 						{{if $marker->updated > 0 OR $marker->added > 0}}
