@@ -118,7 +118,7 @@
 </div>
 <div class='ipsDataItem_main cWidgetComments'>
 	<div class='ipsType_break ipsContained'>
-		<a href="{$event->url()}" title='{lang="view_this_event" sprintf="$event->title"}'  target='_blank' rel="nooptimize">{$event->title}</a>
+		<a href="{$event->url()}" title='{lang="view_this_event" sprintf="$event->title"}' target='_blank' rel="nooptimize">{$event->title}</a>
 	</div>
 	<strong class='ipsType_small'>
 		{{if $event->nextOccurrence( $today, 'startDate' )}}
@@ -141,19 +141,58 @@
 	<div class='membermap_popupContent'>
 		{$event->truncated()|raw}
 	</div>
-</div>]]></template>
- <template template_group="map" template_name="customMarkerPopup" template_data="$marker" template_location="front" template_app="membermap"><![CDATA[<h3>
-	<a href='{url="app=membermap&module=markers&controller=markers&id={$marker['marker_id']}" seoTemplate="markers_marker" seoTitle="$marker['marker_name_seo']"}' target='_blank' rel="nooptimize">
-		{$marker['marker_name']}
+</div>
+
+{{if $event->container()->allow_comments OR $event->container()->allow_reviews}}
+	<ul class="ipsList_inline">
+		{{if $event->container()->allow_comments }}
+			<li class='ipsType_light ipsType_small'>
+				<a href="{$event->lastCommentPageUrl()}" target='_blank' rel="nooptimize">
+					<i class='fa fa-comment'></i> {lang="marker_comment_count" pluralize="$event->mapped('num_comments')"}
+				</a>
+			</li>
+		{{endif}}
+		{{if $event->container()->allow_reviews}}
+			<li class='ipsType_light ipsType_small'>
+				<a href="{$event->lastReviewPageUrl()}" target='_blank' rel="nooptimize">
+					{lang="marker_review_count" pluralize="$event->mapped('num_reviews')"}
+				</a>
+			</li>
+		{{endif}}
+	</ul>
+{{endif}}]]></template>
+ <template template_group="map" template_name="customMarkerPopup" template_data="$marker" template_location="front" template_app="membermap"><![CDATA[<p class='ipsType_large'>
+	<a href='{$marker->url()}' target='_blank' rel="nooptimize">
+		{$marker->name}
 	</a>
-</h3>
-<div class='membermap_popupContent'>{$marker['marker_description']|raw}</div>
-{{if $marker['marker_location']}}
-	<p>{$marker['marker_location']}</p>
+</p>
+{{if $marker->container()->allow_reviews AND $marker->mapped( 'num_reviews' ) > 0 }}
+	{template="rating" group="global" location="front" app="core" params="'large', $marker->averageReviewRating(), \IPS\Settings::i()->reviews_rating_out_of, $marker->memberReviewRating()"}
 {{endif}}
 
-{{if $marker['marker_comments'] > 0 OR $marker['marker_reviews'] > 0}}
-	<p class='ipsType_light ipsType_small'><i class='fa fa-comment'></i> {lang="marker_comment_count" pluralize="$marker['marker_comments']"} &middot; {lang="marker_review_count" pluralize="$marker['marker_reviews']"}</p>
+<div class='membermap_popupContent'>{$marker->description|raw}</div>
+
+{{if $marker->location}}
+	<p>{$marker->location}</p>
+{{endif}}
+
+{{if $marker->container()->allow_comments OR $marker->container()->allow_reviews}}
+	<ul class="ipsList_inline">
+		{{if $marker->container()->allow_comments }}
+			<li class='ipsType_light ipsType_small'>
+				<a href="{$marker->lastCommentPageUrl()}" target='_blank' rel="nooptimize">
+					<i class='fa fa-comment'></i> {lang="marker_comment_count" pluralize="$marker->mapped('num_comments')"}
+				</a>
+			</li>
+		{{endif}}
+		{{if $marker->container()->allow_reviews}}
+			<li class='ipsType_light ipsType_small'>
+				<a href="{$marker->lastReviewPageUrl()}" target='_blank' rel="nooptimize">
+					{lang="marker_review_count" pluralize="$marker->mapped('num_reviews')"} 
+				</a>
+			</li>
+		{{endif}}
+	</ul>
 {{endif}}]]></template>
  <template template_group="map" template_name="memberList" template_data="$orientation='vertical'" template_location="front" template_app="membermap"><![CDATA[<div class='ipsWidget ipsWidget_vertical ipsBox'>
 	<div id="membermap_memberList">
@@ -191,23 +230,42 @@
 		</div>
 	</div>
 </div>]]></template>
- <template template_group="map" template_name="popupContent" template_data="$marker, $photo" template_location="front" template_app="membermap"><![CDATA[<div class="ipsPhotoPanel ipsPhotoPanel_tiny ipsClearfix">
-	<a class='ipsUserPhoto ipsUserPhoto_mini' href='{url="app=core&module=members&controller=profile&id={$marker['member_id']}" seoTemplate="profile" seoTitle="$marker['members_seo_name']"}' target='_blank' rel="nooptimize">
-		<img src='{$photo}' itemprop='image' alt=''>
+ <template template_group="map" template_name="popupContent" template_data="$marker" template_location="front" template_app="membermap"><![CDATA[<div class="ipsPhotoPanel ipsPhotoPanel_tiny ipsClearfix">
+	<a class='ipsUserPhoto ipsUserPhoto_mini' href='{$marker->author()->url()}' target='_blank' rel="nooptimize">
+		<img src='{$marker->author()->photo}' itemprop='image' alt=''>
 	</a>
 	<div>
 		<p class='ipsType_large'>
-			<a href='{url="app=core&module=members&controller=profile&id={$marker['member_id']}" seoTemplate="profile" seoTitle="$marker['members_seo_name']"}' target='_blank' rel="nooptimize">{$marker['marker_name']}</a>
+			<a href='{$marker->author()->url()}' target='_blank' rel="nooptimize">{$marker->author()->name}</a>
 		</p>
-		<span class='localTime ipsHide ipsType_light ipsType_small' data-timezone="{$marker['timezone']}"></span>
+		{{if $marker->container()->allow_reviews AND $marker->mapped( 'num_reviews' ) > 0 }}
+			{template="rating" group="global" location="front" app="core" params="'large', $marker->averageReviewRating(), \IPS\Settings::i()->reviews_rating_out_of, $marker->memberReviewRating()"}
+		{{endif}}
+		<p class='localTime ipsHide ipsType_light ipsType_small' data-timezone="{$marker->author()->timezone}"></p>
 	</div>
 </div>
-{{if $marker['marker_location']}}
-	<p>{$marker['marker_location']}</p>
+{{if $marker->location}}
+	<p>{$marker->location}</p>
 {{endif}}
 
-{{if $marker['marker_comments'] > 0 OR $marker['marker_reviews'] > 0}}
-	<p class='ipsType_light ipsType_small'><i class='fa fa-comment'></i> {lang="marker_comment_count" pluralize="$marker['marker_comments']"} &middot; {lang="marker_review_count" pluralize="$marker['marker_reviews']"}</p>
+{{if $marker->container()->allow_comments OR $marker->container()->allow_reviews}}
+	<ul class="ipsList_inline">
+		{{if $marker->container()->allow_comments }}
+			<li class='ipsType_light ipsType_small'>
+				<a href="{$marker->lastCommentPageUrl()}" target='_blank' rel="nooptimize">
+					<i class='fa fa-comment'></i> {lang="marker_comment_count" pluralize="$marker->mapped('num_comments')"}
+				</a>
+			</li>
+		{{endif}}
+		{{if $marker->container()->allow_reviews}}
+			<li class='ipsType_light ipsType_small'>
+				<a href="{$marker->lastReviewPageUrl()}" target='_blank' rel="nooptimize">
+					{lang="marker_review_count" pluralize="$marker->mapped('num_reviews')"}
+
+				</a>
+			</li>
+		{{endif}}
+	</ul>
 {{endif}}]]></template>
  <template template_group="map" template_name="profileMap" template_data="$member" template_location="front" template_app="membermap"><![CDATA[<div class='ipsWidget ipsWidget_vertical cProfileSidebarBlock ipsBox ipsSpacer_bottom'>
 	<a href='{url="app=membermap&module=membermap&controller=showmap&filter=getByUser&member_id={$member->member_id}" seoTemplate="membermap"}'><h2 class='ipsWidget_title ipsType_reset'>{lang="frontnavigation_membermap"}</h2></a>
@@ -650,16 +708,24 @@
 				</ul>
 			</div>
 			<ul class='ipsDataItem_lastPoster'>
-				{{foreach $marker->stats() as $k => $v}}
-					<li {{if $k == 'num_views'}}class='ipsType_light'{{elseif in_array( $k, $marker->hotStats )}}class="ipsDataItem_stats_hot" data-text='{lang="hot_item"}' data-ipsTooltip title='{lang="hot_item_desc"}'{{endif}}>
-						<span class='ipsDataItem_stats_number'>{number="$v"}</span>
-						<span class='ipsDataItem_stats_type'>{lang="{$k}" pluralize="$v"}</span>
+				{{if $marker->container()->allow_comments}}
+					<li>
+						<span class='ipsDataItem_stats_number'>{number="$marker->mapped('num_comments')"}</span>
+						<span class='ipsDataItem_stats_type'>{lang="comments" pluralize="$marker->mapped('num_comments')"}</span>
 						{{if  \IPS\membermap\Markers\Markers::modPermission( 'unhide', NULL, $marker->container() ) AND $unapprovedComments = $marker->mapped('unapproved_comments')}}
 							&nbsp;<a href='{$marker->url()->setQueryString( 'queued_comments', 1 )}' class='ipsType_warning ipsType_small ipsPos_right ipsResponsive_noFloat' data-ipsTooltip title='{lang="queued_posts_badge" pluralize="$marker->unapproved_comments"}'><i class='fa fa-warning'></i> <strong>{$unapprovedComments}</strong></a>
 						{{endif}}
 					</li>
-				{{endforeach}}
-
+				{{endif}}
+				{{if $marker->container()->allow_reviews}}
+					<li>
+						<span class='ipsDataItem_stats_number'>{number="$marker->mapped('num_reviews')"}</span>
+						<span class='ipsDataItem_stats_type'>
+							{lang="reviews" pluralize="$marker->mapped('num_reviews')"}
+							&nbsp;&nbsp;{template="rating" group="global" location="front" app="core" params="'large', $marker->averageReviewRating(), \IPS\Settings::i()->reviews_rating_out_of, $marker->memberReviewRating()"}
+						</span>
+					</li>
+				{{endif}}
 				<li>
 					<p class='ipsType_normal ipsType_reset ipsType_light'>
 						{{if $marker->updated > 0 OR $marker->added > 0}}

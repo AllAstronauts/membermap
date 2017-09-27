@@ -971,8 +971,8 @@
 										$( '#membermap_memberList' )
 											.append( `<div id="memberList_${marker.parent_id}"><h3 class="ipsType_reset ipsWidget_title">${marker.parent_name}</h3><div class="ipsSideMenu ipsAreaBackground_reset ipsPad"><ul class="ipsList_reset ipsList_bullets"></ul></div></div>` );
 									}
-
-									$( `#memberList_${marker.parent_id} div ul` ).append( title );
+									
+									$( '#memberList_' + marker.parent_id + ' div ul' ).append( title );
 								}
 								else
 								{
