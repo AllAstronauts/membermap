@@ -14,7 +14,7 @@
 </div>
 <div class='ipsDataItem_main cWidgetComments'>
 	<div class='ipsType_break ipsContained'>
-		<a href="{$event->url()}" title='{lang="view_this_event" sprintf="$event->title"}'  target='_blank' rel="nooptimize">{$event->title}</a>
+		<a href="{$event->url()}" title='{lang="view_this_event" sprintf="$event->title"}' target='_blank' rel="nooptimize">{$event->title}</a>
 	</div>
 	<strong class='ipsType_small'>
 		{{if $event->nextOccurrence( $today, 'startDate' )}}
@@ -38,3 +38,22 @@
 		{$event->truncated()|raw}
 	</div>
 </div>
+
+{{if $event->container()->allow_comments OR $event->container()->allow_reviews}}
+	<ul class="ipsList_inline">
+		{{if $event->container()->allow_comments }}
+			<li class='ipsType_light ipsType_small'>
+				<a href="{$event->lastCommentPageUrl()}" target='_blank' rel="nooptimize">
+					<i class='fa fa-comment'></i> {lang="marker_comment_count" pluralize="$event->mapped('num_comments')"}
+				</a>
+			</li>
+		{{endif}}
+		{{if $event->container()->allow_reviews}}
+			<li class='ipsType_light ipsType_small'>
+				<a href="{$event->lastReviewPageUrl()}" target='_blank' rel="nooptimize">
+					{lang="marker_review_count" pluralize="$event->mapped('num_reviews')"}
+				</a>
+			</li>
+		{{endif}}
+	</ul>
+{{endif}}

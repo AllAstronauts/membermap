@@ -93,6 +93,7 @@ $lang = array(
 	'membermap_markers_review_pl_lc'	=> "marker reviews",
 	'marker_comment_count'			=> "{# [1:Comment][?:Comments]}",
 	'marker_review_count'			=> "{# [1:Review][?:Reviews]}",
+	'reviews'						=> "{!#[1:review][?:reviews]}",
 	'marker_submit_comment'			=> "Submit Comment",
 	'membermap_view_this_marker' 	=> "View this marker: %s",
 	'membermap_submit_a_marker' 	=> "Add Marker",
@@ -235,7 +236,7 @@ $lang = array(
 	'membermap_error_cantAdd' 	=> "You are not allowed to add a location.",
 	'membermap_error_noGroups' 	=> "You need to create a Custom Marker Group first.",
 	'membermap_only_one_marker' => "You can only have one member marker. <a href='%s'>Edit your existing one.</a>",
-	'membermap_noAPI_admin'		=> "As of Member Map v3.1 a personal <a href='https://developer.mapquest.com/' target='_blank'>MapQuest API key</a> is required. Go to ACP > Community > Member Map > Settings to add yours. (This message is only visible to administrators)",
+	'membermap_noAPI_admin'		=> "A personal <a href='https://developer.mapquest.com/' target='_blank'>MapQuest API key</a> is required. Go to ACP > Community > Member Map > Settings to add yours. (This message is only visible to administrators)",
 	'membermap_no_club' 		=> "Couldn't find what you were looking for. Showing all members.",
 
 	/* Front-end marker form */

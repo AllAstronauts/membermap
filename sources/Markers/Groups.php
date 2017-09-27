@@ -165,6 +165,9 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 	 * @brief	SEO Title Column
 	 */
 	public static $seoTitleColumn = 'name_seo';
+
+
+	public $recacheJson = 1;
 	
 	/**
 	 * [Node] Get Title
@@ -349,9 +352,9 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 				'purple', 'darkpurple', 'pink', 'cadetblue', 'gray', 'lightgray', 'black', 'white'
 			);
 
-			$icon 		= $this->id ? $this->pin_icon : 'fa-globe';
-			$iconColour 	= $this->id ? $this->pin_colour : '#FFFFFF';
-			$bgColour 	= $this->id ? $this->pin_bg_colour : 'red';
+			$icon 		= ( $this->id AND $this->pin_icon ) ? $this->pin_icon : 'fa-globe';
+			$iconColour = ( $this->id AND $this->pin_colour ) ? $this->pin_colour : '#FFFFFF';
+			$bgColour 	= ( $this->id AND $this->pin_bg_colour ) ? $this->pin_bg_colour : 'red';
 
 			/* Selected a valid colour? */
 			$bgColour = in_array( $bgColour, $colours ) ? $bgColour : 'red';
@@ -445,7 +448,10 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 	{
 		parent::save();
 
-		\IPS\membermap\Map::i()->invalidateJsonCache();
+		if ( $this->recacheJson )
+		{
+			\IPS\membermap\Map::i()->invalidateJsonCache();
+		}
 	}
 
 	/**
@@ -463,7 +469,10 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 
 		parent::delete();
 		
-		\IPS\membermap\Map::i()->invalidateJsonCache();
+		if ( $this->recacheJson )
+		{
+			\IPS\membermap\Map::i()->invalidateJsonCache();
+		}
 	}
 
 	/**

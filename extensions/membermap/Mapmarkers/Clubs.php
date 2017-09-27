@@ -100,7 +100,6 @@ class _Clubs
 	 * 
 	 * @return  array(
 					'appName'               => '', // Application name. Will be used as the name of the group in the map
-					'popup'                 => '', // Popup content
 					'marker_lat'            => 0,  // Latitude
 					'marker_lon'            => 0,  // Longitude
 					'group_pin_bg_colour'   => "", // Marker pin colour. +
@@ -137,7 +136,6 @@ class _Clubs
 				'marker_id'				=> $club->id,
 				'ext'					=> 'membermap_Clubs',
 				'appName'				=> $appName,
-				'popup' 				=> '',
 				'marker_lat'			=> $club->location_lat,
 				'marker_lon'			=> $club->location_long,
 				'group_pin_bg_colour'	=> \IPS\Settings::i()->membermap_clubs_bgcolour ?: "orange",

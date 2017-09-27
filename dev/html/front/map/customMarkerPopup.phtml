@@ -1,14 +1,34 @@
 <ips:template parameters="$marker" />
-<h3>
-	<a href='{url="app=membermap&module=markers&controller=markers&id={$marker['marker_id']}" seoTemplate="markers_marker" seoTitle="$marker['marker_name_seo']"}' target='_blank' rel="nooptimize">
-		{$marker['marker_name']}
+<p class='ipsType_large'>
+	<a href='{$marker->url()}' target='_blank' rel="nooptimize">
+		{$marker->name}
 	</a>
-</h3>
-<div class='membermap_popupContent'>{$marker['marker_description']|raw}</div>
-{{if $marker['marker_location']}}
-	<p>{$marker['marker_location']}</p>
+</p>
+{{if $marker->container()->allow_reviews AND $marker->mapped( 'num_reviews' ) > 0 }}
+	{template="rating" group="global" location="front" app="core" params="'large', $marker->averageReviewRating(), \IPS\Settings::i()->reviews_rating_out_of, $marker->memberReviewRating()"}
 {{endif}}
 
-{{if $marker['marker_comments'] > 0 OR $marker['marker_reviews'] > 0}}
-	<p class='ipsType_light ipsType_small'><i class='fa fa-comment'></i> {lang="marker_comment_count" pluralize="$marker['marker_comments']"} &middot; {lang="marker_review_count" pluralize="$marker['marker_reviews']"}</p>
+<div class='membermap_popupContent'>{$marker->description|raw}</div>
+
+{{if $marker->location}}
+	<p>{$marker->location}</p>
+{{endif}}
+
+{{if $marker->container()->allow_comments OR $marker->container()->allow_reviews}}
+	<ul class="ipsList_inline">
+		{{if $marker->container()->allow_comments }}
+			<li class='ipsType_light ipsType_small'>
+				<a href="{$marker->lastCommentPageUrl()}" target='_blank' rel="nooptimize">
+					<i class='fa fa-comment'></i> {lang="marker_comment_count" pluralize="$marker->mapped('num_comments')"}
+				</a>
+			</li>
+		{{endif}}
+		{{if $marker->container()->allow_reviews}}
+			<li class='ipsType_light ipsType_small'>
+				<a href="{$marker->lastReviewPageUrl()}" target='_blank' rel="nooptimize">
+					{lang="marker_review_count" pluralize="$marker->mapped('num_reviews')"} 
+				</a>
+			</li>
+		{{endif}}
+	</ul>
 {{endif}}

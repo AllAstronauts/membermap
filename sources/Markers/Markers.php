@@ -142,6 +142,9 @@ class _Markers extends \IPS\Content\Item implements
 	 * @brief	SEO Title Column
 	 */
 	public static $seoTitleColumn = 'name_seo';
+
+
+	public $recacheJson = 1;
 	
 	/**
 	 * Get template for content tables
@@ -686,8 +689,6 @@ class _Markers extends \IPS\Content\Item implements
 		return $children;
 	}
 
-	public $recacheJson = 1;
-
 	/**
 	 * Save data
 	 *
@@ -705,8 +706,10 @@ class _Markers extends \IPS\Content\Item implements
 
 		parent::save();
 
+		$this->container()->recacheJson = 0;
 		$this->container()->setLastComment();
 		$this->container()->save();
+		$this->container()->recacheJson = 1;
 
 		if ( $this->recacheJson )
 		{

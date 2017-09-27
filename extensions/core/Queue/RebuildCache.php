@@ -67,7 +67,7 @@ class _RebuildCache
 		/* https://bugs.php.net/bug.php?id=72567 */
 		ini_set('serialize_precision', 14);
 
-		$currentMemUsage = memory_get_usage( TRUE );
+		$currentMemUsage = \memory_get_usage( TRUE );
 
 		/* Wipe out the old files on the first run */
 		if ( $offset === 0 )
@@ -150,7 +150,8 @@ class _RebuildCache
 				json_encode( 
 					array(
 						'markers' 	=> $markers,
-						'fromQueue'	=> 1
+						'fromQueue'	=> 1,
+						'memUsage' 	=> round( ( \memory_get_usage() - $currentMemUsage ) / 1024, 2 ) . 'kB',
 					) 
 				)
 			);
@@ -161,6 +162,9 @@ class _RebuildCache
 
 		if( ! $count )
 		{
+			/* IPS Cloud Sync */
+			\IPS\IPS::resyncIPSCloud( 'Wrote Member Map cache files to disk' );
+			
 			throw new \IPS\Task\Queue\OutOfRangeException;
 		}
 

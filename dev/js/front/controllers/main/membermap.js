@@ -724,6 +724,30 @@
 
 				popups['addLocationPopup'].show();
 			});
+
+			$( '#membermap_memberList h3' ).on( 'click', function(e)
+			{
+				var wrapper = $( e.currentTarget ).parent();
+				var next = $( 'div.ipsSideMenu ul', wrapper );
+
+					Debug.log( next );
+				if( wrapper.hasClass('memberlist_closed') )
+				{
+					wrapper
+						.addClass( 'memberlist_open' )
+						.removeClass( 'memberlist_closed' );
+					ips.utils.anim.go( 'fadeInDown fast', next );
+				} 
+				else 
+				{
+					wrapper
+						.removeClass('memberlist_open')
+						.addClass('memberlist_closed');
+
+
+					ips.utils.anim.go( 'fadeOutDown fast', next );
+				}
+			});
 		},
 
 
@@ -896,7 +920,10 @@
 					}
 					else
 					{
-						mapMarker.bindPopup( ips.getString('loading'), ( popupOptions || {} ) );
+						var popupLoading = L.DomUtil.create( 'div', 'ipsLoading' );
+						popupLoading.style.height = "70px";
+
+						mapMarker.bindPopup( popupLoading, ( popupOptions || {} ) );
 
 						mapMarker.on( 'click', (e) => {
 							var popup = e.target.getPopup();
@@ -927,18 +954,31 @@
 
 							if ( marker.isStaff )
 							{
-								 $( '#memberList_staff div ul' ).append( title );
-								 showStaffMembersBlock = true;
+								$( '#memberList_staff div ul' ).append( title );
+								showStaffMembersBlock = true;
 							}
 							else if ( $.inArray( marker.member_id, ips.getSetting( 'membermap_membersIFollow' ) ) !== -1 )
 							{
-								 $( '#memberList_followers div ul' ).append( title );
+								$( '#memberList_followers div ul' ).append( title );
 								showFollowedUsersBlock = true;
 							}
 							else
 							{
-								$( '#memberList_others div ul' ).append( title );
-								showOtherUsersBlock = true;
+								if ( ips.getSetting( 'membermap_groupByMemberGroup' ) && marker.parent_id > 0 )
+								{
+									if ( $( '#memberList_' + marker.parent_id ).length == 0 )
+									{
+										$( '#membermap_memberList' )
+											.append( `<div id="memberList_${marker.parent_id}"><h3 class="ipsType_reset ipsWidget_title">${marker.parent_name}</h3><div class="ipsSideMenu ipsAreaBackground_reset ipsPad"><ul class="ipsList_reset ipsList_bullets"></ul></div></div>` );
+									}
+									
+									$( '#memberList_' + marker.parent_id + ' div ul' ).append( title );
+								}
+								else
+								{
+									$( '#memberList_others div ul' ).append( title );
+									showOtherUsersBlock = true;
+								}
 							}
 
 							$( title ).click( function() 
