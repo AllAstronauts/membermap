@@ -390,13 +390,13 @@ class _Map
 		/* We'll hardcode the cap at 4000 now, that consumes roughly 50MB */
 		/* We'll also see if we have enough memory available to do it */
 
-		$currentMemUsage 	= memory_get_usage( TRUE );
+		$currentMemUsage 	= \memory_get_usage();
 		$memoryLimit 		= intval( ini_get( 'memory_limit' ) );
-		
+
 		$useQueue 			= false;
 		if ( $memoryLimit > 0 )
 		{
-			$howMuchAreWeGoingToUse = $totalMarkers * 0.02; /* ~0.02MB pr marker */
+			$howMuchAreWeGoingToUse = $totalMarkers * 0.01; /* ~0.01MB pr marker */
 			$howMuchAreWeGoingToUse += 10; /* Plus a bit to be safe */
 
 			$howMuchDoWeHaveLeft = $memoryLimit - ceil( ( $currentMemUsage / 1024 / 1024 ) );
@@ -489,8 +489,10 @@ class _Map
 			\file_put_contents( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-' . $fileCount . '.json', 
 				json_encode( 
 					array( 
-						'markers' => $chunk,
-						'memUsage' => ( (memory_get_usage( TRUE ) - $currentMemUsage ) / 1024 ) . 'kB',
+						'markers' 					=> $chunk,
+						'memUsage' 					=> round( ( \memory_get_usage() - $currentMemUsage ) / 1024, 2 ) . 'kB',
+						'howMuchAreWeGoingToUse' 	=> $howMuchAreWeGoingToUse,
+						'howMuchDoWeHaveLeft'		=> $howMuchDoWeHaveLeft,
 					) 
 				)
 			);
