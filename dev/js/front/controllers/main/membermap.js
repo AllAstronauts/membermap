@@ -920,7 +920,10 @@
 					}
 					else
 					{
-						mapMarker.bindPopup( ips.getString('loading'), ( popupOptions || {} ) );
+						var popupLoading = L.DomUtil.create( 'div', 'ipsLoading' );
+						popupLoading.style.height = "70px";
+
+						mapMarker.bindPopup( popupLoading, ( popupOptions || {} ) );
 
 						mapMarker.on( 'click', (e) => {
 							var popup = e.target.getPopup();
