@@ -197,13 +197,29 @@ class _markers extends \IPS\Node\Controller
 						$group->save();
 
 						// Set default permissions
-						$perms = $group->permissions();
-						\IPS\Db::i()->update( 'core_permission_index', array(
-							'perm_view'	 => '*',
-							'perm_2'	 => '*',  #read
-							'perm_3'     => \IPS\Settings::i()->admin_group,  #add
-						    'perm_4'     => \IPS\Settings::i()->admin_group,  #edit
-						), array( 'perm_id=?', $perms['perm_id'] ) );
+						/* Add in permissions */
+						$groups	= array_filter( iterator_to_array( \IPS\Db::i()->select( 'g_id', 'core_groups' ) ), function( $groupId ) 
+						{
+							if( $groupId == \IPS\Settings::i()->guest_group )
+							{
+								return FALSE;
+							}
+
+							return TRUE;
+						});
+
+						$default = implode( ',', $groups );
+
+						\IPS\Db::i()->insert( 'core_permission_index', array(
+							 'app'			=> 'membermap',
+							 'perm_type'	=> 'membermap',
+							 'perm_type_id'	=> $group->id,
+							 'perm_view'	=> '*', # view
+							 'perm_2'		=> '*', # read
+							 'perm_3'		=> $default, # add
+							 'perm_4'		=> $default, # comment
+							 'perm_5'		=> $default, # review
+						) );
 
 						\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$group->id}", trim( $group->name ) );
 						\IPS\Lang::saveCustom( 'membermap', "membermap_marker_group_{$group->id}_JS", trim( $group->name ), 1 );
@@ -231,6 +247,8 @@ class _markers extends \IPS\Node\Controller
 					{
 						\IPS\Db::i()->insert( 'membermap_markers', $chunks );
 					}
+
+					\IPS\Task::queue( 'core', 'RebuildSearchIndex', array( 'class' => 'IPS\membermap\Markers\Markers', 'container' => $group->id ), 5, 'container' );
 
 					$group->setLastComment();
 					$group->save();
