@@ -144,16 +144,12 @@ class _RebuildCache
 
 			$fileNumber = $offset / $this->perCycle;
 
-			touch( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-' . $fileNumber . '.json' );
-			chmod( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-' . $fileNumber . '.json', \IPS\IPS_FILE_PERMISSION );
-			\file_put_contents( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-' . $fileNumber . '.json', 
-				json_encode( 
-					array(
-						'markers' 	=> $markers,
-						'fromQueue'	=> 1,
-						'memUsage' 	=> round( ( \memory_get_usage() - $currentMemUsage ) / 1024, 2 ) . 'kB',
-					) 
-				)
+			$cacheKey = "membermap_cache_{$fileNumber}";
+			\IPS\Data\Store::i()->$cacheKey = 
+				array( 
+					'markers' 	=> $markers,
+					'fromQueue'	=> 1,
+					'memUsage' 	=> round( ( \memory_get_usage() - $currentMemUsage ) / 1024, 2 ) . 'kB',
 			);
 
 			/* Store the timestamp of the cache to force the browser to purge its local storage */
@@ -161,10 +157,7 @@ class _RebuildCache
 		}
 
 		if( ! $count )
-		{
-			/* IPS Cloud Sync */
-			\IPS\IPS::resyncIPSCloud( 'Wrote Member Map cache files to disk' );
-			
+		{	
 			throw new \IPS\Task\Queue\OutOfRangeException;
 		}
 
