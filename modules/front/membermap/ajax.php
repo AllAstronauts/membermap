@@ -36,9 +36,10 @@ class _ajax extends \IPS\Dispatcher\Controller
 
 		if ( $fileId >= 0 )
 		{
-			if ( file_exists( \IPS\ROOT_PATH . "/datastore/membermap_cache/membermap-{$fileId}.json" ) )
+			$cacheKey = "membermap_cache_{$fileId}";
+			if ( isset( \IPS\Data\Store::i()->$cacheKey ) )
 			{
-				$output = \file_get_contents( \IPS\ROOT_PATH . "/datastore/membermap_cache/membermap-{$fileId}.json" );
+				$output = json_encode( \IPS\Data\Store::i()->$cacheKey );
 			}
 			else
 			{

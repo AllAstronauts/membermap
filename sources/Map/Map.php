@@ -302,7 +302,7 @@ class _Map
 		$cacheTime 	= isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
 
 		/* Rebuild JSON cache if needed */
-		if ( ! is_file ( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-0.json' ) OR \IPS\Request::i()->rebuildCache === '1' OR $cacheTime === 0 )
+		if ( ! isset( \IPS\Data\Store::i()->membermap_cache_0 ) OR \IPS\Request::i()->rebuildCache === '1' OR $cacheTime === 0 )
 		{
 			$this->recacheJsonFile();
 
@@ -336,25 +336,18 @@ class _Map
 		/* Remove all files from cache dir. 
 		 * We need to do this in case of situations were a file won't be overwritten (when deleting markers), 
 		 * and old markers will be left in place, or markers are shown multiple times.*/
-		foreach( glob( \IPS\ROOT_PATH . '/datastore/membermap_cache/*' ) as $file )
+		$fileCount = 0;
+		while( TRUE )
 		{
-			if ( is_file( $file ) )
+			$cacheKey = "membermap_cache_{$fileCount}";
+			if ( isset( \IPS\Data\Store::i()->$cacheKey ) )
 			{
-				unlink( $file );
+				unset( \IPS\Data\Store::i()->$cacheKey );
 			}
-		}
-
-		/* Check if we even have a 'datastore' folder. */
-		if ( ! is_dir( \IPS\ROOT_PATH . '/datastore' ) )
-		{
-			mkdir( \IPS\ROOT_PATH . '/datastore' );
-			chmod( \IPS\ROOT_PATH . '/datastore', \IPS\IPS_FOLDER_PERMISSION );
-		}
-
-		if ( ! is_dir( \IPS\ROOT_PATH . '/datastore/membermap_cache' ) )
-		{
-			mkdir( \IPS\ROOT_PATH . '/datastore/membermap_cache' );
-			chmod( \IPS\ROOT_PATH . '/datastore/membermap_cache', \IPS\IPS_FOLDER_PERMISSION );
+			else
+			{
+				break;
+			}
 		}
 	}
 
@@ -483,26 +476,17 @@ class _Map
 		$fileCount = 0;
 		foreach( $markers as $chunk )
 		{
-
-			touch( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-' . $fileCount . '.json' );
-			chmod( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-' . $fileCount . '.json', \IPS\IPS_FILE_PERMISSION );
-			\file_put_contents( \IPS\ROOT_PATH . '/datastore/membermap_cache/membermap-' . $fileCount . '.json', 
-				json_encode( 
-					array( 
-						'markers' 					=> $chunk,
-						'memUsage' 					=> round( ( \memory_get_usage() - $currentMemUsage ) / 1024, 2 ) . 'kB',
-						'howMuchAreWeGoingToUse' 	=> $howMuchAreWeGoingToUse,
-						'howMuchDoWeHaveLeft'		=> $howMuchDoWeHaveLeft,
-					) 
-				)
+			$cacheKey = "membermap_cache_{$fileCount}";
+			\IPS\Data\Store::i()->$cacheKey = 
+				array( 
+					'markers' 					=> $chunk,
+					'memUsage' 					=> round( ( \memory_get_usage() - $currentMemUsage ) / 1024, 2 ) . 'kB',
+					'howMuchAreWeGoingToUse' 	=> $howMuchAreWeGoingToUse,
+					'howMuchDoWeHaveLeft'		=> $howMuchDoWeHaveLeft,
 			);
 			
 			$fileCount++;
 		}
-
-
-		/* IPS Cloud Sync */
-		\IPS\IPS::resyncIPSCloud( 'Wrote Member Map cache files to disk' );
 
 		/* Store the timestamp of the cache to force the browser to purge its local storage */
 		\IPS\Data\Store::i()->membermap_cacheTime = time();
