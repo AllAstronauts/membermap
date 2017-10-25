@@ -122,9 +122,11 @@ class _ajax extends \IPS\Dispatcher\Controller
 					array(
 						'key' => $apiKey, 
 						'format' => 'json', 
-						'q' => urlencode( $location ),
+						'q' => $location,
 						'accept-language' => isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : NULL,
-					) )->request( 15 )->get()->decodeJson();
+						'debug' => 0
+					) )->request( 15 )->post();
+				$data = $data->decodeJson();
 			}
 			catch( \Exception $e ) 
 			{
