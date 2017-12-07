@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="140008">
+ <app key="membermap" version="140009">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
   <word key="membermap_clubnavtitle" js="0">Member Map</word>
@@ -10,6 +10,7 @@
   <word key="__defart_membermap_marker" js="0">Member Map marker</word>
   <word key="__defart_membermap_marker_comment" js="0">comment on a Member Map marker</word>
   <word key="__defart_membermap_marker_review" js="0">review on a Member Map marker</word>
+  <word key="filestorage__membermap_MarkerStaticMap" js="0">Member Map Embed Preview Image</word>
   <word key="membermap_rebuilding_cache" js="0">Rebuilding Member Map Cache</word>
   <word key="membermap_group_sg" js="0">feature (NOT WORKING)</word>
   <word key="menu__membermap_membermap" js="0">Member Map</word>

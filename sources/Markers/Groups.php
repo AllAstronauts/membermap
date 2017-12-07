@@ -491,4 +491,15 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 
 		return $unapproved;
 	}
+
+	/**
+	 * Set the permission index permissions to a specific club
+	 *
+	 * @param	\IPS\Member\Club	$club	The club
+	 * @return  void
+	 */
+	public function setPermissionsToClub( \IPS\Member\Club $club )
+	{
+		// Deliberately do nothing, Blog handles permissions differently
+	}
 }

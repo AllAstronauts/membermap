@@ -3,31 +3,32 @@
 $lang = array(
 
 	/* Various strings */
-	'__app_membermap'						=> "Member Map",
-	'frontnavigation_membermap'				=> "Member Map",
-	'membermap_clubnavtitle'				=> "Member Map",
-	'__indefart_membermap_marker'			=> "a Member Map marker",
-	'__indefart_membermap_marker_comment'	=> "a comment on a  Member Map marker",
-	'__indefart_membermap_marker_review'	=> "a review on a Member Map event",
-	'__defart_membermap_marker'				=> "Member Map marker",
-	'__defart_membermap_marker_comment'		=> "comment on a Member Map marker",
-	'__defart_membermap_marker_review'		=> "review on a Member Map marker",
+	'__app_membermap'							=> "Member Map",
+	'frontnavigation_membermap'					=> "Member Map",
+	'membermap_clubnavtitle'					=> "Member Map",
+	'__indefart_membermap_marker'				=> "a Member Map marker",
+	'__indefart_membermap_marker_comment'		=> "a comment on a  Member Map marker",
+	'__indefart_membermap_marker_review'		=> "a review on a Member Map event",
+	'__defart_membermap_marker'					=> "Member Map marker",
+	'__defart_membermap_marker_comment'			=> "comment on a Member Map marker",
+	'__defart_membermap_marker_review'			=> "review on a Member Map marker",
+	'filestorage__membermap_MarkerStaticMap' 	=> "Member Map Embed Preview Image",
 
-	'membermap_rebuilding_cache'			=> "Rebuilding Member Map Cache",
+	'membermap_rebuilding_cache'				=> "Rebuilding Member Map Cache",
 
-	'membermap_group_sg'					=> "feature (NOT WORKING)",
+	'membermap_group_sg'						=> "feature (NOT WORKING)",
 
 	/* ACP Module/Menu titles */
-	'menu__membermap_membermap' => "Member Map",
-	'menu__membermap_membermap_markers' 	=> 'Markers Groups',
-	'menu__membermap_membermap_mapmanager' 	=> "Map Manager",
-	'menu__membermap_membermap_settings' 	=> "Settings",
+	'menu__membermap_membermap'					=> "Member Map",
+	'menu__membermap_membermap_markers' 		=> 'Markers Groups',
+	'menu__membermap_membermap_mapmanager'	 	=> "Map Manager",
+	'menu__membermap_membermap_settings' 		=> "Settings",
 
-	'module__membermap_membermap' 	=> "Member Map",
-	'module__membermap_markers' 	=> "Marker Groups",
-	'group__membermap_membermap' 	=> "Member Map",
+	'module__membermap_membermap' 				=> "Member Map",
+	'module__membermap_markers' 				=> "Marker Groups",
+	'group__membermap_membermap' 				=> "Member Map",
 
-	'membermap_group'				=> "Marker Groups",
+	'membermap_group'							=> "Marker Groups",
 
 
 	/* ACP Restrictions */
