@@ -64,6 +64,11 @@ class _RebuildCache
 	 */
 	public function run( $data, $offset )
 	{
+		if ( ! \IPS\Application::appIsEnabled( 'membermap' ) )
+		{
+			throw new \IPS\Task\Queue\OutOfRangeException;
+		}
+		
 		/* https://bugs.php.net/bug.php?id=72567 */
 		ini_set('serialize_precision', 14);
 

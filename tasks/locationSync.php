@@ -36,6 +36,11 @@ class _locationSync extends \IPS\Task
 	 */
 	public function execute()
 	{
+		if ( ! \IPS\Application::appIsEnabled( 'membermap' ) )
+		{
+			return NULL;
+		}
+
 		if ( ! \IPS\Settings::i()->membermap_syncLocationField OR ! \IPS\Settings::i()->membermap_monitorLocationField OR ! \IPS\Settings::i()->membermap_profileLocationField )
 		{
 			$this->enabled = FALSE;
