@@ -941,7 +941,8 @@
 
 						mapMarker.bindPopup( popupLoading, ( popupOptions || {} ) );
 
-						mapMarker.on( 'click', (e) => {
+						mapMarker.on( 'click', function(e) 
+						{
 							var popup = e.target.getPopup();
 							var url = ips.getSetting('baseURL') + 'index.php?app=membermap&module=membermap&controller=ajax&do=getPopup&id=' + e.target.marker_id + '&ext=' + e.target.marker_ext;
 
@@ -985,7 +986,7 @@
 									if ( $( '#memberList_' + marker.parent_id ).length == 0 )
 									{
 										$( '#membermap_memberList' )
-											.append( `<div id="memberList_${marker.parent_id}"><h3 class="ipsType_reset ipsWidget_title">${marker.parent_name}</h3><div class="ipsSideMenu ipsAreaBackground_reset ipsPad"><ul class="ipsList_reset ipsList_bullets"></ul></div></div>` );
+											.append( '<div id="memberList_' + marker.parent_id + '"><h3 class="ipsType_reset ipsWidget_title">' + marker.parent_name + '</h3><div class="ipsSideMenu ipsAreaBackground_reset ipsPad"><ul class="ipsList_reset ipsList_bullets"></ul></div></div>' );
 									}
 									
 									$( '#memberList_' + marker.parent_id + ' div ul' ).append( title );
