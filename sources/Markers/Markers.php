@@ -24,14 +24,13 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 class _Markers extends \IPS\Content\Item implements 
 \IPS\Content\Permissions, 
 \IPS\Content\Searchable, 
-\IPS\Content\ReportCenter, 
 \IPS\Content\Hideable, 
 \IPS\Content\MetaData,
 \IPS\Content\Featurable,
 \IPS\Content\Embeddable,
 \IPS\Content\ReadMarkers
 {
-	use \IPS\Content\Reactable;
+	use \IPS\Content\Reactable, \IPS\Content\Reportable;
 
 	/**
 	 * @brief	Multiton Store

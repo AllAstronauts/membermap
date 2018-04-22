@@ -1,5 +1,5 @@
 <ips:template parameters="$table, $headers, $markers" />
-{{if count( $markers )}}
+{{if is_array( $markers ) AND count( $markers )}}
 	{{foreach $markers as $marker}}
 		{{$idField = $marker::$databaseColumnId;}}
 		<li class='ipsDataItem {{if $marker->unread()}}ipsDataItem_unread{{endif}} {{if method_exists( $marker, 'tableClass' ) && $marker->tableClass()}}ipsDataItem_{$marker->tableClass()}{{endif}} {{if $marker->hidden()}}ipsModerated{{endif}}'>

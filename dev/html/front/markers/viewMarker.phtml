@@ -100,7 +100,7 @@
 											{{endif}}
 											{{if $marker->canHide()}}				
 												<li class='ipsMenu_item'>
-													<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'hide' ) )}' title='{lang="hide_title_file"}' data-ipsDialog data-ipsDialog-title="{lang="hide"}">{lang="hide"}</a>
+													<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'hide' ) )}' title='{lang="hide"}' data-ipsDialog data-ipsDialog-title="{lang="hide"}">{lang="hide"}</a>
 												</li>
 											{{endif}}
 											{{if $marker->canUnhide()}}				

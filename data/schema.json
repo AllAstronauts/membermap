@@ -1104,6 +1104,20 @@
                 "unsigned": false,
                 "values": [],
                 "zerofill": false
+            },
+            "review_author_response": {
+                "name": "review_author_response",
+                "type": "MEDIUMTEXT",
+                "length": null,
+                "decimals": null,
+                "values": null,
+                "allow_null": true,
+                "default": null,
+                "comment": "",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
             }
         },
         "indexes": {

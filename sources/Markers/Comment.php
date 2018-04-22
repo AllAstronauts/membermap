@@ -8,9 +8,9 @@ if( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 	exit;
 }
 
-class _Comment extends \IPS\Content\Comment implements \IPS\Content\EditHistory, \IPS\Content\ReportCenter, \IPS\Content\Hideable, \IPS\Content\Searchable, \IPS\Content\Embeddable
+class _Comment extends \IPS\Content\Comment implements \IPS\Content\EditHistory, \IPS\Content\Hideable, \IPS\Content\Searchable, \IPS\Content\Embeddable
 {
-	use \IPS\Content\Reactable;
+	use \IPS\Content\Reactable, \IPS\Content\Reportable;
 
 	/**
 	 * @brief    [ActiveRecord] Multiton Store

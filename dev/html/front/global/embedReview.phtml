@@ -6,7 +6,7 @@
 	<div class='ipsPad'>
 		<div class='ipsRichEmbed_originalItem ipsAreaBackground_reset ipsSpacer_bottom ipsType_blendLinks'>
 			<div>
-				{{if count( $item->contentImages() )}}
+				{{if is_array( $item->contentImages() ) AND count( $item->contentImages() )}}
 					{{$attachType = key( $item->contentImages()[0] );}}
 					{{$image = \IPS\File::get( $attachType, $item->contentImages()[0][ $attachType ] );}}
 

@@ -129,7 +129,7 @@ class _membermap
 
 		$wereDoneHere = true;
 
-		if( isset( $changes['name'] ) )
+		if ( isset( $changes['name'] ) )
 		{
 			$existingMarker = \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE, FALSE );
 
@@ -142,7 +142,7 @@ class _membermap
 			}
 		}
 
-		if( count( $changes ) AND \IPS\Settings::i()->membermap_monitorLocationField AND ! $member->members_bitoptions['bw_is_spammer'] )
+		if ( is_array( $changes ) AND count( $changes ) AND \IPS\Settings::i()->membermap_monitorLocationField AND ! $member->members_bitoptions['bw_is_spammer'] )
 		{
 			if( \IPS\Settings::i()->membermap_monitorLocationField_groupPerm === '*' or \IPS\Member::loggedIn()->inGroup( explode( ',', \IPS\Settings::i()->membermap_monitorLocationField_groupPerm ) ) )
 			{
@@ -167,7 +167,7 @@ class _membermap
 
 							$addressData['addressLines'][] = $addressData['city'];
 
-							if ( count( $addressData['addressLines'] ) )
+							if ( is_array( $addressData['addressLines'] ) AND count( $addressData['addressLines'] ) )
 							{
 								$location = implode( ', ', $addressData['addressLines'] );
 							}

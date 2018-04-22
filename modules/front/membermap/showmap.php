@@ -84,7 +84,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 						$club = \IPS\Member\Club::load( $clubId );
 						$markers = \IPS\membermap\Map::i()->getClubMemberMarkers( $club );
 
-						if ( count( $markers ) > 0 )
+						if ( is_array( $markers ) AND count( $markers ) > 0 )
 						{
 							\IPS\core\FrontNavigation::$clubTabActive = TRUE;
 							\IPS\Output::i()->breadcrumb = array();
