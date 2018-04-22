@@ -6,7 +6,7 @@
 	<div class='ipsPad'>
 		<div class='ipsRichEmbed_originalItem ipsAreaBackground_reset ipsPad ipsSpacer_bottom ipsType_blendLinks'>
 			<div>
-				{{if count( $item->contentImages() )}}
+				{{if is_array( $item->contentImages() ) AND count( $item->contentImages() )}}
 					{{$attachType = key( $item->contentImages()[0] );}}
 					{{$image = \IPS\File::get( $attachType, $item->contentImages()[0][ $attachType ] );}}
 
@@ -63,7 +63,7 @@
 	<div class='ipsPad'>
 		<div class='ipsRichEmbed_originalItem ipsAreaBackground_reset ipsSpacer_bottom ipsType_blendLinks'>
 			<div>
-				{{if count( $item->contentImages() )}}
+				{{if is_array( $item->contentImages() ) AND count( $item->contentImages() )}}
 					{{$attachType = key( $item->contentImages()[0] );}}
 					{{$image = \IPS\File::get( $attachType, $item->contentImages()[0][ $attachType ] );}}
 
@@ -651,7 +651,7 @@
 		<p class="ipsType_normal ipsType_light ipsType_reset" data-role="noReviews">{lang="no_reviews"}</p>
 	{{endif}}
 </div>]]></template>
- <template template_group="markers" template_name="rows" template_data="$table, $headers, $markers" template_location="front" template_app="membermap"><![CDATA[{{if count( $markers )}}
+ <template template_group="markers" template_name="rows" template_data="$table, $headers, $markers" template_location="front" template_app="membermap"><![CDATA[{{if is_array( $markers ) AND count( $markers )}}
 	{{foreach $markers as $marker}}
 		{{$idField = $marker::$databaseColumnId;}}
 		<li class='ipsDataItem {{if $marker->unread()}}ipsDataItem_unread{{endif}} {{if method_exists( $marker, 'tableClass' ) && $marker->tableClass()}}ipsDataItem_{$marker->tableClass()}{{endif}} {{if $marker->hidden()}}ipsModerated{{endif}}'>
@@ -1122,7 +1122,7 @@
 											{{endif}}
 											{{if $marker->canHide()}}				
 												<li class='ipsMenu_item'>
-													<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'hide' ) )}' title='{lang="hide_title_file"}' data-ipsDialog data-ipsDialog-title="{lang="hide"}">{lang="hide"}</a>
+													<a href='{$marker->url()->csrf()->setQueryString( array( 'do' => 'moderate', 'action' => 'hide' ) )}' title='{lang="hide"}' data-ipsDialog data-ipsDialog-title="{lang="hide"}">{lang="hide"}</a>
 												</li>
 											{{endif}}
 											{{if $marker->canUnhide()}}				

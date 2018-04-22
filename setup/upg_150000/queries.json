@@ -1,5 +1,5 @@
-[
-    {
+{
+    "1": {
         "method": "addColumn",
         "params": [
             "membermap_reviews",
@@ -19,4 +19,4 @@
             }
         ]
     }
-]
+}
