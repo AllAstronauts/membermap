@@ -1,13 +1,12 @@
 <?php
 /**
- * @brief		Uninstall callback
- * @author		<a href='http://www.invisionpower.com'>Invision Power Services, Inc.</a>
- * @copyright	(c) 2001 - SVN_YYYY Invision Power Services, Inc.
- * @license		http://www.invisionpower.com/legal/standards/
- * @package		IPS Social Suite
- * @subpackage	Member Map
- * @since		13 Dec 2015
- * @version		SVN_VERSION_NUMBER
+ * @brief       Uninstall callback
+ * @author      -storm_author-
+ * @copyright   -storm_copyright-
+ * @package     IPS Social Suite
+ * @subpackage  Member Map
+ * @since       13 Dec 2015
+ * @version     -storm_version-
  */
 
 namespace IPS\membermap\extensions\core\Uninstall;

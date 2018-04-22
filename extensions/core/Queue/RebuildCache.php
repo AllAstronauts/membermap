@@ -1,13 +1,12 @@
 <?php
 /**
- * @brief		Background Task
- * @author		<a href='http://www.invisionpower.com'>Invision Power Services, Inc.</a>
- * @copyright	(c) 2001 - 2016 Invision Power Services, Inc.
- * @license		http://www.invisionpower.com/legal/standards/
- * @package		IPS Community Suite
- * @subpackage	Member Map
- * @since		19 May 2016
- * @version		SVN_VERSION_NUMBER
+ * @brief       Rebuild Cache Queue
+ * @author      -storm_author-
+ * @copyright   -storm_copyright-
+ * @package     IPS Social Suite
+ * @subpackage  Member Map
+ * @since       19 May 2016
+ * @version     -storm_version-
  */
 
 namespace IPS\membermap\extensions\core\Queue;

@@ -1,12 +1,12 @@
 <?php
 /**
- * @brief		File Storage Extension: MarkerStaticMap
- * @author		<a href='https://www.invisioncommunity.com'>Invision Power Services, Inc.</a>
- * @copyright	(c) Invision Power Services, Inc.
- * @license		https://www.invisioncommunity.com/legal/standards/
- * @package		Invision Community
- * @subpackage	Member Map
- * @since		13 Aug 2017
+ * @brief       File Storage Extension: MarkerStaticMap
+ * @author      -storm_author-
+ * @copyright   -storm_copyright-
+ * @package     IPS Social Suite
+ * @subpackage  Member Map
+ * @since       13 Aug 2017
+ * @version     -storm_version-
  */
 
 namespace IPS\membermap\extensions\core\FileStorage;

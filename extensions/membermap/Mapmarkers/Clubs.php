@@ -1,13 +1,12 @@
 <?php
 /**
  * @brief       Member Map Mapmarkers Extension: Clubs
- * @author      Stuart Silvester & Martin Aronsen
- * @copyright   (c) 2015 Stuart Silvester & Martin Aronsen
- * @license     http://www.invisionpower.com/legal/standards/
- * @package     IPS Community Suite
- * @subpackage	Member Map
+ * @author      -storm_author-
+ * @copyright   -storm_copyright-
+ * @package     IPS Social Suite
+ * @subpackage  Member Map
  * @since       27 Aug 2017
- * @version     SVN_VERSION_NUMBER
+ * @version     -storm_version-
  */
 
 /*

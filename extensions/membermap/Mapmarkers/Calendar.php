@@ -1,4 +1,13 @@
 <?php
+/**
+ * @brief       Member Map Mapmarkers extension: Calendar
+ * @author      -storm_author-
+ * @copyright   -storm_copyright-
+ * @package     IPS Social Suite
+ * @subpackage  Member Map
+ * @since       27 Aug 2017
+ * @version     -storm_version-
+ */
 
 namespace IPS\membermap\extensions\membermap\Mapmarkers;
 

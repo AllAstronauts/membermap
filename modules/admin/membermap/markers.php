@@ -1,12 +1,12 @@
 <?php
 /**
- * @brief		Marker Groups Controller
- * @author		<a href='http://ipb.silvesterwebdesigns.com'>Stuart Silvester & Martin Aronsen</a>
- * @copyright	(c) 2015 Stuart Silvester & Martin Aronsen
- * @package		IPS Social Suite
- * @subpackage	Member Map
- * @since		20 Oct 2015
- * @version		3.0.1
+ * @brief       Marker Groups Controller
+ * @author      -storm_author-
+ * @copyright   -storm_copyright-
+ * @package     IPS Social Suite
+ * @subpackage  Member Map
+ * @since       20 Oct 2015
+ * @version     -storm_version-
  */
 
 namespace IPS\membermap\modules\admin\membermap;

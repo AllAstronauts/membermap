@@ -1,4 +1,13 @@
 <?php
+/**
+ * @brief       Marker Comment Model
+ * @author      -storm_author-
+ * @copyright   -storm_copyright-
+ * @package     IPS Social Suite
+ * @subpackage  Member Map
+ * @since       13 Aug 2017
+ * @version     -storm_version-
+ */
 
 namespace IPS\membermap\Markers;
 

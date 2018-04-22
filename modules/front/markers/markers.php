@@ -1,5 +1,13 @@
 <?php
-
+/**
+ * @brief       Member Map Markers
+ * @author      -storm_author-
+ * @copyright   -storm_copyright-
+ * @package     IPS Social Suite
+ * @subpackage  Member Map
+ * @since       28 Feb 2016
+ * @version     -storm_version-
+ */
 
 namespace IPS\membermap\modules\front\markers;
 
