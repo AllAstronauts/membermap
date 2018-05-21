@@ -140,7 +140,7 @@
 								</li>
 							{{endif}}
 
-							{{if $marker->canReport() }}
+							{{if $marker->canReportOrRevoke() }}
 								<li>
 									<a href='{$marker->url('report')}' data-ipsDialog data-ipsDialog-size='medium' data-ipsDialog-title="{lang="report_marker"}" data-ipsDialog-remoteSubmit data-ipsDialog-flashMessage="{lang="report_submit_success"}" title="{lang="report_marker"}" class='ipsButton ipsButton_link ipsButton_verySmall ipsButton_fullWidth'>{lang="report_marker"}</a>
 								</li>
