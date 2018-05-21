@@ -486,7 +486,10 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 
 		foreach( static::roots() as $group )
 		{
-			$unapproved += $group->_unapprovedItems;
+			if ( \IPS\membermap\Markers\Markers::modPermission( 'unhide', NULL, $group ) )
+			{
+				$unapproved += $group->_unapprovedItems;
+			}
 		}
 
 		return $unapproved;
