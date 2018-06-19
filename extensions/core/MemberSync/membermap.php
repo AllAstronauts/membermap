@@ -47,7 +47,7 @@ class _membermap
 		// Or move $member2's location over to $member.
 		else if ( $member2Loc instanceof \IPS\membermap\Markers\Markers )
 		{
-			$member2Loc->author = $member->member_id;
+			$member2Loc->member_id = $member->member_id;
 			$member2Loc->save();
 		}
 	}
