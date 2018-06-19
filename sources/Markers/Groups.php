@@ -344,7 +344,7 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 		$form->add( new \IPS\Helpers\Form\YesNo( 'group_allow_reviews', $this->id ? $this->allow_reviews : FALSE, FALSE, array( 'togglesOn' => array( 'group_review_moderate' ) ) ) );
 		$form->add( new \IPS\Helpers\Form\YesNo( 'group_review_moderate', $this->id ? $this->review_moderate : FALSE, FALSE, array(), NULL, NULL, NULL, 'group_review_moderate' ) );
 
-		if( $this->type == 'custom' )
+		if( $this->_new OR $this->type == 'custom' )
 		{
 			$radioOpt = array();
 			$colours = array( 
