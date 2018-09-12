@@ -47,7 +47,7 @@ class _membermap
 		// Or move $member2's location over to $member.
 		else if ( $member2Loc instanceof \IPS\membermap\Markers\Markers )
 		{
-			$member2Loc->author = $member->member_id;
+			$member2Loc->member_id = $member->member_id;
 			$member2Loc->save();
 		}
 	}
@@ -158,7 +158,7 @@ class _membermap
 						{
 							$addressData = json_decode( $fieldValue, TRUE );
 
-							if ( is_float( $addressData['lat'] ) AND is_float( $addressData['long'] ) )
+							if ( isset( $addressData['lat'] ) AND is_float( $addressData['lat'] ) AND is_float( $addressData['long'] ) )
 							{
 								$lat = floatval( $addressData['lat'] );
 								$lng = floatval( $addressData['long'] );
