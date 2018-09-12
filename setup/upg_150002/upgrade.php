@@ -1,7 +1,17 @@
 <?php
 
+/**
+ * @brief       Upgrade Class
+ * @author      -storm_author-
+ * @copyright   -storm_copyright-
+ * @package     IPS Social Suite
+ * @subpackage  Member Map
+ * @since       3.5.2
+ * @version     -storm_version-
+ */
 
-namespace IPS\membermap\setup\upg_working;
+
+namespace IPS\membermap\setup\upg_150002;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
 if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
@@ -11,7 +21,7 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 }
 
 /**
- * {version_human} Upgrade Code
+ * 3.5.2 Upgrade Code
  */
 class _Upgrade
 {
