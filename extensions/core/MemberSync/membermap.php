@@ -158,7 +158,7 @@ class _membermap
 						{
 							$addressData = json_decode( $fieldValue, TRUE );
 
-							if ( is_float( $addressData['lat'] ) AND is_float( $addressData['long'] ) )
+							if ( isset( $addressData['lat'] ) AND is_float( $addressData['lat'] ) AND is_float( $addressData['long'] ) )
 							{
 								$lat = floatval( $addressData['lat'] );
 								$lng = floatval( $addressData['long'] );
