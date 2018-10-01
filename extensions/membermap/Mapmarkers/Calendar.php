@@ -124,12 +124,12 @@ class _Calendar
 			$where[] = array( \IPS\Db::i()->in( 'event_calendar_id', explode( ',', \IPS\Settings::i()->membermap_calendars ) ) );
 		}
 
-		$startDate	= new \IPS\calendar\Date( "now",  NULL );
+		$startDate	= new \IPS\membermap\CalendarDateTime( "now",  NULL );
 		$endDate	= $startDate->adjust( "+" . intval( \IPS\Settings::i()->membermap_calendar_days_ahead ) . " days" );
 
 		/* Get timezone adjusted versions of start/end time */
-		$startDateTimezone	= \IPS\calendar\Date::parseTime( $startDate->mysqlDatetime() );
-		$endDateTimezone	= ( $endDate !== NULL ) ? \IPS\calendar\Date::parseTime( $endDate->mysqlDatetime() ) : NULL;
+		$startDateTimezone	= \IPS\membermap\CalendarDateTime::parseTime( $startDate->mysqlDatetime() );
+		$endDateTimezone	= ( $endDate !== NULL ) ? \IPS\membermap\CalendarDateTime::parseTime( $endDate->mysqlDatetime() ) : NULL;
 
 		/* First we get the non recurring events based on the timestamps */
 		$nonRecurring	= array();
@@ -340,7 +340,7 @@ class _Calendar
 		{
 			$event = \IPS\calendar\Event::load( intval( $id ) );
 
-			$startDate	= new \IPS\calendar\Date( "now",  NULL );
+			$startDate	= new \IPS\membermap\CalendarDateTime( "now",  NULL );
 
 			return \IPS\Theme::i()->getTemplate( 'map', 'membermap', 'front' )->calendarPopup( $event, $startDate );
 		}
