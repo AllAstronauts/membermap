@@ -36,6 +36,9 @@ class _RebuildCache
 	 */
 	public function preQueueData( $data )
 	{
+		/* Store the timestamp of the cache to force the browser to purge its local storage */
+		\IPS\Data\Store::i()->membermap_cacheTime = time();
+
 		try
 		{			
 			$data['count'] = \IPS\Db::i()->select( 'COUNT(*)', 'membermap_markers' )->first();
@@ -156,8 +159,6 @@ class _RebuildCache
 					'memUsage' 	=> round( ( \memory_get_usage() - $currentMemUsage ) / 1024, 2 ) . 'kB',
 			);
 
-			/* Store the timestamp of the cache to force the browser to purge its local storage */
-			\IPS\Data\Store::i()->membermap_cacheTime = time();
 		}
 
 		if( ! $count )
@@ -165,7 +166,7 @@ class _RebuildCache
 			throw new \IPS\Task\Queue\OutOfRangeException;
 		}
 
-		return $offset + $count;
+		return $offset + $this->perCycle;
 	}
 	
 	/**

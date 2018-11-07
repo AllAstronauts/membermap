@@ -340,6 +340,7 @@ class _Map
 		while( TRUE )
 		{
 			$cacheKey = "membermap_cache_{$fileCount}";
+			$fileCount++;
 			if ( isset( \IPS\Data\Store::i()->$cacheKey ) )
 			{
 				unset( \IPS\Data\Store::i()->$cacheKey );
@@ -382,29 +383,33 @@ class _Map
 		/* Trigger the queue if the marker count is too large to do in one go. */
 		/* We'll hardcode the cap at 4000 now, that consumes roughly 50MB */
 		/* We'll also see if we have enough memory available to do it */
+		/* memory_get_usage() may not return a sensible value, so we set the lower entrypoint to even consider using the queue to 1000 */
 
-		$currentMemUsage 	= \memory_get_usage();
-		$memoryLimit 		= intval( ini_get( 'memory_limit' ) );
-
-		$useQueue 			= false;
-		if ( $memoryLimit > 0 )
+		if ( $totalMarkers < 1000 )
 		{
-			$howMuchAreWeGoingToUse = $totalMarkers * 0.01; /* ~0.01MB pr marker */
-			$howMuchAreWeGoingToUse += 10; /* Plus a bit to be safe */
+			$currentMemUsage 	= \memory_get_usage();
+			$memoryLimit 		= intval( ini_get( 'memory_limit' ) );
 
-			$howMuchDoWeHaveLeft = $memoryLimit - ceil( ( $currentMemUsage / 1024 / 1024 ) );
+			$useQueue 			= false;
+			if ( $memoryLimit > 0 )
+			{
+				$howMuchAreWeGoingToUse = $totalMarkers * 0.01; /* ~0.01MB pr marker */
+				$howMuchAreWeGoingToUse += 10; /* Plus a bit to be safe */
 
-			if ( $howMuchDoWeHaveLeft < $howMuchAreWeGoingToUse )
+				$howMuchDoWeHaveLeft = $memoryLimit - ceil( ( $currentMemUsage / 1024 / 1024 ) );
+
+				if ( $howMuchDoWeHaveLeft < $howMuchAreWeGoingToUse )
+				{
+					$useQueue = true;
+				}
+			}
+
+			if ( $totalMarkers > 4000 )
 			{
 				$useQueue = true;
 			}
 		}
 
-		if ( $totalMarkers > 4000 )
-		{
-			$useQueue = true;
-		}
-		
 		if ( $useQueue OR ( defined( 'MEMBERMAP_FORCE_QUEUE' ) and MEMBERMAP_FORCE_QUEUE ) )
 		{
 			\IPS\Task::queue( 'membermap', 'RebuildCache', array( 'class' => '\IPS\membermap\Map' ), 1, array( 'class' ) );
