@@ -390,7 +390,7 @@ class _Map
 			$currentMemUsage 	= \memory_get_usage();
 			$memoryLimit 		= intval( ini_get( 'memory_limit' ) );
 
-			$useQueue 			= false;
+			$useQueue 			= FALSE;
 			if ( $memoryLimit > 0 )
 			{
 				$howMuchAreWeGoingToUse = $totalMarkers * 0.01; /* ~0.01MB pr marker */
@@ -400,17 +400,22 @@ class _Map
 
 				if ( $howMuchDoWeHaveLeft < $howMuchAreWeGoingToUse )
 				{
-					$useQueue = true;
+					$useQueue = TRUE;
 				}
 			}
 
 			if ( $totalMarkers > 4000 )
 			{
-				$useQueue = true;
+				$useQueue = TRUE;
 			}
 		}
 
-		if ( $useQueue OR ( defined( 'MEMBERMAP_FORCE_QUEUE' ) and MEMBERMAP_FORCE_QUEUE ) )
+		if ( $useQueue AND defined( 'MEMBERMAP_FORCE_QUEUE' ) AND ! MEMBERMAP_FORCE_QUEUE )
+		{
+			$useQueue = FALSE;
+		}
+
+		if ( $useQueue OR ( defined( 'MEMBERMAP_FORCE_QUEUE' ) AND MEMBERMAP_FORCE_QUEUE ) )
 		{
 			\IPS\Task::queue( 'membermap', 'RebuildCache', array( 'class' => '\IPS\membermap\Map' ), 1, array( 'class' ) );
 			return;
