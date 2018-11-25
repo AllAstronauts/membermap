@@ -150,9 +150,19 @@ class _ajax extends \IPS\Dispatcher\Controller
 		if ( $lat AND $lng )
 		{
 			$apiKey = \IPS\membermap\Application::getApiKeys( 'mapquest' );
+
 			try
 			{
-				$data = \IPS\Http\Url::external( "https://www.mapquestapi.com/geocoding/v1/reverse?key={$apiKey}&lat={$lat}&lng={$lng}" )->request( 15 )->get()->decodeJson();
+				$url = \IPS\Http\Url::external( "https://www.mapquestapi.com/geocoding/v1/reverse" )->setQueryString( 
+							array(
+								'key'				=> $apiKey,
+								'lat' 				=> $lat,
+								'lng' 				=> $lng,
+								'accept-language' 	=> isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : NULL,
+							)
+				);
+
+				$data = $url->request( 15 )->get()->decodeJson();
 			}
 			catch( \Exception $e )
 			{

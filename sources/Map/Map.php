@@ -252,24 +252,31 @@ class _Map
 			return $locCache[ 'cache-' . $locKey ];
 		}
 
-
 		$apiKey = \IPS\membermap\Application::getApiKeys( 'mapquest' );
 
 		if ( $apiKey )
 		{
 			try
 			{
-				$data = \IPS\Http\Url::external( "https://open.mapquestapi.com/nominatim/v1/search.php?key={$apiKey}&format=json&limit=1&q=" . urlencode( $location ) )
-					->request( 15 )
-					->get()
-					->decodeJson();
+				$url 	= \IPS\Http\Url::external( "https://open.mapquestapi.com/nominatim/v1/search.php" )->setQueryString( 
+							array(
+								'key' 				=> $apiKey, 
+								'format' 			=> 'json', 
+								'q' 				=> $location,
+								'accept-language' 	=> isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : NULL,
+								'debug' 			=> 0
+							) 
+				);
+				$data 	= $url->request()->get();
+				$json 	= $data->decodeJson();
 
-				if ( is_array( $data ) AND count( $data ) )
+
+				if ( is_array( $json ) AND count( $json ) )
 				{
 					$locCache[ 'cache-' . $locKey ] = array(
-						'lat'		=> $data[0]['lat'],
-						'lng'		=> $data[0]['lon'],
-						'location'	=> $data[0]['display_name'],
+						'lat'		=> $json[0]['lat'],
+						'lng'		=> $json[0]['lon'],
+						'location'	=> $json[0]['display_name'],
 					);
 
 					return $locCache[ 'cache-' . $locKey ];
@@ -277,7 +284,7 @@ class _Map
 				else
 				{
 					/* No result for this */
-					$locCache[ 'cache-' . $locKey ] = false;
+					return $locCache[ 'cache-' . $locKey ] = false;
 				}
 			}
 			/* \RuntimeException catches BAD_JSON and \IPS\Http\Request\Exception both */
@@ -287,7 +294,7 @@ class _Map
 
 				return false;
 			}
-		}		
+		}
 
 		return false;
 	}
