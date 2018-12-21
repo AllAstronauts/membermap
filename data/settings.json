@@ -92,6 +92,10 @@
         "default": ""
     },
     {
+        "key": "membermap_restrictCountries",
+        "default": ""
+    },
+    {
         "key": "membermap_showMemberList",
         "default": "1"
     },

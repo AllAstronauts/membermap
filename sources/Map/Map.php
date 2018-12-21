@@ -256,17 +256,22 @@ class _Map
 
 		if ( $apiKey )
 		{
+			$queryString = array(
+				'key' 				=> $apiKey, 
+				'format' 			=> 'json', 
+				'q' 				=> $location,
+				'accept-language' 	=> isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : NULL,
+				'debug' 			=> 0
+			);
+
+			if ( mb_strlen( \IPS\Settings::i()->membermap_restrictCountries ) >= 2 )
+			{
+				$queryString['countrycodes'] = \IPS\Settings::i()->membermap_restrictCountries;
+			}
+
 			try
 			{
-				$url 	= \IPS\Http\Url::external( "https://open.mapquestapi.com/nominatim/v1/search.php" )->setQueryString( 
-							array(
-								'key' 				=> $apiKey, 
-								'format' 			=> 'json', 
-								'q' 				=> $location,
-								'accept-language' 	=> isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : NULL,
-								'debug' 			=> 0
-							) 
-				);
+				$url 	= \IPS\Http\Url::external( "https://open.mapquestapi.com/nominatim/v1/search.php" )->setQueryString( $queryString );
 				$data 	= $url->request()->get();
 				$json 	= $data->decodeJson();
 

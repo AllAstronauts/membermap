@@ -173,7 +173,9 @@ $lang = array(
 	'membermap_clubs_showInClubHeader_desc' => "This will open a map that shows the location of the club members that also have a Member Map marker",
 	'membermap_resetmembersync'			=> "Restart sync process",
 	'membermap_resetmembersync_desc'	=> "Re-process all your members who don't already have a Member Map marker?",
-
+	'membermap_restrictCountries'		=> "Limits the location search to specific countries",
+	'membermap_restrictCountries_desc'	=> "This allows you to only get results from the selected countries when searching for a location. Works in both the \"Add Location\" form and profile synchronisation.",
+	'membermap_noRestriction'			=> "--- NO RESTRICTION ---",
 
 	/* ACP Marker Group Settings */
 	'g_membermap_markerColour' 		=> "Marker Colour",
