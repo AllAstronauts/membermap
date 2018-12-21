@@ -115,21 +115,32 @@ class _ajax extends \IPS\Dispatcher\Controller
 		if ( $location )
 		{
 			$apiKey = \IPS\membermap\Application::getApiKeys( 'mapquest' );
-			try
+			
+			if ( $apiKey )
 			{
-				$data = \IPS\Http\Url::external( "https://open.mapquestapi.com/nominatim/v1/search.php" )->setQueryString( 
-					array(
-						'key' => $apiKey, 
-						'format' => 'json', 
-						'q' => $location,
-						'accept-language' => isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : NULL,
-						'debug' => 0
-					) )->request( 15 )->post();
-				$data = $data->decodeJson();
-			}
-			catch( \Exception $e ) 
-			{
-				\IPS\Log::log( $e, 'membermap' );
+				$queryString = array(
+					'key' 				=> $apiKey, 
+					'format' 			=> 'json', 
+					'q' 				=> $location,
+					'accept-language' 	=> isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : NULL,
+					'debug' 			=> 0
+				);
+				
+				if ( mb_strlen( \IPS\Settings::i()->membermap_restrictCountries ) >= 2 )
+				{
+					$queryString['countrycodes'] = \IPS\Settings::i()->membermap_restrictCountries;
+				}
+
+				try
+				{
+					$url 	= \IPS\Http\Url::external( "https://open.mapquestapi.com/nominatim/v1/search.php" )->setQueryString( $queryString );
+					$data 	= $url->request()->get();
+					$data = $data->decodeJson();
+				}
+				catch( \Exception $e ) 
+				{
+					\IPS\Log::log( $e, 'membermap' );
+				}
 			}
 		}
 		
@@ -150,9 +161,19 @@ class _ajax extends \IPS\Dispatcher\Controller
 		if ( $lat AND $lng )
 		{
 			$apiKey = \IPS\membermap\Application::getApiKeys( 'mapquest' );
+
 			try
 			{
-				$data = \IPS\Http\Url::external( "https://www.mapquestapi.com/geocoding/v1/reverse?key={$apiKey}&lat={$lat}&lng={$lng}" )->request( 15 )->get()->decodeJson();
+				$url = \IPS\Http\Url::external( "https://www.mapquestapi.com/geocoding/v1/reverse" )->setQueryString( 
+							array(
+								'key'				=> $apiKey,
+								'lat' 				=> $lat,
+								'lng' 				=> $lng,
+								'accept-language' 	=> isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : NULL,
+							)
+				);
+
+				$data = $url->request( 15 )->get()->decodeJson();
 			}
 			catch( \Exception $e )
 			{

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="150003">
+ <app key="membermap" version="150006">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
   <word key="membermap_clubnavtitle" js="0">Member Map</word>
@@ -125,7 +125,7 @@
   <word key="membermap_profileLocationField_desc" js="0">Select the custom profile field where members enter their location</word>
   <word key="membermap_monitorLocationField_groupPerm" js="0">Enable for</word>
   <word key="membermap_syncLocationField" js="0">Import members without a map marker?</word>
-  <word key="membermap_syncLocationField_desc" js="0">This will import members that have a location set in the profile, but not one in the map. This will turn itself off once all members are processed.</word>
+  <word key="membermap_syncLocationField_desc" js="0"><![CDATA[This will import members that have a location set in the profile, but not one in the map. This will turn itself off once all members are processed.<br><a href='{internal.app=membermap&module=membermap&controller=settings&do=resetMemberSync}'>Restart sync process</a>]]></word>
   <word key="membermap_calendarExt_header" js="0">Calendar Extension</word>
   <word key="membermap_calendarExt" js="0">Enable Calendar Extension?</word>
   <word key="membermap_calendarExt_desc" js="0">When enabled, this will show upcoming events that have specified a location.</word>
@@ -148,6 +148,11 @@
   <word key="membermap_clubs_showClubLocations_desc" js="0"><![CDATA[<a href='{internal.app=core&module=applications&controller=enhancements&do=edit&id=core_GoogleMaps}' target='_blank'>Google Maps integration</a> and <a href='{internal.app=core&module=clubs&controller=settings&searchResult=clubs_locations}' target='_blank'>'Clubs have physical locations?'</a> needs to be enabled for this to work.]]></word>
   <word key="membermap_clubs_showInClubHeader" js="0">Show a link to &quot;Member Map&quot; in the clubs header</word>
   <word key="membermap_clubs_showInClubHeader_desc" js="0">This will open a map that shows the location of the club members that also have a Member Map marker</word>
+  <word key="membermap_resetmembersync" js="0">Restart sync process</word>
+  <word key="membermap_resetmembersync_desc" js="0">Re-process all your members who don't already have a Member Map marker?</word>
+  <word key="membermap_restrictCountries" js="0">Limits the location search to specific countries</word>
+  <word key="membermap_restrictCountries_desc" js="0">This allows you to only get results from the selected countries when searching for a location. Works in both the &quot;Add Location&quot; form and profile synchronisation.</word>
+  <word key="membermap_noRestriction" js="0">--- NO RESTRICTION ---</word>
   <word key="g_membermap_markerColour" js="0">Marker Colour</word>
   <word key="g_membermap_markerColour_desc" js="0">The members own marker will always be green</word>
   <word key="g_membermap_delete_own" js="0">Can delete own markers?</word>

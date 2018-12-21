@@ -67,14 +67,15 @@ class _locationSync extends \IPS\Task
 				$where[] = \IPS\Db::i()->in( 'm.member_group_id', explode( ',', \IPS\Settings::i()->membermap_monitorLocationField_groupPerm ) );
 			}
 
-			$members = \IPS\Db::i()->select( '*', array( 'core_members', 'm' ), $where, 'm.last_activity DESC', array( 0, $limit ) )
+			$members = \IPS\Db::i()->select( '*', array( 'core_members', 'm' ), $where, 'm.last_activity DESC', array( 0, $limit ), NULL, NULL, \IPS\Db::SELECT_SQL_CALC_FOUND_ROWS )
 						->join( array( 'core_pfields_content', 'pf' ), 'pf.member_id=m.member_id' )
 						->join( array( 'membermap_markers', 'mm' ), 'mm.marker_member_id=m.member_id AND mm.marker_parent_id=' . $memberMarkerGroupId );
 
-			
+			$total = $members->count( TRUE );
+
 			foreach( $members as $member )
 			{	
-				$lat = $lng = $location = NULL;
+				$lat = $lng = $location = $_location = NULL;
 
 				$_member = \IPS\Member::constructFromData( $member );
 			
@@ -84,7 +85,7 @@ class _locationSync extends \IPS\Task
 
 				$_location = trim( $member['field_' . $fieldKey ] );
 				
-				if( empty( $_location ) )
+				if( empty( $_location ) OR $_location != "null" )
 				{
 					continue;
 				}
@@ -100,28 +101,41 @@ class _locationSync extends \IPS\Task
 						$lng = floatval( $addressData['long'] );
 					}
 
-					$addressData['addressLines'][] = $addressData['city'];
-
-					if ( count( $addressData['addressLines'] ) )
+					if ( isset( $addressData['city'] ) )
 					{
-						$location = implode( ', ', $addressData['addressLines'] );
+						$addressData['addressLines'][] = $addressData['city'];
+
+						if ( $addressData['postalCode'] )
+						{
+							$addressData['addressLines'][] = $addressData['postalCode'];
+						}
+
+						$addressData['addressLines'][] = $addressData['country'];
+
+						if ( is_array( $addressData['addressLines'] ) AND count( $addressData['addressLines'] ) )
+						{
+							$location = implode( ',', $addressData['addressLines'] );
+						}
 					}
 				}
-				/* It's a text field, or \IPS\Geolocation failed to get coordinates (in which case we won't bother either */
-				else
+
+				if ( $lat === NULL AND $lng === NULL )
 				{
 					/* Remove HTML, newlines, tab, etc, etc */
-					$_location = preg_replace( "/[\\x00-\\x20]|\\xc2|\\xa0+/", ' ', strip_tags( $_location ) );
-					$_location = trim( preg_replace( "/\s\s+/", ' ', $_location ) );
+					if ( $location === NULL )
+					{
+						$_location = preg_replace( "/[\\x00-\\x20]|\\xc2|\\xa0+/", ' ', strip_tags( $_location ) );
+						$_location = trim( preg_replace( "/\s\s+/", ' ', $_location ) );
+					}
 
 					/* To my understanding we're not allowed to use \IPS\Geolocation, as that uses Google API, and we're not showing the info on a Google Map. */
-					$nominatim = \IPS\membermap\Map::i()->getLatLng( $_location );
+					$nominatim = \IPS\membermap\Map::i()->getLatLng( $location ?: $_location );
 
 					if( is_array( $nominatim ) AND count( $nominatim ) )
 					{
 						$lat 		= $nominatim['lat'];
 						$lng 		= $nominatim['lng'];
-						$location 	= $nominatim['location'];
+						$location 	= $location ?: $nominatim['location'];
 					}
 				}
 
@@ -160,10 +174,9 @@ class _locationSync extends \IPS\Task
 			throw new \IPS\Task\Exception( $this, $e->getMessage() );
 		}
 
-		if( $counter > 0 )
+		if( $total > 0 )
 		{
-			$foundRows = $members->count();
-			return "Synchronised {$counter} out of {$foundRows} member locations";
+			return "Synchronised {$counter} out of {$total} member locations";
 		}
 		else
 		{
@@ -171,7 +184,8 @@ class _locationSync extends \IPS\Task
 			$this->save();
 
 			/* Turn the setting off as well */
-			\IPS\Db::i()->update( 'core_sys_conf_settings', array( 'conf_value' => 0 ), array( 'conf_key=?', 'membermap_syncLocationField' ) );
+			//\IPS\Db::i()->update( 'core_sys_conf_settings', array( 'conf_value' => 0 ), array( 'conf_key=?', 'membermap_syncLocationField' ) );
+			\IPS\Settings::i()->changeValues( array( 'membermap_syncLocationField' => 0 ) );
 			unset( \IPS\Data\Store::i()->settings );
 			return;
 		}

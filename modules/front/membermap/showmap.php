@@ -30,6 +30,9 @@ class _showmap extends \IPS\Dispatcher\Controller
 	 */
 	public function execute()
 	{
+		/* Calling this here, as it will throw an error if the key isn't present */
+		\IPS\membermap\Application::getApiKeys( 'mapquest' );
+
 		parent::execute();
 	}
 

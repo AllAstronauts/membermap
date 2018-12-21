@@ -252,24 +252,36 @@ class _Map
 			return $locCache[ 'cache-' . $locKey ];
 		}
 
-
 		$apiKey = \IPS\membermap\Application::getApiKeys( 'mapquest' );
 
 		if ( $apiKey )
 		{
+			$queryString = array(
+				'key' 				=> $apiKey, 
+				'format' 			=> 'json', 
+				'q' 				=> $location,
+				'accept-language' 	=> isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : NULL,
+				'debug' 			=> 0
+			);
+
+			if ( mb_strlen( \IPS\Settings::i()->membermap_restrictCountries ) >= 2 )
+			{
+				$queryString['countrycodes'] = \IPS\Settings::i()->membermap_restrictCountries;
+			}
+
 			try
 			{
-				$data = \IPS\Http\Url::external( "https://open.mapquestapi.com/nominatim/v1/search.php?key={$apiKey}&format=json&limit=1&q=" . urlencode( $location ) )
-					->request( 15 )
-					->get()
-					->decodeJson();
+				$url 	= \IPS\Http\Url::external( "https://open.mapquestapi.com/nominatim/v1/search.php" )->setQueryString( $queryString );
+				$data 	= $url->request()->get();
+				$json 	= $data->decodeJson();
 
-				if ( is_array( $data ) AND count( $data ) )
+
+				if ( is_array( $json ) AND count( $json ) )
 				{
 					$locCache[ 'cache-' . $locKey ] = array(
-						'lat'		=> $data[0]['lat'],
-						'lng'		=> $data[0]['lon'],
-						'location'	=> $data[0]['display_name'],
+						'lat'		=> $json[0]['lat'],
+						'lng'		=> $json[0]['lon'],
+						'location'	=> $json[0]['display_name'],
 					);
 
 					return $locCache[ 'cache-' . $locKey ];
@@ -277,7 +289,7 @@ class _Map
 				else
 				{
 					/* No result for this */
-					$locCache[ 'cache-' . $locKey ] = false;
+					return $locCache[ 'cache-' . $locKey ] = false;
 				}
 			}
 			/* \RuntimeException catches BAD_JSON and \IPS\Http\Request\Exception both */
@@ -287,7 +299,7 @@ class _Map
 
 				return false;
 			}
-		}		
+		}
 
 		return false;
 	}
@@ -340,6 +352,7 @@ class _Map
 		while( TRUE )
 		{
 			$cacheKey = "membermap_cache_{$fileCount}";
+			$fileCount++;
 			if ( isset( \IPS\Data\Store::i()->$cacheKey ) )
 			{
 				unset( \IPS\Data\Store::i()->$cacheKey );
@@ -382,30 +395,39 @@ class _Map
 		/* Trigger the queue if the marker count is too large to do in one go. */
 		/* We'll hardcode the cap at 4000 now, that consumes roughly 50MB */
 		/* We'll also see if we have enough memory available to do it */
+		/* memory_get_usage() may not return a sensible value, so we set the lower entrypoint to even consider using the queue to 1000 */
 
-		$currentMemUsage 	= \memory_get_usage();
-		$memoryLimit 		= intval( ini_get( 'memory_limit' ) );
-
-		$useQueue 			= false;
-		if ( $memoryLimit > 0 )
+		if ( $totalMarkers < 1000 )
 		{
-			$howMuchAreWeGoingToUse = $totalMarkers * 0.01; /* ~0.01MB pr marker */
-			$howMuchAreWeGoingToUse += 10; /* Plus a bit to be safe */
+			$currentMemUsage 	= \memory_get_usage();
+			$memoryLimit 		= intval( ini_get( 'memory_limit' ) );
 
-			$howMuchDoWeHaveLeft = $memoryLimit - ceil( ( $currentMemUsage / 1024 / 1024 ) );
-
-			if ( $howMuchDoWeHaveLeft < $howMuchAreWeGoingToUse )
+			$useQueue 			= FALSE;
+			if ( $memoryLimit > 0 )
 			{
-				$useQueue = true;
+				$howMuchAreWeGoingToUse = $totalMarkers * 0.01; /* ~0.01MB pr marker */
+				$howMuchAreWeGoingToUse += 10; /* Plus a bit to be safe */
+
+				$howMuchDoWeHaveLeft = $memoryLimit - ceil( ( $currentMemUsage / 1024 / 1024 ) );
+
+				if ( $howMuchDoWeHaveLeft < $howMuchAreWeGoingToUse )
+				{
+					$useQueue = TRUE;
+				}
+			}
+
+			if ( $totalMarkers > 4000 )
+			{
+				$useQueue = TRUE;
 			}
 		}
 
-		if ( $totalMarkers > 4000 )
+		if ( $useQueue AND defined( 'MEMBERMAP_FORCE_QUEUE' ) AND ! MEMBERMAP_FORCE_QUEUE )
 		{
-			$useQueue = true;
+			$useQueue = FALSE;
 		}
-		
-		if ( $useQueue OR ( defined( 'MEMBERMAP_FORCE_QUEUE' ) and MEMBERMAP_FORCE_QUEUE ) )
+
+		if ( $useQueue OR ( defined( 'MEMBERMAP_FORCE_QUEUE' ) AND MEMBERMAP_FORCE_QUEUE ) )
 		{
 			\IPS\Task::queue( 'membermap', 'RebuildCache', array( 'class' => '\IPS\membermap\Map' ), 1, array( 'class' ) );
 			return;

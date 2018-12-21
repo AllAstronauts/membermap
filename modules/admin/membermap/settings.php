@@ -54,6 +54,14 @@ class _settings extends \IPS\Dispatcher\Controller
 		$form->addHeader('api_settings');
 		$form->add( new \IPS\Helpers\Form\Text( 'membermap_mapQuestAPI', \IPS\Settings::i()->membermap_mapQuestAPI, TRUE, array(), NULL, NULL, NULL, 'membermap_mapQuestAPI' ) );
 
+		$countries = array( '' => "membermap_noRestriction" );;
+		foreach( \IPS\GeoLocation::$countries as $c )
+		{
+			$countries[ $c ] = "country-{$c}";
+		}
+
+		$form->add( new \IPS\Helpers\Form\Select( 'membermap_restrictCountries', \IPS\Settings::i()->membermap_restrictCountries, FALSE, array( 'options' => $countries, 'multiple' => TRUE ) ) );
+
 		if ( ! empty( \IPS\Settings::i()->membermap_mapQuestAPI ) )
 		{
 			/* Map Settings */
@@ -159,5 +167,19 @@ class _settings extends \IPS\Dispatcher\Controller
 		}
 		
 		\IPS\Output::i()->json( $data );	
+	}
+
+	/**
+	 * Re-process all members
+	 * @return void
+	 */
+	protected function resetMemberSync()
+	{
+		/* Make sure the user confirmed the deletion */
+		\IPS\Request::i()->confirmedDelete( 'membermap_resetmembersync', 'membermap_resetmembersync_desc', 'continue' );
+
+		\IPS\Db::i()->update( 'core_members', "membermap_location_synced=0" );
+		
+		\IPS\Output::i()->redirect( \IPS\Http\Url::internal( "app=membermap&module=membermap&controller=settings" ), 'saved' );
 	}
 }
