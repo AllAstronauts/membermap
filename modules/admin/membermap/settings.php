@@ -54,13 +54,20 @@ class _settings extends \IPS\Dispatcher\Controller
 		$form->addHeader('api_settings');
 		$form->add( new \IPS\Helpers\Form\Text( 'membermap_mapQuestAPI', \IPS\Settings::i()->membermap_mapQuestAPI, TRUE, array(), NULL, NULL, NULL, 'membermap_mapQuestAPI' ) );
 
-		$countries = array( '' => "membermap_noRestriction" );;
+		$countries = array( '*' => "membermap_noRestriction" );;
 		foreach( \IPS\GeoLocation::$countries as $c )
 		{
 			$countries[ $c ] = "country-{$c}";
 		}
-
-		$form->add( new \IPS\Helpers\Form\Select( 'membermap_restrictCountries', \IPS\Settings::i()->membermap_restrictCountries, FALSE, array( 'options' => $countries, 'multiple' => TRUE ) ) );
+		
+		$form->add( 
+			new \IPS\Helpers\Form\Select( 'membermap_restrictCountries', 
+				\IPS\Settings::i()->membermap_restrictCountries != '' ? 
+					( \IPS\Settings::i()->membermap_restrictCountries === '*' ? '*' : explode( ",", \IPS\Settings::i()->membermap_restrictCountries ) ) 
+					: '*', 
+				FALSE, array( 'options' => $countries, 'multiple' => TRUE ) 
+			) 
+		);
 
 		if ( ! empty( \IPS\Settings::i()->membermap_mapQuestAPI ) )
 		{
@@ -136,6 +143,10 @@ class _settings extends \IPS\Dispatcher\Controller
 
 			\IPS\DB::i()->update( 'core_tasks', array( 'enabled' => isset( $values['membermap_syncLocationField'] ) AND $values['membermap_syncLocationField'] ? 1 : 0 ), array( '`key`=?', 'locationSync' ) );
 
+			if ( mb_strpos( $values['membermap_restrictCountries'], '*' ) !== FALSE AND mb_strlen( $values['membermap_restrictCountries'] ) >= 3 )
+			{
+				$values['membermap_restrictCountries'] = str_replace( '*,', '', $values['membermap_restrictCountries'] );
+			}
 
 			$form->saveAsSettings( $values );
 			\IPS\membermap\Map::i()->invalidateJsonCache();
