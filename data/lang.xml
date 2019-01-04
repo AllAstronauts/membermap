@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="150006">
+ <app key="membermap" version="150007">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
   <word key="membermap_clubnavtitle" js="0">Member Map</word>

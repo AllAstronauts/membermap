@@ -85,7 +85,7 @@ class _locationSync extends \IPS\Task
 
 				$_location = trim( $member['field_' . $fieldKey ] );
 				
-				if( empty( $_location ) OR $_location != "null" )
+				if( empty( $_location ) OR $_location == "null" )
 				{
 					continue;
 				}
