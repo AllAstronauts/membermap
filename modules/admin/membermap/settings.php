@@ -104,10 +104,13 @@ class _settings extends \IPS\Dispatcher\Controller
 				array( 'togglesOn' => array( 'membermap_profileLocationField', 'membermap_monitorLocationField_groupPerm', 'membermap_syncLocationField' ) ) 
 			) );
 
-			$form->add( new \IPS\Helpers\Form\Select( 
-				'membermap_profileLocationField', 
-				\IPS\Settings::i()->membermap_profileLocationField ? intval( \IPS\Settings::i()->membermap_profileLocationField ) : NULL, 
-				FALSE, array( 'options' => $profileFields ), NULL, NULL, NULL, 'membermap_profileLocationField' 
+			$value = \IPS\Settings::i()->membermap_profileLocationField ? explode( ',', \IPS\Settings::i()->membermap_profileLocationField ) : NULL;
+			$value = is_array( $value ) ? array_map( 'intval', $value ) : $value;
+
+			$form->add( new \IPS\Helpers\Form\Stack( 
+				'membermap_profileLocationField',
+				$value, 
+				FALSE, array( 'stackFieldType' => 'Select', 'options' => $profileFields ), NULL, NULL, NULL, 'membermap_profileLocationField' 
 			) );
 
 			$form->add( new \IPS\Helpers\Form\Select(

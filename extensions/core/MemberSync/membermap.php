@@ -141,13 +141,27 @@ class _membermap
 			}
 		}
 
-		if ( is_array( $changes ) AND count( $changes ) AND \IPS\Settings::i()->membermap_monitorLocationField AND ! $member->members_bitoptions['bw_is_spammer'] )
+		if ( is_array( $changes ) AND count( $changes ) AND \IPS\Settings::i()->membermap_monitorLocationField AND ! $member->members_bitoptions['bw_is_spammer'] AND count( explode( ',', \IPS\Settings::i()->membermap_profileLocationField ) ) )
 		{
-			if( \IPS\Settings::i()->membermap_monitorLocationField_groupPerm === '*' or \IPS\Member::loggedIn()->inGroup( explode( ',', \IPS\Settings::i()->membermap_monitorLocationField_groupPerm ) ) )
+			if ( \IPS\Settings::i()->membermap_monitorLocationField_groupPerm === '*' or \IPS\Member::loggedIn()->inGroup( explode( ',', \IPS\Settings::i()->membermap_monitorLocationField_groupPerm ) ) )
 			{
-				$fieldValue = isset( $changes['field_' . \IPS\Settings::i()->membermap_profileLocationField ] ) ? $changes['field_' . \IPS\Settings::i()->membermap_profileLocationField ] : "";
+				$_fields 	= array_map( 'intval', explode( ',', \IPS\Settings::i()->membermap_profileLocationField ) );
+				$fieldValue = NULL;
 
-				if ( isset( $fieldValue ) AND ! empty( $fieldValue ) AND $fieldValue != "null" )
+				foreach( $_fields as $fieldKey )
+				{
+					if ( isset( $changes['field_' . $fieldKey ] ) )
+					{
+						$fieldValue = trim( $changes['field_' . $fieldKey ] );
+					
+						if ( ! empty( $fieldValue ) AND $fieldValue != "null" )
+						{
+							break;
+						}
+					}
+				}
+
+				if ( $fieldValue !== NULL AND ! empty( $fieldValue ) AND $fieldValue != "null" )
 				{
 					try
 					{
