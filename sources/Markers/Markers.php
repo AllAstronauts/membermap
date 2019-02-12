@@ -427,40 +427,41 @@ class _Markers extends \IPS\Content\Item implements
 	 *
 	 * @param	\IPS\Member		$member		The member posting
 	 * @param	\IPS\Node\Model	$container	The container
+	 * @param	bool			$considerPostBeforeRegistering	If TRUE, and $member is a guest, will check if a newly registered member would be moderated
 	 * @return	bool
 	 */
-	public static function moderateNewItems( \IPS\Member $member, \IPS\Node\Model $container = NULL )
+	public static function moderateNewItems( \IPS\Member $member, \IPS\Node\Model $container = NULL, $considerPostBeforeRegistering = FALSE )
 	{
 		if ( $container and $container->moderate and !$member->group['g_avoid_q'] )
 		{
 			return TRUE;
 		}
 		
-		return parent::moderateNewItems( $member, $container );
+		return parent::moderateNewItems( $member, $container, $considerPostBeforeRegistering );
 	}
 
 	/**
 	 * Should new comments be moderated?
 	 *
-	 * @param	\IPS\Member	$member	The member posting
+	 * @param	\IPS\Member	$member							The member posting
+	 * @param	bool		$considerPostBeforeRegistering	If TRUE, and $member is a guest, will check if a newly registered member would be moderated
 	 * @return	bool
 	 */
-	public function moderateNewComments( \IPS\Member $member )
+	public function moderateNewComments( \IPS\Member $member, $considerPostBeforeRegistering = FALSE )
 	{
-		$commentClass = static::$commentClass;
-		return ( $this->container()->comment_moderate and !$member->group['g_avoid_q'] ) or parent::moderateNewComments( $member );
+		return ( $this->container()->comment_moderate and !$member->group['g_avoid_q'] ) or parent::moderateNewComments( $member, $considerPostBeforeRegistering );
 	}
 
 	/**
 	 * Should new reviews be moderated?
 	 *
-	 * @param	\IPS\Member	$member	The member posting
+	 * @param	\IPS\Member	$member							The member posting
+	 * @param	bool		$considerPostBeforeRegistering	If TRUE, and $member is a guest, will check if a newly registered member would be moderated
 	 * @return	bool
 	 */
-	public function moderateNewReviews( \IPS\Member $member )
+	public function moderateNewReviews( \IPS\Member $member, $considerPostBeforeRegistering = FALSE )
 	{
-		$reviewClass = static::$reviewClass;
-		return ( $this->container()->review_moderate and !$member->group['g_avoid_q'] ) or parent::moderateNewReviews( $member );
+		return ( $this->container()->review_moderate and !$member->group['g_avoid_q'] ) or parent::moderateNewReviews( $member, $considerPostBeforeRegistering );
 	}
 
 	/**
@@ -504,25 +505,27 @@ class _Markers extends \IPS\Content\Item implements
 	/**
 	 * Can comment?
 	 *
-	 * @param	\IPS\Member\NULL	$member	The member (NULL for currently logged in member)
+	 * @param	\IPS\Member\NULL	$member							The member (NULL for currently logged in member)
+	 * @param	bool				$considerPostBeforeRegistering	If TRUE, and $member is a guest, will return TRUE if "Post Before Registering" feature is enabled
 	 * @return	bool
 	 */
-	public function canComment( $member=NULL )
+	public function canComment( $member=NULL, $considerPostBeforeRegistering = TRUE )
 	{
 		$member = $member ?: \IPS\Member::loggedIn();
-		return parent::canComment( $member ) and $this->container()->allow_comments;
+		return parent::canComment( $member, $considerPostBeforeRegistering ) and $this->container()->allow_comments;
 	}
 
 	/**
 	 * Can review?
 	 *
-	 * @param	\IPS\Member\NULL	$member	The member (NULL for currently logged in member)
+	 * @param	\IPS\Member\NULL	$member							The member (NULL for currently logged in member)
+	 * @param	bool				$considerPostBeforeRegistering	If TRUE, and $member is a guest, will return TRUE if "Post Before Registering" feature is enabled
 	 * @return	bool
 	 */
-	public function canReview( $member = NULL )
+	public function canReview( $member=NULL, $considerPostBeforeRegistering = TRUE )
 	{
 		$member = $member ?: \IPS\Member::loggedIn();
-		return parent::canReview( $member ) and $this->container()->allow_reviews;
+		return parent::canReview( $member, $considerPostBeforeRegistering ) and $this->container()->allow_reviews;
 	}
 
 	/**

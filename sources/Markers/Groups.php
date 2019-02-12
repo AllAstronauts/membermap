@@ -415,14 +415,15 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 	/**
 	 * Check permissions
 	 *
-	 * @param	mixed								$permission		A key which has a value in static::$permissionMap['view'] matching a column ID in core_permission_index
-	 * @param	\IPS\Member|\IPS\Member\Group|NULL	$member			The member or group to check (NULL for currently logged in member)
+	 * @param	mixed								$permission						A key which has a value in static::$permissionMap['view'] matching a column ID in core_permission_index
+	 * @param	\IPS\Member|\IPS\Member\Group|NULL	$member							The member or group to check (NULL for currently logged in member)
+	 * @param	bool								$considerPostBeforeRegistering	If TRUE, and $member is a guest, will return TRUE if "Post Before Registering" feature is enabled
 	 * @return	bool
 	 * @throws	\OutOfBoundsException	If $permission does not exist in static::$permissionMap
 	 */
-	public function can( $permission, $member=NULL )
+	public function can( $permission, $member=NULL, $considerPostBeforeRegistering = TRUE )
 	{
-		$parent = parent::can( $permission, $member );
+		$parent = parent::can( $permission, $member, $considerPostBeforeRegistering );
 
 		if( $parent === TRUE )
 		{
