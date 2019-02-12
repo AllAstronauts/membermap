@@ -12,7 +12,7 @@
 namespace IPS\membermap\tasks;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
 	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
 	exit;
@@ -41,7 +41,7 @@ class _locationSync extends \IPS\Task
 			return NULL;
 		}
 
-		if ( ! \IPS\Settings::i()->membermap_syncLocationField OR ! \IPS\Settings::i()->membermap_monitorLocationField OR ! count( explode( ',', \IPS\Settings::i()->membermap_profileLocationField ) ) )
+		if ( ! \IPS\Settings::i()->membermap_syncLocationField OR ! \IPS\Settings::i()->membermap_monitorLocationField OR ! \count( explode( ',', \IPS\Settings::i()->membermap_profileLocationField ) ) )
 		{
 			$this->enabled = FALSE;
 			$this->save();
@@ -105,14 +105,14 @@ class _locationSync extends \IPS\Task
 				}
 
 				/* If it's an array, it might be from an address field, which already have the lat/lng data */
-				if( is_array( json_decode( $_location, TRUE ) ) )
+				if( \is_array( json_decode( $_location, TRUE ) ) )
 				{
 					$addressData = json_decode( $_location, TRUE );
 
-					if ( is_float( $addressData['lat'] ) AND is_float( $addressData['long'] ) )
+					if ( \is_float( $addressData['lat'] ) AND \is_float( $addressData['long'] ) )
 					{
-						$lat = floatval( $addressData['lat'] );
-						$lng = floatval( $addressData['long'] );
+						$lat = \floatval( $addressData['lat'] );
+						$lng = \floatval( $addressData['long'] );
 					}
 
 					if ( isset( $addressData['city'] ) )
@@ -126,7 +126,7 @@ class _locationSync extends \IPS\Task
 
 						$addressData['addressLines'][] = $addressData['country'];
 
-						if ( is_array( $addressData['addressLines'] ) AND count( $addressData['addressLines'] ) )
+						if ( \is_array( $addressData['addressLines'] ) AND \count( $addressData['addressLines'] ) )
 						{
 							$location = implode( ',', $addressData['addressLines'] );
 						}
@@ -145,7 +145,7 @@ class _locationSync extends \IPS\Task
 					/* To my understanding we're not allowed to use \IPS\Geolocation, as that uses Google API, and we're not showing the info on a Google Map. */
 					$nominatim = \IPS\membermap\Map::i()->getLatLng( $location ?: $_location );
 
-					if( is_array( $nominatim ) AND count( $nominatim ) )
+					if( \is_array( $nominatim ) AND \count( $nominatim ) )
 					{
 						$lat 		= $nominatim['lat'];
 						$lng 		= $nominatim['lng'];

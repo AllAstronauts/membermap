@@ -13,7 +13,7 @@
 		<ul class='ipsForm ipsForm_vertical'>
 			{{foreach $elements as $collection}}
 				{{foreach $collection as $inputName => $input}}
-					{{if in_array( $inputName, array( 'marker_title', 'marker_description' ) )}}
+					{{if \in_array( $inputName, array( 'marker_title', 'marker_description' ) )}}
 						{$input|raw}
 					{{endif}}
 				{{endforeach}}
@@ -26,7 +26,7 @@
 				<ul class='ipsForm ipsPad ipsForm_vertical'>
 					{{foreach $elements as $collection}}
 						{{foreach $collection as $inputName => $input}}
-							{{if ! in_array( $inputName, array( 'marker_title', 'marker_description' ) )}}
+							{{if ! \in_array( $inputName, array( 'marker_title', 'marker_description' ) )}}
 								{$input|raw}
 							{{endif}}
 						{{endforeach}}

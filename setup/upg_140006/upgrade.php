@@ -13,7 +13,7 @@
 namespace IPS\membermap\setup\upg_140006;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
 	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
 	exit;
@@ -31,11 +31,11 @@ class _Upgrade
 	 */
 	public function step1()
 	{
-		if ( is_dir( \IPS\ROOT_PATH . '/datastore/membermap_cache' ) )
+		if ( \is_dir( \IPS\ROOT_PATH . '/datastore/membermap_cache' ) )
 		{
 			foreach( glob( \IPS\ROOT_PATH . '/datastore/membermap_cache/*' ) as $file )
 			{
-				if ( is_file( $file ) )
+				if ( \is_file( $file ) )
 				{
 					@unlink( $file );
 				}

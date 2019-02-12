@@ -1,7 +1,7 @@
 <ips:template parameters="$indexData, $articles, $authorData, $itemData, $unread, $objectUrl, $itemUrl, $containerUrl, $containerTitle, $repCount, $showRepUrl, $snippet, $iPostedIn, $view, $canIgnoreComments=FALSE" />
 <li class='ipsStreamItem ipsStreamItem_contentBlock ipsStreamItem_{$view} ipsAreaBackground_reset ipsPad {{if $indexData['index_hidden']}}ipsModerated{{endif}}' data-role='activityItem' data-timestamp='{$indexData['index_date_created']}'>
 	<div class='ipsStreamItem_container ipsClearfix'>
-		{{if in_array( 'IPS\Content\Comment', class_parents( $indexData['index_class'] ) )}}
+		{{if \in_array( 'IPS\Content\Comment', class_parents( $indexData['index_class'] ) )}}
 			{{$itemClass = $indexData['index_class']::$itemClass;}}
 			<div class='ipsStreamItem_header ipsPhotoPanel ipsPhotoPanel_mini'>
 				{{if $indexData['index_title']}}
@@ -42,7 +42,7 @@
 					</h2>
 					{{if $view != 'condensed'}}
 						<p class='ipsType_reset ipsStreamItem_status ipsType_light ipsType_blendLinks'>
-							{{if in_array( 'IPS\Content\Review', class_parents( $indexData['index_class'] ) )}}
+							{{if \in_array( 'IPS\Content\Review', class_parents( $indexData['index_class'] ) )}}
 								{{if isset( $itemData['author'] )}}
 									{lang="ft_user_other_activity_review" sprintf="$authorData['name'], $itemData['author']['name'], $articles['definite']"}
 								{{else}}
@@ -71,7 +71,7 @@
 					{{else}}
 						<ul class='ipsList_inline ipsStreamItem_stats ipsType_light ipsType_blendLinks'>
 							<li>
-								<a href='{{if $indexData['index_title']}}{$objectUrl}{{else}}{{if in_array( 'IPS\Content\Review', class_parents( $indexData['index_class'] ) )}}{$objectUrl->setQueryString( array( 'do' => 'findReview', 'review' => $indexData['index_object_id'] ) )}{{else}}{$objectUrl->setQueryString( array( 'do' => 'findComment', 'comment' => $indexData['index_object_id'] ) )}{{endif}}{{endif}}' class='ipsType_blendLinks'><i class='fa fa-clock-o'></i> {datetime="$indexData['index_date_created']"}</a>
+								<a href='{{if $indexData['index_title']}}{$objectUrl}{{else}}{{if \in_array( 'IPS\Content\Review', class_parents( $indexData['index_class'] ) )}}{$objectUrl->setQueryString( array( 'do' => 'findReview', 'review' => $indexData['index_object_id'] ) )}{{else}}{$objectUrl->setQueryString( array( 'do' => 'findComment', 'comment' => $indexData['index_object_id'] ) )}{{endif}}{{endif}}' class='ipsType_blendLinks'><i class='fa fa-clock-o'></i> {datetime="$indexData['index_date_created']"}</a>
 							</li>
 							{{if isset( $itemClass::$databaseColumnMap['num_comments'] ) and isset( $itemData[ $itemClass::$databasePrefix . $itemClass::$databaseColumnMap['num_comments'] ] ) and $itemData[ $itemClass::$databasePrefix . $itemClass::$databaseColumnMap['num_comments'] ] > ( $itemClass::$firstCommentRequired ? 1 : 0 )}}
 								<li>
@@ -92,7 +92,7 @@
 						</ul>
 
 						<p class='ipsStreamItem_status ipsType_reset ipsType_blendLinks'>
-							{{if in_array( 'IPS\Content\Review', class_parents( $indexData['index_class'] ) )}}
+							{{if \in_array( 'IPS\Content\Review', class_parents( $indexData['index_class'] ) )}}
 								{{if isset( $itemData['author'] )}}
 									{lang="ft_user_other_activity_review" sprintf="$authorData['name'], $itemData['author']['name'], $articles['definite']"} 
 								{{else}}
@@ -150,7 +150,7 @@
 				</div>
 				<ul class='ipsList_inline ipsStreamItem_meta'>
 					<li class='ipsType_light ipsType_medium'>
-						<a href='{{if $indexData['index_title']}}{$objectUrl}{{else}}{{if in_array( 'IPS\Content\Review', class_parents( $indexData['index_class'] ) )}}{$objectUrl->setQueryString( array( 'do' => 'findReview', 'review' => $indexData['index_object_id'] ) )}{{else}}{$objectUrl->setQueryString( array( 'do' => 'findComment', 'comment' => $indexData['index_object_id'] ) )}{{endif}}{{endif}}' class='ipsType_blendLinks'><i class='fa fa-clock-o'></i> {datetime="$indexData['index_date_created']"}</a>
+						<a href='{{if $indexData['index_title']}}{$objectUrl}{{else}}{{if \in_array( 'IPS\Content\Review', class_parents( $indexData['index_class'] ) )}}{$objectUrl->setQueryString( array( 'do' => 'findReview', 'review' => $indexData['index_object_id'] ) )}{{else}}{$objectUrl->setQueryString( array( 'do' => 'findComment', 'comment' => $indexData['index_object_id'] ) )}{{endif}}{{endif}}' class='ipsType_blendLinks'><i class='fa fa-clock-o'></i> {datetime="$indexData['index_date_created']"}</a>
 					</li>
 					{{if isset( $itemClass::$databaseColumnMap['num_comments'] ) and isset( $itemData[ $itemClass::$databasePrefix . $itemClass::$databaseColumnMap['num_comments'] ] ) and $itemData[ $itemClass::$databasePrefix . $itemClass::$databaseColumnMap['num_comments'] ] > ( $itemClass::$firstCommentRequired ? 1 : 0 )}}
 						<li class='ipsType_light ipsType_medium'>
@@ -163,7 +163,7 @@
 							</a>
 						</li>
 					{{endif}}
-					{{if in_array( 'IPS\Content\Reputation', class_implements( $indexData['index_class'] ) ) and settings.reputation_enabled && $repCount}}
+					{{if \in_array( 'IPS\Content\Reputation', class_implements( $indexData['index_class'] ) ) and settings.reputation_enabled && $repCount}}
 						<li class='ipsType_light ipsType_medium'>{template="reputationMini" group="global" app="core" params="$repCount, FALSE, FALSE, $showRepUrl, NULL"}</li>
 					{{endif}}
 					{{if isset( $indexData['index_tags'] )}}
@@ -259,7 +259,7 @@
 							<a href='{$itemUrl}#reviews' class='ipsType_blendLinks'><i class='fa fa-star-half-o'></i> {lang="num_reviews" pluralize="$itemData[ $indexData['index_class']::$databasePrefix . $indexData['index_class']::$databaseColumnMap['num_reviews'] ]"}</a>
 						</li>
 					{{endif}}
-					{{if in_array( 'IPS\Content\Reputation', class_implements( $indexData['index_class'] ) ) and settings.reputation_enabled and $repCount}}
+					{{if \in_array( 'IPS\Content\Reputation', class_implements( $indexData['index_class'] ) ) and settings.reputation_enabled and $repCount}}
 						<li class='ipsType_light ipsType_medium'>{template="reputationMini" group="global" app="core" params="$repCount, FALSE, FALSE, $showRepUrl, NULL"}</li>
 					{{endif}}
 					{{if isset( $indexData['index_tags'] )}}

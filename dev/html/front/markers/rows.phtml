@@ -1,5 +1,5 @@
 <ips:template parameters="$table, $headers, $markers" />
-{{if is_array( $markers ) AND count( $markers )}}
+{{if \is_array( $markers ) AND \count( $markers )}}
 	{{foreach $markers as $marker}}
 		{{$idField = $marker::$databaseColumnId;}}
 		<li class='ipsDataItem {{if $marker->unread()}}ipsDataItem_unread{{endif}} {{if method_exists( $marker, 'tableClass' ) && $marker->tableClass()}}ipsDataItem_{$marker->tableClass()}{{endif}} {{if $marker->hidden()}}ipsModerated{{endif}}'>
@@ -7,10 +7,10 @@
 				<div class='ipsDataItem_icon ipsPos_top'>
 					{{if $marker->unread()}}
 						<a href='{$marker->url( 'getNewComment' )}' title='{lang="first_unread_post"}' data-ipsTooltip>
-							<span class='ipsItemStatus'><i class="fa {{if in_array( $marker->$idField, $table->contentPostedIn )}}fa-star{{else}}fa-circle{{endif}}"></i></span>
+							<span class='ipsItemStatus'><i class="fa {{if \in_array( $marker->$idField, $table->contentPostedIn )}}fa-star{{else}}fa-circle{{endif}}"></i></span>
 						</a>
 					{{else}}
-						{{if in_array( $marker->$idField, $table->contentPostedIn )}}
+						{{if \in_array( $marker->$idField, $table->contentPostedIn )}}
 							<span class='ipsItemStatus ipsItemStatus_read ipsItemStatus_posted'><i class="fa fa-star"></i></span>
 						{{else}}
 							&nbsp;

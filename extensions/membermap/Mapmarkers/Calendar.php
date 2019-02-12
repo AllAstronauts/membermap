@@ -12,7 +12,7 @@
 namespace IPS\membermap\extensions\membermap\Mapmarkers;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
 	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
 	exit;
@@ -72,7 +72,7 @@ class _Calendar
 		$bgColour 	= \IPS\Settings::i()->membermap_calendar_bgcolour ?: 'red';
 
 		/* Selected a valid colour? */
-		$bgColour = in_array( $bgColour, $colours ) ? $bgColour : 'red';
+		$bgColour = \in_array( $bgColour, $colours ) ? $bgColour : 'red';
 		
 		$radioOpt = array();
 		foreach( $colours as $c )
@@ -125,7 +125,7 @@ class _Calendar
 		}
 
 		$startDate	= new \IPS\membermap\CalendarDateTime( "now",  NULL );
-		$endDate	= $startDate->adjust( "+" . intval( \IPS\Settings::i()->membermap_calendar_days_ahead ) . " days" );
+		$endDate	= $startDate->adjust( "+" . \intval( \IPS\Settings::i()->membermap_calendar_days_ahead ) . " days" );
 
 		/* Get timezone adjusted versions of start/end time */
 		$startDateTimezone	= \IPS\membermap\CalendarDateTime::parseTime( $startDate->mysqlDatetime() );
@@ -219,7 +219,7 @@ class _Calendar
 			$occurrences	= $event->findOccurrences( $startDate, $thisEndDate );
 
 			/* Do we have any? */
-			if( count( $occurrences ) )
+			if( \count( $occurrences ) )
 			{
 				$formattedEvents[]	= $event;
 			}
@@ -247,7 +247,7 @@ class _Calendar
 		} );
 
 		$return = array();
-		if ( is_array( $formattedEvents ) AND count( $formattedEvents ) )
+		if ( \is_array( $formattedEvents ) AND \count( $formattedEvents ) )
 		{
 			$appName = \IPS\Lang::load( \IPS\Lang::defaultLanguage() )->get( 'frontnavigation_calendar' );
 			
@@ -338,7 +338,7 @@ class _Calendar
 	{
 		try
 		{
-			$event = \IPS\calendar\Event::load( intval( $id ) );
+			$event = \IPS\calendar\Event::load( \intval( $id ) );
 
 			$startDate	= new \IPS\membermap\CalendarDateTime( "now",  NULL );
 

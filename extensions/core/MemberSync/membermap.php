@@ -12,7 +12,7 @@
 namespace IPS\membermap\extensions\core\MemberSync;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
 	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
 	exit;
@@ -141,7 +141,7 @@ class _membermap
 			}
 		}
 
-		if ( is_array( $changes ) AND count( $changes ) AND \IPS\Settings::i()->membermap_monitorLocationField AND ! $member->members_bitoptions['bw_is_spammer'] AND count( explode( ',', \IPS\Settings::i()->membermap_profileLocationField ) ) )
+		if ( \is_array( $changes ) AND \count( $changes ) AND \IPS\Settings::i()->membermap_monitorLocationField AND ! $member->members_bitoptions['bw_is_spammer'] AND \count( explode( ',', \IPS\Settings::i()->membermap_profileLocationField ) ) )
 		{
 			if ( \IPS\Settings::i()->membermap_monitorLocationField_groupPerm === '*' or \IPS\Member::loggedIn()->inGroup( explode( ',', \IPS\Settings::i()->membermap_monitorLocationField_groupPerm ) ) )
 			{
@@ -168,19 +168,19 @@ class _membermap
 						$lat = $lng = $location = NULL;
 
 						/* If it's an array, it might be from an address field, which already have the lat/lng data */
-						if( is_array( json_decode( $fieldValue, TRUE ) ) )
+						if( \is_array( json_decode( $fieldValue, TRUE ) ) )
 						{
 							$addressData = json_decode( $fieldValue, TRUE );
 
-							if ( isset( $addressData['lat'] ) AND is_float( $addressData['lat'] ) AND is_float( $addressData['long'] ) )
+							if ( isset( $addressData['lat'] ) AND \is_float( $addressData['lat'] ) AND \is_float( $addressData['long'] ) )
 							{
-								$lat = floatval( $addressData['lat'] );
-								$lng = floatval( $addressData['long'] );
+								$lat = \floatval( $addressData['lat'] );
+								$lng = \floatval( $addressData['long'] );
 							}
 
 							$addressData['addressLines'][] = $addressData['city'];
 
-							if ( is_array( $addressData['addressLines'] ) AND count( $addressData['addressLines'] ) )
+							if ( \is_array( $addressData['addressLines'] ) AND \count( $addressData['addressLines'] ) )
 							{
 								$location = implode( ', ', $addressData['addressLines'] );
 							}
@@ -199,7 +199,7 @@ class _membermap
 							/* To my understanding we're not allowed to use \IPS\Geolocation, as that uses Google API, and we're not showing the info on a Google Map. */
 							$nominatim = \IPS\membermap\Map::i()->getLatLng( $location ?: $fieldValue );
 
-							if( is_array( $nominatim ) AND count( $nominatim ) )
+							if( \is_array( $nominatim ) AND \count( $nominatim ) )
 							{
 								$lat 		= $nominatim['lat'];
 								$lng 		= $nominatim['lng'];

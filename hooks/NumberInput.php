@@ -17,11 +17,11 @@ class membermap_hook_NumberInput extends _HOOK_CLASS_
 {
 	public function formatValue()
 	{
-		if ( in_array( $this->htmlId, array( 'marker_lat', 'marker_lon' ) ) )
+		if ( \in_array( $this->htmlId, array( 'marker_lat', 'marker_lon' ) ) )
 		{
 			$value = $this->value;
 
-			$value = floatval( $value );
+			$value = \floatval( $value );
 
 			$value = round( $value, 6 );
 
@@ -31,7 +31,7 @@ class membermap_hook_NumberInput extends _HOOK_CLASS_
 
 			
 			/* If it's not numeric, throw an exception */
-			if ( ( !is_numeric( $value ) and $value !== '' and $this->required === FALSE ) or ( !is_numeric( $value ) and $this->required === TRUE ) )
+			if ( ( !\is_numeric( $value ) and $value !== '' and $this->required === FALSE ) or ( !\is_numeric( $value ) and $this->required === TRUE ) )
 			{
 				throw new \InvalidArgumentException( 'form_number_bad' );
 			}

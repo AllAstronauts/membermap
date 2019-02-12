@@ -12,7 +12,7 @@
 namespace IPS\membermap\Markers;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
 	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
 	exit;
@@ -646,7 +646,7 @@ class _Markers extends \IPS\Content\Item implements
 		$attachments[] = array( 'membermap_MarkerStaticMap' => $this->embedimage );
 		
 		
-		return count( $attachments ) ? $attachments : NULL;
+		return \count( $attachments ) ? $attachments : NULL;
 	}
 
 	/**
@@ -680,7 +680,7 @@ class _Markers extends \IPS\Content\Item implements
 	public static function getChildren( $groupId=0 )
 	{
 		$children = array();
-		foreach( \IPS\Db::i()->select( '*', static::$databaseTable, array( static::$databasePrefix . 'parent_id=?', intval( $groupId ) ), static::$databasePrefix . 'name ASC' ) as $child )
+		foreach( \IPS\Db::i()->select( '*', static::$databaseTable, array( static::$databasePrefix . 'parent_id=?', \intval( $groupId ) ), static::$databasePrefix . 'name ASC' ) as $child )
 		{
 			$children[ $child[ static::$databasePrefix . static::$databaseColumnId ] ] = static::load( $child[ static::$databasePrefix . static::$databaseColumnId ] );
 		}

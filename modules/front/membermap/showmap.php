@@ -12,7 +12,7 @@
 namespace IPS\membermap\modules\front\membermap;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
 	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
 	exit;
@@ -70,12 +70,12 @@ class _showmap extends \IPS\Dispatcher\Controller
 		$cacheTime 	= isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
 
 		/* Get by user */
-		if ( \IPS\Request::i()->filter == 'getByUser' AND intval( \IPS\Request::i()->member_id ) )
+		if ( \IPS\Request::i()->filter == 'getByUser' AND \intval( \IPS\Request::i()->member_id ) )
 		{
-			$markers = \IPS\membermap\Map::i()->getMarkerByMember( intval( \IPS\Request::i()->member_id ) );
+			$markers = \IPS\membermap\Map::i()->getMarkerByMember( \intval( \IPS\Request::i()->member_id ) );
 		}
 		/* Get club member markers */
-		else if ( \IPS\Settings::i()->clubs AND \IPS\Request::i()->filter == 'showClub' AND $clubId = intval( \IPS\Request::i()->clubId ) )
+		else if ( \IPS\Settings::i()->clubs AND \IPS\Request::i()->filter == 'showClub' AND $clubId = \intval( \IPS\Request::i()->clubId ) )
 		{
 			if ( \IPS\Settings::i()->membermap_clubs_showInClubHeader )
 			{
@@ -86,7 +86,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 						$club = \IPS\Member\Club::load( $clubId );
 						$markers = \IPS\membermap\Map::i()->getClubMemberMarkers( $club );
 
-						if ( is_array( $markers ) AND count( $markers ) > 0 )
+						if ( \is_array( $markers ) AND \count( $markers ) > 0 )
 						{
 							\IPS\core\FrontNavigation::$clubTabActive = TRUE;
 							\IPS\Output::i()->breadcrumb = array();
@@ -146,7 +146,7 @@ class _showmap extends \IPS\Dispatcher\Controller
         	'membermap_canDelete'			=> $canDelete ?: 0,
         	'membermap_cacheTime'			=> $cacheTime,
 			'membermap_bbox'				=> json_decode( \IPS\Settings::i()->membermap_bbox ),
-			'membermap_bbox_zoom'			=> intval( \IPS\Settings::i()->membermap_bbox_zoom ),
+			'membermap_bbox_zoom'			=> \intval( \IPS\Settings::i()->membermap_bbox_zoom ),
 			'membermap_defaultMaps'			=> $defaultMaps,
 			'membermap_enable_clustering' 	=> \IPS\Settings::i()->membermap_enable_clustering == 1 ? 1 : 0,
 			'membermap_groupByMemberGroup'	=> \IPS\Settings::i()->membermap_groupByMemberGroup == 1 ? 1 : 0,
@@ -162,7 +162,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 		</script>
 EOF;
 
-		if ( \IPS\Settings::i()->membermap_showMemberList AND count( $markers ) !== 1 )
+		if ( \IPS\Settings::i()->membermap_showMemberList AND \count( $markers ) !== 1 )
 		{
 			\IPS\Output::i()->sidebar['contextual'] = ( isset( \IPS\Output::i()->sidebar['contextual'] ) ? \IPS\Output::i()->sidebar['contextual'] : "" ) . \IPS\Theme::i()->getTemplate( 'map' )->memberList();
 		}
@@ -279,13 +279,13 @@ EOF;
 	{
 		\IPS\Session::i()->csrfCheck();
 
-		if ( ! \IPS\Member::loggedIn()->member_id OR ! intval( \IPS\Request::i()->member_id ) )
+		if ( ! \IPS\Member::loggedIn()->member_id OR ! \intval( \IPS\Request::i()->member_id ) )
 		{
 			\IPS\Output::i()->error( 'no_permission', '2MM3/4', 403, '' );
 		}
 
 		/* Get the marker */
-		$existing = \IPS\membermap\Map::i()->getMarkerByMember( intval( \IPS\Request::i()->member_id ), FALSE );
+		$existing = \IPS\membermap\Map::i()->getMarkerByMember( \intval( \IPS\Request::i()->member_id ), FALSE );
 
 		if ( isset( $existing ) AND $existing->canDelete() )
 		{

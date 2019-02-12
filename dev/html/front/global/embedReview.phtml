@@ -6,7 +6,7 @@
 	<div class='ipsPad'>
 		<div class='ipsRichEmbed_originalItem ipsAreaBackground_reset ipsSpacer_bottom ipsType_blendLinks'>
 			<div>
-				{{if is_array( $item->contentImages() ) AND count( $item->contentImages() )}}
+				{{if \is_array( $item->contentImages() ) AND \count( $item->contentImages() )}}
 					{{$attachType = key( $item->contentImages()[0] );}}
 					{{$image = \IPS\File::get( $attachType, $item->contentImages()[0][ $attachType ] );}}
 
@@ -32,7 +32,7 @@
 			{$comment->truncated(TRUE)|raw}
 		</div>
 
-		{{if \IPS\IPS::classUsesTrait( $comment, 'IPS\Content\Reactable' ) and count( $comment->reactions() ) and settings.reputation_enabled}}
+		{{if \IPS\IPS::classUsesTrait( $comment, 'IPS\Content\Reactable' ) AND \count( $comment->reactions() ) AND settings.reputation_enabled}}
 			<ul class='ipsList_inline ipsSpacer_top ipsSpacer_half'>
 				<li>
 					{template="reactionOverview" app="core" group="global" params="$comment, TRUE, 'small'"}

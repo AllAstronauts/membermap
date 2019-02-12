@@ -12,7 +12,7 @@
 namespace IPS\membermap\Markers;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
 	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
 	exit;
@@ -357,7 +357,7 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 			$bgColour 	= ( $this->id AND $this->pin_bg_colour ) ? $this->pin_bg_colour : 'red';
 
 			/* Selected a valid colour? */
-			$bgColour = in_array( $bgColour, $colours ) ? $bgColour : 'red';
+			$bgColour = \in_array( $bgColour, $colours ) ? $bgColour : 'red';
 
 			foreach( $colours as $c )
 			{

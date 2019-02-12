@@ -17,7 +17,7 @@
 namespace IPS\membermap\extensions\membermap\Mapmarkers;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
 	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
 	exit;
@@ -74,7 +74,7 @@ class _Clubs
 		$bgColour   = \IPS\Settings::i()->membermap_clubs_bgcolour ?: 'orange';
 
 		/* Selected a valid colour? */
-		$bgColour = in_array( $bgColour, $colours ) ? $bgColour : 'orange';
+		$bgColour = \in_array( $bgColour, $colours ) ? $bgColour : 'orange';
 		
 		$radioOpt = array();
 		foreach( $colours as $c )
@@ -155,7 +155,7 @@ class _Clubs
 	{
 		try
 		{
-			$club = \IPS\Member\Club::load( intval( $id ) );
+			$club = \IPS\Member\Club::load( \intval( $id ) );
 
 			return \IPS\Theme::i()->getTemplate( 'clubs', 'core', 'front' )->mapPopup( $club );
 		}

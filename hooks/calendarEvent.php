@@ -1,7 +1,7 @@
 //<?php
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
 	exit;
 }
@@ -15,7 +15,7 @@ class membermap_hook_calendarEvent extends _HOOK_CLASS_
 	 */
 	public function save()
 	{
-		call_user_func_array( 'parent::save', func_get_args() );
+		\call_user_func_array( 'parent::save', \func_get_args() );
 
 		if ( ! \IPS\Settings::i()->membermap_calendarExt )
 		{
@@ -36,7 +36,7 @@ class membermap_hook_calendarEvent extends _HOOK_CLASS_
 				{
 					if ( $location[ $k ] )
 					{
-						if ( is_array( $location[ $k ] ) )
+						if ( \is_array( $location[ $k ] ) )
 						{
 							foreach ( array_reverse( $location[ $k ] ) as $v )
 							{
