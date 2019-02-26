@@ -27,7 +27,11 @@
 	overflow: auto;
 }
 
-#membermap_location > label {
+.ipsForm #membermap_location > label {
+	display: none;
+}
+
+.ipsForm #guest_email > label {
 	display: none;
 }
 

@@ -12,7 +12,7 @@
 namespace IPS\membermap\extensions\core\Queue;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
 	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
 	exit;
@@ -125,7 +125,7 @@ class _RebuildCache
 			{
 				$appMarkers = $class->getLocations();
 				
-				if ( is_array( $appMarkers ) AND count( $appMarkers ) )
+				if ( \is_array( $appMarkers ) AND \count( $appMarkers ) )
 				{
 					/* Set 'appName' if it isn't already */
 					array_walk( $appMarkers, function( &$v, $key ) use ( $k )

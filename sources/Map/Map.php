@@ -12,7 +12,7 @@
 namespace IPS\membermap;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
 	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
 	exit;
@@ -31,7 +31,7 @@ class _Map
 	{
 		if( static::$instance === NULL )
 		{
-			$classname = get_called_class();
+			$classname = \get_called_class();
 			static::$instance = new $classname;
 		}
 		
@@ -125,7 +125,7 @@ class _Map
 	public function getMarkerByMember( $memberId, $format=TRUE, $loadMemberdata=TRUE )
 	{
 		static $marker = array();
-		if ( ! intval( $memberId ) )
+		if ( ! \intval( $memberId ) )
 		{
 			return false;
 		}
@@ -140,7 +140,7 @@ class _Map
 			{
 				$groupId = $this->getMemberGroupId();
 
-				$db = \IPS\Db::i()->select( '*', array( 'membermap_markers', 'mm' ), array( 'mm.marker_member_id=? AND mm.marker_parent_id=?', intval( $memberId ), intval( $groupId ) ) );
+				$db = \IPS\Db::i()->select( '*', array( 'membermap_markers', 'mm' ), array( 'mm.marker_member_id=? AND mm.marker_parent_id=?', \intval( $memberId ), \intval( $groupId ) ) );
 
 				if ( $loadMemberdata )
 				{
@@ -223,11 +223,11 @@ class _Map
 	{
 		if ( \IPS\Settings::i()->clubs )
 		{
-			if ( isset( \IPS\Request::i()->clubId ) AND intval( \IPS\Request::i()->clubId ) )
+			if ( isset( \IPS\Request::i()->clubId ) AND \intval( \IPS\Request::i()->clubId ) )
 			{
 				try
 				{
-					return \IPS\Member\Club::load( intval( \IPS\Request::i()->clubId ) );
+					return \IPS\Member\Club::load( \intval( \IPS\Request::i()->clubId ) );
 				}
 				catch ( \OutOfRangeException $e ) { }
 			}
@@ -276,7 +276,7 @@ class _Map
 				$json 	= $data->decodeJson();
 
 
-				if ( is_array( $json ) AND count( $json ) )
+				if ( \is_array( $json ) AND \count( $json ) )
 				{
 					$locCache[ 'cache-' . $locKey ] = array(
 						'lat'		=> $json[0]['lat'],
@@ -400,7 +400,7 @@ class _Map
 		if ( $totalMarkers < 1000 )
 		{
 			$currentMemUsage 	= \memory_get_usage();
-			$memoryLimit 		= intval( ini_get( 'memory_limit' ) );
+			$memoryLimit 		= \intval( ini_get( 'memory_limit' ) );
 
 			$useQueue 			= FALSE;
 			if ( $memoryLimit > 0 )
@@ -422,12 +422,12 @@ class _Map
 			}
 		}
 
-		if ( $useQueue AND defined( 'MEMBERMAP_FORCE_QUEUE' ) AND ! MEMBERMAP_FORCE_QUEUE )
+		if ( $useQueue AND \defined( 'MEMBERMAP_FORCE_QUEUE' ) AND ! MEMBERMAP_FORCE_QUEUE )
 		{
 			$useQueue = FALSE;
 		}
 
-		if ( $useQueue OR ( defined( 'MEMBERMAP_FORCE_QUEUE' ) AND MEMBERMAP_FORCE_QUEUE ) )
+		if ( $useQueue OR ( \defined( 'MEMBERMAP_FORCE_QUEUE' ) AND MEMBERMAP_FORCE_QUEUE ) )
 		{
 			\IPS\Task::queue( 'membermap', 'RebuildCache', array( 'class' => '\IPS\membermap\Map' ), 1, array( 'class' ) );
 			return;
@@ -468,7 +468,7 @@ class _Map
 		{
 			$appMarkers = $class->getLocations();
 			
-			if ( is_array( $appMarkers ) AND count( $appMarkers ) )
+			if ( \is_array( $appMarkers ) AND \count( $appMarkers ) )
 			{
 				/* Set 'appName' if it isn't already */
 				array_walk( $appMarkers, function( &$v, $key ) use ( $k )
@@ -533,7 +533,7 @@ class _Map
 			$staff[ $s['leader_type'] ][ $s['leader_type_id'] ] = $s;
 		}
 
-		if ( is_array( $markers ) AND count( $markers ) )
+		if ( \is_array( $markers ) AND \count( $markers ) )
 		{
 			foreach( $markers as $marker )
 			{
@@ -611,7 +611,7 @@ class _Map
 			'purple', 'darkpurple', 'pink', 'cadetblue', 'gray', 'lightgray', 'black', 'white'
 		);
 
-		if ( is_array( $markers ) AND count( $markers ) )
+		if ( \is_array( $markers ) AND \count( $markers ) )
 		{
 			foreach( $markers as $marker )
 			{
@@ -633,7 +633,7 @@ class _Map
 					'popup' 		=> $popup,
 					'icon'			=> $marker['group_pin_icon'],
 					'colour'		=> $marker['group_pin_colour'],
-					'bgColour'		=> in_array( $marker['group_pin_bg_colour'], $validColours ) ? $marker['group_pin_bg_colour'] : 'red',
+					'bgColour'		=> \in_array( $marker['group_pin_bg_colour'], $validColours ) ? $marker['group_pin_bg_colour'] : 'red',
 					'parent_id' 	=> isset( $marker['marker_parent_id'] ) ? $marker['marker_parent_id'] : NULL,
 					'from_app'		=> isset( $marker['appName'] ) ? TRUE : FALSE,
 					'appName'		=> isset( $marker['appName'] ) ? $marker['appName'] : NULL,

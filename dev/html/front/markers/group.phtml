@@ -8,7 +8,7 @@
 	{{endif}}
 </div>
 <div>
-	{{if \IPS\membermap\Markers\Groups::canOnAny('add') AND ( !$group OR $group->can('add') ) }}
+	{{if ( !$group AND \IPS\membermap\Markers\Groups::canOnAny( 'add' ) ) OR ( $group AND $group->can( 'add' ) ) }}
 	<ul class="ipsToolList ipsToolList_horizontal ipsResponsive_hidePhone ipsClearfix ipsSpacer_both">
 		{template="groupButtons" group="markers" params="\IPS\membermap\Markers\Groups::canOnAny('add'), $group"}
 	</ul>
@@ -22,7 +22,7 @@
 		{$table|raw}
 	</div>
 
-	{{if \IPS\membermap\Markers\Groups::canOnAny('add') AND ( !$group OR $group->can('add') ) }}
+	{{if ( !$group AND \IPS\membermap\Markers\Groups::canOnAny( 'add' ) ) OR ( $group AND $group->can( 'add' ) ) }}
 	<ul class="ipsToolList ipsToolList_horizontal ipsResponsive_hidePhone ipsClearfix ipsSpacer_both">
 		{template="groupButtons" group="markers" params="\IPS\membermap\Markers\Groups::canOnAny('add'), $group"}
 	</ul>

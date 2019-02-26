@@ -12,7 +12,7 @@
 namespace IPS\membermap\modules\front\membermap;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
 	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
 	exit;
@@ -60,7 +60,7 @@ class _ajax extends \IPS\Dispatcher\Controller
 	 */
 	protected function getPopup()
 	{
-		$markerId 	= intval( \IPS\Request::i()->id );
+		$markerId 	= \intval( \IPS\Request::i()->id );
 		$markerExt 	= \IPS\Request::i()->ext ?: '';
 		$output 	= '';
 
@@ -154,8 +154,8 @@ class _ajax extends \IPS\Dispatcher\Controller
 	 */
 	protected function mapquestReverseLookup()
 	{
-		$lat 	= floatval( \IPS\Request::i()->lat );
-		$lng 	= floatval( \IPS\Request::i()->lng );
+		$lat 	= \floatval( \IPS\Request::i()->lat );
+		$lng 	= \floatval( \IPS\Request::i()->lng );
 		$data 	= array();
 		
 		if ( $lat AND $lng )

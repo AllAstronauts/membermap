@@ -12,7 +12,7 @@
 namespace IPS\membermap\modules\front\membermap;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
 	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
 	exit;
@@ -70,12 +70,12 @@ class _showmap extends \IPS\Dispatcher\Controller
 		$cacheTime 	= isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
 
 		/* Get by user */
-		if ( \IPS\Request::i()->filter == 'getByUser' AND intval( \IPS\Request::i()->member_id ) )
+		if ( \IPS\Request::i()->filter == 'getByUser' AND \intval( \IPS\Request::i()->member_id ) )
 		{
-			$markers = \IPS\membermap\Map::i()->getMarkerByMember( intval( \IPS\Request::i()->member_id ) );
+			$markers = \IPS\membermap\Map::i()->getMarkerByMember( \intval( \IPS\Request::i()->member_id ) );
 		}
 		/* Get club member markers */
-		else if ( \IPS\Settings::i()->clubs AND \IPS\Request::i()->filter == 'showClub' AND $clubId = intval( \IPS\Request::i()->clubId ) )
+		else if ( \IPS\Settings::i()->clubs AND \IPS\Request::i()->filter == 'showClub' AND $clubId = \intval( \IPS\Request::i()->clubId ) )
 		{
 			if ( \IPS\Settings::i()->membermap_clubs_showInClubHeader )
 			{
@@ -86,7 +86,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 						$club = \IPS\Member\Club::load( $clubId );
 						$markers = \IPS\membermap\Map::i()->getClubMemberMarkers( $club );
 
-						if ( is_array( $markers ) AND count( $markers ) > 0 )
+						if ( \is_array( $markers ) AND \count( $markers ) > 0 )
 						{
 							\IPS\core\FrontNavigation::$clubTabActive = TRUE;
 							\IPS\Output::i()->breadcrumb = array();
@@ -146,7 +146,7 @@ class _showmap extends \IPS\Dispatcher\Controller
         	'membermap_canDelete'			=> $canDelete ?: 0,
         	'membermap_cacheTime'			=> $cacheTime,
 			'membermap_bbox'				=> json_decode( \IPS\Settings::i()->membermap_bbox ),
-			'membermap_bbox_zoom'			=> intval( \IPS\Settings::i()->membermap_bbox_zoom ),
+			'membermap_bbox_zoom'			=> \intval( \IPS\Settings::i()->membermap_bbox_zoom ),
 			'membermap_defaultMaps'			=> $defaultMaps,
 			'membermap_enable_clustering' 	=> \IPS\Settings::i()->membermap_enable_clustering == 1 ? 1 : 0,
 			'membermap_groupByMemberGroup'	=> \IPS\Settings::i()->membermap_groupByMemberGroup == 1 ? 1 : 0,
@@ -162,7 +162,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 		</script>
 EOF;
 
-		if ( \IPS\Settings::i()->membermap_showMemberList AND count( $markers ) !== 1 )
+		if ( \IPS\Settings::i()->membermap_showMemberList AND \count( $markers ) !== 1 )
 		{
 			\IPS\Output::i()->sidebar['contextual'] = ( isset( \IPS\Output::i()->sidebar['contextual'] ) ? \IPS\Output::i()->sidebar['contextual'] : "" ) . \IPS\Theme::i()->getTemplate( 'map' )->memberList();
 		}
@@ -177,13 +177,14 @@ EOF;
 	 */
 	protected function add()
 	{
-		if ( ! \IPS\Member::loggedIn()->member_id )
+		$existing = NULL;
+
+		if ( \IPS\Member::loggedIn()->member_id )
 		{
-			\IPS\Output::i()->error( 'no_permission', '2MM3/1', 403, '' );
+			/* Get the members location, if it exists */
+			$existing = \IPS\membermap\Map::i()->getMarkerByMember( \IPS\Member::loggedIn()->member_id, FALSE );
 		}
 
-		/* Get the members location, if it exists */
-		$existing = \IPS\membermap\Map::i()->getMarkerByMember( \IPS\Member::loggedIn()->member_id, FALSE );
 		$groupId = \IPS\membermap\Map::i()->getMemberGroupId();
 
 		/* Check permissions */
@@ -210,10 +211,23 @@ EOF;
 
 
 		$form = new \IPS\Helpers\Form( 'membermap_form_location', NULL, NULL, array( 'id' => 'membermap_form_location' ) );
-		$form->class = 'ipsForm_vertical ipsType_center';
+		$form->class = 'ipsForm_vertical ipsType_center ipsPos_center';
 
 		$form->addHeader( 'membermap_form_location' );
+
 		$form->add( new \IPS\Helpers\Form\Text( 'membermap_location', '', FALSE, array( 'placeholder' => \IPS\Member::loggedIn()->language()->addToStack( 'membermap_form_placeholder' ) ), NULL, NULL, NULL, 'membermap_location' ) );
+
+		if ( !\IPS\Member::loggedIn()->member_id )
+		{
+			$form->addHeader( 'guest_email' );
+			$form->add( new \IPS\Helpers\Form\Email( 'guest_email', NULL, TRUE, array( 'accountEmail' => TRUE ), NULL, NULL, NULL, 'guest_email' ) );
+			
+			if ( \IPS\Settings::i()->bot_antispam_type !== 'none' and \IPS\Settings::i()->guest_captcha )
+			{
+				$form->add( new \IPS\Helpers\Form\Captcha );
+			}
+		}
+
 		$form->addButton( 'save', 'submit', NULL, 'ipsPos_center ipsButton ipsButton_primary', array( 'id' => 'membermap_locationSubmit' ) );
 
 		$form->hiddenValues['lat'] = \IPS\Request::i()->lat;
@@ -221,6 +235,8 @@ EOF;
 
 		if ( $values = $form->values() )
 		{
+			$member = \IPS\Member::loggedIn();
+
 			try
 			{
 				/* Create marker */
@@ -231,28 +247,45 @@ EOF;
 				}
 				else
 				{
-					$marker = \IPS\membermap\Markers\Markers::createItem( \IPS\Member::loggedIn(), \IPS\Request::i()->ipAddress(), new \IPS\DateTime, \IPS\membermap\Markers\Groups::load( $groupId ) );
-					$marker->member_id = \IPS\Member::loggedIn()->member_id;
+					$marker = \IPS\membermap\Markers\Markers::createItem( $member, \IPS\Request::i()->ipAddress(), new \IPS\DateTime, \IPS\membermap\Markers\Groups::load( $groupId ) );
+					$marker->member_id = (int) $member->member_id;
+
+					$marker->processForm( $values );
 				}
 
 				$marker->location = ( isset( $values['membermap_location'] ) AND ! empty( $values['membermap_location'] ) ) ? $values['membermap_location'] : "";
 				
-				$marker->name = \IPS\Member::loggedIn()->name;
-				$marker->lat = $values['lat'];
-				$marker->lon = $values['lng'];
+				$marker->name 	= !$member->member_id ? 'Created as guest' : $member->name;
+				$marker->lat 	= $values['lat'];
+				$marker->lon 	= $values['lng'];
 				$marker->save();
 
 				/* Add to search index */
 				\IPS\Content\Search\Index::i()->index( $marker );
 
 				/* Content approval is required, redirect the member to the marker page, where this is made clear */
-				if ( $marker->hidden() )
+				try
 				{
-					\IPS\Output::i()->redirect( $marker->url() );
-				}
-				else
-				{
+					if ( $marker->hidden() === -3 )
+					{
+						\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=core&module=system&controller=register', 'front', 'register' ) );
+					}
+					elseif ( !\IPS\Member::loggedIn()->member_id and $marker->hidden() )
+					{
+						\IPS\Output::i()->redirect( $marker->container()->url(), 'mod_queue_message' );
+					}
+					else if ( $marker->hidden() == 1 )
+					{
+						\IPS\Output::i()->redirect( $marker->url(), 'mod_queue_message' );
+					}
+					else
+					{
 					\IPS\Output::i()->redirect( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=showmap&dropBrowserCache=1&goHome=1', 'front', 'membermap' ) );
+					}
+				}
+				catch ( \DomainException $e )
+				{
+					$form->error = $e->getMessage();
 				}
 
 				return;
@@ -279,13 +312,13 @@ EOF;
 	{
 		\IPS\Session::i()->csrfCheck();
 
-		if ( ! \IPS\Member::loggedIn()->member_id OR ! intval( \IPS\Request::i()->member_id ) )
+		if ( ! \IPS\Member::loggedIn()->member_id OR ! \intval( \IPS\Request::i()->member_id ) )
 		{
 			\IPS\Output::i()->error( 'no_permission', '2MM3/4', 403, '' );
 		}
 
 		/* Get the marker */
-		$existing = \IPS\membermap\Map::i()->getMarkerByMember( intval( \IPS\Request::i()->member_id ), FALSE );
+		$existing = \IPS\membermap\Map::i()->getMarkerByMember( \intval( \IPS\Request::i()->member_id ), FALSE );
 
 		if ( isset( $existing ) AND $existing->canDelete() )
 		{

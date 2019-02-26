@@ -12,7 +12,7 @@
 namespace IPS\membermap\Markers;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
 	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
 	exit;
@@ -357,7 +357,7 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 			$bgColour 	= ( $this->id AND $this->pin_bg_colour ) ? $this->pin_bg_colour : 'red';
 
 			/* Selected a valid colour? */
-			$bgColour = in_array( $bgColour, $colours ) ? $bgColour : 'red';
+			$bgColour = \in_array( $bgColour, $colours ) ? $bgColour : 'red';
 
 			foreach( $colours as $c )
 			{
@@ -415,14 +415,15 @@ class _Groups extends \IPS\Node\Model implements \IPS\Node\Permissions
 	/**
 	 * Check permissions
 	 *
-	 * @param	mixed								$permission		A key which has a value in static::$permissionMap['view'] matching a column ID in core_permission_index
-	 * @param	\IPS\Member|\IPS\Member\Group|NULL	$member			The member or group to check (NULL for currently logged in member)
+	 * @param	mixed								$permission						A key which has a value in static::$permissionMap['view'] matching a column ID in core_permission_index
+	 * @param	\IPS\Member|\IPS\Member\Group|NULL	$member							The member or group to check (NULL for currently logged in member)
+	 * @param	bool								$considerPostBeforeRegistering	If TRUE, and $member is a guest, will return TRUE if "Post Before Registering" feature is enabled
 	 * @return	bool
 	 * @throws	\OutOfBoundsException	If $permission does not exist in static::$permissionMap
 	 */
-	public function can( $permission, $member=NULL )
+	public function can( $permission, $member=NULL, $considerPostBeforeRegistering = TRUE )
 	{
-		$parent = parent::can( $permission, $member );
+		$parent = parent::can( $permission, $member, $considerPostBeforeRegistering );
 
 		if( $parent === TRUE )
 		{

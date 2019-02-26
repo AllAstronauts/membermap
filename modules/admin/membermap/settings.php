@@ -12,7 +12,7 @@
 namespace IPS\membermap\modules\admin\membermap;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
 	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
 	exit;
@@ -80,7 +80,7 @@ class _settings extends \IPS\Dispatcher\Controller
 			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_enable_clustering', \IPS\Settings::i()->membermap_enable_clustering ) );
 			$form->hiddenValues['membermap_bbox'] = \IPS\Settings::i()->membermap_bbox;
 			$form->add( new \IPS\Helpers\Form\Text( 'membermap_bbox_location', \IPS\Settings::i()->membermap_bbox_location, FALSE, array(), NULL, NULL, NULL, 'membermap_bbox_location' ) );
-			$form->add( new \IPS\Helpers\Form\Number( 'membermap_bbox_zoom', intval( \IPS\Settings::i()->membermap_bbox_zoom ), FALSE, array( 'min' => 1, 'max' => 18 ) ) );
+			$form->add( new \IPS\Helpers\Form\Number( 'membermap_bbox_zoom', \intval( \IPS\Settings::i()->membermap_bbox_zoom ), FALSE, array( 'min' => 1, 'max' => 18 ) ) );
 			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_showNightAndDay', \IPS\Settings::i()->membermap_showNightAndDay ) );
 			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_showMemberList', \IPS\Settings::i()->membermap_showMemberList ) );
 
@@ -104,10 +104,13 @@ class _settings extends \IPS\Dispatcher\Controller
 				array( 'togglesOn' => array( 'membermap_profileLocationField', 'membermap_monitorLocationField_groupPerm', 'membermap_syncLocationField' ) ) 
 			) );
 
-			$form->add( new \IPS\Helpers\Form\Select( 
-				'membermap_profileLocationField', 
-				\IPS\Settings::i()->membermap_profileLocationField ? intval( \IPS\Settings::i()->membermap_profileLocationField ) : NULL, 
-				FALSE, array( 'options' => $profileFields ), NULL, NULL, NULL, 'membermap_profileLocationField' 
+			$value = \IPS\Settings::i()->membermap_profileLocationField ? explode( ',', \IPS\Settings::i()->membermap_profileLocationField ) : NULL;
+			$value = \is_array( $value ) ? array_map( 'intval', $value ) : $value;
+
+			$form->add( new \IPS\Helpers\Form\Stack( 
+				'membermap_profileLocationField',
+				$value, 
+				FALSE, array( 'stackFieldType' => 'Select', 'options' => $profileFields ), NULL, NULL, NULL, 'membermap_profileLocationField' 
 			) );
 
 			$form->add( new \IPS\Helpers\Form\Select(

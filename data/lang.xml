@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="150007">
+ <app key="membermap" version="160001">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
   <word key="membermap_clubnavtitle" js="0">Member Map</word>
@@ -121,8 +121,8 @@
   <word key="membermap_groupByMemberGroup" js="0">Group member markers by member group?</word>
   <word key="membermap_autoUpdate" js="0">Profile location synchronisation</word>
   <word key="membermap_monitorLocationField" js="0">Enable profile sync?</word>
-  <word key="membermap_profileLocationField" js="0">Select profile field</word>
-  <word key="membermap_profileLocationField_desc" js="0">Select the custom profile field where members enter their location</word>
+  <word key="membermap_profileLocationField" js="0">Select profile field(s)</word>
+  <word key="membermap_profileLocationField_desc" js="0">Select the custom profile field(s) where members enter their location. You can add multiple fields here, and the first populated profile field will be selected.</word>
   <word key="membermap_monitorLocationField_groupPerm" js="0">Enable for</word>
   <word key="membermap_syncLocationField" js="0">Import members without a map marker?</word>
   <word key="membermap_syncLocationField_desc" js="0"><![CDATA[This will import members that have a location set in the profile, but not one in the map. This will turn itself off once all members are processed.<br><a href='{internal.app=membermap&module=membermap&controller=settings&do=resetMemberSync}'>Restart sync process</a>]]></word>

@@ -12,7 +12,7 @@
 namespace IPS\membermap\extensions\core\GroupForm;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
 	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
 	exit;
@@ -43,7 +43,7 @@ class _membermap
 		$bgColour 	= $group->g_membermap_markerColour ? $group->g_membermap_markerColour : 'darkblue';
 
 		/* Selected a valid colour? */
-		$bgColour = in_array( $bgColour, $this->colours ) ? $bgColour : 'darkblue';
+		$bgColour = \in_array( $bgColour, $this->colours ) ? $bgColour : 'darkblue';
 
 		foreach( $this->colours as $c )
 		{
@@ -69,7 +69,7 @@ class _membermap
 		$bgColour 	= $values['g_membermap_markerColour'] ? $values['g_membermap_markerColour'] : 'darkblue';
 
 		/* Selected a valid colour? */
-		$bgColour = in_array( $bgColour, $this->colours ) ? $bgColour : 'darkblue';
+		$bgColour = \in_array( $bgColour, $this->colours ) ? $bgColour : 'darkblue';
 
 		$group->g_membermap_markerColour = $bgColour;
 		$group->g_membermap_delete_own 	 = $values['g_membermap_delete_own'];

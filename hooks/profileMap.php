@@ -13,7 +13,7 @@ public static function hookData() {
       'selector' => '#elProfileInfoColumn > div.ipsPad',
       'type' => 'add_inside_end',
       'content' => '{{ $memberMarker = FALSE; try { $memberMarker = \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id ); } catch( \Exception $ex ){ } }}
-      {{if $memberMarker AND $memberMarker !== false AND count( $memberMarker ) AND \IPS\Member::loggedIn()->canAccessModule( \IPS\Application\Module::get( "membermap", "membermap" ) )}}
+      {{if $memberMarker AND $memberMarker !== false AND \count( $memberMarker ) AND \IPS\Member::loggedIn()->canAccessModule( \IPS\Application\Module::get( "membermap", "membermap" ) )}}
 	{template="profileMap" group="map" app="membermap" params="$member"}
 {{endif}}',
     ),

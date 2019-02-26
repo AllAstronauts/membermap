@@ -13,7 +13,7 @@
 namespace IPS\membermap\setup\upg_110006;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
 	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
 	exit;
@@ -34,14 +34,14 @@ class _Upgrade
 		/* Remove MapQuest.OSM, as it's no longer "free" */
 		$maps = json_decode( \IPS\Settings::i()->membermap_activemaps, true );
 
-		if ( is_array( $maps ) )
+		if ( \is_array( $maps ) )
 		{
 			$osm = array_search( 'MapQuestOpen.OSM', $maps['basemaps'] );
 
 			if ( $osm !== FALSE )
 			{
 				$maps['basemaps'][ $osm ] = 'OpenStreetMap.France';
-				$maps['basemaps'] = array_unique( $maps['basemaps'], SORT_REGULAR );
+				$maps['basemaps'] = array_unique( $maps['basemaps'], \SORT_REGULAR );
 
 				\IPS\Settings::i()->membermap_activemaps = json_encode( $maps );
 				\IPS\Db::i()->update( 'core_sys_conf_settings', array( 'conf_value' => \IPS\Settings::i()->membermap_activemaps ), array( 'conf_key=?', 'membermap_activemaps' ) );

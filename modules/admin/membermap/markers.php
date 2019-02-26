@@ -12,7 +12,7 @@
 namespace IPS\membermap\modules\admin\membermap;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
 	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
 	exit;
@@ -83,13 +83,13 @@ class _markers extends \IPS\Node\Controller
 
 	public function import()
 	{
-		$id = isset( \IPS\Request::i()->id ) ? intval( \IPS\Request::i()->id ) : 0;
+		$id = isset( \IPS\Request::i()->id ) ? \intval( \IPS\Request::i()->id ) : 0;
 
 		/* Build form */
 		$form = new \IPS\Helpers\Form( NULL, 'import' );
 		if ( isset( \IPS\Request::i()->id ) )
 		{
-			$group = \IPS\membermap\Markers\Groups::load( intval( \IPS\Request::i()->id ) );
+			$group = \IPS\membermap\Markers\Groups::load( \intval( \IPS\Request::i()->id ) );
 
 			if ( $group->type == 'member' )
 			{
@@ -173,7 +173,7 @@ class _markers extends \IPS\Node\Controller
 
 			foreach( $markers as $folder )
 			{
-				if ( count( $folder['markers'] ) > 0 )
+				if ( \count( $folder['markers'] ) > 0 )
 				{
 					/* Create a new group per "folder" */
 					if ( $values['import_creategroups'] == TRUE )
@@ -253,7 +253,7 @@ class _markers extends \IPS\Node\Controller
 					$group->setLastComment();
 					$group->save();
 					
-					$imported	+= count( $folder['markers'] );
+					$imported	+= \count( $folder['markers'] );
 				}
 			}
 			
@@ -275,7 +275,7 @@ class _markers extends \IPS\Node\Controller
 			{
 				$folderName = isset( $folder->name ) ? (string) $folder->name : '';
 
-				if ( isset( $folder->Folder ) AND ! isset( $folder->Placemark ) AND ( is_object( $folder->Folder ) OR is_array( $folder->Folder ) ) )
+				if ( isset( $folder->Folder ) AND ! isset( $folder->Placemark ) AND ( \is_object( $folder->Folder ) OR \is_array( $folder->Folder ) ) )
 				{
 					$this->_parseKml( $markers, $folder, $folderName );
 				}

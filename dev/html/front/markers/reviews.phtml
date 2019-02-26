@@ -17,7 +17,7 @@
 			{template="reviewUnavailable" group="forms" location="front" app="core" params="'unacknowledged_warning_cannot_post', \IPS\Member::loggedIn()->warnings( 1, FALSE )"}
 		{{endif}}
 	{{endif}}
-	{{if count( $marker->reviews( NULL, NULL, NULL, 'desc', NULL, NULL, NULL, NULL, isset( \IPS\Request::i()->showDeleted ) ) )}}
+	{{if \count( $marker->reviews( NULL, NULL, NULL, 'desc', NULL, NULL, NULL, NULL, isset( \IPS\Request::i()->showDeleted ) ) )}}
 		{{if !$marker->hasReviewed()}}<hr class='ipsHr'>{{endif}}
 		<div class="ipsClearfix ipsSpacer_bottom">
 			{{if $marker->reviewPageCount() > 1}}

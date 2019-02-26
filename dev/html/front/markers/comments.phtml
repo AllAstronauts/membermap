@@ -8,7 +8,7 @@
 	{template="featuredComments" group="global" app="core" params="$marker->featuredComments(), $marker->url()->setQueryString('tab', 'comments')->setQueryString('recommended', 'comments')"}
 
 	<div data-role='commentFeed' data-controller='core.front.core.moderation'>
-		{{if ( $comments = $marker->comments( NULL, NULL, 'date', 'asc', NULL, NULL, NULL, NULL, FALSE, isset( \IPS\Request::i()->showDeleted ) ) and count( $comments ) )}}
+		{{if ( $comments = $marker->comments( NULL, NULL, 'date', 'asc', NULL, NULL, NULL, NULL, FALSE, isset( \IPS\Request::i()->showDeleted ) ) AND \count( $comments ) )}}
 			<form action="{$marker->url()->csrf()->setQueryString( 'do', 'multimodComment' )}" method="post" data-ipsPageAction data-role='moderationTools'>
 				{{$commentCount=0; $timeLastRead = $marker->timeLastRead(); $lined = FALSE;}}
 				{{foreach $comments as $comment}}

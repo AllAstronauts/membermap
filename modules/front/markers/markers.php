@@ -12,7 +12,7 @@
 namespace IPS\membermap\modules\front\markers;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
 	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
 	exit;
@@ -91,9 +91,9 @@ class _markers extends \IPS\Content\Controller
 		$tab = isset( \IPS\Request::i()->tab ) ? \IPS\Request::i()->tab : array_shift( $_tabs );
 		$activeTabContents = $this->marker->commentReviews( $tab );
 		
-		if ( count( $tabs ) > 1 )
+		if ( \count( $tabs ) > 1 )
 		{
-			$commentsAndReviews = count( $tabs ) ? \IPS\Theme::i()->getTemplate( 'global', 'core' )->tabs( $tabs, $tab, $activeTabContents, $this->marker->url(), 'tab', FALSE, TRUE ) : NULL;
+			$commentsAndReviews = \count( $tabs ) ? \IPS\Theme::i()->getTemplate( 'global', 'core' )->tabs( $tabs, $tab, $activeTabContents, $this->marker->url(), 'tab', FALSE, TRUE ) : NULL;
 		}
 		else
 		{
@@ -186,6 +186,6 @@ class _markers extends \IPS\Content\Controller
 		\IPS\Output::i()->sidebar['enabled'] = FALSE;
 		\IPS\Output::i()->breadcrumb[] = array( NULL, \IPS\Member::loggedIn()->language()->addToStack( 'membermap_edit_a_marker' ) );
 
-		\IPS\Output::i()->output	= \IPS\Theme::i()->getTemplate( 'submit' )->submitPage( $form->customTemplate( array( call_user_func_array( array( \IPS\Theme::i(), 'getTemplate' ), array( 'submit', 'membermap' ) ), 'submitForm' ) ) );
+		\IPS\Output::i()->output	= \IPS\Theme::i()->getTemplate( 'submit' )->submitPage( $form->customTemplate( array( \call_user_func_array( array( \IPS\Theme::i(), 'getTemplate' ), array( 'submit', 'membermap' ) ), 'submitForm' ) ) );
 	}
 }
