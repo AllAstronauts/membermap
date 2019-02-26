@@ -81,12 +81,12 @@
 			options: {
 				maxZoom: 19,
 				attribution:
-					'&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+					'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 			},
 			variants: {
 				Mapnik: {},
 				BlackAndWhite: {
-					url: 'http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png',
+					url: 'https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png',
 					options: {
 						maxZoom: 18
 					}
@@ -114,7 +114,10 @@
 				HOT: {
 					url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
 					options: {
-						attribution: '{attribution.OpenStreetMap}, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
+						attribution:
+							'{attribution.OpenStreetMap}, ' +
+							'Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> ' +
+							'hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>'
 					}
 				},
 				BZH: {
@@ -124,20 +127,6 @@
 						bounds: [[46.2, -5.5], [50, 0.7]]
 					}
 				}
-			}
-		},
-		OpenInfraMap: {
-			url: 'https://tiles-{s}.openinframap.org/{variant}/{z}/{x}/{y}.png',
-			options: {
-				maxZoom: 18,
-				attribution:
-					'{attribution.OpenStreetMap}, <a href="http://www.openinframap.org/about.html">About OpenInfraMap</a>'
-			},
-			variants: {
-				Power: 'power',
-				Telecom: 'telecoms',
-				Petroleum: 'petroleum',
-				Water: 'water'
 			}
 		},
 		OpenSeaMap: {
@@ -213,9 +202,9 @@
 			}
 		},
 		OpenMapSurfer: {
-			url: 'https://korona.geog.uni-heidelberg.de/tiles/{variant}/x={x}&y={y}&z={z}',
+			url: 'https://maps.heigit.org/openmapsurfer/tiles/{variant}/webmercator/{z}/{x}/{y}.png',
 			options: {
-				maxZoom: 20,
+				maxZoom: 19,
 				variant: 'roads',
 				attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data {attribution.OpenStreetMap}'
 			},
@@ -224,13 +213,7 @@
 				AdminBounds: {
 					options: {
 						variant: 'adminb',
-						maxZoom: 19
-					}
-				},
-				Grayscale: {
-					options: {
-						variant: 'roadsg',
-						maxZoom: 19
+						maxZoom: 18
 					}
 				}
 			}
@@ -252,10 +235,11 @@
 			url: 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}{r}.png?access_token={accessToken}',
 			options: {
 				attribution:
-					'Imagery from <a href="http://mapbox.com/about/maps/">MapBox</a> &mdash; ' +
-					'Map data {attribution.OpenStreetMap}',
+					'<a href="https://www.mapbox.com/about/maps/" target="_blank">&copy; Mapbox</a> ' +
+					'{attribution.OpenStreetMap} ' +
+					'<a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a>',
 				subdomains: 'abcd',
-				id: 'streets',
+				id: 'mapbox.streets',
 				accessToken: '<insert your access token here>',
 			}
 		},
@@ -283,6 +267,7 @@
 					url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/{variant}/{z}/{x}/{y}.{ext}',
 					options: {
 						variant: 'watercolor',
+						ext: 'jpg',
 						minZoom: 1,
 						maxZoom: 16
 					}
@@ -428,19 +413,15 @@
 			/*
 			 * HERE maps, formerly Nokia maps.
 			 * These basemaps are free, but you need an API key. Please sign up at
-			 * http://developer.here.com/getting-started
-			 *
-			 * Note that the base urls contain '.cit' whichs is HERE's
-			 * 'Customer Integration Testing' environment. Please remove for production
-			 * envirionments.
+			 * https://developer.here.com/plans
 			 */
 			url:
-				'https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/' +
+				'https://{s}.{base}.maps.api.here.com/maptile/2.1/' +
 				'{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?' +
 				'app_id={app_id}&app_code={app_code}&lg={language}',
 			options: {
 				attribution:
-					'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
+					'Map &copy; 1987-' + new Date().getFullYear() + ' <a href="http://developer.here.com">HERE</a>',
 				subdomains: '1234',
 				mapID: 'newest',
 				'app_id': '<insert your app_id here>',
@@ -467,8 +448,8 @@
 				normalNightGreyMobile: 'normal.night.grey.mobile',
 				normalNightTransit: 'normal.night.transit',
 				normalNightTransitMobile: 'normal.night.transit.mobile',
-				redcuedDay: 'reduced.day',
-				redcuedNight: 'reduced.night',
+				reducedDay: 'reduced.day',
+				reducedNight: 'reduced.night',
 				basicMap: {
 					options: {
 						type: 'basetile'
@@ -552,9 +533,9 @@
 			}
 		},
 		CartoDB: {
-			url: 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/{variant}/{z}/{x}/{y}{r}.png',
+			url: 'https://{s}.basemaps.cartocdn.com/{variant}/{z}/{x}/{y}{r}.png',
 			options: {
-				attribution: '{attribution.OpenStreetMap} &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+				attribution: '{attribution.OpenStreetMap} &copy; <a href="https://carto.com/attributions">CARTO</a>',
 				subdomains: 'abcd',
 				maxZoom: 19,
 				variant: 'light_all'
@@ -573,7 +554,7 @@
 			}
 		},
 		HikeBike: {
-			url: 'http://{s}.tiles.wmflabs.org/{variant}/{z}/{x}/{y}.png',
+			url: 'https://tiles.wmflabs.org/{variant}/{z}/{x}/{y}.png',
 			options: {
 				maxZoom: 19,
 				attribution: '{attribution.OpenStreetMap}',
