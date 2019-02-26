@@ -115,9 +115,16 @@ class _locationSync extends \IPS\Task
 						$lng = \floatval( $addressData['long'] );
 					}
 
-					if ( isset( $addressData['city'] ) )
+					if ( isset( $addressData['city'] ) OR isset( $addressData['region'] ) )
 					{
-						$addressData['addressLines'][] = $addressData['city'];
+						if ( isset( $addressData['city'] ) AND $addressData['city'] )
+						{
+							$addressData['addressLines'][] = $addressData['city'];
+						}
+						elseif ( isset( $addressData['region'] ) AND $addressData['region']  )
+						{
+							$addressData['addressLines'][] = $addressData['region'];
+						}
 
 						if ( $addressData['postalCode'] )
 						{
