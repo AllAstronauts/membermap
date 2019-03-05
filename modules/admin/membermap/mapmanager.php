@@ -81,14 +81,11 @@ class _mapmanager extends \IPS\Dispatcher\Controller
 			$maps['overlays'] = array();
 		}
 
-		\IPS\Settings::i()->membermap_activemaps = json_encode( $maps );
-		\IPS\Db::i()->update( 'core_sys_conf_settings', array( 'conf_value' => \IPS\Settings::i()->membermap_activemaps ), array( 'conf_key=?', 'membermap_activemaps' ) );
-		
-		unset( \IPS\Data\Store::i()->settings );
+		\IPS\Settings::i()->changeValues( array( 'membermap_activemaps' => json_encode( $maps ) ) );
 
 		if( \IPS\Request::i()->isAjax() )
 		{
-			\IPS\Output::i()->output = 1;
+			\IPS\Output::i()->json( 'ok' );
 			return;
 		}
 

@@ -105,7 +105,7 @@ class _Application extends \IPS\Application
 
 		if ( \IPS\Settings::i()->membermap_activemaps )
 		{
-			$maps = json_decode( \IPS\Settings::i()->membermap_activemaps, false );
+			$maps = json_decode( \IPS\Settings::i()->membermap_activemaps, TRUE );
 			if ( \is_array( $maps ) )
 			{
 				$defaultMaps = $maps;
