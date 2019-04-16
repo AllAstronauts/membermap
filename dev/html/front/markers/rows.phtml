@@ -43,7 +43,7 @@
 			</div>
 			<div class='ipsDataItem_generic ipsDataItem_size9'>
 				<ul class='ipsList_reset'>
-					{{if $marker->location}}
+					{{if $marker->locationToDisplay}}
 						<li data-ipsTruncate data-ipsTruncate-size='1 lines' data-ipsTruncate-type='remove'>
 							{{$location = trim( $marker->location, ',' );}}
 							{$location}

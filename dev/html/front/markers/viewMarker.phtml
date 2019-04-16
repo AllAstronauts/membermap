@@ -193,13 +193,13 @@
 					</li>
 				{{endif}}
 
-				{{if $marker->location}}
+				{{if $marker->locationToDisplay}}
 					<li class='ipsDataItem'>
 						<span class='ipsDataItem_generic ipsDataItem_size3'>
 							<strong>{lang="membermap_marker_location"}</strong>
 						</span>
 						<span class='ipsDataItem_generic cMarkerData'>
-							{{$location = trim( $marker->location, ',' );}}
+							{{$location = trim( $marker->locationToDisplay, ',' );}}
 							{$location}
 						</span>
 					</li>
