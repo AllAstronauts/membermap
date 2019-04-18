@@ -13,8 +13,8 @@
 		<p class='localTime ipsHide ipsType_light ipsType_small' data-timezone="{$marker->author()->timezone}"></p>
 	</div>
 </div>
-{{if $marker->location}}
-	<p>{$marker->location}</p>
+{{if $marker->locationToDisplay}}
+	<p>{$marker->locationToDisplay}</p>
 {{endif}}
 
 {{if $marker->container()->allow_comments OR $marker->container()->allow_reviews}}

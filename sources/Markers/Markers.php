@@ -254,6 +254,42 @@ class _Markers extends \IPS\Content\Item implements
 	}
 
 	/**
+	 * Returns the content
+	 *
+	 * @return	string
+	 */
+	public function content()
+	{
+		if ( $this->container()->type == 'member' )
+		{
+			if ( \IPS\Settings::i()->membermap_hideMarkerContent ) 
+			{
+				return "";
+			}
+		}
+
+		return $this->mapped('content');
+	}
+
+	/**
+	 * Returns the location
+	 *
+	 * @return	string
+	 */
+	public function get_locationToDisplay()
+	{
+		if ( $this->container()->type == 'member' )
+		{
+			if ( \IPS\Settings::i()->membermap_hideMarkerContent ) 
+			{
+				return "";
+			}
+		}
+
+		return $this->_data['location'];
+	}
+
+	/**
 	 * [Node] Get buttons to display in tree
 	 * Example code explains return value
 	 * @endcode

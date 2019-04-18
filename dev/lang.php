@@ -176,6 +176,9 @@ $lang = array(
 	'membermap_restrictCountries'		=> "Limits the location search to specific countries",
 	'membermap_restrictCountries_desc'	=> "This allows you to only get results from the selected countries when searching for a location. Works in both the \"Add Location\" form and profile synchronisation.",
 	'membermap_noRestriction'			=> "--- NO RESTRICTION ---",
+	'membermap_privacy'					=> "Privacy",
+	'membermap_hideMarkerContent'		=> "Hide location for member markers",
+	'membermap_hideMarkerContent_desc'	=> "Some markers reveal the exact address for some members. Enable this to hide this information from all member markers. Markers in other groups are not affected",
 
 	/* ACP Marker Group Settings */
 	'g_membermap_markerColour' 		=> "Marker Colour",

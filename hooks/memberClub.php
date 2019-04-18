@@ -16,7 +16,7 @@ class membermap_hook_memberClub extends _HOOK_CLASS_
 	 */
 	public function nodes()
 	{
-		$return = \call_user_func_array( 'parent::nodes', \func_get_args() );
+		$return = parent::nodes();
 
 		if ( \IPS\Dispatcher::hasInstance() AND \IPS\Dispatcher::i()->controllerLocation == 'front' AND \IPS\Settings::i()->membermap_clubsExt )
 		{
@@ -46,7 +46,7 @@ class membermap_hook_memberClub extends _HOOK_CLASS_
 	{
 		parent::save();
 
-		if ( \IPS\Settings::i()->membermap_clubsExt AND \IPS\Settings::i()->clubs_locations AND \IPS\Dispatcher::i()->controllerLocation == 'admin' )
+		if ( \IPS\Settings::i()->membermap_clubsExt AND \IPS\Settings::i()->clubs_locations AND \IPS\Disptacher::hasInstance() AND \IPS\Dispatcher::i()->controllerLocation == 'admin' )
 		{
 			\IPS\membermap\Map::i()->invalidateJsonCache();
 		}

@@ -76,6 +76,10 @@
         "default": "0"
     },
     {
+        "key": "membermap_hideMarkerContent",
+        "default": "0"
+    },
+    {
         "key": "membermap_mapQuestAPI",
         "default": ""
     },

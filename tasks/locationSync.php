@@ -150,7 +150,7 @@ class _locationSync extends \IPS\Task
 					}
 
 					/* To my understanding we're not allowed to use \IPS\Geolocation, as that uses Google API, and we're not showing the info on a Google Map. */
-					$nominatim = \IPS\membermap\Map::i()->getLatLng( $location ?: $_location );
+					$nominatim = \IPS\membermap\Map::i()->getLatLng( $location ?: $_location, TRUE );
 
 					if( \is_array( $nominatim ) AND \count( $nominatim ) )
 					{

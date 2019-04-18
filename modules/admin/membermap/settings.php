@@ -84,6 +84,9 @@ class _settings extends \IPS\Dispatcher\Controller
 			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_showNightAndDay', \IPS\Settings::i()->membermap_showNightAndDay ) );
 			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_showMemberList', \IPS\Settings::i()->membermap_showMemberList ) );
 
+			$form->addHeader( 'membermap_privacy' );
+			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_hideMarkerContent', \IPS\Settings::i()->membermap_hideMarkerContent ) );
+
 
 			/* Profile Synchronization */
 			$form->addTab( 'membermap_settings_tab_profile' );

@@ -240,9 +240,10 @@ class _Map
 	 * Geocode, get lat/lng by location
 	 *
 	 * @param 	string 	Location
+	 * @param 	bool 	Request coming from a task?
 	 * @return 	array 	Lat/lng/formatted address
 	*/
-	public function getLatLng( $location )
+	public function getLatLng( $location, $fromTask = FALSE )
 	{
 		static $locCache = array();
 		$locKey = md5( $location );
@@ -254,13 +255,30 @@ class _Map
 
 		$apiKey = \IPS\membermap\Application::getApiKeys( 'mapquest' );
 
+		/* 
+			HTTP Language 
+			Defaults to 'en', unless the constant 'MEMBERMAP_HTTP_LANGUAGE' is defined to something else.
+			Uses the browser's "HTTP_ACCEPT_LANGUAGE" unless the request is coming from a task, 
+			where the request could be triggered by a russian crawler, causing all your results to be in cyrillic.
+		*/
+		$language = 'en'; 
+		if ( \defined( 'MEMBERMAP_HTTP_LANGUAGE' ) AND MEMBERMAP_HTTP_LANGUAGE )
+		{
+			$language = MEMBERMAP_HTTP_LANGUAGE;
+		}
+		
+		if ( ! $fromTask AND isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) )
+		{
+			$language = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+		}
+
 		if ( $apiKey )
 		{
 			$queryString = array(
 				'key' 				=> $apiKey, 
 				'format' 			=> 'json', 
 				'q' 				=> $location,
-				'accept-language' 	=> isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : NULL,
+				'accept-language' 	=> $language,
 				'debug' 			=> 0
 			);
 
