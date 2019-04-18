@@ -286,7 +286,7 @@ class _Markers extends \IPS\Content\Item implements
 			}
 		}
 
-		return $this->data['location'];
+		return $this->_data['location'];
 	}
 
 	/**

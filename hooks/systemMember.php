@@ -17,7 +17,7 @@ class membermap_hook_systemMember extends _HOOK_CLASS_
 	protected function _processPostBeforeRegistering( $secret = NULL )
 	{
 		/*
-			Laborrates is only allowed to store one item per member, but there is currently not an easy way to determine 
+			Member Map is only allowed to store one item per member, but there is currently not an easy way to determine 
 			if a guest have created more than one before completing the registration. We will therefor keep the last one, and delete the others.
 		 */
 		$where = $secret ? array( 'member=? OR secret=?', $this->member_id, $secret ) : array( 'member=?', $this->member_id );
@@ -57,5 +57,4 @@ class membermap_hook_systemMember extends _HOOK_CLASS_
 
 		return parent::_processPostBeforeRegistering( $secret );
 	}
-
 }

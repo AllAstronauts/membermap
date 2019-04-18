@@ -16,7 +16,7 @@ class membermap_hook_memberClub extends _HOOK_CLASS_
 	 */
 	public function nodes()
 	{
-		$return = \call_user_func_array( 'parent::nodes', \func_get_args() );
+		$return = parent::nodes();
 
 		if ( \IPS\Dispatcher::hasInstance() AND \IPS\Dispatcher::i()->controllerLocation == 'front' AND \IPS\Settings::i()->membermap_clubsExt )
 		{

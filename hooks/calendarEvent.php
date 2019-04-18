@@ -15,7 +15,7 @@ class membermap_hook_calendarEvent extends _HOOK_CLASS_
 	 */
 	public function save()
 	{
-		\call_user_func_array( 'parent::save', \func_get_args() );
+		parent::save();
 
 		if ( ! \IPS\Settings::i()->membermap_calendarExt )
 		{
