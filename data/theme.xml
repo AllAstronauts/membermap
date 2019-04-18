@@ -244,8 +244,8 @@
 		<p class='localTime ipsHide ipsType_light ipsType_small' data-timezone="{$marker->author()->timezone}"></p>
 	</div>
 </div>
-{{if $marker->location}}
-	<p>{$marker->location}</p>
+{{if $marker->locationToDisplay}}
+	<p>{$marker->locationToDisplay}</p>
 {{endif}}
 
 {{if $marker->container()->allow_comments OR $marker->container()->allow_reviews}}
@@ -695,7 +695,7 @@
 			</div>
 			<div class='ipsDataItem_generic ipsDataItem_size9'>
 				<ul class='ipsList_reset'>
-					{{if $marker->location}}
+					{{if $marker->locationToDisplay}}
 						<li data-ipsTruncate data-ipsTruncate-size='1 lines' data-ipsTruncate-type='remove'>
 							{{$location = trim( $marker->location, ',' );}}
 							{$location}
@@ -1215,13 +1215,13 @@
 					</li>
 				{{endif}}
 
-				{{if $marker->location}}
+				{{if $marker->locationToDisplay}}
 					<li class='ipsDataItem'>
 						<span class='ipsDataItem_generic ipsDataItem_size3'>
 							<strong>{lang="membermap_marker_location"}</strong>
 						</span>
 						<span class='ipsDataItem_generic cMarkerData'>
-							{{$location = trim( $marker->location, ',' );}}
+							{{$location = trim( $marker->locationToDisplay, ',' );}}
 							{$location}
 						</span>
 					</li>
