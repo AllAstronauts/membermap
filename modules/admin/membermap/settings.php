@@ -83,6 +83,8 @@ class _settings extends \IPS\Dispatcher\Controller
 			$form->add( new \IPS\Helpers\Form\Number( 'membermap_bbox_zoom', \intval( \IPS\Settings::i()->membermap_bbox_zoom ), FALSE, array( 'min' => 1, 'max' => 18 ) ) );
 			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_showNightAndDay', \IPS\Settings::i()->membermap_showNightAndDay ) );
 			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_showMemberList', \IPS\Settings::i()->membermap_showMemberList ) );
+			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_showProfileMap', \IPS\Settings::i()->membermap_showProfileMap ) );
+			
 
 			$form->addHeader( 'membermap_privacy' );
 			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_hideMarkerContent', \IPS\Settings::i()->membermap_hideMarkerContent ) );

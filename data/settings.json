@@ -108,6 +108,10 @@
         "default": "1"
     },
     {
+        "key": "membermap_showProfileMap",
+        "default": "1"
+    },
+    {
         "key": "membermap_syncLocationField",
         "default": "0"
     }

@@ -179,6 +179,7 @@ $lang = array(
 	'membermap_privacy'					=> "Privacy",
 	'membermap_hideMarkerContent'		=> "Hide location for member markers",
 	'membermap_hideMarkerContent_desc'	=> "Some markers reveal the exact address for some members. Enable this to hide this information from all member markers. Markers in other groups are not affected",
+	'membermap_showProfileMap'			=> "Show minimap in the member's profile?",
 
 	/* ACP Marker Group Settings */
 	'g_membermap_markerColour' 		=> "Marker Colour",
