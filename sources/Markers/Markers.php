@@ -290,6 +290,43 @@ class _Markers extends \IPS\Content\Item implements
 	}
 
 	/**
+	 * Returns the location
+	 *
+	 * @return	string
+	 */
+	public function get_popupProfileFields()
+	{
+		if ( $this->container()->type == 'member' )
+		{
+			if ( \IPS\Settings::i()->membermap_popupFields ) 
+			{
+				$_display 		= array();
+				$profileFields 	= $this->author()->profileFields( \IPS\core\ProfileFields\Field::PROFILE );
+				$fieldsToShow 	= explode( ',', \IPS\Settings::i()->membermap_popupFields );
+
+				foreach( $fieldsToShow as $_field )
+				{
+					list( $group, $field ) = explode( '-', $_field );
+
+					if ( isset( $profileFields['core_pfieldgroups_' . $group ] ) AND 
+						 isset( $profileFields['core_pfieldgroups_' . $group ]['core_pfield_' . $field ] ) AND
+						 ! empty( $profileFields['core_pfieldgroups_' . $group ]['core_pfield_' . $field ] ) )
+					{
+						$_display[] = array(
+										'title'	=> \IPS\Member::loggedIn()->language()->addToStack( 'core_pfield_' . $field ),
+										'value' => $profileFields['core_pfieldgroups_' . $group ]['core_pfield_' . $field ],
+						);
+					}
+				}
+
+				return $_display;
+			}
+		}
+
+		return NULL;
+	}
+
+	/**
 	 * [Node] Get buttons to display in tree
 	 * Example code explains return value
 	 * @endcode

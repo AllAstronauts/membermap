@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="160004">
+ <app key="membermap" version="160005">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
   <word key="membermap_clubnavtitle" js="0">Member Map</word>
@@ -14,7 +14,7 @@
   <word key="membermap_rebuilding_cache" js="0">Rebuilding Member Map Cache</word>
   <word key="membermap_group_sg" js="0">feature (NOT WORKING)</word>
   <word key="menu__membermap_membermap" js="0">Member Map</word>
-  <word key="menu__membermap_membermap_markers" js="0">Markers Groups</word>
+  <word key="menu__membermap_membermap_markers" js="0">Marker Groups</word>
   <word key="menu__membermap_membermap_mapmanager" js="0">Map Manager</word>
   <word key="menu__membermap_membermap_settings" js="0">Settings</word>
   <word key="module__membermap_membermap" js="0">Member Map</word>
@@ -157,6 +157,8 @@
   <word key="membermap_hideMarkerContent" js="0">Hide location for member markers</word>
   <word key="membermap_hideMarkerContent_desc" js="0">Some markers reveal the exact address for some members. Enable this to hide this information from all member markers. Markers in other groups are not affected</word>
   <word key="membermap_showProfileMap" js="0">Show minimap in the member's profile?</word>
+  <word key="membermap_popupSettings" js="0">Map popup settings</word>
+  <word key="membermap_popupFields" js="0">Additional profile fields to show</word>
   <word key="g_membermap_markerColour" js="0">Marker Colour</word>
   <word key="g_membermap_markerColour_desc" js="0">The members own marker will always be green</word>
   <word key="g_membermap_delete_own" js="0">Can delete own markers?</word>

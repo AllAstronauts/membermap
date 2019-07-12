@@ -92,6 +92,10 @@
         "default": "*"
     },
     {
+        "key": "membermap_popupFields",
+        "default": ""
+    },
+    {
         "key": "membermap_profileLocationField",
         "default": ""
     },

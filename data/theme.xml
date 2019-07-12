@@ -248,6 +248,13 @@
 	<p>{$marker->locationToDisplay}</p>
 {{endif}}
 
+{{if $profileFields = $marker->popupProfileFields AND \is_array( $profileFields )}}
+	<br>
+	{{foreach $profileFields as $field}}
+		<p><strong>{$field['title']}:</strong> {$field['value']|raw}</p>
+	{{endforeach}}
+{{endif}}
+
 {{if $marker->container()->allow_comments OR $marker->container()->allow_reviews}}
 	<ul class="ipsList_inline">
 		{{if $marker->container()->allow_comments }}
