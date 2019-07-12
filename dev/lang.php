@@ -20,7 +20,7 @@ $lang = array(
 
 	/* ACP Module/Menu titles */
 	'menu__membermap_membermap'					=> "Member Map",
-	'menu__membermap_membermap_markers' 		=> 'Markers Groups',
+	'menu__membermap_membermap_markers' 		=> 'Marker Groups',
 	'menu__membermap_membermap_mapmanager'	 	=> "Map Manager",
 	'menu__membermap_membermap_settings' 		=> "Settings",
 
@@ -180,6 +180,8 @@ $lang = array(
 	'membermap_hideMarkerContent'		=> "Hide location for member markers",
 	'membermap_hideMarkerContent_desc'	=> "Some markers reveal the exact address for some members. Enable this to hide this information from all member markers. Markers in other groups are not affected",
 	'membermap_showProfileMap'			=> "Show minimap in the member's profile?",
+	'membermap_popupSettings'			=> "Map popup settings",
+	'membermap_popupFields'				=> "Additional profile fields to show",
 
 	/* ACP Marker Group Settings */
 	'g_membermap_markerColour' 		=> "Marker Colour",

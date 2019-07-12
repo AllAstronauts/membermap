@@ -90,6 +90,29 @@ class _settings extends \IPS\Dispatcher\Controller
 			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_hideMarkerContent', \IPS\Settings::i()->membermap_hideMarkerContent ) );
 
 
+			$form->addHeader( 'membermap_popupSettings' );
+			
+			/* Need to store it slightly different, that's why we can't reuse the $profileFields defined further down */
+			$_profileFields = array( '' => ' -- ' . \IPS\Member::loggedIn()->language()->addToStack( 'membermap_profileLocationField' ) . ' -- ' );
+
+			foreach ( \IPS\core\ProfileFields\Field::fieldData() as $group => $fields )
+			{
+				foreach ( $fields as $id => $field )
+				{
+					$field = \IPS\core\ProfileFields\Field::constructFromData( $field )->buildHelper();
+					
+					$_profileFields[ 'core_pfieldgroups_' . $group ][ $group . '-' . $id ] = $field->name;
+				}
+			}
+
+			$value = \IPS\Settings::i()->membermap_popupFields ? explode( ',', \IPS\Settings::i()->membermap_popupFields ) : NULL;
+
+			$form->add( new \IPS\Helpers\Form\Stack( 
+				'membermap_popupFields',
+				$value, 
+				FALSE, array( 'stackFieldType' => 'Select', 'options' => $_profileFields ), NULL, NULL, NULL, 'membermap_popupFields' 
+			) );
+
 			/* Profile Synchronization */
 			$form->addTab( 'membermap_settings_tab_profile' );
 			$form->addHeader( 'membermap_autoUpdate' );
