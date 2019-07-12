@@ -71,6 +71,7 @@ class _settings extends \IPS\Dispatcher\Controller
 
 		if ( ! empty( \IPS\Settings::i()->membermap_mapQuestAPI ) )
 		{
+
 			/* Map Settings */
 			$form->attributes['data-controller'] 	= 'membermap.admin.membermap.settings';
 			$form->attributes['id'] 				= 'membermap_form_settings';
@@ -117,7 +118,18 @@ class _settings extends \IPS\Dispatcher\Controller
 			$form->addTab( 'membermap_settings_tab_profile' );
 			$form->addHeader( 'membermap_autoUpdate' );
 
+			
+			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_monitorLocationField', \IPS\Settings::i()->membermap_monitorLocationField, FALSE, 
+				array( 'togglesOn' => array( 'membermap_profileLocationField', 'membermap_monitorLocationField_groupPerm', 'membermap_syncLocationField' ) ) 
+			) );
+
 			$profileFields = array( '' => ' -- ' . \IPS\Member::loggedIn()->language()->addToStack( 'membermap_profileLocationField' ) . ' -- ' );
+
+			if ( \IPS\Db::i()->checkForTable( 'core_member_locations' ) )
+			{
+				$profileFields['999999'] = "Member Location, by Boris";
+			}
+
 			foreach ( \IPS\core\ProfileFields\Field::fieldData() as $group => $fields )
 			{
 				foreach ( $fields as $id => $field )
@@ -127,10 +139,6 @@ class _settings extends \IPS\Dispatcher\Controller
 					$profileFields[ 'core_pfieldgroups_' . $group ][ $id ] = $field->name;
 				}
 			}
-
-			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_monitorLocationField', \IPS\Settings::i()->membermap_monitorLocationField, FALSE, 
-				array( 'togglesOn' => array( 'membermap_profileLocationField', 'membermap_monitorLocationField_groupPerm', 'membermap_syncLocationField' ) ) 
-			) );
 
 			$value = \IPS\Settings::i()->membermap_profileLocationField ? explode( ',', \IPS\Settings::i()->membermap_profileLocationField ) : NULL;
 			$value = \is_array( $value ) ? array_map( 'intval', $value ) : $value;

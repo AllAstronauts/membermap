@@ -23,6 +23,8 @@ if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
  */
 class _locationSync extends \IPS\Task
 {
+	protected static $borisMemberLocation = 999999;
+
 	/**
 	 * Execute
 	 *
@@ -51,30 +53,59 @@ class _locationSync extends \IPS\Task
 		$_fields 	= array_map( 'intval', explode( ',', \IPS\Settings::i()->membermap_profileLocationField ) );
 		$limit		= 100;
 		$counter	= 0;
+		$nominatim  = NULL;
 
 		$memberMarkerGroupId = \IPS\membermap\Map::i()->getMemberGroupId();
 
 		try
 		{
-			$where = array();
-
+			$where 		= array();
+			$orWhere	= array();
 			foreach( $_fields as $fieldKey )
 			{
-				$where[] = array( "( pf.field_{$fieldKey} IS NOT NULL OR pf.field_{$fieldKey} != '' )" );
+				/* Not borisMemberLocation */
+				if ( $fieldKey != static::$borisMemberLocation )
+				{
+					$orWhere[] = "( pf.field_{$fieldKey} IS NOT NULL OR pf.field_{$fieldKey} != '' )";
+				}
 			}
 
+			$where[] = array( '( ' . implode( ' OR ', $orWhere ) . ' )' );
 			$where[] = array( "mm.marker_id IS NULL" );
 			$where[] = array( "m.membermap_location_synced = 0" );
 			$where[] = array( '( ! ' . \IPS\Db::i()->bitwiseWhere( \IPS\Member::$bitOptions['members_bitoptions'], 'bw_is_spammer' ) . ' )' );
+			$joins = array(
+						array(
+							'from' 	=> array( 'core_pfields_content', 'pf' ),
+							'where' => 'pf.member_id=m.member_id'
+						),
+						array(
+							'from' 	=> array( 'membermap_markers', 'mm' ),
+							'where' => 'mm.marker_member_id=m.member_id AND mm.marker_parent_id=' . $memberMarkerGroupId
+						),
+					);
+
+			/* Member Location by "Boris" */
+			if ( \IPS\Db::i()->checkForTable( 'core_member_locations' ) )
+			{
+				$where[] = array( 'cml.member_id IS NOT NULL' );
+				$joins[] = array(
+							'from'	=> array( 'core_member_locations', 'cml' ),
+							'where'	=> array( 'cml.member_id=m.member_id' ),
+				);
+			}
 
 			if( \IPS\Settings::i()->membermap_monitorLocationField_groupPerm !== '*' )
 			{
 				$where[] = \IPS\Db::i()->in( 'm.member_group_id', explode( ',', \IPS\Settings::i()->membermap_monitorLocationField_groupPerm ) );
 			}
 
-			$members = \IPS\Db::i()->select( '*', array( 'core_members', 'm' ), $where, 'm.last_activity DESC', array( 0, $limit ), NULL, NULL, \IPS\Db::SELECT_SQL_CALC_FOUND_ROWS )
-						->join( array( 'core_pfields_content', 'pf' ), 'pf.member_id=m.member_id' )
-						->join( array( 'membermap_markers', 'mm' ), 'mm.marker_member_id=m.member_id AND mm.marker_parent_id=' . $memberMarkerGroupId );
+			$members = \IPS\Db::i()->select( '*', array( 'core_members', 'm' ), $where, 'm.last_activity DESC', array( 0, $limit ), NULL, NULL, \IPS\Db::SELECT_SQL_CALC_FOUND_ROWS );
+
+			foreach( $joins as $join )
+			{
+				$members->join( $join['from'], $join['where'] );
+			}
 
 			$total = $members->count( TRUE );
 
@@ -88,14 +119,30 @@ class _locationSync extends \IPS\Task
 				$_member->membermap_location_synced = 1;
 				$_member->save();
 
+
 				/* Loop through our list of fields and choose the first populated field we find */
 				foreach( $_fields as $fieldKey )
 				{
-					$_location = trim( $member['field_' . $fieldKey ] );
-					
-					if ( ! empty( $_location ) AND $_location != "null" )
+					/* borisMemberLocation */
+					if ( $fieldKey == static::$borisMemberLocation )
 					{
-						break;
+						if ( $member['long'] )
+						{
+							$lat 		= $member['lat'];
+							$lng 		= $member['long'];
+							$_location 	= $member['description'];
+
+							break;
+						}
+					}
+					else
+					{
+						$_location = trim( $member['field_' . $fieldKey ] );
+						
+						if ( ! empty( $_location ) AND $_location != "null" )
+						{
+							break;
+						}
 					}
 				}
 
@@ -205,10 +252,7 @@ class _locationSync extends \IPS\Task
 			$this->save();
 
 			/* Turn the setting off as well */
-			//\IPS\Db::i()->update( 'core_sys_conf_settings', array( 'conf_value' => 0 ), array( 'conf_key=?', 'membermap_syncLocationField' ) );
 			\IPS\Settings::i()->changeValues( array( 'membermap_syncLocationField' => 0 ) );
-			unset( \IPS\Data\Store::i()->settings );
-			return;
 		}
 
 		return NULL;

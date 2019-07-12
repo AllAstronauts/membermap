@@ -18,5 +18,9 @@
     "systemMember": {
         "type": "C",
         "class": "\\IPS\\Member"
+    },
+    "coreModuleFrontMembersProfile": {
+        "type": "C",
+        "class": "\\IPS\\core\\modules\\front\\members\\profile"
     }
 }
