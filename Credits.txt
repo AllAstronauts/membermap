@@ -8,7 +8,7 @@ jQuery UI
 LeafletJS
 	Description: Map library
 	Location: interface/leaflet
-	Included version: 1.4.0
+	Included version: 1.5.1
 	Website: http://leafletjs.com/
 	License: BSD 2-clause "Simplified" https://github.com/Leaflet/Leaflet/blob/master/LICENSE
 
@@ -29,7 +29,7 @@ Leaflet.Contextmenu
 Leaflet.Fullscreen
 	Description: Leaflet Fullscreen library
 	Location: interface/leaflet/plugins/Control.FullScreen.js
-	Included version: 1.4.5
+	Included version: 1.5.1
 	Website: https://github.com/brunob/leaflet.fullscreen
 	License: MIT https://github.com/brunob/leaflet.fullscreen/blob/master/LICENSE
 
@@ -43,7 +43,7 @@ Leaflet.markercluster
 Leaflet-providers
 	Description: List of free-to-use map tile providers for Leaflet
 	Location: interface/leaflet/plugins/leaflet-providers.js
-	Included version: 1.6.0
+	Included version: 1.8.0
 	Website: https://github.com/leaflet-extras/leaflet-providers
 	License: BSD 2-clause "Simplified" https://github.com/leaflet-extras/leaflet-providers/blob/master/license.md
 
