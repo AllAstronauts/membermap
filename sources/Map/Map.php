@@ -453,13 +453,6 @@ class _Map
 
 
 		$selectColumns = array( 'mm.*', 'mg.*', 'm.member_id', 'm.name', 'm.members_seo_name', 'm.member_group_id', 'm.pp_photo_type', 'm.pp_main_photo', 'm.pp_thumb_photo', 'm.timezone', 'pi.perm_2 as viewPerms' );
-		
-		if ( \IPS\Settings::i()->allow_gravatars )
-		{
-			$selectColumns[] = 'm.pp_gravatar';
-			$selectColumns[] = 'm.email';
-			$selectColumns[] = 'm.members_bitoptions';
-		}
 
 		/* Remember to update the queue too */
 		$_markers = \IPS\Db::i()->select( implode( ',', $selectColumns ), array( 'membermap_markers', 'mm' ), array( 'marker_open=1' ), 'mg.group_position ASC, mm.marker_name ASC' )

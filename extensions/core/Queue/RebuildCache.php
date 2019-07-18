@@ -87,13 +87,6 @@ class _RebuildCache
 		$customMarkers = array();
 		
 		$selectColumns = array( 'mm.*', 'mg.*', 'm.member_id', 'm.name', 'm.members_seo_name', 'm.member_group_id', 'm.pp_photo_type', 'm.pp_main_photo', 'm.pp_thumb_photo', 'pi.perm_2 as viewPerms' );
-		
-		if ( \IPS\Settings::i()->allow_gravatars )
-		{
-			$selectColumns[] = 'm.pp_gravatar';
-			$selectColumns[] = 'm.email';
-			$selectColumns[] = 'm.members_bitoptions';
-		}
 
 		/* Remember to update membermap\Map too */
 		$_markers = \IPS\Db::i()->select( implode( ',', $selectColumns ), array( 'membermap_markers', 'mm' ), array( 'marker_open=1' ), 'mg.group_position ASC, mm.marker_name ASC', array( $offset, $this->perCycle ) )
