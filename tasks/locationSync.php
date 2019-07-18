@@ -23,8 +23,6 @@ if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
  */
 class _locationSync extends \IPS\Task
 {
-	protected static $borisMemberLocation = 999999;
-
 	/**
 	 * Execute
 	 *
@@ -64,13 +62,17 @@ class _locationSync extends \IPS\Task
 			foreach( $_fields as $fieldKey )
 			{
 				/* Not borisMemberLocation */
-				if ( $fieldKey != static::$borisMemberLocation )
+				if ( $fieldKey != 999999 )
 				{
 					$orWhere[] = "( pf.field_{$fieldKey} IS NOT NULL OR pf.field_{$fieldKey} != '' )";
 				}
 			}
 
-			$where[] = array( '( ' . implode( ' OR ', $orWhere ) . ' )' );
+			if ( \count( $orWhere ) )
+			{
+				$where[] = array( '( ' . implode( ' OR ', $orWhere ) . ' )' );
+			}
+			
 			$where[] = array( "mm.marker_id IS NULL" );
 			$where[] = array( "m.membermap_location_synced = 0" );
 			$where[] = array( '( ! ' . \IPS\Db::i()->bitwiseWhere( \IPS\Member::$bitOptions['members_bitoptions'], 'bw_is_spammer' ) . ' )' );
@@ -124,7 +126,7 @@ class _locationSync extends \IPS\Task
 				foreach( $_fields as $fieldKey )
 				{
 					/* borisMemberLocation */
-					if ( $fieldKey == static::$borisMemberLocation )
+					if ( $fieldKey == 999999 )
 					{
 						if ( $member['long'] )
 						{
@@ -232,12 +234,12 @@ class _locationSync extends \IPS\Task
 		/* Have to catch \RuntimeException to catch the BAD_JSON error */
 		catch ( \RuntimeException $e )
 		{
-			\IPS\Log::log( array( $e->getMessage(), $nominatim ), 'membermap' );
+			\IPS\Log::log( array( $e->getMessage(), $nominatim, $where ), 'membermap' );
 		}
 		/* Any other exception means an error which should be logged */
 		catch ( \Exception $e )
 		{
-			\IPS\Log::log( array( $e->getMessage(), $nominatim ), 'membermap' );
+			\IPS\Log::log( array( $e->getMessage(), $nominatim, $where ), 'membermap' );
 			
 			throw new \IPS\Task\Exception( $this, $e->getMessage() );
 		}
