@@ -142,6 +142,7 @@ $lang = array(
 	'membermap_showNightAndDay'			=> "Show a 'night and day' overlay",
 	'membermap_showMemberList'			=> "Show a list of markers in the sidebar?",
 	'membermap_groupByMemberGroup'		=> "Group member markers by member group?",
+	'membermap_highlightStaff'			=> "Group members of staff on top of sidebar?",
 	'membermap_autoUpdate'				=> "Profile location synchronisation",
 	'membermap_monitorLocationField' 	=> "Enable profile sync?",
 	'membermap_profileLocationField' 	=> "Select profile field(s)",
@@ -269,6 +270,7 @@ $lang = array(
 	'block_memberList_staff'				=> "Staff members",
 	'block_memberList_followers'			=> "Members you follow",
 	'block_memberList_others'				=> "Other members",
+	'block_memberList_members'				=> "Members",
 
 	/* Digests */
 	'x_created_marker_in'		=> "%s created a marker in %s",

@@ -148,8 +148,9 @@ class _showmap extends \IPS\Dispatcher\Controller
 			'membermap_bbox'				=> json_decode( \IPS\Settings::i()->membermap_bbox ),
 			'membermap_bbox_zoom'			=> \intval( \IPS\Settings::i()->membermap_bbox_zoom ),
 			'membermap_defaultMaps'			=> $defaultMaps,
-			'membermap_enable_clustering' 	=> \IPS\Settings::i()->membermap_enable_clustering == 1 ? 1 : 0,
-			'membermap_groupByMemberGroup'	=> \IPS\Settings::i()->membermap_groupByMemberGroup == 1 ? 1 : 0,
+			'membermap_enable_clustering' 	=> \IPS\Settings::i()->membermap_enable_clustering == 1 ?: 0,
+			'membermap_groupByMemberGroup'	=> \IPS\Settings::i()->membermap_groupByMemberGroup == 1 ?: 0,
+			'membermap_highlightStaff'		=> \IPS\Settings::i()->membermap_highlightStaff == 1 ?: 0,
 			'membermap_onlyShowGroup'		=> \IPS\Request::i()->group ? explode( ',', mb_strtolower( \IPS\Request::i()->group ) ) : array(),
 			'membermap_showNightAndDay'		=> \IPS\Settings::i()->membermap_showNightAndDay == 1 ?: 0,
 			'membermap_membersIFollow'		=> iterator_to_array( \IPS\Db::i()->select( 'follow_rel_id', 'core_follow', array( 'follow_app=? AND follow_area=? AND follow_member_id=?', 'core', 'member', \IPS\Member::loggedIn()->member_id ) ) )

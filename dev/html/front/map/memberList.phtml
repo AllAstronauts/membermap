@@ -25,7 +25,11 @@
 
 		<div id="memberList_others" class='ipsHide'>
 			<h3 class='ipsType_reset ipsWidget_title ipsHide'>
-				{lang="block_memberList_others"}
+				{{if settings.membermap_highlightStaff}}
+					{lang="block_memberList_others"}
+				{{else}}
+					{lang="block_memberList_members"}
+				{{endif}}
 			</h3>
 			<div class='ipsSideMenu ipsAreaBackground_reset ipsPad'>
 				<ul class='ipsList_reset ipsList_bullets'>
