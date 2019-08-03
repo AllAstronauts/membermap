@@ -28,7 +28,7 @@ class _MarkerStaticMap
 	 *
 	 * @return	int
 	 */
-	public function count()
+	public function count(): int
 	{
 		return \IPS\Db::i()->select( 'COUNT(*)', 'membermap_markers', 'marker_embedimage IS NOT NULL' )->first();
 	}
@@ -63,7 +63,7 @@ class _MarkerStaticMap
 	 * @param	string	$file		The file path to check
 	 * @return	bool
 	 */
-	public function isValidFile( $file )
+	public function isValidFile( $file ): bool
 	{
 		try
 		{
@@ -81,7 +81,7 @@ class _MarkerStaticMap
 	 *
 	 * @return	void
 	 */
-	public function delete()
+	public function delete(): void
 	{
 		foreach( \IPS\Db::i()->select( '*', 'membermap_markers', "marker_embedimage IS NOT NULL" ) as $marker )
 		{

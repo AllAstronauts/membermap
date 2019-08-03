@@ -14,7 +14,7 @@ class membermap_hook_memberClub extends _HOOK_CLASS_
 	 *
 	 * @return	array
 	 */
-	public function nodes()
+	public function nodes(): array
 	{
 		$return = parent::nodes();
 
@@ -42,7 +42,7 @@ class membermap_hook_memberClub extends _HOOK_CLASS_
 	 *
 	 * @return void
 	 */
-	public function save()
+	public function save(): void
 	{
 		parent::save();
 

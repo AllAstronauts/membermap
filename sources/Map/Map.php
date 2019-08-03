@@ -43,7 +43,7 @@ class _Map
 	 * 
 	 * @return int Group ID
 	 */
-	public function getMemberGroupId()
+	public function getMemberGroupId(): int
 	{
 		static $groupId = null;
 
@@ -122,7 +122,7 @@ class _Map
 	 * @param 		bool 	Load member and group data
 	 * @return		mixed 	Members location record, or false if non-existent
 	 */
-	public function getMarkerByMember( $memberId, $format=TRUE, $loadMemberdata=TRUE )
+	public function getMarkerByMember( int $memberId, $format=TRUE, $loadMemberdata=TRUE )
 	{
 		static $marker = array();
 		if ( ! \intval( $memberId ) )
@@ -243,7 +243,7 @@ class _Map
 	 * @param 	bool 	Request coming from a task?
 	 * @return 	array 	Lat/lng/formatted address
 	*/
-	public function getLatLng( $location, $fromTask = FALSE )
+	public function getLatLng( string $location, bool $fromTask = FALSE )
 	{
 		static $locCache = array();
 		$locKey = md5( $location );
@@ -327,7 +327,7 @@ class _Map
 	 *
 	 * @return 	bool 	TRUE when OK, FALSE when rewrite was needed
 	 */
-	public function checkForCache()
+	public function checkForCache(): bool
 	{
 		$cacheTime 	= isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
 
@@ -349,7 +349,7 @@ class _Map
 	 *
 	 * @return void
 	 */
-	public function invalidateJsonCache()
+	public function invalidateJsonCache(): void
 	{
 		/* Just reset cachetime to 0. checkForCache() will deal with the actual recaching on the next load */
 		\IPS\Data\Store::i()->membermap_cacheTime = 0;
@@ -361,7 +361,7 @@ class _Map
 	 *
 	 * @return void
 	 */
-	public function deleteCacheFiles()
+	public function deleteCacheFiles(): void
 	{
 		/* Remove all files from cache dir. 
 		 * We need to do this in case of situations were a file won't be overwritten (when deleting markers), 
@@ -385,9 +385,9 @@ class _Map
 	/**
 	 * Rewrite cache file
 	 * 
-	 * @return	array	Parsed list of markers
+	 * @return	void
 	 */
-	public function recacheJsonFile()
+	public function recacheJsonFile(): void
 	{
 		/* https://bugs.php.net/bug.php?id=72567 */
 		ini_set('serialize_precision', 14);
@@ -531,7 +531,7 @@ class _Map
 	 * @param 		array 	Markers
 	 * @return		array	Markers
 	 */
-	public function formatMemberMarkers( array $markers )
+	public function formatMemberMarkers( array $markers ): array
 	{
 		$markersToKeep = array();
 		$groupCache = \IPS\Data\Store::i()->groups;
@@ -614,7 +614,7 @@ class _Map
 	 * @param 		array 	Markers
 	 * @return		array	Markers
 	 */
-	public function formatCustomMarkers( array $markers )
+	public function formatCustomMarkers( array $markers ): array
 	{
 		$markersToKeep = array();
 		$validColours = array( 

@@ -28,7 +28,7 @@ class _Permissions
 	 *
 	 * @return	array
 	 */
-	public function getNodeClasses()
+	public function getNodeClasses(): array
 	{		
 		return array(
 			'IPS\membermap\Markers\Groups' => function( $current, $group )

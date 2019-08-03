@@ -28,7 +28,7 @@ class _mapmanager extends \IPS\Dispatcher\Controller
 	 *
 	 * @return	void
 	 */
-	public function execute()
+	public function execute(): void
 	{
 		\IPS\Dispatcher::i()->checkAcpPermission( 'mapmanager_manage' );
 
@@ -46,7 +46,7 @@ class _mapmanager extends \IPS\Dispatcher\Controller
 	 *
 	 * @return	void
 	 */
-	protected function manage()
+	protected function manage(): void
 	{
 		$defaultMaps = \IPS\membermap\Application::getEnabledMaps();
 
@@ -65,9 +65,10 @@ class _mapmanager extends \IPS\Dispatcher\Controller
 
 	/**
 	 * Update default maps
+	 * 
 	 * @return void
 	 */
-	public function update()
+	public function update(): void
 	{
 		$maps = \IPS\Request::i()->maps;
 		

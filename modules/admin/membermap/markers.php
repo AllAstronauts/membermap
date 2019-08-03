@@ -33,7 +33,7 @@ class _markers extends \IPS\Node\Controller
 	 *
 	 * @return	void
 	 */
-	public function execute()
+	public function execute(): void
 	{
 		\IPS\Dispatcher::i()->checkAcpPermission( 'markers_manage' );
 
@@ -45,7 +45,7 @@ class _markers extends \IPS\Node\Controller
 	 *
 	 * @return	array
 	 */
-	public function _getRootButtons()
+	public function _getRootButtons(): array
 	{
 		$nodeClass = $this->nodeClass;
 		$buttons   = array();
@@ -72,16 +72,21 @@ class _markers extends \IPS\Node\Controller
 	 *
 	 * @return	string
 	 */
-	protected function manage()
+	protected function manage(): void
 	{
 		/* Javascript & CSS */
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'admin_membermap.js', 'membermap', 'admin' ) );
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css( 'membermap.css', 'membermap' ) );
 		
-		return parent::manage();
+		parent::manage();
 	}
 
-	public function import()
+	/**
+	 * Import from Google Maps/Earth KML/KMZ file
+	 * 
+	 * @return void
+	 */
+	public function import(): void
 	{
 		$id = isset( \IPS\Request::i()->id ) ? \intval( \IPS\Request::i()->id ) : 0;
 
@@ -267,7 +272,16 @@ class _markers extends \IPS\Node\Controller
 		\IPS\Output::i()->output = $form;
 	}
 
-	protected function _parseKml( &$markers, $_folder, $prevFolderName='' )
+	/**
+	 * Parse KML entry
+	 * 
+	 * @param  array  &$markers       	Array of markers
+	 * @param  object $_folder        	\IPS\Xml\SimpleXML
+	 * @param  string $prevFolderName 	[description]
+	 * 
+	 * @return void
+	 */
+	protected function _parseKml( array &$markers, $_folder, $prevFolderName='' ): void
 	{
 		if ( isset( $_folder->Folder ) )
 		{
@@ -296,7 +310,16 @@ class _markers extends \IPS\Node\Controller
 		}
 	}
 
-	protected function _parseKmlPlacemark( &$markers, $folder, $prevFolderName )
+	/**
+	 * Pare KML placemark
+	 * 
+	 * @param  array  &$markers       Array of markers
+	 * @param  object $folder         \IPS\Xml\SimpleXML
+	 * @param  string $prevFolderName Group name
+	 * 
+	 * @return void
+	 */
+	protected function _parseKmlPlacemark( array &$markers, object $folder, string $prevFolderName ): void
 	{
 		foreach( $folder->Placemark as $placemark )
 		{

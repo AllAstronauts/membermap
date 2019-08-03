@@ -28,7 +28,7 @@ class _membermap extends \IPS\core\FrontNavigation\FrontNavigationAbstract
 	 *
 	 * @return	string
 	 */
-	public static function typeTitle()
+	public static function typeTitle(): string
 	{
 		return \IPS\Member::loggedIn()->language()->addToStack('frontnavigation_membermap');
 	}
@@ -37,7 +37,7 @@ class _membermap extends \IPS\core\FrontNavigation\FrontNavigationAbstract
 	 *
 	 * @return	bool
 	 */
-	public function canView()
+	public function canView(): bool
 	{
 		return parent::canView() AND \IPS\Member::loggedIn()->canAccessModule( \IPS\Application\Module::get( 'membermap', 'membermap' ) );
 	}
@@ -49,7 +49,7 @@ class _membermap extends \IPS\core\FrontNavigation\FrontNavigationAbstract
 	 *
 	 * @return	bool
 	 */
-	public static function isEnabled()
+	public static function isEnabled(): bool
 	{
 		return TRUE;
 	}
@@ -59,7 +59,7 @@ class _membermap extends \IPS\core\FrontNavigation\FrontNavigationAbstract
 	 *
 	 * @return	bool
 	 */
-	public function canAccessContent()
+	public function canAccessContent(): bool
 	{
 		return \IPS\Member::loggedIn()->canAccessModule( \IPS\Application\Module::get( 'membermap', 'membermap' ) );
 	}
@@ -69,7 +69,7 @@ class _membermap extends \IPS\core\FrontNavigation\FrontNavigationAbstract
 	 *
 	 * @return	string
 	 */
-	public function title()
+	public function title(): string
 	{
 		return \IPS\Member::loggedIn()->language()->addToStack('frontnavigation_membermap');
 	}
@@ -79,7 +79,7 @@ class _membermap extends \IPS\core\FrontNavigation\FrontNavigationAbstract
 	 *
 	 * @return	\IPS\Http\Url
 	 */
-	public function link()
+	public function link(): object
 	{
 		return \IPS\Http\Url::internal( "app=membermap&module=membermap&controller=showmap", 'front', 'membermap' );
 	}
@@ -89,7 +89,7 @@ class _membermap extends \IPS\core\FrontNavigation\FrontNavigationAbstract
 	 *
 	 * @return	bool
 	 */
-	public function active()
+	public function active(): bool
 	{
 		return \IPS\Dispatcher::i()->application->directory === 'membermap';
 	}
@@ -99,7 +99,7 @@ class _membermap extends \IPS\core\FrontNavigation\FrontNavigationAbstract
 	 *
 	 * @return	array
 	 */
-	public function children( $noStore=FALSE )
+	public function children( $noStore=FALSE ): array
 	{
 		return array();
 	}

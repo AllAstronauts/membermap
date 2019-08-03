@@ -11,9 +11,9 @@ class membermap_hook_calendarEvent extends _HOOK_CLASS_
 	/**
 	 * Save Changed Columns
 	 *
-	 * @return	void
+	 * @return void
 	 */
-	public function save()
+	public function save(): void
 	{
 		parent::save();
 
@@ -71,7 +71,6 @@ class membermap_hook_calendarEvent extends _HOOK_CLASS_
 					}
 				}
 			}
-
 		}
 	}
 }

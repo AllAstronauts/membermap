@@ -28,7 +28,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 	 *
 	 * @return	void
 	 */
-	public function execute()
+	public function execute(): void
 	{
 		/* Calling this here, as it will throw an error if the key isn't present */
 		\IPS\membermap\Application::getApiKeys( 'mapquest' );
@@ -41,7 +41,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 	 *
 	 * @return	void
 	 */
-	protected function manage()
+	protected function manage(): void
 	{
 		$markers 	= array();
 		$club 		= NULL;
@@ -176,7 +176,7 @@ EOF;
 	 *
 	 * @return	void
 	 */
-	protected function add()
+	protected function add(): void
 	{
 		$existing = NULL;
 
@@ -309,7 +309,7 @@ EOF;
 	 *
 	 * @return	void
 	 */
-	protected function delete()
+	protected function delete(): void
 	{
 		\IPS\Session::i()->csrfCheck();
 
@@ -336,7 +336,7 @@ EOF;
 	 * 
 	 * @return void
 	 */
-	protected function embed()
+	protected function embed(): void
 	{
 		$this->manage();
 

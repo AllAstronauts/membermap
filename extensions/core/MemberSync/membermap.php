@@ -30,7 +30,7 @@ class _membermap
 	 * @param	\IPS\Member	$member2	Member being removed
 	 * @return	void
 	 */
-	public function onMerge( $member, $member2 )
+	public function onMerge( $member, $member2 ): void
 	{
 		/* A member can't have multiple locations, so we'll have to delete one of them */
 		$memberLoc 	= \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE );
@@ -58,7 +58,7 @@ class _membermap
 	 * @param	$member	\IPS\Member	The member
 	 * @return	void
 	 */
-	public function onDelete( $member )
+	public function onDelete( $member ): void
 	{
 		$memberLoc 	= \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE, FALSE );
 
@@ -74,7 +74,7 @@ class _membermap
 	 * @param	$member	\IPS\Member	The member
 	 * @return	void
 	 */
-	public function onSetAsSpammer( $member )
+	public function onSetAsSpammer( $member ): void
 	{
 		$memberLoc 	= \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE, FALSE );
 
@@ -90,7 +90,7 @@ class _membermap
 	 * @param	$member	\IPS\Member	The member
 	 * @return	void
 	 */
-	public function onUnSetAsSpammer( $member )
+	public function onUnSetAsSpammer( $member ): void
 	{
 		$memberLoc 	= \IPS\membermap\Map::i()->getMarkerByMember( $member->member_id, FALSE, FALSE );
 
@@ -116,7 +116,7 @@ class _membermap
 	 * @param	$changes	array		The changes
 	 * @return	void
 	 */
-	public function onProfileUpdate( $member, $changes )
+	public function onProfileUpdate( $member, $changes ): void
 	{
 		/* An endless loop is formed when \Item::createItem() is saving \Member, which then fires this membersync, which then calls \Item::createItem, and so on, and so on */
 		static $wereDoneHere = false;

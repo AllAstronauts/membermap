@@ -33,7 +33,7 @@ class _groups extends \IPS\Content\Controller
 	 *
 	 * @return	void
 	 */
-	public function execute()
+	public function execute(): void
 	{
 		\IPS\Output::i()->breadcrumb[] = array( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=showmap', 'front', 'membermap' ), \IPS\Member::loggedIn()->language()->addToStack( 'module__membermap_membermap' ) );
 		\IPS\Output::i()->breadcrumb = array_reverse( \IPS\Output::i()->breadcrumb );
@@ -46,7 +46,7 @@ class _groups extends \IPS\Content\Controller
 	 *
 	 * @return	void
 	 */
-	protected function manage()
+	protected function manage(): void
 	{
 		if ( isset( \IPS\Request::i()->id ) )
 		{
@@ -68,10 +68,10 @@ class _groups extends \IPS\Content\Controller
 	/**
 	 * Show marker group
 	 * 
-	 * @param  \IPS\membermap\Markers\Group $group Group object
+	 * @param  \IPS\membermap\Markers\Groups $group Group object
 	 * @return void
 	 */
-	protected function _group( $group )
+	protected function _group( \IPS\membermap\Markers\Groups $group ): void
 	{
 		$_count = \IPS\membermap\Markers\Markers::getItemsWithPermission( array( array( \IPS\membermap\Markers\Markers::$databasePrefix . \IPS\membermap\Markers\Markers::$databaseColumnMap['container'] . '=?', $group->_id ) ), NULL, 1, 'read', NULL, 0, NULL, FALSE, FALSE, FALSE, TRUE );
 
@@ -205,7 +205,7 @@ class _groups extends \IPS\Content\Controller
 	 * 
 	 * @return void
 	 */
-	protected function _index()
+	protected function _index(): void
 	{
 		/* Online User Location */
 		\IPS\Session::i()->setLocation( \IPS\Http\Url::internal( 'app=membermap&module=markers&controller=groups', 'front', 'markers' ), array(), 'loc_membermap_browsing_groups' );
