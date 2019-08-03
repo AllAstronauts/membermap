@@ -234,6 +234,39 @@
 		</div>
 	</div>
 </div>]]></template>
+ <template template_group="map" template_name="pagesPopup" template_data="$record, $location" template_location="front" template_app="membermap"><![CDATA[<p class='ipsType_large'>
+	<a href='{$record->url()}' target='_blank' rel="nooptimize">
+		{$record->_title}
+	</a>
+</p>
+{{if $record->container()->allow_reviews AND $record->mapped( 'num_reviews' ) > 0 }}
+	{template="rating" group="global" location="front" app="core" params="'large', $record->averageReviewRating(), \IPS\Settings::i()->reviews_rating_out_of, $record->memberReviewRating()"}
+{{endif}}
+
+<div class='membermap_popupContent'>{$record->description|raw}</div>
+
+{{if $location}}
+	<p>{$location|raw}</p>
+{{endif}}
+
+{{if $record->container()->allow_comments OR $record->container()->allow_reviews}}
+	<ul class="ipsList_inline">
+		{{if $record->container()->allow_comments }}
+			<li class='ipsType_light ipsType_small'>
+				<a href="{$record->lastCommentPageUrl()}" target='_blank' rel="nooptimize">
+					<i class='fa fa-comment'></i> {lang="marker_comment_count" pluralize="$record->mapped('num_comments')"}
+				</a>
+			</li>
+		{{endif}}
+		{{if $record->container()->allow_reviews}}
+			<li class='ipsType_light ipsType_small'>
+				<a href="{$record->lastReviewPageUrl()}" target='_blank' rel="nooptimize">
+					{lang="marker_review_count" pluralize="$record->mapped('num_reviews')"} 
+				</a>
+			</li>
+		{{endif}}
+	</ul>
+{{endif}}]]></template>
  <template template_group="map" template_name="popupContent" template_data="$marker" template_location="front" template_app="membermap"><![CDATA[<div class="ipsPhotoPanel ipsPhotoPanel_tiny ipsClearfix">
 	<a class='ipsUserPhoto ipsUserPhoto_mini' href='{$marker->author()->url()}' target='_blank' rel="nooptimize">
 		<img src='{$marker->author()->photo}' itemprop='image' alt=''>

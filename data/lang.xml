@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="160006">
+ <app key="membermap" version="160007">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
   <word key="membermap_clubnavtitle" js="0">Member Map</word>
@@ -109,6 +109,7 @@
   <word key="membermap_settings_tab_profile" js="0">Profile sync</word>
   <word key="membermap_settings_tab_calendar" js="0">Calendar ext.</word>
   <word key="membermap_settings_tab_clubs" js="0">Clubs ext.</word>
+  <word key="membermap_settings_tab_pages" js="0">Pages ext.</word>
   <word key="membermap_enable_clustering" js="0">Enable Marker Clustering?</word>
   <word key="membermap_bbox_location" js="0">Define Forced Bounding Box</word>
   <word key="membermap_bbox_location_desc" js="0">Use the field above to search for a location that will always be in center of your map. The map will only focus on this area, regardless of markers outside of it. Try a few of the results from the search untill you find one that suits your needs.</word>
@@ -133,7 +134,7 @@
   <word key="membermap_calendars" js="0">Enabled calendars</word>
   <word key="membermap_calendar_days_ahead" js="0">Number of days ahead to show</word>
   <word key="membermap_calendar_icon" js="0">Marker Icon</word>
-  <word key="membermap_calendar_icon_desc" js="0"><![CDATA[Choose any icon from the <a href='http://fontawesome.io/icons/' target='_blank'>Font Awesome icon set</a>, input the full name in the box above, i.e. `fa-calendar`]]></word>
+  <word key="membermap_calendar_icon_desc" js="0"><![CDATA[Choose any icon from the <a href='https://fontawesome.com/v4.7.0/icons/' target='_blank'>Font Awesome icon set</a>, input the full name in the box above, i.e. `fa-calendar`]]></word>
   <word key="membermap_calendar_colour" js="0">Marker Icon Colour</word>
   <word key="membermap_calendar_bgcolour" js="0">Marker Pin Colour</word>
   <word key="membermap_calendar_marker_example" js="0">Marker Preview</word>
@@ -141,7 +142,7 @@
   <word key="membermap_clubsExt" js="0">Enable Clubs Extension?</word>
   <word key="membermap_clubs" js="0">Enabled Clubs</word>
   <word key="membermap_clubs_icon" js="0">Marker Icon</word>
-  <word key="membermap_clubs_icon_desc" js="0"><![CDATA[Choose any icon from the <a href='http://fontawesome.io/icons/' target='_blank'>Font Awesome icon set</a>, input the full name in the box above, i.e. `fa-users`]]></word>
+  <word key="membermap_clubs_icon_desc" js="0"><![CDATA[Choose any icon from the <a href='https://fontawesome.com/v4.7.0/icons/' target='_blank'>Font Awesome icon set</a>, input the full name in the box above, i.e. `fa-users`]]></word>
   <word key="membermap_clubs_colour" js="0">Marker Icon Colour</word>
   <word key="membermap_clubs_bgcolour" js="0">Marker Pin Colour</word>
   <word key="membermap_clubs_marker_example" js="0">Marker Preview</word>
@@ -149,6 +150,17 @@
   <word key="membermap_clubs_showClubLocations_desc" js="0"><![CDATA[<a href='{internal.app=core&module=applications&controller=enhancements&do=edit&id=core_GoogleMaps}' target='_blank'>Google Maps integration</a> and <a href='{internal.app=core&module=clubs&controller=settings&searchResult=clubs_locations}' target='_blank'>'Clubs have physical locations?'</a> needs to be enabled for this to work.]]></word>
   <word key="membermap_clubs_showInClubHeader" js="0">Show a link to &quot;Member Map&quot; in the clubs header</word>
   <word key="membermap_clubs_showInClubHeader_desc" js="0">This will open a map that shows the location of the club members that also have a Member Map marker</word>
+  <word key="membermap_pagesExt_header" js="0">Pages Extension</word>
+  <word key="membermap_pagesExt" js="0">Enable Pages Extension?</word>
+  <word key="membermap_pagesExt_desc" js="0">When enabled, this will show database records that have specified a location.</word>
+  <word key="membermap_pages_databases" js="0">Enabled databases</word>
+  <word key="membermap_pages_databases_desc" js="0">Note: This will only show databases that have a field of the type 'Address'.</word>
+  <word key="membermap_pages_days_behind" js="0">From the last X days</word>
+  <word key="membermap_pages_icon" js="0">Marker Icon</word>
+  <word key="membermap_pages_icon_desc" js="0"><![CDATA[Choose any icon from the <a href='https://fontawesome.com/v4.7.0/icons/' target='_blank'>Font Awesome icon set</a>, input the full name in the box above, i.e. `fa-pages`]]></word>
+  <word key="membermap_pages_colour" js="0">Marker Icon Colour</word>
+  <word key="membermap_pages_bgcolour" js="0">Marker Pin Colour</word>
+  <word key="membermap_pages_marker_example" js="0">Marker Preview</word>
   <word key="membermap_resetmembersync" js="0">Restart sync process</word>
   <word key="membermap_resetmembersync_desc" js="0">Re-process all your members who don't already have a Member Map marker?</word>
   <word key="membermap_restrictCountries" js="0">Limits the location search to specific countries</word>
@@ -166,7 +178,7 @@
   <word key="group_marker_example" js="0">Marker Preview</word>
   <word key="group_name" js="0">Marker Group Name</word>
   <word key="group_pin_icon" js="0">Marker Icon</word>
-  <word key="group_pin_icon_desc" js="0"><![CDATA[Choose any icon from the <a href='http://fontawesome.io/icons/' target='_blank'>Font Awesome icon set</a>, input the full name in the box above, i.e. `fa-map-marker`]]></word>
+  <word key="group_pin_icon_desc" js="0"><![CDATA[Choose any icon from the <a href='https://fontawesome.com/v4.7.0/icons/' target='_blank'>Font Awesome icon set</a>, input the full name in the box above, i.e. `fa-map-marker`]]></word>
   <word key="group_pin_colour" js="0">Marker Icon Colour</word>
   <word key="group_pin_bg_colour" js="0">Marker Background Colour</word>
   <word key="group_pin_bg_colour_white" js="0">White</word>
