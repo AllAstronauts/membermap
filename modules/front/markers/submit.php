@@ -28,7 +28,7 @@ class _submit extends \IPS\Dispatcher\Controller
 	 *
 	 * @return	void
 	 */
-	public function execute(): void
+	public function execute()
 	{
 		\IPS\Output::i()->breadcrumb[] = array( \IPS\Http\Url::internal( 'app=membermap&module=membermap&controller=showmap', 'front', 'membermap' ), \IPS\Member::loggedIn()->language()->addToStack( 'module__membermap_membermap' ) );
 		\IPS\Output::i()->breadcrumb = array_reverse( \IPS\Output::i()->breadcrumb );
@@ -62,7 +62,7 @@ class _submit extends \IPS\Dispatcher\Controller
 	 *
 	 * @return	void
 	 */
-	protected function manage(): void
+	protected function manage()
 	{
 		$group = NULL;
 		if ( isset( \IPS\Request::i()->group ) )

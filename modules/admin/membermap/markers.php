@@ -33,7 +33,7 @@ class _markers extends \IPS\Node\Controller
 	 *
 	 * @return	void
 	 */
-	public function execute(): void
+	public function execute()
 	{
 		\IPS\Dispatcher::i()->checkAcpPermission( 'markers_manage' );
 
@@ -45,7 +45,7 @@ class _markers extends \IPS\Node\Controller
 	 *
 	 * @return	array
 	 */
-	public function _getRootButtons(): array
+	public function _getRootButtons()
 	{
 		$nodeClass = $this->nodeClass;
 		$buttons   = array();
@@ -72,7 +72,7 @@ class _markers extends \IPS\Node\Controller
 	 *
 	 * @return	string
 	 */
-	protected function manage(): void
+	protected function manage()
 	{
 		/* Javascript & CSS */
 		\IPS\Output::i()->jsFiles = array_merge( \IPS\Output::i()->jsFiles, \IPS\Output::i()->js( 'admin_membermap.js', 'membermap', 'admin' ) );
@@ -86,7 +86,7 @@ class _markers extends \IPS\Node\Controller
 	 * 
 	 * @return void
 	 */
-	public function import(): void
+	public function import()
 	{
 		$id = isset( \IPS\Request::i()->id ) ? \intval( \IPS\Request::i()->id ) : 0;
 
@@ -281,7 +281,7 @@ class _markers extends \IPS\Node\Controller
 	 * 
 	 * @return void
 	 */
-	protected function _parseKml( array &$markers, $_folder, $prevFolderName='' ): void
+	protected function _parseKml( array &$markers, $_folder, $prevFolderName='' )
 	{
 		if ( isset( $_folder->Folder ) )
 		{
@@ -319,7 +319,7 @@ class _markers extends \IPS\Node\Controller
 	 * 
 	 * @return void
 	 */
-	protected function _parseKmlPlacemark( array &$markers, object $folder, string $prevFolderName ): void
+	protected function _parseKmlPlacemark( array &$markers, object $folder, string $prevFolderName )
 	{
 		foreach( $folder->Placemark as $placemark )
 		{

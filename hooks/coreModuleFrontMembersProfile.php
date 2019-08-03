@@ -14,7 +14,7 @@ class membermap_hook_coreModuleFrontMembersProfile extends _HOOK_CLASS_
 	 * @param $form
 	 * @param array $values
 	 */
-	protected function _saveMember( $form, array $values ): void
+	protected function _saveMember( $form, array $values )
 	{
 		parent::_saveMember( $form, $values );
 

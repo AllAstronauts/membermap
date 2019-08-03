@@ -117,7 +117,7 @@ class _Pages
 		+: Valid colours are 'red', 'darkred', 'lightred', 'orange', 'beige', 'green', 'darkgreen', 'lightgreen', 'blue', 'darkblue', 'lightblue',
 			'purple', 'darkpurple', 'pink', 'cadetblue', 'gray', 'lightgray', 'black' and 'white'.
 	 */
-	public function getLocations(): array
+	public function getLocations()
 	{
 		if ( ! \IPS\Settings::i()->membermap_pagesExt OR ! \IPS\Application::appIsEnabled( 'cms' ) )
 		{
@@ -201,7 +201,7 @@ class _Pages
 	 * @param  	int 	$id 	Marker ID
 	 * @return html
 	 */
-	public function getPopup( $id ): string
+	public function getPopup( $id )
 	{
 		try
 		{

@@ -26,7 +26,7 @@ class _RebuildCache
 	/**
 	 * @brief Number of topics to build per cycle
 	 */
-	public $perCycle	= 500;
+	public $perCycle	= \IPS\REBUILD_QUICK;
 
 	/**
 	 * Parse data before queuing
@@ -34,7 +34,7 @@ class _RebuildCache
 	 * @param	array	$data
 	 * @return	array
 	 */
-	public function preQueueData( $data ): array
+	public function preQueueData( $data )
 	{
 		/* Store the timestamp of the cache to force the browser to purge its local storage */
 		\IPS\Data\Store::i()->membermap_cacheTime = time();
@@ -64,7 +64,7 @@ class _RebuildCache
 	 * @return	int|null				New offset or NULL if complete
 	 * @throws	\OutOfRangeException	Indicates offset doesn't exist and thus task is complete
 	 */
-	public function run( $data, $offset ): ?int
+	public function run( $data, $offset )
 	{
 		if ( ! \IPS\Application::appIsEnabled( 'membermap' ) )
 		{
@@ -170,7 +170,7 @@ class _RebuildCache
 	 * @return	array( 'text' => 'Doing something...', 'complete' => 50 )	Text explaining task and percentage complete
 	 * @throws	\OutOfRangeException	Indicates offset doesn't exist and thus task is complete
 	 */
-	public function getProgress( $data, $offset ): array
+	public function getProgress( $data, $offset )
 	{
 		return array( 'text' => \IPS\Member::loggedIn()->language()->addToStack('membermap_rebuilding_cache'), 'complete' => round( 100 / $data['count'] * $offset, 2 ) );
 	}	

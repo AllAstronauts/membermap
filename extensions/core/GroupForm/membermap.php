@@ -35,7 +35,7 @@ class _membermap
 	 * @param	\IPS\Member\Group		$group	Existing Group
 	 * @return	void
 	 */
-	public function process( &$form, $group ): void
+	public function process( &$form, $group )
 	{
 		$form->add( new \IPS\Helpers\Form\YesNo( 'g_membermap_delete_own', $group->g_membermap_delete_own, FALSE ) );
 		
@@ -64,7 +64,7 @@ class _membermap
 	 * @param	\IPS\Member\Group	$group	The group
 	 * @return	void
 	 */
-	public function save( $values, &$group ): void
+	public function save( $values, &$group )
 	{
 		$bgColour 	= $values['g_membermap_markerColour'] ? $values['g_membermap_markerColour'] : 'darkblue';
 

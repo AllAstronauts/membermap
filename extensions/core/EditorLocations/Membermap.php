@@ -29,7 +29,7 @@ class _Membermap
 	 * @param	\IPS\Member	$member	The member
 	 * @return	bool|null	NULL will cause the default value (based on the member's permissions) to be used, and is recommended in most cases. A boolean value will override that.
 	 */
-	public function canUseHtml( $member ): ?bool
+	public function canUseHtml( $member )
 	{
 		return NULL;
 	}
@@ -41,7 +41,7 @@ class _Membermap
 	 * @param	\IPS\Helpers\Form\Editor	$field	The editor field
 	 * @return	bool|null	NULL will cause the default value (based on the member's permissions) to be used, and is recommended in most cases. A boolean value will override that.
 	 */
-	public function canAttach( $member, $field ): ?bool
+	public function canAttach( $member, $field )
 	{
 		return NULL;
 	}
@@ -56,7 +56,7 @@ class _Membermap
 	 * @param	array		$attachment	The attachment data
 	 * @return	bool
 	 */
-	public function attachmentPermissionCheck( $member, $id1, $id2, $id3, $attachment ): ?bool
+	public function attachmentPermissionCheck( $member, $id1, $id2, $id3, $attachment )
 	{
 		return $member->canAccessModule( \IPS\Application\Module::get( 'membermap', 'membermap' ) );
 	}

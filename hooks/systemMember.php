@@ -15,7 +15,7 @@ class membermap_hook_systemMember extends _HOOK_CLASS_
 	 * 
 	 * @return	void
 	 */
-	protected function _processPostBeforeRegistering( $secret = NULL ): void
+	protected function _processPostBeforeRegistering( $secret = NULL )
 	{
 		/*
 			Member Map is only allowed to store one item per member, but there is currently not an easy way to determine 

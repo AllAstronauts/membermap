@@ -33,7 +33,7 @@ class _markers extends \IPS\Content\Controller
 	 *
 	 * @return	void
 	 */
-	public function execute(): void
+	public function execute()
 	{
 		try
 		{
@@ -80,7 +80,7 @@ class _markers extends \IPS\Content\Controller
 	 *
 	 * @return	void
 	 */
-	protected function manage(): void
+	protected function manage()
 	{
 		/* Init */
 		parent::manage();
@@ -148,7 +148,7 @@ class _markers extends \IPS\Content\Controller
 	 * 
 	 * @return void
 	 */
-	protected function edit(): void
+	protected function edit()
 	{
 		if ( !$this->marker->canEdit() and !\IPS\Request::i()->form_submitted ) // We check if the form has been submitted to prevent the user loosing their content
 		{

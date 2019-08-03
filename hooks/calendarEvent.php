@@ -13,7 +13,7 @@ class membermap_hook_calendarEvent extends _HOOK_CLASS_
 	 *
 	 * @return void
 	 */
-	public function save(): void
+	public function save()
 	{
 		parent::save();
 

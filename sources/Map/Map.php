@@ -27,7 +27,7 @@ class _Map extends \IPS\Patterns\Singleton
 	 * 
 	 * @return int Group ID
 	 */
-	public function getMemberGroupId(): int
+	public function getMemberGroupId()
 	{
 		static $groupId = null;
 
@@ -106,7 +106,7 @@ class _Map extends \IPS\Patterns\Singleton
 	 * @param 		bool 	Load member and group data
 	 * @return		mixed 	Members location record, or false if non-existent
 	 */
-	public function getMarkerByMember( int $memberId, $format=TRUE, $loadMemberdata=TRUE )
+	public function getMarkerByMember( $memberId, $format=TRUE, $loadMemberdata=TRUE )
 	{
 		static $marker = array();
 		if ( ! \intval( $memberId ) )
@@ -311,7 +311,7 @@ class _Map extends \IPS\Patterns\Singleton
 	 *
 	 * @return 	bool 	TRUE when OK, FALSE when rewrite was needed
 	 */
-	public function checkForCache(): bool
+	public function checkForCache()
 	{
 		$cacheTime 	= isset( \IPS\Data\Store::i()->membermap_cacheTime ) ? \IPS\Data\Store::i()->membermap_cacheTime : 0;
 
@@ -333,7 +333,7 @@ class _Map extends \IPS\Patterns\Singleton
 	 *
 	 * @return void
 	 */
-	public function invalidateJsonCache(): void
+	public function invalidateJsonCache()
 	{
 		/* Just reset cachetime to 0. checkForCache() will deal with the actual recaching on the next load */
 		\IPS\Data\Store::i()->membermap_cacheTime = 0;
@@ -345,7 +345,7 @@ class _Map extends \IPS\Patterns\Singleton
 	 *
 	 * @return void
 	 */
-	public function deleteCacheFiles(): void
+	public function deleteCacheFiles()
 	{
 		/* Remove all files from cache dir. 
 		 * We need to do this in case of situations were a file won't be overwritten (when deleting markers), 
@@ -371,7 +371,7 @@ class _Map extends \IPS\Patterns\Singleton
 	 * 
 	 * @return	void
 	 */
-	public function recacheJsonFile(): void
+	public function recacheJsonFile()
 	{
 		/* https://bugs.php.net/bug.php?id=72567 */
 		ini_set('serialize_precision', 14);
@@ -515,7 +515,7 @@ class _Map extends \IPS\Patterns\Singleton
 	 * @param 		array 	Markers
 	 * @return		array	Markers
 	 */
-	public function formatMemberMarkers( array $markers ): array
+	public function formatMemberMarkers( array $markers )
 	{
 		$markersToKeep = array();
 		$groupCache = \IPS\Data\Store::i()->groups;
@@ -598,7 +598,7 @@ class _Map extends \IPS\Patterns\Singleton
 	 * @param 		array 	Markers
 	 * @return		array	Markers
 	 */
-	public function formatCustomMarkers( array $markers ): array
+	public function formatCustomMarkers( array $markers )
 	{
 		$markersToKeep = array();
 		$validColours = array( 

@@ -28,7 +28,7 @@ class _settings extends \IPS\Dispatcher\Controller
 	 *
 	 * @return	void
 	 */
-	public function execute(): void
+	public function execute()
 	{
 		\IPS\Dispatcher::i()->checkAcpPermission( 'settings_manage' );
 		parent::execute();
@@ -39,7 +39,7 @@ class _settings extends \IPS\Dispatcher\Controller
 	 *
 	 * @return	void
 	 */
-	protected function manage(): void
+	protected function manage()
 	{
 		\IPS\Output::i()->title = \IPS\Member::loggedIn()->language()->addToStack('menu__membermap_membermap_settings');
 
@@ -205,7 +205,7 @@ class _settings extends \IPS\Dispatcher\Controller
 	 * 
 	 * @return void
 	 */
-	protected function mapquestSearch(): void
+	protected function mapquestSearch()
 	{
 		$location 	= \IPS\Request::i()->q;
 		$data 		= array();
@@ -231,7 +231,7 @@ class _settings extends \IPS\Dispatcher\Controller
 	 * 
 	 * @return void
 	 */
-	protected function resetMemberSync(): void
+	protected function resetMemberSync()
 	{
 		/* Make sure the user confirmed the deletion */
 		\IPS\Request::i()->confirmedDelete( 'membermap_resetmembersync', 'membermap_resetmembersync_desc', 'continue' );

@@ -46,7 +46,7 @@ class _Application extends \IPS\Application
 	 *
 	 * @return void
 	 */
-	public function installOther(): void
+	public function installOther()
 	{
 		/* Install default Members marker group */
 		/* Calling this will create a group if one don't exist */
@@ -99,7 +99,7 @@ class _Application extends \IPS\Application
 	 * Get an array of enabled maps
 	 * @return array 	List of maps
 	 */
-	public static function getEnabledMaps(): array
+	public static function getEnabledMaps()
 	{
 		$defaultMaps = static::$defaultMaps;
 
@@ -121,7 +121,7 @@ class _Application extends \IPS\Application
 	 * @note	Return the class for the icon (e.g. 'globe')
 	 * @return	string|null
 	 */
-	protected function get__icon(): string
+	protected function get__icon()
 	{
 		return 'map-marker';
 	}
@@ -150,7 +150,7 @@ class _Application extends \IPS\Application
 	 * @endcode
 	 * @return array
 	 */
-	public function defaultFrontNavigation(): array
+	public function defaultFrontNavigation()
 	{
 		return array(
 			'rootTabs'		=> array( 

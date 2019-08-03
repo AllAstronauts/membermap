@@ -29,7 +29,7 @@ class _ajax extends \IPS\Dispatcher\Controller
 	 *
 	 * @return json
 	 */
-	protected function getCache(): void
+	protected function getCache()
 	{
 		$fileId = isset( \IPS\Request::i()->id ) ? (int) \IPS\Request::i()->id : NULL;
 
@@ -58,7 +58,7 @@ class _ajax extends \IPS\Dispatcher\Controller
 	 * 
 	 * @return html
 	 */
-	protected function getPopup(): void
+	protected function getPopup()
 	{
 		$markerId 	= \IPS\Request::i()->id;
 		$markerExt 	= \IPS\Request::i()->ext ?: '';
@@ -107,7 +107,7 @@ class _ajax extends \IPS\Dispatcher\Controller
 	 * 
 	 * @return json
 	 */
-	protected function mapquestSearch(): void
+	protected function mapquestSearch()
 	{
 		$location 	= \IPS\Request::i()->q;
 		$data 		= array();
@@ -152,7 +152,7 @@ class _ajax extends \IPS\Dispatcher\Controller
 	 * 
 	 * @return json
 	 */
-	protected function mapquestReverseLookup(): void
+	protected function mapquestReverseLookup()
 	{
 		$lat 	= \floatval( \IPS\Request::i()->lat );
 		$lng 	= \floatval( \IPS\Request::i()->lng );
