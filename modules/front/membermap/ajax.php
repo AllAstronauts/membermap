@@ -60,7 +60,7 @@ class _ajax extends \IPS\Dispatcher\Controller
 	 */
 	protected function getPopup()
 	{
-		$markerId 	= \intval( \IPS\Request::i()->id );
+		$markerId 	= \IPS\Request::i()->id;
 		$markerExt 	= \IPS\Request::i()->ext ?: '';
 		$output 	= '';
 
@@ -74,7 +74,7 @@ class _ajax extends \IPS\Dispatcher\Controller
 			if ( ! $markerExt )
 			{
 				/* Remember to update the queue too */
-				$marker = \IPS\membermap\Markers\Markers::load( $markerId );
+				$marker = \IPS\membermap\Markers\Markers::load( \intval( $markerId ) );
 
 				if ( $marker->container()->type == 'member' )
 				{

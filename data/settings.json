@@ -92,6 +92,30 @@
         "default": "*"
     },
     {
+        "key": "membermap_pagesExt",
+        "default": "0"
+    },
+    {
+        "key": "membermap_pages_bgcolour",
+        "default": "red"
+    },
+    {
+        "key": "membermap_pages_colour",
+        "default": "#FFFFFF"
+    },
+    {
+        "key": "membermap_pages_databases",
+        "default": "*"
+    },
+    {
+        "key": "membermap_pages_days_behind",
+        "default": "120"
+    },
+    {
+        "key": "membermap_pages_icon",
+        "default": "fa-files-o"
+    },
+    {
         "key": "membermap_popupFields",
         "default": ""
     },
