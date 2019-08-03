@@ -9,7 +9,7 @@
  * @version     -storm_version-
  */
 
-namespace IPS\membermap\extensions\dtdevplus\Headerdoc;
+namespace IPS\membermap\extensions\toolbox\Headerdoc;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
 if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
@@ -21,7 +21,7 @@ if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 /**
  * headerdoc
  */
-class _headerdoc extends \IPS\dtdevplus\Headerdoc\HeaderdocAbstract
+class _headerdoc extends \IPS\toolbox\Headerdoc\HeaderdocAbstract
 {
 
     /**

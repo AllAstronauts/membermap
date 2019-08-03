@@ -80,6 +80,10 @@
         "default": "0"
     },
     {
+        "key": "membermap_highlightStaff",
+        "default": "1"
+    },
+    {
         "key": "membermap_mapQuestAPI",
         "default": ""
     },

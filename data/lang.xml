@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="membermap" version="160005">
+ <app key="membermap" version="160006">
   <word key="__app_membermap" js="0">Member Map</word>
   <word key="frontnavigation_membermap" js="0">Member Map</word>
   <word key="membermap_clubnavtitle" js="0">Member Map</word>
@@ -119,6 +119,7 @@
   <word key="membermap_showNightAndDay" js="0">Show a 'night and day' overlay</word>
   <word key="membermap_showMemberList" js="0">Show a list of markers in the sidebar?</word>
   <word key="membermap_groupByMemberGroup" js="0">Group member markers by member group?</word>
+  <word key="membermap_highlightStaff" js="0">Group members of staff on top of sidebar?</word>
   <word key="membermap_autoUpdate" js="0">Profile location synchronisation</word>
   <word key="membermap_monitorLocationField" js="0">Enable profile sync?</word>
   <word key="membermap_profileLocationField" js="0">Select profile field(s)</word>
@@ -227,6 +228,7 @@
   <word key="block_memberList_staff" js="0">Staff members</word>
   <word key="block_memberList_followers" js="0">Members you follow</word>
   <word key="block_memberList_others" js="0">Other members</word>
+  <word key="block_memberList_members" js="0">Members</word>
   <word key="x_created_marker_in" js="0">%s created a marker in %s</word>
   <word key="x_commented_marker" js="0">%s commented on a marker</word>
   <word key="membermap_button_editLocation" js="1">Update Location</word>
