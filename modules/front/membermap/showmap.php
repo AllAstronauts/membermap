@@ -211,6 +211,7 @@ EOF;
 		$geoLocForm->addButton( 'membermap_current_location', 'button', NULL, 'ipsButton ipsButton_primary', array( 'id' => 'membermap_currentLocation' ) );
 
 
+		/* "Normal" form */
 		$form = new \IPS\Helpers\Form( 'membermap_form_location', NULL, NULL, array( 'id' => 'membermap_form_location' ) );
 		$form->class = 'ipsForm_vertical ipsType_center ipsPos_center';
 

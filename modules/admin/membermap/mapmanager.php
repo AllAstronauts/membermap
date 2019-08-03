@@ -42,7 +42,7 @@ class _mapmanager extends \IPS\Dispatcher\Controller
 	}
 
 	/**
-	 * ...
+	 * Map Manager
 	 *
 	 * @return	void
 	 */
@@ -74,8 +74,8 @@ class _mapmanager extends \IPS\Dispatcher\Controller
 		
 		if( !isset( $maps['basemaps'] ) )
 		{
-			/* You can't have a map with no basemap. Defaulting to OpenStreetMap.France */
-			$maps['basemaps'] = array( 'OpenStreetMap.France' );
+			/* You can't have a map with no basemap. Defaulting to OpenStreetMap.Mapnik */
+			$maps['basemaps'] = array( 'OpenStreetMap.Mapnik' );
 		}
 		if( !isset( $maps['overlays'] ) )
 		{

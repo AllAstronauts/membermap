@@ -18,25 +18,9 @@ if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 	exit;
 }
 
-class _Map
+class _Map extends \IPS\Patterns\Singleton
 {
 	protected static $instance = NULL;
-
-	/**
-	 * Get instance
-	 *
-	 * @return	static
-	 */
-	public static function i()
-	{
-		if( static::$instance === NULL )
-		{
-			$classname = \get_called_class();
-			static::$instance = new $classname;
-		}
-		
-		return static::$instance;
-	}
 
 	/**
 	 * Get the marker group ID for member markers
@@ -627,7 +611,7 @@ class _Map
 			foreach( $markers as $marker )
 			{
 				$popup = "";
-				if(  isset( $marker['popup'] ) )
+				if ( isset( $marker['popup'] ) )
 				{
 					$popup = $marker['popup'];
 					\IPS\Output::i()->parseFileObjectUrls( $popup );

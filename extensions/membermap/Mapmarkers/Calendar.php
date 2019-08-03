@@ -325,7 +325,7 @@ class _Calendar
 				);
 			}
 		}
-
+		
 		return $return;
 	}
 
