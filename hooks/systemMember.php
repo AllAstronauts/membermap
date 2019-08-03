@@ -12,9 +12,10 @@ class membermap_hook_systemMember extends _HOOK_CLASS_
 	 * Process any posst made before registering
 	 *
 	 * @param	string	$secret	The secret, if just created (necessary for avoiding R/W separation issues if no validation is required)
+	 * 
 	 * @return	void
 	 */
-	protected function _processPostBeforeRegistering( $secret = NULL )
+	protected function _processPostBeforeRegistering( $secret = NULL ): void
 	{
 		/*
 			Member Map is only allowed to store one item per member, but there is currently not an easy way to determine 
@@ -55,6 +56,6 @@ class membermap_hook_systemMember extends _HOOK_CLASS_
 			}
 		}
 
-		return parent::_processPostBeforeRegistering( $secret );
+		parent::_processPostBeforeRegistering( $secret );
 	}
 }

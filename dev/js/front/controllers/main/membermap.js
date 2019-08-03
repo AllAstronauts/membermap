@@ -969,7 +969,7 @@
 						{
 							var title = $( '<li>' ).addClass( 'ipsCursor_pointer' ).append( marker.member_name );
 
-							if ( marker.isStaff )
+							if ( marker.isStaff && ips.getSetting( 'membermap_highlightStaff' ) )
 							{
 								$( '#memberList_staff div ul' ).append( title );
 								showStaffMembersBlock = true;
@@ -1135,7 +1135,7 @@
 				}
 
 				/* Don't show the title unless there are staff members or users you follow in any other blocks */
-				if ( showOtherUsersBlock && ( showStaffMembersBlock || showFollowedUsersBlock ) && $( '#memberList_others h3' ).is( ':hidden' ) )
+				if ( showOtherUsersBlock /*&& ( showStaffMembersBlock || showFollowedUsersBlock )*/ && $( '#memberList_others h3' ).is( ':hidden' ) )
 				{
 					$( '#memberList_others h3' ).show();
 				}

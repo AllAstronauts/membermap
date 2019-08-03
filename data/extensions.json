@@ -1,0 +1,38 @@
+{
+    "core": {
+        "GroupForm": {
+            "membermap": "IPS\\membermap\\extensions\\core\\GroupForm\\membermap"
+        },
+        "FileStorage": {
+            "MarkerStaticMap": "IPS\\membermap\\extensions\\core\\FileStorage\\MarkerStaticMap"
+        },
+        "Queue": {
+            "RebuildCache": "IPS\\membermap\\extensions\\core\\Queue\\RebuildCache"
+        },
+        "Uninstall": {
+            "membermap": "IPS\\membermap\\extensions\\core\\Uninstall\\membermap"
+        },
+        "MemberSync": {
+            "membermap": "IPS\\membermap\\extensions\\core\\MemberSync\\membermap"
+        },
+        "Permissions": {
+            "Permissions": "IPS\\membermap\\extensions\\core\\Permissions\\Permissions"
+        },
+        "EditorLocations": {
+            "Membermap": "IPS\\membermap\\extensions\\core\\EditorLocations\\Membermap"
+        },
+        "FrontNavigation": {
+            "membermap": "IPS\\membermap\\extensions\\core\\FrontNavigation\\membermap"
+        },
+        "ContentRouter": {
+            "MemberMarkers": "IPS\\membermap\\extensions\\core\\ContentRouter\\MemberMarkers"
+        }
+    },
+    "membermap": {
+        "Mapmarkers": {
+            "Clubs": "IPS\\membermap\\extensions\\membermap\\Mapmarkers\\Clubs",
+            "Calendar": "IPS\\membermap\\extensions\\membermap\\Mapmarkers\\Calendar",
+            "Pages": "IPS\\membermap\\extensions\\membermap\\Mapmarkers\\Pages"
+        }
+    }
+}

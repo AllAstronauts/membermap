@@ -29,7 +29,7 @@ class _ajax extends \IPS\Dispatcher\Controller
 	 *
 	 * @return json
 	 */
-	protected function getCache()
+	protected function getCache(): void
 	{
 		$fileId = isset( \IPS\Request::i()->id ) ? (int) \IPS\Request::i()->id : NULL;
 
@@ -58,9 +58,9 @@ class _ajax extends \IPS\Dispatcher\Controller
 	 * 
 	 * @return html
 	 */
-	protected function getPopup()
+	protected function getPopup(): void
 	{
-		$markerId 	= \intval( \IPS\Request::i()->id );
+		$markerId 	= \IPS\Request::i()->id;
 		$markerExt 	= \IPS\Request::i()->ext ?: '';
 		$output 	= '';
 
@@ -74,7 +74,7 @@ class _ajax extends \IPS\Dispatcher\Controller
 			if ( ! $markerExt )
 			{
 				/* Remember to update the queue too */
-				$marker = \IPS\membermap\Markers\Markers::load( $markerId );
+				$marker = \IPS\membermap\Markers\Markers::load( \intval( $markerId ) );
 
 				if ( $marker->container()->type == 'member' )
 				{
@@ -107,7 +107,7 @@ class _ajax extends \IPS\Dispatcher\Controller
 	 * 
 	 * @return json
 	 */
-	protected function mapquestSearch()
+	protected function mapquestSearch(): void
 	{
 		$location 	= \IPS\Request::i()->q;
 		$data 		= array();
@@ -152,7 +152,7 @@ class _ajax extends \IPS\Dispatcher\Controller
 	 * 
 	 * @return json
 	 */
-	protected function mapquestReverseLookup()
+	protected function mapquestReverseLookup(): void
 	{
 		$lat 	= \floatval( \IPS\Request::i()->lat );
 		$lng 	= \floatval( \IPS\Request::i()->lng );
@@ -183,5 +183,4 @@ class _ajax extends \IPS\Dispatcher\Controller
 		
 		\IPS\Output::i()->json( $data );	
 	}
-	
 }

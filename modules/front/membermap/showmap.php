@@ -28,7 +28,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 	 *
 	 * @return	void
 	 */
-	public function execute()
+	public function execute(): void
 	{
 		/* Calling this here, as it will throw an error if the key isn't present */
 		\IPS\membermap\Application::getApiKeys( 'mapquest' );
@@ -41,7 +41,7 @@ class _showmap extends \IPS\Dispatcher\Controller
 	 *
 	 * @return	void
 	 */
-	protected function manage()
+	protected function manage(): void
 	{
 		$markers 	= array();
 		$club 		= NULL;
@@ -148,8 +148,9 @@ class _showmap extends \IPS\Dispatcher\Controller
 			'membermap_bbox'				=> json_decode( \IPS\Settings::i()->membermap_bbox ),
 			'membermap_bbox_zoom'			=> \intval( \IPS\Settings::i()->membermap_bbox_zoom ),
 			'membermap_defaultMaps'			=> $defaultMaps,
-			'membermap_enable_clustering' 	=> \IPS\Settings::i()->membermap_enable_clustering == 1 ? 1 : 0,
-			'membermap_groupByMemberGroup'	=> \IPS\Settings::i()->membermap_groupByMemberGroup == 1 ? 1 : 0,
+			'membermap_enable_clustering' 	=> \IPS\Settings::i()->membermap_enable_clustering == 1 ?: 0,
+			'membermap_groupByMemberGroup'	=> \IPS\Settings::i()->membermap_groupByMemberGroup == 1 ?: 0,
+			'membermap_highlightStaff'		=> \IPS\Settings::i()->membermap_highlightStaff == 1 ?: 0,
 			'membermap_onlyShowGroup'		=> \IPS\Request::i()->group ? explode( ',', mb_strtolower( \IPS\Request::i()->group ) ) : array(),
 			'membermap_showNightAndDay'		=> \IPS\Settings::i()->membermap_showNightAndDay == 1 ?: 0,
 			'membermap_membersIFollow'		=> iterator_to_array( \IPS\Db::i()->select( 'follow_rel_id', 'core_follow', array( 'follow_app=? AND follow_area=? AND follow_member_id=?', 'core', 'member', \IPS\Member::loggedIn()->member_id ) ) )
@@ -175,7 +176,7 @@ EOF;
 	 *
 	 * @return	void
 	 */
-	protected function add()
+	protected function add(): void
 	{
 		$existing = NULL;
 
@@ -210,6 +211,7 @@ EOF;
 		$geoLocForm->addButton( 'membermap_current_location', 'button', NULL, 'ipsButton ipsButton_primary', array( 'id' => 'membermap_currentLocation' ) );
 
 
+		/* "Normal" form */
 		$form = new \IPS\Helpers\Form( 'membermap_form_location', NULL, NULL, array( 'id' => 'membermap_form_location' ) );
 		$form->class = 'ipsForm_vertical ipsType_center ipsPos_center';
 
@@ -308,7 +310,7 @@ EOF;
 	 *
 	 * @return	void
 	 */
-	protected function delete()
+	protected function delete(): void
 	{
 		\IPS\Session::i()->csrfCheck();
 
@@ -335,7 +337,7 @@ EOF;
 	 * 
 	 * @return void
 	 */
-	protected function embed()
+	protected function embed(): void
 	{
 		$this->manage();
 

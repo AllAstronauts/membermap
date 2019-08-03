@@ -28,7 +28,7 @@ class _settings extends \IPS\Dispatcher\Controller
 	 *
 	 * @return	void
 	 */
-	public function execute()
+	public function execute(): void
 	{
 		\IPS\Dispatcher::i()->checkAcpPermission( 'settings_manage' );
 		parent::execute();
@@ -39,7 +39,7 @@ class _settings extends \IPS\Dispatcher\Controller
 	 *
 	 * @return	void
 	 */
-	protected function manage()
+	protected function manage(): void
 	{
 		\IPS\Output::i()->title = \IPS\Member::loggedIn()->language()->addToStack('menu__membermap_membermap_settings');
 
@@ -71,18 +71,21 @@ class _settings extends \IPS\Dispatcher\Controller
 
 		if ( ! empty( \IPS\Settings::i()->membermap_mapQuestAPI ) )
 		{
+
 			/* Map Settings */
 			$form->attributes['data-controller'] 	= 'membermap.admin.membermap.settings';
 			$form->attributes['id'] 				= 'membermap_form_settings';
 
 			$form->addHeader('map_settings');
-			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_groupByMemberGroup', \IPS\Settings::i()->membermap_groupByMemberGroup ) );
+			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_groupByMemberGroup', \IPS\Settings::i()->membermap_groupByMemberGroup, FALSE,
+				array( 'togglesOff' => array( 'membermap_highlightStaff' ) ) ) );
 			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_enable_clustering', \IPS\Settings::i()->membermap_enable_clustering ) );
 			$form->hiddenValues['membermap_bbox'] = \IPS\Settings::i()->membermap_bbox;
 			$form->add( new \IPS\Helpers\Form\Text( 'membermap_bbox_location', \IPS\Settings::i()->membermap_bbox_location, FALSE, array(), NULL, NULL, NULL, 'membermap_bbox_location' ) );
 			$form->add( new \IPS\Helpers\Form\Number( 'membermap_bbox_zoom', \intval( \IPS\Settings::i()->membermap_bbox_zoom ), FALSE, array( 'min' => 1, 'max' => 18 ) ) );
 			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_showNightAndDay', \IPS\Settings::i()->membermap_showNightAndDay ) );
 			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_showMemberList', \IPS\Settings::i()->membermap_showMemberList ) );
+			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_highlightStaff', \IPS\Settings::i()->membermap_highlightStaff, FALSE, array(), NULL, NULL, NULL, 'membermap_highlightStaff' ) );
 			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_showProfileMap', \IPS\Settings::i()->membermap_showProfileMap ) );
 			
 
@@ -90,11 +93,45 @@ class _settings extends \IPS\Dispatcher\Controller
 			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_hideMarkerContent', \IPS\Settings::i()->membermap_hideMarkerContent ) );
 
 
+			$form->addHeader( 'membermap_popupSettings' );
+			
+			/* Need to store it slightly different, that's why we can't reuse the $profileFields defined further down */
+			$_profileFields = array( '' => ' -- ' . \IPS\Member::loggedIn()->language()->addToStack( 'membermap_profileLocationField' ) . ' -- ' );
+
+			foreach ( \IPS\core\ProfileFields\Field::fieldData() as $group => $fields )
+			{
+				foreach ( $fields as $id => $field )
+				{
+					$field = \IPS\core\ProfileFields\Field::constructFromData( $field )->buildHelper();
+					
+					$_profileFields[ 'core_pfieldgroups_' . $group ][ $group . '-' . $id ] = $field->name;
+				}
+			}
+
+			$value = \IPS\Settings::i()->membermap_popupFields ? explode( ',', \IPS\Settings::i()->membermap_popupFields ) : NULL;
+
+			$form->add( new \IPS\Helpers\Form\Stack( 
+				'membermap_popupFields',
+				$value, 
+				FALSE, array( 'stackFieldType' => 'Select', 'options' => $_profileFields ), NULL, NULL, NULL, 'membermap_popupFields' 
+			) );
+
 			/* Profile Synchronization */
 			$form->addTab( 'membermap_settings_tab_profile' );
 			$form->addHeader( 'membermap_autoUpdate' );
 
+			
+			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_monitorLocationField', \IPS\Settings::i()->membermap_monitorLocationField, FALSE, 
+				array( 'togglesOn' => array( 'membermap_profileLocationField', 'membermap_monitorLocationField_groupPerm', 'membermap_syncLocationField' ) ) 
+			) );
+
 			$profileFields = array( '' => ' -- ' . \IPS\Member::loggedIn()->language()->addToStack( 'membermap_profileLocationField' ) . ' -- ' );
+
+			if ( \IPS\Db::i()->checkForTable( 'core_member_locations' ) )
+			{
+				$profileFields['999999'] = "Member Location, by Boris";
+			}
+
 			foreach ( \IPS\core\ProfileFields\Field::fieldData() as $group => $fields )
 			{
 				foreach ( $fields as $id => $field )
@@ -104,10 +141,6 @@ class _settings extends \IPS\Dispatcher\Controller
 					$profileFields[ 'core_pfieldgroups_' . $group ][ $id ] = $field->name;
 				}
 			}
-
-			$form->add( new \IPS\Helpers\Form\YesNo( 'membermap_monitorLocationField', \IPS\Settings::i()->membermap_monitorLocationField, FALSE, 
-				array( 'togglesOn' => array( 'membermap_profileLocationField', 'membermap_monitorLocationField_groupPerm', 'membermap_syncLocationField' ) ) 
-			) );
 
 			$value = \IPS\Settings::i()->membermap_profileLocationField ? explode( ',', \IPS\Settings::i()->membermap_profileLocationField ) : NULL;
 			$value = \is_array( $value ) ? array_map( 'intval', $value ) : $value;
@@ -167,7 +200,12 @@ class _settings extends \IPS\Dispatcher\Controller
 		\IPS\Output::i()->output = $form;
 	}
 
-	protected function mapquestSearch()
+	/**
+	 * MapQuest search
+	 * 
+	 * @return void
+	 */
+	protected function mapquestSearch(): void
 	{
 		$location 	= \IPS\Request::i()->q;
 		$data 		= array();
@@ -190,9 +228,10 @@ class _settings extends \IPS\Dispatcher\Controller
 
 	/**
 	 * Re-process all members
+	 * 
 	 * @return void
 	 */
-	protected function resetMemberSync()
+	protected function resetMemberSync(): void
 	{
 		/* Make sure the user confirmed the deletion */
 		\IPS\Request::i()->confirmedDelete( 'membermap_resetmembersync', 'membermap_resetmembersync_desc', 'continue' );

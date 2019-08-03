@@ -34,7 +34,7 @@ class _RebuildCache
 	 * @param	array	$data
 	 * @return	array
 	 */
-	public function preQueueData( $data )
+	public function preQueueData( $data ): array
 	{
 		/* Store the timestamp of the cache to force the browser to purge its local storage */
 		\IPS\Data\Store::i()->membermap_cacheTime = time();
@@ -64,7 +64,7 @@ class _RebuildCache
 	 * @return	int|null				New offset or NULL if complete
 	 * @throws	\OutOfRangeException	Indicates offset doesn't exist and thus task is complete
 	 */
-	public function run( $data, $offset )
+	public function run( $data, $offset ): ?int
 	{
 		if ( ! \IPS\Application::appIsEnabled( 'membermap' ) )
 		{
@@ -87,13 +87,6 @@ class _RebuildCache
 		$customMarkers = array();
 		
 		$selectColumns = array( 'mm.*', 'mg.*', 'm.member_id', 'm.name', 'm.members_seo_name', 'm.member_group_id', 'm.pp_photo_type', 'm.pp_main_photo', 'm.pp_thumb_photo', 'pi.perm_2 as viewPerms' );
-		
-		if ( \IPS\Settings::i()->allow_gravatars )
-		{
-			$selectColumns[] = 'm.pp_gravatar';
-			$selectColumns[] = 'm.email';
-			$selectColumns[] = 'm.members_bitoptions';
-		}
 
 		/* Remember to update membermap\Map too */
 		$_markers = \IPS\Db::i()->select( implode( ',', $selectColumns ), array( 'membermap_markers', 'mm' ), array( 'marker_open=1' ), 'mg.group_position ASC, mm.marker_name ASC', array( $offset, $this->perCycle ) )
@@ -177,7 +170,7 @@ class _RebuildCache
 	 * @return	array( 'text' => 'Doing something...', 'complete' => 50 )	Text explaining task and percentage complete
 	 * @throws	\OutOfRangeException	Indicates offset doesn't exist and thus task is complete
 	 */
-	public function getProgress( $data, $offset )
+	public function getProgress( $data, $offset ): array
 	{
 		return array( 'text' => \IPS\Member::loggedIn()->language()->addToStack('membermap_rebuilding_cache'), 'complete' => round( 100 / $data['count'] * $offset, 2 ) );
 	}	

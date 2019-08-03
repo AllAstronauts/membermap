@@ -28,7 +28,7 @@ class _mapmanager extends \IPS\Dispatcher\Controller
 	 *
 	 * @return	void
 	 */
-	public function execute()
+	public function execute(): void
 	{
 		\IPS\Dispatcher::i()->checkAcpPermission( 'mapmanager_manage' );
 
@@ -42,11 +42,11 @@ class _mapmanager extends \IPS\Dispatcher\Controller
 	}
 
 	/**
-	 * ...
+	 * Map Manager
 	 *
 	 * @return	void
 	 */
-	protected function manage()
+	protected function manage(): void
 	{
 		$defaultMaps = \IPS\membermap\Application::getEnabledMaps();
 
@@ -65,16 +65,17 @@ class _mapmanager extends \IPS\Dispatcher\Controller
 
 	/**
 	 * Update default maps
+	 * 
 	 * @return void
 	 */
-	public function update()
+	public function update(): void
 	{
 		$maps = \IPS\Request::i()->maps;
 		
 		if( !isset( $maps['basemaps'] ) )
 		{
-			/* You can't have a map with no basemap. Defaulting to OpenStreetMap.France */
-			$maps['basemaps'] = array( 'OpenStreetMap.France' );
+			/* You can't have a map with no basemap. Defaulting to OpenStreetMap.Mapnik */
+			$maps['basemaps'] = array( 'OpenStreetMap.Mapnik' );
 		}
 		if( !isset( $maps['overlays'] ) )
 		{
