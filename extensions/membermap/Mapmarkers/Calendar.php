@@ -255,8 +255,8 @@ class _Calendar
 			{
 				$location = json_decode( $event->location, TRUE );
 
-				$location['lat']  = isset( $location['mm_lat'] ) ? $location['mm_lat'] : $location['lat'];
-				$location['long'] = isset( $location['mm_long'] ) ? $location['mm_long'] : $location['long'];
+				$location['lat']  = $location['mm_lat'] ?? $location['lat'] ?? FALSE;
+				$location['long'] = $location['mm_long'] ?? $location['long'] ?? FALSE;
 
 				if ( ! $location['lat'] OR ! $location['long'] )
 				{
