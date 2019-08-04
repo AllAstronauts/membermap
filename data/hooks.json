@@ -1,19 +1,19 @@
 {
-    "profileMap": {
-        "type": "S",
-        "class": "\\IPS\\Theme\\class_core_front_profile"
-    },
-    "calendarEvent": {
-        "type": "C",
-        "class": "\\IPS\\calendar\\Event"
-    },
     "NumberInput": {
         "type": "C",
         "class": "\\IPS\\Helpers\\Form\\Number"
     },
+    "profileMap": {
+        "type": "S",
+        "class": "\\IPS\\Theme\\class_core_front_profile"
+    },
     "memberClub": {
         "type": "C",
         "class": "\\IPS\\Member\\Club"
+    },
+    "calendarEvent": {
+        "type": "C",
+        "class": "\\IPS\\calendar\\Event"
     },
     "systemMember": {
         "type": "C",

@@ -147,7 +147,7 @@ $lang = array(
 	'membermap_autoUpdate'				=> "Profile location synchronisation",
 	'membermap_monitorLocationField' 	=> "Enable profile sync?",
 	'membermap_profileLocationField' 	=> "Select profile field(s)",
-	'membermap_profileLocationField_desc' => "Select the custom profile field(s) where members enter their location. You can add multiple fields here, and the first populated profile field will be selected.",
+	'membermap_profileLocationField_desc' => "Select the custom profile field(s) where members enter their location. You can add multiple fields here, and the first populated profile field will be selected.<br>If you change this setting, and the setting below to import members is enabled, you may have to <a href='{internal.app=membermap&module=membermap&controller=settings&do=resetMemberSync}'>restart the sync process</a> for this to have any effect. <strong>This will not affect existing markers on the map.</strong>",
 	'membermap_monitorLocationField_groupPerm' => "Enable for",
 	'membermap_syncLocationField'		=> "Import members without a map marker?",
 	'membermap_syncLocationField_desc'	=> "This will import members that have a location set in the profile, but not one in the map. This will turn itself off once all members are processed.<br><a href='{internal.app=membermap&module=membermap&controller=settings&do=resetMemberSync}'>Restart sync process</a>",
