@@ -42,31 +42,7 @@
 					</h2>
 					{{if $view != 'condensed'}}
 						<p class='ipsType_reset ipsStreamItem_status ipsType_light ipsType_blendLinks'>
-							{{if \in_array( 'IPS\Content\Review', class_parents( $indexData['index_class'] ) )}}
-								{{if isset( $itemData['author'] )}}
-									{lang="ft_user_other_activity_review" sprintf="$authorData['name'], $itemData['author']['name'], $articles['definite']"}
-								{{else}}
-									{lang="ft_user_own_activity_review" sprintf="$authorData['name'], $articles['indefinite']"}
-								{{endif}}
-							{{else}}
-								{{if $itemClass::$firstCommentRequired}}
-									{{if $indexData['index_title']}}
-										{lang="ft_user_own_activity_item" sprintf="$authorData['name'], $articles['indefinite']"}
-									{{else}}
-										{{if isset( $itemData['author'] )}}
-											{lang="ft_user_other_activity_reply" sprintf="$authorData['name'], $articles['definite']"} 
-										{{else}}
-											{lang="ft_user_own_activity_reply" sprintf="$authorData['name'], $articles['indefinite']"}
-										{{endif}}
-									{{endif}}
-								{{else}}
-									{{if isset( $itemData['author'] )}}
-										{lang="ft_user_other_activity_comment" sprintf="$authorData['name'], $articles['definite']"} 
-									{{else}}
-										{lang="ft_user_own_activity_comment" sprintf="$authorData['name'], $articles['indefinite']"}
-									{{endif}}
-								{{endif}}
-							{{endif}}							
+							{expression="$itemClass::searchResultSummaryLanguage( $authorData, $articles, $indexData, $itemData )"} <a href='{$containerUrl}'>{$containerTitle|raw}</a>			
 						</p>
 					{{else}}
 						<ul class='ipsList_inline ipsStreamItem_stats ipsType_light ipsType_blendLinks'>
