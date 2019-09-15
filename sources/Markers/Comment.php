@@ -99,29 +99,6 @@ class _Comment extends \IPS\Content\Comment implements \IPS\Content\EditHistory,
 	}
 
 	/**
-	 * Get HTML for search result display
-	 *
-	 * @param	array		$indexData		Data from the search index
-	 * @param	array		$authorData		Basic data about the author. Only includes columns returned by \IPS\Member::columnsForPhoto()
-	 * @param	array		$itemData		Basic data about the item. Only includes columns returned by item::basicDataColumns()
-	 * @param	array|NULL	$containerData	Basic data about the container. Only includes columns returned by container::basicDataColumns()
-	 * @param	array		$reputationData	Array of people who have given reputation and the reputation they gave
-	 * @param	int|NULL	$reviewRating	If this is a review, the rating
-	 * @param	bool		$iPostedIn		If the user has posted in the item
-	 * @param	string		$view			'expanded' or 'condensed'
-	 * @param	bool		$asItem	Displaying results as items?
-	 * @param	bool		$canIgnoreComments	Can ignore comments in the result stream? Activity stream can, but search results cannot.
-	 * @param	array		$template	Optional custom template
-	 * @return	string
-	 */
-	public static function searchResult( array $indexData, array $authorData, array $itemData, array $containerData = NULL, array $reputationData, $reviewRating, $iPostedIn, $view, $asItem, $canIgnoreComments=FALSE, $template=NULL, $reactions=array() )
-	{
-		$template = array( \IPS\Theme::i()->getTemplate( 'markers', 'membermap', 'front' ), 'searchResult' );
-
-		return parent::searchResult( $indexData, $authorData, $itemData, $containerData, $reputationData, $reviewRating, $iPostedIn, $view, $asItem, $canIgnoreComments, $template, $reactions );
-	}
-
-	/**
 	 * Reaction Type
 	 *
 	 * @return	string
